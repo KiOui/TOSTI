@@ -1,0 +1,18 @@
+{% extends 'tosti/base.html' %}
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'users/css/centered-container.css' %}"/>
+{% endblock %}
+
+{% block page %}
+    <div class="container-sm flex-container">
+        <div class="container-centered">
+            <h1 class="mb-3">You are now logged out.</h1>
+            <div class="container-fluid mb-3">
+            <a href="{% url "users:login" %}">Log in</a> |
+            <a href="{% url "index" %}">Back to homepage</a>
+        </div>
+        </div>
+    </div>
+{% endblock %}

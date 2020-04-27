@@ -31,6 +31,7 @@ jobs:
         poetry run
         flake8
         --exclude="migrations,website/tosti/settings.py"
+        --max-line-length=119
         website
 
     - name: "Run PyDocStyle"
