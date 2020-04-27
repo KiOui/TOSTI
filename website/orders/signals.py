@@ -30,3 +30,15 @@ def set_order_paid_at_if_paid(sender, instance, **kwargs):
             instance.paid_at = datetime.now()
         if not instance.paid and obj.paid:
             instance.paid_at = None
+
+
+@receiver(pre_save)
+def copy_order_price(sender, instance, **kwargs):
+    """Copy the product price to an order."""
+    try:
+        obj = sender.objects.get(pk=instance.pk)
+    except sender.DoesNotExist:
+        pass
+    else:
+        if not instance.product == obj.product:
+            instance.order_price = obj.product.current_price

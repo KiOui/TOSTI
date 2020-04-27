@@ -215,8 +215,6 @@ class Order(models.Model):
                 f"You are not allowed to order more than {self.product.max_allowed_per_shift} products of this kind in this shift."
             )
 
-        self.order_price = self.product.current_price
-
         super(Order, self).save(*args, **kwargs)
 
     @property

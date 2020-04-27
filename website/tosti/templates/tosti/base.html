@@ -38,6 +38,9 @@
                         <div class="dropdown-menu" aria-labelledby="accountDropdownMenuLink">
                             {% if user.is_authenticated %}
                                 <a class="dropdown-item">Logged in as: {{ user.username }}</a>
+                                {% if user.is_staff %}
+                                    <a class="dropdown-item" href="{% url "admin:index" %}">Go to admin</a>
+                                {% endif %}
                                 <a class="dropdown-item" href="{% url "users:logout" %}">Logout</a>
                             {% else %}
                                 <a class="dropdown-item" href="{% url "users:login" %}">Login</a>
