@@ -92,7 +92,7 @@ class OrderAdminShiftFilter(AutocompleteFilter):
 class OrderAdmin(ImportExportModelAdmin):
     """Custom admin for products."""
 
-    readonly_fields = ["order_price", "paid_at", "delivered_at"]
+    readonly_fields = ["order_price", "created", "paid_at", "delivered_at"]
     list_display = ["user", "created", "get_venue", "product", "paid", "delivered"]
     list_filter = [
         OrderAdminUserFilter,
