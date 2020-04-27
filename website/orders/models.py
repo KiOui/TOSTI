@@ -135,6 +135,9 @@ class Shift(models.Model):
         if not self.venue.active:
             raise ValueError(f"This venue is currently not active.")
 
+        if self.end_date <= self.start_date:
+            raise ValueError(f"End date cannot be before start date.")
+
         overlapping_start = (
             Shift.objects.filter(
                 start_date__gte=self.start_date,
