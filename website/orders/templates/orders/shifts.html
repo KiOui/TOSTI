@@ -1,0 +1,20 @@
+{% extends 'tosti/base.html' %}
+{% load static %}
+
+{% block page %}
+    <div class="container-sm">
+        <h1>Active shifts</h1>
+        <p>Select an active shift below to order items.</p>
+        {% if shifts %}
+            {% for shift in shifts %}
+                <div class="{% if not forloop.last %}border-bottom {% endif %}pt-4 pb-4">
+                    <h2>{{ shift.venue.name }}</h2>
+                    <p>Order open until {{ shift.end_date }}</p>
+                    <a href="{% url 'orders:order' shift=shift %}" class="btn btn-primary">Order at {{ shift.venue.name }}</a>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>There are no active shifts.</p>
+        {% endif %}
+    </div>
+{% endblock %}

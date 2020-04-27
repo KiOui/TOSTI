@@ -1,0 +1,9 @@
+{% extends 'tosti/base.html' %}
+{% load static %}
+
+{% block page %}
+    <div class="container-sm">
+        <h1>Order</h1>
+        <p>You are ordering at {{ shift.venue.name }}</p>
+    </div>
+{% endblock %}
