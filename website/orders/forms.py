@@ -1,19 +1,35 @@
 from django import forms
 
 
-class OrderForm(forms.Form):
-    """Form for setting parameters."""
+class ProductForm(forms.Form):
+    """Form for ordering products."""
 
     product_id = forms.IntegerField(widget=forms.HiddenInput())
 
     def __init__(self, product, *args, **kwargs):
         """
-        Initialise the ParameterForm.
+        Initialise the ProductForm.
 
-        :param parameters: a list of BaseParameter objects including the parameters to add to this form, field types are
-        automatically set for the parameters
+        :param product: the product to order in this form
         :param args: arguments
         :param kwargs: keyword arguments
         """
-        super(OrderForm, self).__init__(*args, **kwargs)
+        super(ProductForm, self).__init__(*args, **kwargs)
         self.fields['product_id'].initial = product.id
+
+
+class OrderRemoveForm(forms.Form):
+    """Order remove form."""
+
+    order_id = forms.IntegerField(widget=forms.HiddenInput())
+
+    def __init__(self, order, *args, **kwargs):
+        """
+        Initialise the OrderRemoveForm.
+
+        :param order: the order to remove in this form
+        :param args: arguments
+        :param kwargs: keyword arguments
+        """
+        super(OrderRemoveForm, self).__init__(*args, **kwargs)
+        self.fields['order_id'].initial = order.id

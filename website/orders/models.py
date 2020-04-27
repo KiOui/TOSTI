@@ -37,6 +37,12 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
+    def user_can_order_amount(self, user, shift, amount=1):
+        user_order_amount_product = Order.objects.filter(user=user, shift=shift, product=self).count()
+        if self.max_allowed_per_shift is not None and user_order_amount_product + amount > self.max_allowed_per_shift:
+            return False
+        return True
+
     class Meta:
         ordering = ["-available", "name"]
 
@@ -132,6 +138,13 @@ class Shift(models.Model):
 
         super(Shift, self).save(*args, **kwargs)
 
+    def user_can_order_amount(self, user, amount=1):
+        user_order_amount = Order.objects.filter(user=user, shift=self).count()
+        if self.max_orders_per_user is not None and user_order_amount + amount > self.max_orders_per_user:
+            return False
+
+        return True
+
     class Meta:
         ordering = ["start_date", "end_date"]
 
@@ -168,7 +181,7 @@ class Order(models.Model):
             raise ValueError(f"This product is not available right now.")
         if (
             self.shift.max_orders_per_user is not None
-            and Order.objects.filter(shift=self.shift).count()
+            and Order.objects.filter(shift=self.shift, user=self.user).count()
             >= self.shift.max_orders_per_user
         ):
             raise ValueError(
@@ -176,7 +189,7 @@ class Order(models.Model):
             )
         if (
             self.product.max_allowed_per_shift is not None
-            and Order.objects.filter(product=self.product).count()
+            and Order.objects.filter(product=self.product, user=self.user, shift=self.shift).count()
             >= self.product.max_allowed_per_shift
         ):
             raise ValueError(
@@ -186,9 +199,6 @@ class Order(models.Model):
         self.order_price = self.product.current_price
 
         super(Order, self).save(*args, **kwargs)
-
-    def user_can_order(self, user, shift, amount=1):
-        user_orders = Order.objects.filter(user=user, shift=shift, )
 
     @property
     def get_venue(self):

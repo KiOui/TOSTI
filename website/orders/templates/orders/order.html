@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block page %}
-    <div class="container-sm">
+    <div class="container-sm mb-5">
         <h1>Order</h1>
         <p>You are ordering at {{ shift.venue.name }}</p>
         {% if error %}
@@ -31,4 +31,23 @@
             <p class="alert-warning">There are currently no available items you can order.</p>
         {% endif %}
     </div>
+    {% if ordered_items %}
+        <div class="container-sm">
+            <h1>Ordered items</h1>
+            <ul class="item-list">
+                {% for order in ordered_items %}
+                    <li class="pt-2 pb-2">
+                        <form method="POST">
+                            {% csrf_token %}
+                            <i class="item-icon fas fa-{{ order.product.icon }}"></i>
+                            <p class="item-name">{{ order.product.name }}</p>
+                            <p class="item-price">€{{ order.order_price }}</p>
+                            {{ order.form }}
+                            <input type="submit" value="Delete" class="item-button btn btn-danger"/>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
 {% endblock %}
