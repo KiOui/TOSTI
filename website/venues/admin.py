@@ -6,3 +6,5 @@ from venues.models import Venue
 @admin.register(Venue)
 class VenueAdmin(admin.ModelAdmin):
     """Custom admin for venues."""
+
+    search_fields = ["name"]
