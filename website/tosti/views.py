@@ -2,8 +2,6 @@ from django.views.generic import TemplateView
 
 
 class IndexView(TemplateView):
-    """Empty view."""
+    """Index view."""
 
-    def get(self, request, **kwargs):
-        """GET request for empty index view."""
-        pass
+    template_name = 'tosti/index.html'
