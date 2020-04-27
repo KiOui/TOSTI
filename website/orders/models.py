@@ -22,6 +22,8 @@ class Product(models.Model):
 
     current_price = models.DecimalField(max_digits=6, decimal_places=2)
 
+    max_allowed_per_shift = models.IntegerField(default=2, null=True, blank=True, help_text="The maximum amount a single user can order this product in a single shift. Note that shifts are bound to the venue.")
+
     def __str__(self):
         return self.name
 
@@ -41,18 +43,37 @@ class Shift(models.Model):
 
     orders_allowed = models.BooleanField(default=False, blank=False, null=False)
 
+    max_orders_per_user = models.IntegerField(default=2, null=True, blank=True, help_text="The maximum amount of products a single user can order in this shift.")
+
+    max_orders_total = models.IntegerField(default=50, null=True, blank=True, help_text="The maximum amount of products that can be ordered during this shift in total.")
+
+    assignees = models.ManyToManyField(User)
+
+    @property
+    def number_of_orders(self):
+        return Order.objects.filter(shift=self).count()
+
+    @property
+    def can_order(self):
+        return self.orders_allowed and self.number_of_orders < self.max_orders_total
+
     @property
     def is_active(self):
         return self.start_date < datetime.now() < self.end_date
 
-    assignees = models.ManyToManyField(User)
+    @property
+    def get_date_formatted(self):
+        if self.start_date.date() == self.end_date.date():
+            return f"{self.start_date.strftime(self.DATE_FORMAT)}"
+        return f"{self.start_date.strftime(self.DATE_FORMAT)} - {self.end_date.strftime(self.DATE_FORMAT)}"
 
     def __str__(self):
-        if self.start_date.date() == self.end_date.date():
-            return f"Shift {self.venue} - {self.start_date.strftime(self.DATE_FORMAT)}"
-        return f"Shift {self.venue} - {self.start_date.strftime(self.DATE_FORMAT)} to {self.end_date.strftime(self.DATE_FORMAT)}"
+        return f"Shift {self.venue} {self.get_date_formatted}"
 
     def save(self, *args, **kwargs):
+        if not self.venue.active:
+            raise ValueError(f"This venue is currently not active.")
+
         overlapping_start = Shift.objects.filter(
             start_date__gte=self.start_date,
             start_date__lte=self.end_date,
@@ -63,8 +84,8 @@ class Shift(models.Model):
         ).count()
         if overlapping_start > 0 or overlapping_end > 0:
             raise ValueError("Overlapping shifts for the same venue are not allowed.")
-        else:
-            super(Shift, self).save(*args, **kwargs)
+
+        super(Shift, self).save(*args, **kwargs)
 
     class Meta:
         ordering = ["start_date", "end_date"]
@@ -95,10 +116,18 @@ class Order(models.Model):
     def __str__(self):
         return f"{self.product} for {self.user} ({self.shift})"
 
-    # TODO: we should run some checks on whether people are allowed to place this order.
-
     def save(self, *args, **kwargs):
+        if not self.shift.can_order:
+            raise ValueError(f"You cannot order for this shift right now.")
+        if not self.product.available:
+            raise ValueError(f"This product is not available right now.")
+        if Order.objects.filter(shift=self.shift).count() >= self.shift.max_orders_per_user:
+            raise ValueError(f"You are not allowed to order more than {self.shift.max_orders_per_user} in this shift.")
+        if Order.objects.filter(product=self.product).count() >= self.product.max_allowed_per_shift:
+            raise ValueError(f"You are not allowed to order more than {self.product.max_allowed_per_shift} products of this kind in this shift.")
+
         self.order_price = self.product.current_price
+
         super(Order, self).save(*args, **kwargs)
 
     @property
