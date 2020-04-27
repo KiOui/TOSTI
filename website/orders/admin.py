@@ -1,6 +1,6 @@
 from admin_auto_filters.filters import AutocompleteFilter
 
-from django.contrib import admin
+from django.contrib import admin, messages
 from import_export.admin import ImportExportModelAdmin
 
 from orders.models import Product, Order, Shift
@@ -85,6 +85,18 @@ class OrderAdmin(ImportExportModelAdmin):
         "shift__venue",
     ]
     search_fields = ["user", "shift"]
+
+    actions = ["set_paid", "set_delivered"]
+
+    def set_paid(self, request, queryset):
+        messages.success(request, f"{queryset.filter(paid=False).update(paid=True)} orders were marked as paid")
+        return request
+    set_paid.short_description = "Mark selected orders as paid"
+
+    def set_delivered(self, request, queryset):
+        messages.success(request, f"{queryset.filter(delivered=False).update(delivered=True)} orders were marked as delivered")
+        return request
+    set_delivered.short_description = "Mark selected orders as delivered"
 
     class Media:
         """Necessary to use AutocompleteFilter."""
