@@ -2,7 +2,7 @@
 
 ### How to install this
 
-- Install Python 3.8+ and poetry.
+- Install Python 3.7+ and poetry.
 - Clone this repository.
 - Run `poetry install` to install all dependencies into virtual environment.
 - Run `poetry shell` to enter the virtual environment.
