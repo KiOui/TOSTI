@@ -166,7 +166,10 @@ class Order(models.Model):
     order_price = models.DecimalField(max_digits=6, decimal_places=2)
 
     paid = models.BooleanField(default=False, null=False)
+    paid_at = models.DateTimeField(null=True, blank=True)
+
     delivered = models.BooleanField(default=False, null=False)
+    delivered_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.product} for {self.user} ({self.shift})"
