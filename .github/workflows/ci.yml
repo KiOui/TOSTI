@@ -1,0 +1,67 @@
+---
+
+name: "Linting and Testing"
+on: "push"
+
+jobs:
+  lint:
+    name: "Linting"
+    runs-on: "ubuntu-latest"
+    steps:
+
+    - name: "Checkout the repository"
+      uses: "actions/checkout@v1"
+
+    - name: "Setup Python"
+      uses: "actions/setup-python@v1"
+      with:
+        python-version: '3.7'
+
+    - name: "Setup Poetry"
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install poetry
+        poetry install
+
+    - name: "Run Black"
+      run: "poetry run black --quiet --check website"
+
+    - name: "Run flake8"
+      run: >-
+        poetry run
+        flake8
+        --exclude="migrations"
+        website
+
+    - name: "Run PyDocStyle"
+      run: "poetry run pydocstyle --explain --add-ignore=D100,D104 --match-dir='(?!migrations).*'"
+
+  test:
+    name: "Testing"
+    runs-on: "ubuntu-latest"
+    steps:
+
+    - name: "Checkout the repository"
+      uses: "actions/checkout@v1"
+
+    - name: "Setup Python"
+      uses: "actions/setup-python@v1"
+      with:
+        python-version: '3.8'
+
+    - name: "Setup Poetry"
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install poetry
+        poetry install
+
+    - name: "Run Django checks"
+      run: "poetry run python website/manage.py check --no-color"
+
+    - name: "Test migrations"
+      run: |
+        poetry run python website/manage.py makemigrations --no-input --check --dry-run
+        poetry run python website/manage.py migrate
+
+    - name: "Run Django tests using Coverage"
+      run: "poetry run coverage run website/manage.py test website/"
