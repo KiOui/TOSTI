@@ -47,10 +47,10 @@ class Shift(models.Model):
     DATE_FORMAT = "%Y-%m-%d"
     TIME_FORMAT = "%H:%M"
 
-    start_date = models.DateTimeField(blank=False, null=False)
-    end_date = models.DateTimeField(blank=False, null=False)
-
     venue = models.ForeignKey(Venue, blank=False, null=False, on_delete=models.PROTECT)
+
+    start_date = models.DateTimeField(blank=False, null=False, default=datetime.now().replace(hour=12, minute=15, second=0, microsecond=0))
+    end_date = models.DateTimeField(blank=False, null=False, default=datetime.now().replace(hour=13, minute=15,  second=0, microsecond=0))
 
     orders_allowed = models.BooleanField(verbose_name="Orders allowed", default=False, blank=False, null=False, help_text="If checked, people can order within the given time frame. If not checked, ordering will not be possible, even in the given time frame.")
 
