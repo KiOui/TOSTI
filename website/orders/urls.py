@@ -7,5 +7,5 @@ register_converter(ShiftConverter, "shift")
 
 urlpatterns = [
     path("shifts", ShiftView.as_view(), name="shifts"),
-    path("<shift:shift>/order", OrderView.as_view(), name="order")
+    path("<shift:shift>/order", OrderView.as_view(), name="order"),
 ]

@@ -18,21 +18,27 @@ class ProductAdmin(admin.ModelAdmin):
     """Custom admin for products."""
 
     list_display = ["name", "current_price", "available"]
-    list_filter = [
-        ProductAdminVenueFilter, "available"
-    ]
+    list_filter = [ProductAdminVenueFilter, "available"]
     search_fields = ["name", "venue"]
 
     actions = ["make_available", "make_unavailable"]
 
     def make_available(self, request, queryset):
-        messages.success(request, f"{queryset.filter(available=False).update(available=True)} products were marked as available")
+        messages.success(
+            request,
+            f"{queryset.filter(available=False).update(available=True)} products were marked as available",
+        )
         return request
+
     make_available.short_description = "Make selected products available"
 
     def make_unavailable(self, request, queryset):
-        messages.success(request, f"{queryset.filter(available=True).update(available=False)} products were marked as unavailable")
+        messages.success(
+            request,
+            f"{queryset.filter(available=True).update(available=False)} products were marked as unavailable",
+        )
         return request
+
     make_unavailable.short_description = "Make selected products unavailable"
 
     class Media:
@@ -101,13 +107,21 @@ class OrderAdmin(ImportExportModelAdmin):
     actions = ["set_paid", "set_delivered"]
 
     def set_paid(self, request, queryset):
-        messages.success(request, f"{queryset.filter(paid=False).update(paid=True)} orders were marked as paid")
+        messages.success(
+            request,
+            f"{queryset.filter(paid=False).update(paid=True)} orders were marked as paid",
+        )
         return request
+
     set_paid.short_description = "Mark selected orders as paid"
 
     def set_delivered(self, request, queryset):
-        messages.success(request, f"{queryset.filter(delivered=False).update(delivered=True)} orders were marked as delivered")
+        messages.success(
+            request,
+            f"{queryset.filter(delivered=False).update(delivered=True)} orders were marked as delivered",
+        )
         return request
+
     set_delivered.short_description = "Mark selected orders as delivered"
 
     class Media:

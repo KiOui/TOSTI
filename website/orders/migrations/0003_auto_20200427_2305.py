@@ -7,23 +7,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('orders', '0002_auto_20200427_2024'),
+        ("orders", "0002_auto_20200427_2024"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='order',
-            name='delivered_at',
+            model_name="order",
+            name="delivered_at",
             field=models.DateTimeField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='shift',
-            name='end_date',
+            model_name="shift",
+            name="end_date",
             field=models.DateTimeField(default=datetime.datetime(2020, 4, 27, 13, 15)),
         ),
         migrations.AlterField(
-            model_name='shift',
-            name='start_date',
+            model_name="shift",
+            name="start_date",
             field=models.DateTimeField(default=datetime.datetime(2020, 4, 27, 12, 15)),
         ),
     ]

@@ -7,20 +7,30 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Venue',
+            name="Venue",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=50, unique=True)),
-                ('image', models.ImageField(blank=True, null=True, upload_to='venues/images/')),
-                ('active', models.BooleanField(default=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=50, unique=True)),
+                (
+                    "image",
+                    models.ImageField(
+                        blank=True, null=True, upload_to="venues/images/"
+                    ),
+                ),
+                ("active", models.BooleanField(default=True)),
             ],
-            options={
-                'ordering': ['-active', 'name'],
-            },
+            options={"ordering": ["-active", "name"],},
         ),
     ]

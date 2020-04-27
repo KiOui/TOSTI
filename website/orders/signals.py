@@ -17,6 +17,7 @@ def set_order_delivered_at_if_delivered(sender, instance, **kwargs):
         if not instance.delivered and obj.delivered:
             instance.delivered_at = None
 
+
 @receiver(pre_save)
 def set_order_paid_at_if_paid(sender, instance, **kwargs):
     """Save when a order was delivered when it is set to delivered."""

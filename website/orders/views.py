@@ -20,6 +20,6 @@ class OrderView(TemplateView):
 
     def get(self, request, **kwargs):
 
-        shift = kwargs.get('shift')
+        shift = kwargs.get("shift")
 
         return render(request, self.template_name, {"shift": shift})
