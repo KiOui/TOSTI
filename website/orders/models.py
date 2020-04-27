@@ -39,6 +39,8 @@ class Shift(models.Model):
 
     venue = models.ForeignKey(Venue, blank=False, null=False, on_delete=models.PROTECT)
 
+    orders_allowed = models.BooleanField(default=False, blank=False, null=False)
+
     @property
     def is_active(self):
         return self.start_date < datetime.now() < self.end_date
