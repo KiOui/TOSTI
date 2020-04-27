@@ -1,0 +1,107 @@
+from datetime import datetime
+
+from django.contrib.auth import get_user_model
+from django.db import models
+
+from venues.models import Venue
+
+User = get_user_model()
+
+
+class Product(models.Model):
+    """Products that can be ordered."""
+
+    name = models.CharField(max_length=50, unique=True)
+    icon = models.CharField(
+        max_length=20,
+        unique=True,
+        help_text="Font-awesome icon name that is used for quick display of the product type.",
+    )
+    available = models.BooleanField(default=True, null=False)
+    available_at = models.ManyToManyField(Venue)
+
+    current_price = models.DecimalField(max_digits=6, decimal_places=2)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ["-available", "name"]
+
+
+class Shift(models.Model):
+    """Shifts in which orders can be placed."""
+
+    DATE_FORMAT = "%Y-%m-%d"
+
+    start_date = models.DateTimeField(blank=False, null=False)
+    end_date = models.DateTimeField(blank=False, null=False)
+
+    venue = models.ForeignKey(Venue, blank=False, null=False, on_delete=models.PROTECT)
+
+    @property
+    def is_active(self):
+        return self.start_date < datetime.now() < self.end_date
+
+    assignees = models.ManyToManyField(User)
+
+    def __str__(self):
+        if self.start_date.date() == self.end_date.date():
+            return f"Shift {self.venue} - {self.start_date.strftime(self.DATE_FORMAT)}"
+        return f"Shift {self.venue} - {self.start_date.strftime(self.DATE_FORMAT)} to {self.end_date.strftime(self.DATE_FORMAT)}"
+
+    def save(self, *args, **kwargs):
+        overlapping_start = Shift.objects.filter(
+            start_date__gte=self.start_date,
+            start_date__lte=self.end_date,
+            venue=self.venue,
+        ).count()
+        overlapping_end = Shift.objects.filter(
+            end_date__gte=self.start_date, end_date__lte=self.end_date, venue=self.venue
+        ).count()
+        if overlapping_start > 0 or overlapping_end > 0:
+            raise ValueError("Overlapping shifts for the same venue are not allowed.")
+        else:
+            super(Shift, self).save(*args, **kwargs)
+
+    class Meta:
+        ordering = ["start_date", "end_date"]
+
+
+class Order(models.Model):
+    """
+    A user that ordered a product.
+
+    Orders only contain a single product. If a user orders multiple products
+    (or multiple amounts of products) he or she must place multiple orders.
+    Verifying the amount of allowed orders is done via Shifts.
+    """
+
+    created = models.DateTimeField(auto_now_add=True)
+
+    user = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT)
+    shift = models.ForeignKey(Shift, blank=False, null=False, on_delete=models.PROTECT)
+    product = models.ForeignKey(
+        Product, blank=False, null=False, on_delete=models.PROTECT
+    )
+
+    order_price = models.DecimalField(max_digits=6, decimal_places=2)
+
+    paid = models.BooleanField(default=False, null=False)
+    delivered = models.BooleanField(default=False, null=False)
+
+    def __str__(self):
+        return f"{self.product} for {self.user} ({self.shift})"
+
+    # TODO: we should run some checks on whether people are allowed to place this order.
+
+    def save(self, *args, **kwargs):
+        self.order_price = self.product.current_price
+        super(Order, self).save(*args, **kwargs)
+
+    @property
+    def get_venue(self):
+        return self.shift.venue
+
+    class Meta:
+        ordering = ["created"]

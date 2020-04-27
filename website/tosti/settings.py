@@ -37,8 +37,12 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "admin_auto_filters",
+    "import_export",
     "users",
     "tosti",
+    "venues",
+    "orders",
 ]
 
 AUTH_USER_MODEL = "users.User"
