@@ -168,15 +168,15 @@ class Order(models.Model):
             raise ValueError(f"This product is not available right now.")
         if (
             self.shift.max_orders_per_user is not None
-            and Order.objects.filter(shift=self.shift).count()
+            and Order.objects.filter(shift=self.shift).exclude(pk=self.pk).count()
             >= self.shift.max_orders_per_user
         ):
             raise ValueError(
-                f"You are not allowed to order more than {self.shift.max_orders_per_user} in this shift."
+                f"You are not allowed to order more than {self.shift.max_orders_per_user} products in this shift."
             )
         if (
             self.product.max_allowed_per_shift is not None
-            and Order.objects.filter(product=self.product).count()
+            and Order.objects.filter(product=self.product).exclude(pk=self.pk).count()
             >= self.product.max_allowed_per_shift
         ):
             raise ValueError(
