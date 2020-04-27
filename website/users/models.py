@@ -6,42 +6,42 @@ from django.db import models
 class UserManager(BaseUserManager):
     """User manager object."""
 
-    def _create_user(self, username, **extra_fields):
+    def _create_user(self, username, **kwargs):
         """
         Create user given a username.
 
         :param username: the username
-        :param extra_fields: optional extra fields
+        :param kwargs: optional extra fields
         :return: a new User object
         """
-        user = self.model(username=username, **extra_fields)
+        user = self.model(username=username, **kwargs)
         user.set_unusable_password()
         user.save(using=self._db)
         return user
 
-    def create_user(self, username, **extra_fields):
+    def create_user(self, username, **kwargs):
         """
         Create a user given a username.
 
         :param username: the username
-        :param extra_fields: optional extra fields
+        :param kwargs: optional extra fields
         :return: a new User object
         """
-        extra_fields.setdefault("is_staff", False)
-        extra_fields.setdefault("is_superuser", False)
-        return self._create_user(username, **extra_fields)
+        kwargs.setdefault("is_staff", False)
+        kwargs.setdefault("is_superuser", False)
+        return self._create_user(username, **kwargs)
 
-    def create_superuser(self, username, **extra_fields):
+    def create_superuser(self, username, **kwargs):
         """
         Create a superuser.
 
         :param username: the username
-        :param extra_fields: optional extra fields
+        :param kwargs: optional extra fields
         :return: a new User object
         """
-        extra_fields.setdefault("is_staff", True)
-        extra_fields.setdefault("is_superuser", True)
-        return self._create_user(username, **extra_fields)
+        kwargs.setdefault("is_staff", True)
+        kwargs.setdefault("is_superuser", True)
+        return self._create_user(username, **kwargs)
 
 
 class User(AbstractUser):

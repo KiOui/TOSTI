@@ -11,6 +11,7 @@ django = "^3.0.5"
 pydocstyle = "^5.0.2"
 black = "^19.10b0"
 flake8 = "^3.7.9"
+requests = "^2.23.0"
 
 [tool.poetry.dev-dependencies]
 
