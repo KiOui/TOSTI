@@ -1,5 +1,6 @@
 from datetime import datetime
-
+from django.conf import settings
+import pytz
 from django.contrib.auth import get_user_model
 from django.db import models
 
@@ -43,7 +44,9 @@ class Shift(models.Model):
 
     @property
     def is_active(self):
-        return self.start_date < datetime.now() < self.end_date
+        timezone = pytz.timezone(settings.TIME_ZONE)
+        current_time = timezone.localize(datetime.now())
+        return self.start_date < current_time < self.end_date
 
     assignees = models.ManyToManyField(User)
 
