@@ -77,6 +77,16 @@ class Shift(models.Model):
         return Order.objects.filter(shift=self).count()
 
     @property
+    def max_orders_total_string(self):
+        if self.max_orders_total:
+            return self.max_orders_total
+        return "∞"
+
+    @property
+    def capacity(self):
+        return f"{self.number_of_orders} / {self.max_orders_total_string}"
+
+    @property
     def can_order(self):
         return self.orders_allowed and (
             self.number_of_orders < self.max_orders_total or not self.max_orders_total

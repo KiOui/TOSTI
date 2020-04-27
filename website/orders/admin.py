@@ -19,9 +19,21 @@ class ProductAdmin(admin.ModelAdmin):
 
     list_display = ["name", "current_price", "available"]
     list_filter = [
-        ProductAdminVenueFilter,
+        ProductAdminVenueFilter, "available"
     ]
     search_fields = ["name", "venue"]
+
+    actions = ["make_available", "make_unavailable"]
+
+    def make_available(self, request, queryset):
+        messages.success(request, f"{queryset.filter(available=False).update(available=True)} products were marked as available")
+        return request
+    make_available.short_description = "Make selected products available"
+
+    def make_unavailable(self, request, queryset):
+        messages.success(request, f"{queryset.filter(available=True).update(available=False)} products were marked as unavailable")
+        return request
+    make_unavailable.short_description = "Make selected products unavailable"
 
     class Media:
         """Necessary to use AutocompleteFilter."""
@@ -43,7 +55,7 @@ class ShiftAdmin(ImportExportModelAdmin):
         "start_time",
         "end_time",
         "venue",
-        "number_of_orders",
+        "capacity",
         "orders_allowed",
         "can_order",
         "is_active",
