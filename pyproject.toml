@@ -10,6 +10,7 @@ python = "^3.7"
 django = "^3.0.5"
 pydocstyle = "^5.0.2"
 black = "^19.10b0"
+flake8 = "^3.7.9"
 
 [tool.poetry.dev-dependencies]
 

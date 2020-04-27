@@ -1,10 +1,11 @@
 #!/usr/bin/env python
-"""Django's command-line utility for administrative tasks."""
+"""Django command-line utility for administrative tasks."""
 import os
 import sys
 
 
 def main():
+    """Django management command."""
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tosti.settings")
     try:
         from django.core.management import execute_from_command_line

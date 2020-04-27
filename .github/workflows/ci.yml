@@ -30,7 +30,7 @@ jobs:
       run: >-
         poetry run
         flake8
-        --exclude="migrations"
+        --exclude="migrations,website/tosti/settings.py"
         website
 
     - name: "Run PyDocStyle"
