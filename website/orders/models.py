@@ -104,6 +104,9 @@ class Order(models.Model):
         self.order_price = self.product.current_price
         super(Order, self).save(*args, **kwargs)
 
+    def user_can_order(self, user, shift, amount=1):
+        user_orders = Order.objects.filter(user=user, shift=shift, )
+
     @property
     def get_venue(self):
         return self.shift.venue
