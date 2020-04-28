@@ -96,6 +96,7 @@ class ShiftAdmin(ImportExportModelAdmin):
     """Custom admin for products."""
 
     form = ShiftAdminForm
+    date_hierarchy = "start_date"
 
     list_display = [
         "date",
@@ -111,6 +112,17 @@ class ShiftAdmin(ImportExportModelAdmin):
     inlines = [OrderInline]
 
     search_fields = ["start_date", "venue"]
+
+    actions = ["close_shift"]
+
+    def close_shift(self, request, queryset):
+        messages.success(
+            request,
+            f"{queryset.filter(is_active=True).update(is_active=False)} shifts were closed",
+        )
+        return request
+
+    close_shift.short_description = "Close orders for shift"
 
     class Media:
         """Necessary to use AutocompleteFilter."""
