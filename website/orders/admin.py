@@ -104,8 +104,8 @@ class ShiftAdmin(ImportExportModelAdmin):
         "venue",
         "capacity",
         "orders_allowed",
-        "can_order",
         "is_active",
+        "can_order",
     ]
     list_filter = [ShiftAdminAssigneeFilter, "venue", "orders_allowed"]
     inlines = [OrderInline]
