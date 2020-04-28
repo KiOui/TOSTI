@@ -15,7 +15,7 @@ class ProductForm(forms.Form):
         :param kwargs: keyword arguments
         """
         super(ProductForm, self).__init__(*args, **kwargs)
-        self.fields['product_id'].initial = product.id
+        self.fields["product_id"].initial = product.id
 
 
 class OrderRemoveForm(forms.Form):
@@ -32,4 +32,4 @@ class OrderRemoveForm(forms.Form):
         :param kwargs: keyword arguments
         """
         super(OrderRemoveForm, self).__init__(*args, **kwargs)
-        self.fields['order_id'].initial = order.id
+        self.fields["order_id"].initial = order.id
