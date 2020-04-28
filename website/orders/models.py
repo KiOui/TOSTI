@@ -194,13 +194,16 @@ class Order(models.Model):
         return f"{self.product} for {self.user} ({self.shift})"
 
     def save(self, *args, **kwargs):
+        if not self.order_price:
+            self.order_price = self.product.current_price
+
         if not self.shift.can_order:
             raise ValueError(f"You cannot order for this shift right now.")
         if not self.product.available:
             raise ValueError(f"This product is not available right now.")
         if (
             self.shift.max_orders_per_user is not None
-            and Order.objects.filter(shift=self.shift).exclude(pk=self.pk).count()
+            and Order.objects.filter(shift=self.shift, user=self.pk).exclude(pk=self.pk).count()
             >= self.shift.max_orders_per_user
         ):
             raise ValueError(
@@ -208,7 +211,7 @@ class Order(models.Model):
             )
         if (
             self.product.max_allowed_per_shift is not None
-            and Order.objects.filter(product=self.product).exclude(pk=self.pk).count()
+            and Order.objects.filter(product=self.product, user=self.pk).exclude(pk=self.pk).count()
             >= self.product.max_allowed_per_shift
         ):
             raise ValueError(
