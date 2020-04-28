@@ -129,12 +129,22 @@ class Shift(models.Model):
 
     @property
     def max_orders_total_string(self):
+        """
+        Get the maximum amount of orders in string format.
+
+        :return: the maximum amount of orders in string format
+        """
         if self.max_orders_total:
             return self.max_orders_total
         return "∞"
 
     @property
     def capacity(self):
+        """
+        Get the current capacity of a shift as a string.
+
+        :return: the current capacity of a shift in string format
+        """
         return f"{self.number_of_orders} / {self.max_orders_total_string}"
 
     @property
@@ -144,8 +154,13 @@ class Shift(models.Model):
 
         :return: True if orders can be placed in this shift, False otherwise
         """
-        return self.is_active and self.orders_allowed and (
-            self.number_of_orders < self.max_orders_total or not self.max_orders_total
+        return (
+            self.is_active
+            and self.orders_allowed
+            and (
+                self.number_of_orders < self.max_orders_total
+                or not self.max_orders_total
+            )
         )
 
     @property
@@ -306,7 +321,9 @@ class Order(models.Model):
             raise ValueError(f"This product is not available right now.")
         if (
             self.shift.max_orders_per_user is not None
-            and Order.objects.filter(shift=self.shift, user=self.pk).exclude(pk=self.pk).count()
+            and Order.objects.filter(shift=self.shift, user=self.pk)
+            .exclude(pk=self.pk)
+            .count()
             >= self.shift.max_orders_per_user
         ):
             raise ValueError(
@@ -314,7 +331,9 @@ class Order(models.Model):
             )
         if (
             self.product.max_allowed_per_shift is not None
-            and Order.objects.filter(product=self.product, user=self.pk).exclude(pk=self.pk).count()
+            and Order.objects.filter(product=self.product, user=self.pk)
+            .exclude(pk=self.pk)
+            .count()
             >= self.product.max_allowed_per_shift
         ):
             raise ValueError(

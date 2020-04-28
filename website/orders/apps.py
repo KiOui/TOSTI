@@ -7,4 +7,9 @@ class OrdersConfig(AppConfig):
     name = "orders"
 
     def ready(self):
+        """
+        Ready method.
+
+        :return: None
+        """
         from orders import signals
