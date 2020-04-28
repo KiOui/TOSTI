@@ -22,4 +22,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", IndexView.as_view(), name="index"),
     path("users/", include(("users.urls", "users"), namespace="users"),),
-    path("orders/", include(("orders.urls", "orders"), namespace="orders"),),]
+    path("orders/", include(("orders.urls", "orders"), namespace="orders"),),
+]

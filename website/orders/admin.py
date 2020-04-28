@@ -30,6 +30,13 @@ class ProductAdmin(admin.ModelAdmin):
     actions = ["make_available", "make_unavailable"]
 
     def make_available(self, request, queryset):
+        """
+        Make a QuerySet of products available.
+
+        :param request: the request
+        :param queryset: the queryset of products
+        :return: the request
+        """
         messages.success(
             request,
             f"{queryset.filter(available=False).update(available=True)} products were marked as available",
@@ -39,6 +46,13 @@ class ProductAdmin(admin.ModelAdmin):
     make_available.short_description = "Make selected products available"
 
     def make_unavailable(self, request, queryset):
+        """
+        Make a QuerySet of product unavailable.
+
+        :param request: the request
+        :param queryset: the queryset of products
+        :return: the request
+        """
         messages.success(
             request,
             f"{queryset.filter(available=True).update(available=False)} products were marked as unavailable",
@@ -62,7 +76,14 @@ class OrderInline(admin.TabularInline):
     """Inline form for Registration."""
 
     model = Order
-    readonly_fields = ["user", "product", "order_price", "created", "paid_at", "delivered_at"]
+    readonly_fields = [
+        "user",
+        "product",
+        "order_price",
+        "created",
+        "paid_at",
+        "delivered_at",
+    ]
     extra = 0
 
 
@@ -87,7 +108,9 @@ class ShiftAdminForm(forms.ModelForm):
             self.fields["assignees"].initial = User.objects.filter(shift=self.instance)
 
     assignees = forms.ModelMultipleChoiceField(
-        queryset=None, required=False, widget=widgets.FilteredSelectMultiple("Assignees", False)
+        queryset=None,
+        required=False,
+        widget=widgets.FilteredSelectMultiple("Assignees", False),
     )
 
 
@@ -116,6 +139,13 @@ class ShiftAdmin(ImportExportModelAdmin):
     actions = ["close_shift"]
 
     def close_shift(self, request, queryset):
+        """
+        Close a QuerySet of shifts.
+
+        :param request: the request
+        :param queryset: a queryset of shifts
+        :return: the request
+        """
         messages.success(
             request,
             f"{queryset.filter(is_active=True).update(is_active=False)} shifts were closed",
@@ -186,6 +216,13 @@ class OrderAdmin(ImportExportModelAdmin):
     actions = ["set_paid", "set_delivered"]
 
     def set_paid(self, request, queryset):
+        """
+        Set orders in a QuerySet as paid.
+
+        :param request: the request
+        :param queryset: a queryset of orders
+        :return: the request
+        """
         messages.success(
             request,
             f"{queryset.filter(paid=False).update(paid=True)} orders were marked as paid",
@@ -195,6 +232,13 @@ class OrderAdmin(ImportExportModelAdmin):
     set_paid.short_description = "Mark selected orders as paid"
 
     def set_delivered(self, request, queryset):
+        """
+        Set orders in a QuerySet as delivered.
+
+        :param request: the request
+        :param queryset: a queryset of orders
+        :return: the request
+        """
         messages.success(
             request,
             f"{queryset.filter(delivered=False).update(delivered=True)} orders were marked as delivered",

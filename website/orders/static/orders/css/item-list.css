@@ -1,0 +1,37 @@
+
+ul.item-list li form {
+    display: flex;
+    align-items: center;
+}
+
+ul.item-list li {
+    display: block;
+}
+
+i.item-icon {
+    flex-basis: 50px;
+    flex-grow: 0;
+    margin: 5px;
+}
+
+input.item-button {
+    margin-left: 10px;
+}
+
+svg.item-icon {
+    flex-grow: 0;
+    margin: 5px;
+}
+
+p.item-name, p.item-price {
+    margin: 0;
+}
+
+ul.item-list {
+    margin: 0;
+    padding: 0;
+}
+
+p.item-name {
+    flex-grow: 1;
+}
