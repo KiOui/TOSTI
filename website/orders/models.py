@@ -77,10 +77,18 @@ class Shift(models.Model):
     DATE_FORMAT = "%Y-%m-%d"
     TIME_FORMAT = "%H:%M"
 
-    start_date = models.DateTimeField(blank=False, null=False)
-    end_date = models.DateTimeField(blank=False, null=False)
-
     venue = models.ForeignKey(Venue, blank=False, null=False, on_delete=models.PROTECT)
+
+    start_date = models.DateTimeField(
+        blank=False,
+        null=False,
+        default=datetime.now().replace(hour=12, minute=15, second=0, microsecond=0),
+    )
+    end_date = models.DateTimeField(
+        blank=False,
+        null=False,
+        default=datetime.now().replace(hour=13, minute=15, second=0, microsecond=0),
+    )
 
     orders_allowed = models.BooleanField(
         verbose_name="Orders allowed",
@@ -120,13 +128,23 @@ class Shift(models.Model):
         return Order.objects.filter(shift=self).count()
 
     @property
+    def max_orders_total_string(self):
+        if self.max_orders_total:
+            return self.max_orders_total
+        return "∞"
+
+    @property
+    def capacity(self):
+        return f"{self.number_of_orders} / {self.max_orders_total_string}"
+
+    @property
     def can_order(self):
         """
         Check if orders can be placed in this shift.
 
         :return: True if orders can be placed in this shift, False otherwise
         """
-        return self.orders_allowed and (
+        return self.is_active and self.orders_allowed and (
             self.number_of_orders < self.max_orders_total or not self.max_orders_total
         )
 
@@ -188,6 +206,9 @@ class Shift(models.Model):
         """
         if not self.venue.active:
             raise ValueError(f"This venue is currently not active.")
+
+        if self.end_date <= self.start_date:
+            raise ValueError(f"End date cannot be before start date.")
 
         overlapping_start = (
             Shift.objects.filter(
@@ -255,7 +276,10 @@ class Order(models.Model):
     order_price = models.DecimalField(max_digits=6, decimal_places=2)
 
     paid = models.BooleanField(default=False, null=False)
+    paid_at = models.DateTimeField(null=True, blank=True)
+
     delivered = models.BooleanField(default=False, null=False)
+    delivered_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         """
@@ -273,31 +297,30 @@ class Order(models.Model):
         :param kwargs: keyword arguments
         :return: an instance of the Order object if the saving succeeded, raises a ValueError on error
         """
+        if not self.order_price:
+            self.order_price = self.product.current_price
+
         if not self.shift.can_order:
             raise ValueError(f"You cannot order for this shift right now.")
         if not self.product.available:
             raise ValueError(f"This product is not available right now.")
         if (
             self.shift.max_orders_per_user is not None
-            and Order.objects.filter(shift=self.shift, user=self.user).count()
+            and Order.objects.filter(shift=self.shift, user=self.pk).exclude(pk=self.pk).count()
             >= self.shift.max_orders_per_user
         ):
             raise ValueError(
-                f"You are not allowed to order more than {self.shift.max_orders_per_user} in this shift."
+                f"You are not allowed to order more than {self.shift.max_orders_per_user} products in this shift."
             )
         if (
             self.product.max_allowed_per_shift is not None
-            and Order.objects.filter(
-                product=self.product, user=self.user, shift=self.shift
-            ).count()
+            and Order.objects.filter(product=self.product, user=self.pk).exclude(pk=self.pk).count()
             >= self.product.max_allowed_per_shift
         ):
             raise ValueError(
                 f"You are not allowed to order more than {self.product.max_allowed_per_shift} products of this kind in"
                 f" this shift."
             )
-
-        self.order_price = self.product.current_price
 
         super(Order, self).save(*args, **kwargs)
 
