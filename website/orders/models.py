@@ -104,7 +104,7 @@ class Shift(models.Model):
 
     @property
     def can_order(self):
-        return self.orders_allowed and (
+        return self.is_active and self.orders_allowed and (
             self.number_of_orders < self.max_orders_total or not self.max_orders_total
         )
 
