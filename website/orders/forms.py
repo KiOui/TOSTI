@@ -1,4 +1,5 @@
 from django import forms
+from .models import Shift
 
 
 class ProductForm(forms.Form):
@@ -33,3 +34,36 @@ class OrderRemoveForm(forms.Form):
         """
         super(OrderRemoveForm, self).__init__(*args, **kwargs)
         self.fields["order_id"].initial = order.id
+
+
+class ShiftForm(forms.ModelForm):
+    """Shift creation form."""
+
+    def clean(self):
+        cleaned_data = super(ShiftForm, self).clean()
+        start_date = cleaned_data.get('start_date')
+        end_date = cleaned_data.get('end_date')
+        venue = cleaned_data.get('venue')
+        overlapping_start = (
+            Shift.objects.filter(
+                start_date__gte=start_date,
+                start_date__lte=end_date,
+                venue=venue,
+            ).count()
+        )
+        overlapping_end = (
+            Shift.objects.filter(
+                end_date__gte=start_date,
+                end_date__lte=end_date,
+                venue=venue,
+            ).count()
+        )
+        if overlapping_start > 0 or overlapping_end > 0:
+            raise forms.ValidationError("Overlapping shifts for the same venue are not allowed.")
+
+        return cleaned_data
+
+    class Meta:
+        model = Shift
+        fields = ['venue', 'start_date', 'end_date', 'orders_allowed', 'max_orders_per_user', 'max_orders_total', 'assignees']
+

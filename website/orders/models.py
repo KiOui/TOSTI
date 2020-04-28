@@ -37,6 +37,15 @@ class Product(models.Model):
         "bound to the venue. Empty means no limit.",
     )
 
+    def to_json(self):
+        return {
+            'name': self.name,
+            'icon': self.icon,
+            'price': self.current_price,
+            'max_per_shift': self.max_allowed_per_shift,
+            'available': self.available
+        }
+
     def __str__(self):
         """
         Convert a Product object to string.
@@ -295,6 +304,17 @@ class Order(models.Model):
 
     delivered = models.BooleanField(default=False, null=False)
     delivered_at = models.DateTimeField(null=True, blank=True)
+
+    def to_json(self):
+
+        return {
+            'id': self.pk,
+            'user': self.user.username,
+            'product': self.product.to_json(),
+            'price': self.order_price,
+            'paid': self.paid,
+            'delivered': self.delivered
+        }
 
     def __str__(self):
         """

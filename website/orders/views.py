@@ -1,7 +1,8 @@
-from django.shortcuts import render
+from django.http import JsonResponse
+from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
 from .models import Shift, Product, Order
-from .forms import ProductForm, OrderRemoveForm
+from .forms import ProductForm, OrderRemoveForm, ShiftForm
 
 
 class ShiftView(TemplateView):
@@ -154,3 +155,79 @@ class OrderView(TemplateView):
                 )
 
         return render(request, self.template_name, parameters)
+
+
+class ShiftStartView(TemplateView):
+
+    template_name = "orders/startshift.html"
+
+    def get(self, request, **kwargs):
+        active_shifts = [x for x in Shift.objects.all() if x.is_active]
+
+        form = ShiftForm()
+
+        return render(request, self.template_name, {'shifts': active_shifts, 'form': form})
+
+    def post(self, request, **kwargs):
+        active_shifts = [x for x in Shift.objects.all() if x.is_active]
+
+        form = ShiftForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+            return redirect('index')
+
+        return render(request, self.template_name, {'shifts': active_shifts, 'form': form})
+
+
+class ShiftAdminView(TemplateView):
+
+    template_name = "orders/shift_admin.html"
+
+    def get(self, request, **kwargs):
+        shift = kwargs.get('shift')
+
+        form = ShiftForm(instance=shift)
+
+        return render(request, self.template_name, {'shift': shift, 'form': form})
+
+
+class ShiftStatusView(TemplateView):
+
+    def post(self, request, **kwargs):
+        shift = kwargs.get('shift')
+
+        orders = Order.objects.filter(shift=shift).order_by('user', 'created')
+        json_data = []
+        for order in orders:
+            json_data.append(order.to_json())
+        return JsonResponse({'data': json_data})
+
+
+class OrderUpdateView(TemplateView):
+
+    def post(self, request, **kwargs):
+        order_id = request.POST.get('order', None)
+        property = request.POST.get('property', None)
+        value = request.POST.get('value', None)
+
+        if order_id is None or property is None or value is None:
+            return JsonResponse({"error": "Invalid request"})
+
+        value = True if value == "true" else False
+
+        try:
+            order = Order.objects.get(pk=order_id)
+        except Order.DoesNotExist:
+            return JsonResponse({'error': "That order does not exist"})
+
+        if property == "delivered":
+            order.delivered = value
+            order.save()
+            return JsonResponse({})
+        elif property == "paid":
+            order.paid = value
+            order.save()
+            return JsonResponse({})
+        else:
+            return JsonResponse({"error": "Property unknown"})

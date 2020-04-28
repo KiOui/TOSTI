@@ -38,15 +38,23 @@
                         <div class="dropdown-menu" aria-labelledby="accountDropdownMenuLink">
                             {% if user.is_authenticated %}
                                 <a class="dropdown-item">Logged in as: {{ user.username }}</a>
-                                {% if user.is_staff %}
-                                    <a class="dropdown-item" href="{% url "admin:index" %}">Go to admin</a>
-                                {% endif %}
                                 <a class="dropdown-item" href="{% url "users:logout" %}">Logout</a>
                             {% else %}
                                 <a class="dropdown-item" href="{% url "users:login" %}">Login</a>
                             {% endif %}
                         </div>
                     </li>
+                    {% if user.is_staff %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="adminDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Admin
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="adminDropdownMenuLink">
+                                <a class="dropdown-item" href="{% url "admin:index" %}">Site admin</a>
+                                <a class="dropdown-item" href="{% url "orders:shift_start" %}">Shift admin</a>
+                            </div>
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>

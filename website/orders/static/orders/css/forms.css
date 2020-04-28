@@ -1,0 +1,31 @@
+
+p label {
+    width: 100%;
+}
+
+p input {
+    width: 100%;
+}
+
+p select {
+    width: 100%;
+}
+
+p span {
+    font-style: italic;
+    font-size: 0.7rem;
+    width: 100%;
+}
+
+ul.errorlist {
+    margin: 0;
+    padding: 0;
+}
+
+ul.errorlist li {
+    display: block;
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    margin: 0;
+}
