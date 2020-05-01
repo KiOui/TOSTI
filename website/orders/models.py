@@ -38,12 +38,17 @@ class Product(models.Model):
     )
 
     def to_json(self):
+        """
+        Convert this object to JSON.
+
+        :return: a to JSON convertable dictionary of properties.
+        """
         return {
-            'name': self.name,
-            'icon': self.icon,
-            'price': self.current_price,
-            'max_per_shift': self.max_allowed_per_shift,
-            'available': self.available
+            "name": self.name,
+            "icon": self.icon,
+            "price": self.current_price,
+            "max_per_shift": self.max_allowed_per_shift,
+            "available": self.available,
         }
 
     def __str__(self):
@@ -306,14 +311,18 @@ class Order(models.Model):
     delivered_at = models.DateTimeField(null=True, blank=True)
 
     def to_json(self):
+        """
+        Convert this object to JSON.
 
+        :return: a to JSON convertable dictionary of properties.
+        """
         return {
-            'id': self.pk,
-            'user': self.user.username,
-            'product': self.product.to_json(),
-            'price': self.order_price,
-            'paid': self.paid,
-            'delivered': self.delivered
+            "id": self.pk,
+            "user": self.user.username,
+            "product": self.product.to_json(),
+            "price": self.order_price,
+            "paid": self.paid,
+            "delivered": self.delivered,
         }
 
     def __str__(self):

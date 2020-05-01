@@ -158,60 +158,120 @@ class OrderView(TemplateView):
 
 
 class ShiftStartView(TemplateView):
+    """Page for starting a shift."""
 
     template_name = "orders/startshift.html"
 
     def get(self, request, **kwargs):
+        """
+        GET request for ShiftStartView.
+
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: a page with all current shifts and a form for starting a new shift
+        """
         active_shifts = [x for x in Shift.objects.all() if x.is_active]
 
         form = ShiftForm()
 
-        return render(request, self.template_name, {'shifts': active_shifts, 'form': form})
+        return render(
+            request, self.template_name, {"shifts": active_shifts, "form": form}
+        )
 
     def post(self, request, **kwargs):
+        """
+        POST request for ShiftStartView.
+
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: a page with all current shifts and a form for starting a new shift, if the form was filled in
+        correctly a new shift is started.
+        """
         active_shifts = [x for x in Shift.objects.all() if x.is_active]
 
         form = ShiftForm(request.POST)
 
         if form.is_valid():
-            form.save()
-            return redirect('index')
+            shift = form.save()
+            return redirect("shift_admin", shift=shift)
 
-        return render(request, self.template_name, {'shifts': active_shifts, 'form': form})
+        return render(
+            request, self.template_name, {"shifts": active_shifts, "form": form}
+        )
 
 
 class ShiftAdminView(TemplateView):
+    """Admin view for starting shifts."""
 
     template_name = "orders/shift_admin.html"
 
     def get(self, request, **kwargs):
-        shift = kwargs.get('shift')
+        """
+        GET request for ShiftAdminView.
+
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: the Shift admin view page for seeing the current orders of a shift and modifying it
+        """
+        shift = kwargs.get("shift")
 
         form = ShiftForm(instance=shift)
 
-        return render(request, self.template_name, {'shift': shift, 'form': form})
+        return render(request, self.template_name, {"shift": shift, "form": form})
 
 
 class ShiftStatusView(TemplateView):
+    """View for getting the orders of a shift."""
 
     def post(self, request, **kwargs):
-        shift = kwargs.get('shift')
+        """
+        POST request for ShiftStatusView.
 
-        orders = Order.objects.filter(shift=shift).order_by('user', 'created')
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: a response of the following format:
+        {
+            data: [orders]
+        }
+        """
+        shift = kwargs.get("shift")
+
+        orders = Order.objects.filter(shift=shift).order_by("user", "created")
         json_data = []
         for order in orders:
             json_data.append(order.to_json())
-        return JsonResponse({'data': json_data})
+        return JsonResponse({"data": json_data})
 
 
 class OrderUpdateView(TemplateView):
+    """View for updating orders via asynchronous POST requests."""
 
     def post(self, request, **kwargs):
-        order_id = request.POST.get('order', None)
-        property = request.POST.get('property', None)
-        value = request.POST.get('value', None)
+        """
+        POST method for OrderUpdateView.
 
-        if order_id is None or property is None or value is None:
+        This view expects JSON of the following type:
+        {
+            order: [order_id],
+            property: [delivered | paid],
+            value: [true | false]
+        }
+        :param request: the request
+        :param kwargs: the keyword arguments
+        :return: A response of the following format on success:
+        {
+            value: [true | false]
+        }
+        A response of the following format on failure:
+        {
+            error: [error message]
+        }
+        """
+        order_id = request.POST.get("order", None)
+        order_property = request.POST.get("property", None)
+        value = request.POST.get("value", None)
+
+        if order_id is None or order_property is None or value is None:
             return JsonResponse({"error": "Invalid request"})
 
         value = True if value == "true" else False
@@ -219,15 +279,15 @@ class OrderUpdateView(TemplateView):
         try:
             order = Order.objects.get(pk=order_id)
         except Order.DoesNotExist:
-            return JsonResponse({'error': "That order does not exist"})
+            return JsonResponse({"error": "That order does not exist"})
 
-        if property == "delivered":
+        if order_property == "delivered":
             order.delivered = value
             order.save()
-            return JsonResponse({})
-        elif property == "paid":
+            return JsonResponse({"value": order.delivered})
+        elif order_property == "paid":
             order.paid = value
             order.save()
-            return JsonResponse({})
+            return JsonResponse({"value": order.paid})
         else:
             return JsonResponse({"error": "Property unknown"})

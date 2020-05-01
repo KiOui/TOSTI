@@ -49,13 +49,15 @@ function update_order_data(orders, element) {
         let icon = create_element('i', ['fas', 'fa-'+orders[i].product.icon], '');
         let item_name = create_element('p', ['item-name'], orders[i].product.name);
         let item_price = create_element('p', ['item-price'], '€'+orders[i].price);
-        let paid = create_checkbox(orders[i].delivered, orders[i].id, 'delivered');
+        let paid = create_checkbox(orders[i].paid, orders[i].id, 'paid');
+        let delivered = create_checkbox(orders[i].delivered, orders[i].id, 'delivered');
 
         list_item.appendChild(username);
         list_item.appendChild(icon);
         list_item.appendChild(item_name);
         list_item.append(item_price);
         list_item.append(paid);
+        list_item.append(delivered);
         base.appendChild(list_item);
     }
 
@@ -79,6 +81,8 @@ function update_order(checkbox, order_id, property, callback_ok, callback_error 
                     callback_error.apply(this, args);
                 }
                 else {
+                    args.unshift(checkbox);
+                    args.unshift(data.value);
                     callback_ok.apply(this, args);
                 }
             }}).fail(function() {
@@ -93,13 +97,13 @@ function update_checkbox_error(error) {
     ERROR_CONTAINER.innerHTML = error;
 }
 
-function update_checkbox() {
-    get_orders(ORDER_URL, CSRF_TOKEN, update_order_data, update_order_error, ITEM_CONTAINER);
+function update_checkbox(value, checkbox) {
+    checkbox.checked = value;
 }
 
 function update_orders(container, url, token) {
     get_orders(url, token, update_order_data, update_order_error, container);
-    setTimeout(update_orders.bind(null, container, url, token), 5000);
+    //setTimeout(update_orders.bind(null, container, url, token), 5000);
 }
 
 $(document).ready(function() {

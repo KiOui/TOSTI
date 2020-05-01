@@ -40,30 +40,39 @@ class ShiftForm(forms.ModelForm):
     """Shift creation form."""
 
     def clean(self):
+        """
+        Clean the ShiftForm.
+
+        Makes sure that the dates in the form are not overlapping with other shifts.
+        :return: cleaned data
+        """
         cleaned_data = super(ShiftForm, self).clean()
-        start_date = cleaned_data.get('start_date')
-        end_date = cleaned_data.get('end_date')
-        venue = cleaned_data.get('venue')
-        overlapping_start = (
-            Shift.objects.filter(
-                start_date__gte=start_date,
-                start_date__lte=end_date,
-                venue=venue,
-            ).count()
-        )
-        overlapping_end = (
-            Shift.objects.filter(
-                end_date__gte=start_date,
-                end_date__lte=end_date,
-                venue=venue,
-            ).count()
-        )
+        start_date = cleaned_data.get("start_date")
+        end_date = cleaned_data.get("end_date")
+        venue = cleaned_data.get("venue")
+        overlapping_start = Shift.objects.filter(
+            start_date__gte=start_date, start_date__lte=end_date, venue=venue,
+        ).count()
+        overlapping_end = Shift.objects.filter(
+            end_date__gte=start_date, end_date__lte=end_date, venue=venue,
+        ).count()
         if overlapping_start > 0 or overlapping_end > 0:
-            raise forms.ValidationError("Overlapping shifts for the same venue are not allowed.")
+            raise forms.ValidationError(
+                "Overlapping shifts for the same venue are not allowed."
+            )
 
         return cleaned_data
 
     class Meta:
-        model = Shift
-        fields = ['venue', 'start_date', 'end_date', 'orders_allowed', 'max_orders_per_user', 'max_orders_total', 'assignees']
+        """Meta class."""
 
+        model = Shift
+        fields = [
+            "venue",
+            "start_date",
+            "end_date",
+            "orders_allowed",
+            "max_orders_per_user",
+            "max_orders_total",
+            "assignees",
+        ]

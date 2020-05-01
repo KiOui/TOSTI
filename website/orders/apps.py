@@ -12,4 +12,4 @@ class OrdersConfig(AppConfig):
 
         :return: None
         """
-        from orders import signals
+        from orders import signals  # noqa
