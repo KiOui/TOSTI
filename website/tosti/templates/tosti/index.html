@@ -1,0 +1,21 @@
+{% extends 'tosti/base.html' %}
+{% load static order_now start_shift %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'tosti/css/index.css' %}"/>
+{% endblock %}
+
+{% block page %}
+    <div class="container mt-5 mb-5 text-center">
+        <h1 class="tosti-title">TOSTI</h1>
+        <h6>Tartarus Order System for Take-away Items</h6>
+    </div>
+    <div class="container">
+        {%  render_order_now_buttons_venues  %}
+    </div>
+    {% if user.is_authenticated and user.is_staff %}
+    <div class="container">
+        {%  render_start_shift_buttons  %}
+    </div>
+    {% endif %}
+{% endblock %}

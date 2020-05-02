@@ -1,0 +1,20 @@
+{% load order_now %}
+
+{% if venues %}
+    {% for next_venue in venues %}
+        {% with next_venue.venue|currently_active_shift_for_venue as venue_shift %}
+            {% if venue_shift and venue_shift.can_order %}
+                <div class="btn-ml btn-on" onclick="window.location.href = '{% url 'orders:order' shift=venue_shift %}';">
+                    <h4>Order at {{ venue_shift.venue.name }}</h4>
+                    <p class="btn-note">order until {{ venue_shift.end_date|date:"g:iA" }} or capacity reached
+                    ({{ venue_shift.number_of_orders }}/{{ venue_shift.max_orders_total }})</p>
+                </div>
+            {% else %}
+                <div class="btn-ml btn-off">
+                    <h4>Order at {{ next_venue.venue.name }}</h4>
+                    <p class="btn-note">not available to order</p>
+                </div>
+            {% endif %}
+        {% endwith %}
+    {% endfor %}
+{% endif %}
