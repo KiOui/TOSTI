@@ -1,0 +1,51 @@
+{% extends 'tosti/base.html' %}
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'orders/css/item-list.css' %}"/>
+    <link rel="stylesheet" href="{% static 'tosti/css/index.css' %}"/>
+{% endblock %}
+
+{% block page %}
+    <div class="container-sm mb-5 text-center">
+        <h1>{{ shift.venue.name }} shift #{{ shift.pk }}</h1>
+        {% if already_ordered %}
+            <div class="btn-ml btn-on" onclick="window.location.href = '{% url "orders:order_status" shift=shift %}';">
+                <h2>You have already ordered items</h2>
+                <p>Click to go to status page</p>
+            </div>
+            <p>Or order more items below</p>
+        {% else %}
+            <p>Order your items below</p>
+        {% endif %}
+        <p class="alert-danger" id="update-error"></p>
+        {% if error %}
+            <p class="alert-danger">{{ error }}</p>
+        {% endif %}
+        <div id="product-list">
+        </div>
+    </div>
+    <div class="container-sm text-center">
+        <h1>Items in cart</h1>
+        <p>Manage the items in your cart below</p>
+        <div id="order-list">
+        </div>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="submit" value="Order" class="btn btn-success" id="order-button" style="display: none"/>
+        </form>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        const PRODUCT_CONTAINER = document.getElementById('product-list');
+        const ORDER_CONTAINER = document.getElementById('order-list');
+        const UPDATE_URL = "{% url 'orders:product_list' shift=shift %}";
+        const CART_COOKIE_NAME = "cart_{{ shift.id }}";
+        const ORDER_BUTTON = document.getElementById('order-button');
+        const ERROR_CONTAINER = document.getElementById('update-error');
+        const CSRF_TOKEN = "{{ csrf_token }}";
+    </script>
+    <script src="{% static 'orders/js/asynch-order-orders.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'tosti/base.html' %}
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'orders/css/forms.css' %}"/>
+    <link rel="stylesheet" href="{% static 'orders/css/item-list-admin.css' %}"/>
+{% endblock %}
+
+{% block page %}
+    <div class="container-sm">
+        <h1>{{ shift.venue.name }} shift #{{ shift.pk }}</h1>
+        <p>Shift open from {{ shift.start_date }} until {{ shift.end_date }}</p>
+    </div>
+    <div class="container-sm">
+        <h1>Orders</h1>
+        <p id="update-error" class="alert-danger"></p>
+        <div id="item-orders">
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        const ITEM_CONTAINER = document.getElementById('item-orders');
+        const ORDER_URL = "{% url 'orders:shift_status' shift=shift %}";
+        const CSRF_TOKEN = "{{ csrf_token }}";
+        const ORDER_UPDATE_URL = "{% url 'orders:order_update' %}";
+        const ERROR_CONTAINER = document.getElementById('update-error');
+    </script>
+    <script src="{% static 'orders/js/asynch-update-orders.js' %}"></script>
+{% endblock %}

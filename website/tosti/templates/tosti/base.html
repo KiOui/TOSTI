@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>
+        {% block title %}TOSTI{% endblock %}
+    </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" type="image/png" href="#"/>
+    <link href="https://fonts.googleapis.com/css2?family=Neucha&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'tosti/css/bootstrap/bootstrap.css' %}"/>
+    {% block styles %}{% endblock %}
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+    <script src="{% static 'tosti/fontawesome/js/all.min.js' %}" crossorigin="anonymous"></script>
+    <script src="{% static 'tosti/js/base.js'  %}"></script>
+    <link rel="stylesheet" href="{% static 'tosti/css/base.css' %}"/>
+
+    <link rel="apple-touch-icon" sizes="57x57" href="{% static 'tosti/favicon/apple-icon-57x57.png' %}">
+    <link rel="apple-touch-icon" sizes="60x60" href="{% static 'tosti/favicon/apple-icon-60x60.png' %}">
+    <link rel="apple-touch-icon" sizes="72x72" href="{% static 'tosti/favicon/apple-icon-72x72.png' %}">
+    <link rel="apple-touch-icon" sizes="76x76" href="{% static 'tosti/favicon/apple-icon-76x76.png' %}">
+    <link rel="apple-touch-icon" sizes="114x114" href="{% static 'tosti/favicon/apple-icon-114x114.png' %}">
+    <link rel="apple-touch-icon" sizes="120x120" href="{% static 'tosti/favicon/apple-icon-120x120.png' %}">
+    <link rel="apple-touch-icon" sizes="144x144" href="{% static 'tosti/favicon/apple-icon-144x144.png' %}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{% static 'tosti/favicon/apple-icon-152x152.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'tosti/favicon/apple-icon-180x180.png' %}">
+    <link rel="icon" type="image/png" sizes="192x192"  href="{% static 'tosti/favicon/android-icon-192x192.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'tosti/favicon/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="96x96" href="{% static 'tosti/favicon/favicon-96x96.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'tosti/favicon/favicon-16x16.png' %}">
+    <link rel="manifest" href="{% static 'tosti/favicon/manifest.json' %}">
+    <meta name="msapplication-TileColor" content="#e8b365">
+    <meta name="msapplication-TileImage" content="{% static 'tosti/favicon/ms-icon-144x144.png' %}">
+    <meta name="theme-color" content="#e8b365">
+</head>
+<body>
+    <nav class="navbar navbar-expand-md sticky-top site-header mb-5">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/"><img src="{% static 'tosti/svg/TOSTI-logo.svg' %}" height="60"/></a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url "index" %}">
+                            Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url "orders:shifts" %}">
+                            Order now
+                        </a>
+                    </li>
+                    {% if not user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url "users:login" %}">
+                                Login
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url "users:logout" %}">
+                                Logout ({{ user.username }})
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {% if user.is_staff %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url "admin:index" %}">
+                                Site admin
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="page">
+        {% block page %}{% endblock %}
+    </div>
+    <footer class="page-footer font-small mt-5 fixed-bottom">
+        <div class="footer-copyright text-center py-3">© 2020 Copyright:
+            <a href="/">TOSTI</a>
+        </div>
+    </footer>
+    <script src="{% static 'tosti/js/bootstrap/bootstrap.js' %}"></script>
+    {%  block js %}{%  endblock %}
+</body>
+</html>

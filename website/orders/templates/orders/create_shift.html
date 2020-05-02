@@ -1,0 +1,18 @@
+{% extends 'tosti/base.html' %}
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'orders/css/forms.css' %}"/>
+    <link rel="stylesheet" href="{% static 'tosti/css/index.css' %}"/>
+{% endblock %}
+
+{% block page %}
+    <div class="container-sm text-center">
+        <h1>Create new shift</h1>
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Start shift" class="btn btn-primary"/>
+        </form>
+    </div>
+{% endblock %}

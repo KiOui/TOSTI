@@ -1,0 +1,42 @@
+
+.btn-ml {
+    display: block;
+    padding: 10px;
+    max-width: 400px;
+    margin: 40px auto;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.btn-on:hover {
+    background-color: white;
+    color: black;
+}
+
+.btn-ml h2 {
+    width: 100%;
+    text-align: center;
+}
+
+.btn-ml p {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 0;
+}
+
+.btn-on {
+    border: 1px solid black;
+    background-color: black;
+    color: white;
+    cursor: pointer;
+}
+
+.btn-off {
+    border: 1px solid grey;
+    background-color: grey;
+    color: white;
+}
+
+.btn-off {
+    background-color: grey;
+    color: white;
+}

@@ -1,0 +1,25 @@
+.flex-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 400px;
+}
+
+.container-centered {
+    width: 100%;
+}
+
+.centered-form input {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: 10px;
+}
+
+.centered-form ul {
+    list-style-type: none;
+    padding: 5px;
+    margin: 0;
+    background-color: #ff3232;
+    color: white;
+}

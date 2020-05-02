@@ -1,0 +1,73 @@
+body {
+    font-family: 'Neucha', cursive;
+}
+
+.page {
+    min-height: 90vh;
+}
+
+.site-header, .page-footer {
+    background-color: rgba(232, 179, 101, 1);
+    color: white;
+}
+
+.navbar-expand-md .navbar-nav .nav-link {
+    color: white;
+}
+
+.navbar-toggler {
+    border-color: #ffffff;
+}
+
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3e%3cpath stroke='#ffffff' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+
+.nav-item {
+    text-transform: uppercase;
+    font-size: 1.5rem;
+    padding: 8px;
+}
+
+h1 {
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    text-align: center;
+    font-size: 3rem
+}
+h2 {
+    letter-spacing: 4px;
+    text-align: center;
+    font-size: 2.5rem;
+}
+h3 {
+    letter-spacing: 4px;
+    text-align: center;
+    font-size: 2rem
+}
+h4 {
+    text-align: center;
+    font-size: 1.75rem
+}
+h5 {
+    text-align: center;
+    font-size: 1.5rem
+}
+h6 {
+    text-align: center;
+    font-size: 1rem
+}
+
+p {
+    text-align: center;
+    font-size: 1.5rem
+}
+
+p.btn-note {
+    font-size: .8rem
+}
+
+.tosti-title {
+    letter-spacing: 20px;
+}

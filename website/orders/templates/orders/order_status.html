@@ -1,0 +1,25 @@
+{% extends 'tosti/base.html' %}
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'tosti/css/index.css' %}"/>
+{% endblock %}
+
+{% block page %}
+    <div class="container-sm text-center">
+        <h1>{{ shift.venue.name }} shift #{{ shift.pk }} status</h1>
+        <div id="ordered-items">
+        </div>
+        <a class="btn btn-primary text-white" href="{% url "orders:order" shift=shift %}">Back to order screen</a>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        const ORDER_CONTAINER = document.getElementById('ordered-items');
+        const UPDATE_URL = "{% url 'orders:order_status' shift=shift %}";
+        const ERROR_CONTAINER = document.getElementById('update-error');
+        const CSRF_TOKEN = "{{ csrf_token }}";
+    </script>
+    <script src="{% static 'orders/js/asynch-order-status.js' %}"></script>
+{% endblock %}

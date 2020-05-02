@@ -1,0 +1,44 @@
+
+
+.order-list {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.order-item {
+    max-height: 200px;
+    width: 100%;
+    max-width: 200px;
+    color: white;
+    background-color: black;
+    padding: 10px;
+    margin: 10px;
+}
+
+.order-succeeded {
+    background-color: green;
+}
+
+i.item-icon {
+    flex-basis: 50px;
+    flex-grow: 0;
+    margin: 5px;
+}
+
+input.item-button {
+    margin-left: 10px;
+}
+
+svg.item-icon {
+    flex-grow: 0;
+    margin: 5px;
+}
+
+p.item-name, p.item-price {
+    margin: 0;
+}
+
+p.item-name {
+    flex-grow: 1;
+}
