@@ -4,7 +4,7 @@ Welcome to the repository of Tartarus Order System for Take-away Items, TOSTI fo
 
 The current system features the following:
 
-- A custom user model that makes it able to authenticate via the [science openid server](openid.science.ru.nl).
+- A custom user model that makes it able to authenticate via the [science openid server](https://openid.science.ru.nl).
 - A really nice model structure where new venues, products and staff users can be easily added.
 - A beautiful minimal interface to order your products online
 
