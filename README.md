@@ -30,4 +30,4 @@ This project is built using the [Django](https://github.com/django/django) frame
 Now your server is setup and running on ```localhost:8000```. The administrator interface can be accessed by going to ```localhost:8000/admin```.
 
 ### Docker
-For running this application with a docker, a docker image of the latest build is provided on [this page](). You can also build your own docker image by executing ```docker build .``` in the main directory. An example docker-compose file is added as ```docker-compose.yml.example```.
+For running this application with a docker, a docker image of the latest build is provided on [this page](https://hub.docker.com/repository/docker/larsvanrhijn/tosti). You can also build your own docker image by executing ```docker build .``` in the main directory. An example docker-compose file is added as ```docker-compose.yml.example```.
