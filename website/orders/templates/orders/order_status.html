@@ -10,7 +10,10 @@
         <h1>{{ shift.venue.name }} shift #{{ shift.pk }} status</h1>
         <div id="ordered-items">
         </div>
-        <a class="btn btn-primary text-white" href="{% url "orders:order" shift=shift %}">Back to order screen</a>
+        <div class="btn-ml btn-on" onclick="window.location.href = '{% url "orders:order" shift=shift %}'">
+            <h4>Back to order screen</h4>
+            <i class="fas fa-arrow-left"></i>
+        </div>
     </div>
 {% endblock %}
 

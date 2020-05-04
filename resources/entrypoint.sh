@@ -18,7 +18,7 @@ chown --recursive www-data:www-data /tosti/
 
 echo "Starting uwsgi server."
 uwsgi --chdir=/tosti/src/website \
-    --module=website.wsgi:application \
+    --module=tosti.wsgi:application \
     --master --pidfile=/tmp/project-master.pid \
     --socket=:8000 \
     --processes=5 \

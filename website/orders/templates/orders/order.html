@@ -12,6 +12,7 @@
         {% if already_ordered %}
             <div class="btn-ml btn-on" onclick="window.location.href = '{% url "orders:order_status" shift=shift %}';">
                 <h2>You have already ordered items</h2>
+                <i class="fas fa-arrow-right"></i>
                 <p>Click to go to status page</p>
             </div>
             <p>Or order more items below</p>
