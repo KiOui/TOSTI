@@ -1,5 +1,9 @@
 from django import forms
+from django.contrib.auth import get_user_model
 from .models import Shift
+
+
+User = get_user_model()
 
 
 class ShiftForm(forms.ModelForm):
@@ -15,6 +19,7 @@ class ShiftForm(forms.ModelForm):
         """
         super(ShiftForm, self).__init__(*args, **kwargs)
         self.fields["venue"].initial = venue
+        self.fields["assignees"].queryset = User.objects.filter(is_staff=True)
 
     def clean(self):
         """

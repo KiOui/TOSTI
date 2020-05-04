@@ -15,6 +15,8 @@ Pillow = "^7.1.2"
 django-admin-autocomplete-filter = "^0.5"
 django-import-export = "^2.0.2"
 requests = "^2.23.0"
+uwsgi = "^2.0.18"
+psycopg2-binary = "^2.8.5"
 
 [tool.poetry.dev-dependencies]
 
