@@ -69,3 +69,7 @@ p.item-name {
     margin: 20px;
     background-color: lightgray;
 }
+
+.status-button:hover {
+    cursor: unset;
+}
