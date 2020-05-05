@@ -3,6 +3,7 @@
 
 {% block styles %}
     <link rel="stylesheet" href="{% static 'orders/css/forms.css' %}"/>
+    <link rel="stylesheet" href="{% static 'tosti/css/index.css' %}"/>
     <link rel="stylesheet" href="{% static 'orders/css/item-list-admin.css' %}"/>
 {% endblock %}
 
@@ -10,6 +11,12 @@
     <div class="container-sm">
         <h1>{{ shift.venue.name }} shift #{{ shift.pk }}</h1>
         <p>Shift open from {{ shift.start_date }} until {{ shift.end_date }}</p>
+    </div>
+    <div class="container-sm">
+        <div class="btn-ml btn-on bg-primary border-0 text-center" onclick="window.location.href = '{% url "orders:shift_overview" shift=shift %}';">
+            <h5>Order overview</h5>
+            <i class="fas fa-users"></i>
+        </div>
     </div>
     <div class="container-sm">
         <h1>Orders</h1>

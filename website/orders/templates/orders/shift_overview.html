@@ -12,11 +12,18 @@
         <h1>{{ shift.venue.name }} shift #{{ shift.pk }}</h1>
         <p>Shift open from {{ shift.start_date }} until {{ shift.end_date }}</p>
     </div>
+    {% if user.is_staff %}
+        <div class="container-sm">
+            <div class="btn-ml btn-on bg-primary border-0 text-center" onclick="window.location.href = '{% url "orders:shift_admin" shift=shift %}';">
+                <h5>Admin view</h5>
+                <i class="fas fa-tools"></i>
+            </div>
+        </div>
+    {% endif %}
     <div class="container-sm">
         <h1>Orders</h1>
         <p id="update-error" class="alert-danger"></p>
         <div id="item-orders">
-
         </div>
     </div>
     <div class="container-sm">
