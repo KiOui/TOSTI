@@ -2,6 +2,7 @@
 {% load static %}
 
 {% block styles %}
+    <link rel="stylesheet" href="{% static 'tosti/css/index.css' %}"/>
     <link rel="stylesheet" href="{% static 'orders/css/forms.css' %}"/>
     <link rel="stylesheet" href="{% static 'orders/css/item-list-admin.css' %}"/>
 {% endblock %}
@@ -18,6 +19,12 @@
 
         </div>
     </div>
+    <div class="container-sm">
+        <div class="btn-ml btn-on" onclick="window.location.href = '{% url "orders:order" shift=shift %}';">
+            <h2>Order items</h2>
+            <p>Click to order items</p>
+        </div>
+    </div>
 {% endblock %}
 
 {% block js %}
@@ -28,5 +35,5 @@
         const ORDER_UPDATE_URL = "{% url 'orders:order_update' %}";
         const ERROR_CONTAINER = document.getElementById('update-error');
     </script>
-    <script src="{% static 'orders/js/asynch-update-orders-admin.js' %}"></script>
+    <script src="{% static 'orders/js/asynch-update-orders.js' %}"></script>
 {% endblock %}

@@ -1,7 +1,7 @@
 {% if shifts %}
     {% for next_shift in shifts %}
         {% if next_shift.shift.can_order %}
-            <div class="btn-ml btn-on" onclick="window.location.href = '{% url 'orders:order' shift=next_shift.shift %}';">
+            <div class="btn-ml btn-on" onclick="window.location.href = '{% url 'orders:shift_overview' shift=next_shift.shift %}';">
                 <h4>Order at {{ next_shift.shift.venue.name }}</h4>
                 <p class="btn-note">order until {{ next_shift.shift.end_date|date:"g:iA" }} or capacity reached
                 ({{ next_shift.shift.number_of_orders }}/{{ next_shift.shift.max_orders_total }})</p>
