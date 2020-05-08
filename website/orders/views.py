@@ -333,9 +333,8 @@ class JoinShiftView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
 
         :param request: the request
         :param kwargs: keyword arguments
-        :return: the Join shift view page for asking the user whether or not to join the shift if something went wrong,
-        a redirect to the shift admin page otherwise, also adds a user to a shift if the user agreed to adding him/her
-        to the shift
+        :return: the Join shift view page for asking the user whether or not to join the shift, if they agree this view
+        will redirect to the shift admin page, otherwise it will redirect to the index page
         """
         shift = kwargs.get("shift")
 
@@ -347,7 +346,7 @@ class JoinShiftView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
                 shift.save()
             return redirect("orders:shift_admin", shift=shift)
         elif confirm == "No":
-            return redirect("orders:shift_admin", shift=shift)
+            return redirect("index")
         else:
             return render(request, self.template_name, {"shift": shift})
 
