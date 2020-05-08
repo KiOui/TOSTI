@@ -7,18 +7,22 @@ import orders.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('orders', '0001_initial'),
+        ("orders", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='shift',
-            name='end_date',
-            field=models.DateTimeField(default=orders.models.get_default_end_time_shift),
+            model_name="shift",
+            name="end_date",
+            field=models.DateTimeField(
+                default=orders.models.get_default_end_time_shift
+            ),
         ),
         migrations.AlterField(
-            model_name='shift',
-            name='start_date',
-            field=models.DateTimeField(default=orders.models.get_default_start_time_shift),
+            model_name="shift",
+            name="start_date",
+            field=models.DateTimeField(
+                default=orders.models.get_default_start_time_shift
+            ),
         ),
     ]
