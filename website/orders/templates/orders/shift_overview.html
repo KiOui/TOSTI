@@ -9,7 +9,18 @@
 
 {% block page %}
     <div class="container-sm">
-        <h1>{{ shift.venue.name }} shift #{{ shift.pk }}</h1>
+        <h1>{{ shift.venue.name }}</h1>
+        <h3>
+            shift #{{ shift.pk }}
+            {% if shift.assignees %}
+                -
+                {% for assignee in shift.get_assignees %}
+                    {{ assignee.first_name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            {% else %}
+             - No assignees
+            {% endif %}
+        </h3>
         <p>Shift open from {{ shift.start_date }} until {{ shift.end_date }}</p>
     </div>
     {% if user.is_staff %}
