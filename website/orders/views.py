@@ -299,6 +299,55 @@ class ShiftAdminView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
         return render(request, self.template_name, {"shift": shift})
 
 
+class JoinShiftView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
+    """Admin view for joining shifts."""
+
+    template_name = "orders/join_shift.html"
+
+    permission_required = "is_staff"
+
+    def get(self, request, **kwargs):
+        """
+        GET request for JoinShiftView.
+
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: the Join shift view page for asking the user whether or not to join the shift
+        """
+        shift = kwargs.get("shift")
+
+        assignees = shift.assignees.all()
+
+        if request.user not in assignees:
+            return render(request, self.template_name, {"shift": shift})
+        else:
+            return redirect("orders:shift_admin", shift=shift)
+
+    def post(self, request, **kwargs):
+        """
+        POST request for JoinShiftView.
+
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: the Join shift view page for asking the user whether or not to join the shift if something went wrong,
+        a redirect to the shift admin page otherwise, also adds a user to a shift if the user agreed to adding him/her
+        to the shift
+        """
+        shift = kwargs.get("shift")
+
+        confirm = request.POST.get("confirm", None)
+        if confirm == "Yes":
+            assignees = shift.assignees.all()
+            if request.user not in assignees:
+                shift.assignees.add(request.user)
+                shift.save()
+            return redirect("orders:shift_admin", shift=shift)
+        elif confirm == "No":
+            return redirect("orders:shift_admin", shift=shift)
+        else:
+            return render(request, self.template_name, {"shift": shift})
+
+
 class ShiftStatusView(TemplateView):
     """View for getting the orders of a shift."""
 
