@@ -235,6 +235,11 @@ class Shift(models.Model):
 
     @property
     def get_assignees(self):
+        """
+        Get assignees of this shift.
+
+        :return: a QuerySet with User objects of assignees of this shift
+        """
         return self.assignees.all()
 
     def __str__(self):

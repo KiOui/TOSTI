@@ -14,7 +14,7 @@
             {% if shift.assignees %}
                 -
                 {% for assignee in shift.get_assignees %}
-                    {{ assignee.first_name }}{% if not forloop.last %}, {% endif %}
+                    {{ assignee.get_short_name }}{% if not forloop.last %}, {% endif %}
                 {% endfor %}
             {% else %}
              - No assignees
