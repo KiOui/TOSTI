@@ -35,13 +35,9 @@
     <meta name="theme-color" content="#e8b365">
 </head>
 <body>
-    <nav class="navbar navbar-expand-md sticky-top site-header mb-5">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/"><img src="{% static 'tosti/svg/TOSTI-logo.svg' %}" height="60"/></a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarResponsive">
+    <nav class="navbar navbar-expand-md sticky-top site-header mb-5 navbar-dark">
+        <div class="container">
+            <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
                 <ul class="navbar-nav">
                     <li class="nav-item">
                         <a class="nav-link" href="{% url "index" %}">
@@ -53,6 +49,16 @@
                             Order now
                         </a>
                     </li>
+                </ul>
+            </div>
+            <div class="mx-auto order-0 navbar-collapse collapse position-relative">
+                <a class="navbar-brand" href="/"><img src="{% static 'tosti/svg/TOSTI-logo.svg' %}" height="60"/></a>
+            </div>
+            <div class="order-0 d-block d-md-none">
+                <a class="navbar-brand" href="/"><img src="{% static 'tosti/svg/TOSTI-logo.svg' %}" height="60"/></a>
+            </div>
+            <div class="navbar-collapse collapse w-100 order-3 dual-collapse2 ">
+                <ul class="navbar-nav ml-auto">
                     {% if not user.is_authenticated %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url "users:login" %}">
@@ -60,22 +66,27 @@
                             </a>
                         </li>
                     {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url "users:logout" %}">
-                                Logout ({{ user.username }})
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {{ user }}
                             </a>
-                        </li>
-                    {% endif %}
-
-                    {% if user.is_staff %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url "admin:index" %}">
-                                Site admin
-                            </a>
+                            <div class="dropdown-menu p-2" aria-labelledby="navbarDropdownMenuLink">
+                                {% if user.is_staff %}
+                                <a class="nav-link text-dark" href="{% url "admin:index" %}">
+                                    Site admin
+                                </a>
+                                {% endif %}
+                                <a class="nav-link text-dark" href="{% url "users:logout" %}">
+                                    Logout ({{ user.username }})
+                                </a>
+                            </div>
                         </li>
                     {% endif %}
                 </ul>
             </div>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".dual-collapse2">
+                <span class="navbar-toggler-icon"></span>
+            </button>
         </div>
     </nav>
     <div class="page">
