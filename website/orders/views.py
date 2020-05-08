@@ -1,5 +1,6 @@
 import json
 
+from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
@@ -7,6 +8,8 @@ from django.views.generic import TemplateView
 from .models import Shift, Product, Order
 from .forms import ShiftForm
 import urllib.parse
+
+User = get_user_model()
 
 
 class ShiftView(LoginRequiredMixin, TemplateView):
@@ -256,6 +259,7 @@ class CreateShiftView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView)
         venue = kwargs.get("venue")
 
         form = ShiftForm(venue=venue)
+        form.set_initial_users(User.objects.filter(pk=request.user.pk))
 
         return render(request, self.template_name, {"venue": venue, "form": form})
 
