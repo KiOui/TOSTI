@@ -1,4 +1,4 @@
-{% extends 'tosti/base.html' %}
+{% extends 'orders/order_base.html' %}
 {% load static %}
 
 {% block styles %}
@@ -7,22 +7,7 @@
     <link rel="stylesheet" href="{% static 'orders/css/item-list-admin.css' %}"/>
 {% endblock %}
 
-{% block page %}
-    <div class="container-sm">
-        <h1>{{ shift.venue.name }}</h1>
-        <h3>
-            shift #{{ shift.pk }}
-            {% if shift.assignees %}
-                -
-                {% for assignee in shift.get_assignees %}
-                    {{ assignee.get_short_name }}{% if not forloop.last %}, {% endif %}
-                {% endfor %}
-            {% else %}
-             - No assignees
-            {% endif %}
-        </h3>
-        <p>Shift open from {{ shift.start_date }} until {{ shift.end_date }}</p>
-    </div>
+{% block order_content %}
     <div class="container-sm">
         <div class="btn-ml btn-on bg-primary border-0 text-center" onclick="window.location.href = '{% url "orders:shift_overview" shift=shift %}';">
             <h5>Order overview</h5>
