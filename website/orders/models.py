@@ -13,6 +13,24 @@ from venues.models import Venue
 User = get_user_model()
 
 
+def get_default_start_time_shift():
+    """
+    Get the default start time of a Shift object.
+
+    :return: the default start time of a shift
+    """
+    return datetime.now().replace(hour=12, minute=15, second=0, microsecond=0)
+
+
+def get_default_end_time_shift():
+    """
+    Get the default end time of a Shift object.
+
+    :return: the default end time of a shift
+    """
+    return datetime.now().replace(hour=13, minute=15, second=0, microsecond=0)
+
+
 class Product(models.Model):
     """Products that can be ordered."""
 
@@ -126,14 +144,10 @@ class Shift(models.Model):
     )
 
     start_date = models.DateTimeField(
-        blank=False,
-        null=False,
-        default=datetime.now().replace(hour=12, minute=15, second=0, microsecond=0),
+        blank=False, null=False, default=get_default_start_time_shift,
     )
     end_date = models.DateTimeField(
-        blank=False,
-        null=False,
-        default=datetime.now().replace(hour=13, minute=15, second=0, microsecond=0),
+        blank=False, null=False, default=get_default_end_time_shift,
     )
 
     can_order = models.BooleanField(
