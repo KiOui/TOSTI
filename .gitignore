@@ -136,9 +136,9 @@ dmypy.json
 
 # Docker
 docker-compose.yml
-media/
-static/
-database/
-database_init/*.sql
-log/
+/media
+/static
+/database
+/database_init/*.sql
+/log
 

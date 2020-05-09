@@ -21,6 +21,24 @@ function get_orders(data_url, csrf_token, callback_ok, callback_error, /*, args 
     )
 }
 
+function create_checkbox(value, order_id, property, class_list) {
+    let element = document.createElement('input');
+    element.type = 'button';
+    element.value = property.capitalize();
+    element.setAttribute('onclick',"update_order(this, '" + order_id + "', '" + property + "', update_checkbox, update_checkbox_error)");
+    element.classList.add('btn');
+    if (value) {
+        element.classList.add('btn-success');
+    }
+    else {
+        element.classList.add('btn-danger');
+    }
+    for (let i = 0; i < class_list.length; i++) {
+        element.classList.add(class_list[i]);
+    }
+    return element;
+}
+
 function update_order_error(error, element) {
 
 }
@@ -34,33 +52,13 @@ function update_order_data(orders, element) {
         list_item_wrapper.appendChild(list_item);
         let username = create_element('p', ['item-username'], orders[i].user);
         let icon = create_element('i', ['fas', 'fa-'+orders[i].product.icon], '');
+        let paid = create_checkbox(orders[i].paid, orders[i].id, 'paid', ['checkbox-paid']);
+        let delivered = create_checkbox(orders[i].delivered, orders[i].id, 'delivered', ['checkbox-delivered']);
 
         list_item.appendChild(icon);
         list_item.appendChild(username);
-        if (orders[i].own) {
-            let user_icon = create_element('i', ['fas', 'fa-user'], '');
-            list_item.appendChild(user_icon);
-        }
-        let status = null;
-        if (orders[i].delivered && !orders[i].own) {
-            status = create_element('div', ['bg-success', 'status-button', 'text-white', 'mr-2'], 'Done');
-        }
-        else if (!orders[i].delivered && !orders[i].own) {
-            status = create_element('div', ['bg-warning', 'status-button', 'mr-2'], 'Processing');
-        }
-        else if (orders[i].delivered && orders[i].paid && orders[i].own) {
-            status = create_element('div', ['bg-success', 'status-button', 'text-white', 'mr-2'], 'Done');
-        }
-        else if (orders[i].delivered && !orders[i].paid && orders[i].own) {
-            status = create_element('div', ['bg-warning', 'status-button', 'mr-2'], 'Done');
-        }
-        else if (!orders[i].delivered && orders[i].paid && orders[i].own) {
-            status = create_element('div', ['bg-warning', 'status-button', 'mr-2'], 'Processing');
-        }
-        else {
-            status = create_element('div', ['bg-danger', 'status-button', 'mr-2'], 'Not payed');
-        }
-        list_item.append(status);
+        list_item.append(paid);
+        list_item.append(delivered);
         base.appendChild(list_item_wrapper);
     }
 
