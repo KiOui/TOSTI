@@ -43,22 +43,22 @@ function update_order_data(orders, element) {
         }
         let status = null;
         if (orders[i].delivered && !orders[i].own) {
-            status = create_element('div', ['bg-success', 'status-button', 'text-white'], 'Done');
+            status = create_element('div', ['bg-success', 'status-button', 'text-white', 'mr-2'], 'Done');
         }
         else if (!orders[i].delivered && !orders[i].own) {
-            status = create_element('div', ['bg-warning', 'status-button'], 'Processing');
+            status = create_element('div', ['bg-warning', 'status-button', 'mr-2'], 'Processing');
         }
         else if (orders[i].delivered && orders[i].paid && orders[i].own) {
-            status = create_element('div', ['bg-success', 'status-button', 'text-white'], 'Done');
+            status = create_element('div', ['bg-success', 'status-button', 'text-white', 'mr-2'], 'Done');
         }
         else if (orders[i].delivered && !orders[i].paid && orders[i].own) {
-            status = create_element('div', ['bg-warning', 'status-button', 'text-white'], 'Done');
+            status = create_element('div', ['bg-warning', 'status-button', 'mr-2'], 'Done');
         }
         else if (!orders[i].delivered && orders[i].paid && orders[i].own) {
-            status = create_element('div', ['bg-warning', 'status-button'], 'Processing');
+            status = create_element('div', ['bg-warning', 'status-button', 'mr-2'], 'Processing');
         }
         else {
-            status = create_element('div', ['bg-danger', 'status-button'], 'Not payed');
+            status = create_element('div', ['bg-danger', 'status-button', 'mr-2'], 'Not payed');
         }
         list_item.append(status);
         base.appendChild(list_item_wrapper);
