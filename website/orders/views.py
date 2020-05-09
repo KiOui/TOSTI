@@ -141,7 +141,9 @@ class OrderView(LoginRequiredMixin, TemplateView):
                 request, self.template_name, {"shift": shift, "error": error_msg}
             )
         else:
-            return redirect("orders:order_status", shift=shift)
+            response = redirect("orders:shift_overview", shift=shift)
+            response.delete_cookie("cart_{}".format(shift.pk))
+            return response
 
 
 class OrderStatusView(LoginRequiredMixin, TemplateView):
@@ -370,7 +372,9 @@ class ShiftStatusView(TemplateView):
         orders = Order.objects.filter(shift=shift).order_by("user", "created")
         json_data = []
         for order in orders:
-            json_data.append(order.to_json())
+            json_order = order.to_json()
+            json_order["own"] = order.user == request.user
+            json_data.append(json_order)
         return JsonResponse({"data": json_data})
 
 
@@ -424,3 +428,21 @@ class OrderUpdateView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView)
             return JsonResponse({"value": order.paid})
         else:
             return JsonResponse({"error": "Property unknown"})
+
+
+class ShiftOverview(TemplateView, LoginRequiredMixin):
+    """Shift overview page."""
+
+    template_name = "orders/shift_overview.html"
+
+    def get(self, request, **kwargs):
+        """
+        GET request of shift overview page.
+
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: a render of the shift overview page
+        """
+        shift = kwargs.get("shift")
+
+        return render(request, self.template_name, {"shift": shift})

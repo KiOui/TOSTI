@@ -2,23 +2,30 @@
 {% load static %}
 
 {% block styles %}
-    <link rel="stylesheet" href="{% static 'orders/css/forms.css' %}"/>
     <link rel="stylesheet" href="{% static 'tosti/css/index.css' %}"/>
+    <link rel="stylesheet" href="{% static 'orders/css/forms.css' %}"/>
     <link rel="stylesheet" href="{% static 'orders/css/item-list-admin.css' %}"/>
 {% endblock %}
 
 {% block order_content %}
-    <div class="container-sm">
-        <div class="btn-ml btn-on bg-primary border-0 text-center" onclick="window.location.href = '{% url "orders:shift_overview" shift=shift %}';">
-            <h5>Order overview</h5>
-            <i class="fas fa-users"></i>
+    {% if user.is_staff %}
+        <div class="container-sm">
+            <div class="btn-ml btn-on bg-primary border-0 text-center" onclick="window.location.href = '{% url "orders:shift_admin" shift=shift %}';">
+                <h5>Admin view</h5>
+                <i class="fas fa-tools"></i>
+            </div>
         </div>
-    </div>
+    {% endif %}
     <div class="container-sm">
         <h1>Orders</h1>
         <p id="update-error" class="alert-danger"></p>
         <div id="item-orders">
-
+        </div>
+    </div>
+    <div class="container-sm">
+        <div class="btn-ml btn-on" onclick="window.location.href = '{% url "orders:order" shift=shift %}';">
+            <h2>Order items</h2>
+            <p>Click to order items</p>
         </div>
     </div>
 {% endblock %}
@@ -31,5 +38,5 @@
         const ORDER_UPDATE_URL = "{% url 'orders:order_update' %}";
         const ERROR_CONTAINER = document.getElementById('update-error');
     </script>
-    <script src="{% static 'orders/js/asynch-update-orders-admin.js' %}"></script>
+    <script src="{% static 'orders/js/asynch-update-orders.js' %}"></script>
 {% endblock %}
