@@ -22,7 +22,7 @@ div.item-list-div {
 }
 
 .item-list li div input {
-    margin-left: 5px;
+    margin-right: 5px;
 }
 
 p.item-name, p.item-price, p.item-username {
@@ -78,4 +78,19 @@ p.item-name {
 
 .status-button:hover {
     cursor: unset;
+}
+
+@media screen and (max-width: 500px) {
+    .item-list {
+        font-size: 10pt !important;
+    }
+
+    .item-username {
+        font-size: 10pt !important;
+        overflow: hidden;
+    }
+
+    .btn {
+        font-size: 10pt !important;
+    }
 }
