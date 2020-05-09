@@ -4,7 +4,13 @@
         {% with next_venue.venue|currently_active_shift_for_venue as venue_shift %}
             {% if venue_shift %}
                 <div class="btn-ml btn-on" onclick="window.location.href = '{% url 'orders:shift_join' shift=venue_shift %}';">
+            {% if venue_shift and venue_shift.is_active %}
+                <div class="btn-ml btn-on" onclick="window.location.href = '{% url 'orders:shift_admin' shift=venue_shift %}';">
                     <p>Join shift at {{ next_venue.venue.name }}</p>
+                </div>
+            {% elif venue_shift %}
+                <div class="btn-ml btn-on" onclick="window.location.href = '{% url 'orders:shift_admin' shift=venue_shift %}';">
+                    <p>Check out previous at {{ next_venue.venue.name }}</p>
                 </div>
             {% else %}
                 <div class="btn-ml btn-on" onclick="window.location.href = '{% url 'orders:shift_create' venue=next_venue.venue%}';">
