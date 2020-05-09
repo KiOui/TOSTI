@@ -21,15 +21,6 @@ class ShiftForm(forms.ModelForm):
         self.fields["venue"].initial = venue
         self.fields["assignees"].queryset = User.objects.filter(is_staff=True)
 
-    def set_initial_users(self, users):
-        """
-        Set the assignees initial field.
-
-        :param users: the initial users to select
-        :return: None
-        """
-        self.fields["assignees"].initial = users
-
     def clean(self):
         """
         Clean the ShiftForm.

@@ -80,6 +80,10 @@ p.item-name {
     cursor: unset;
 }
 
+.cursor-pointer:hover {
+    cursor: pointer;
+}
+
 @media screen and (max-width: 500px) {
     .item-list {
         font-size: 10pt !important;
