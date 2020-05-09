@@ -5,7 +5,6 @@ class Venue(models.Model):
     """Venue model class."""
 
     name = models.CharField(max_length=50, unique=True, blank=False, null=False)
-    image = models.ImageField(upload_to="venues/images/", blank=True, null=True)
 
     active = models.BooleanField(default=True, null=False)
 
