@@ -321,10 +321,7 @@ class ShiftStatusView(TemplateView):
         json_data = []
         for order in orders:
             json_order = order.to_json()
-            if order.user == request.user:
-                json_order["own"] = True
-            else:
-                json_order["own"] = False
+            json_order["own"] = order.user == request.user
             json_data.append(json_order)
         return JsonResponse({"data": json_data})
 
