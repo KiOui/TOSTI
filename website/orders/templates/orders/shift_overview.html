@@ -4,25 +4,11 @@
 {% block styles %}
     <link rel="stylesheet" href="{% static 'tosti/css/index.css' %}"/>
     <link rel="stylesheet" href="{% static 'orders/css/forms.css' %}"/>
-    <link rel="stylesheet" href="{% static 'orders/css/item-list-admin.css' %}"/>
 {% endblock %}
 
 {% block page %}
-    <div class="container-sm mb-5 text-center" id="header-container">
-        {% render_order_header shift %}
-    </div>
-    <div class="container-sm">
-        <h1>Orders</h1>
-        <p id="update-error" class="alert-danger"></p>
-        <div id="item-orders">
-        </div>
-    </div>
-    <div class="container-sm">
-        <div class="btn-ml btn-on" onclick="window.location.href = '{% url "orders:order" shift=shift %}';">
-            <h2>Order items</h2>
-            <p>Click to order items</p>
-        </div>
-    </div>
+    {% render_order_header shift %}
+    {% render_order_items shift user=request.user %}
 {% endblock %}
 
 {% block footer %}
@@ -53,15 +39,4 @@
     {% else %}
         {{ block.super }}
     {% endif %}
-{% endblock %}
-
-{% block js %}
-    <script>
-        const ITEM_CONTAINER = document.getElementById('item-orders');
-        const ORDER_URL = "{% url 'orders:shift_status' shift=shift %}";
-        const CSRF_TOKEN = "{{ csrf_token }}";
-        const ORDER_UPDATE_URL = "{% url 'orders:order_update' %}";
-        const ERROR_CONTAINER = document.getElementById('update-error');
-    </script>
-    <script src="{% static 'orders/js/asynch-update-orders.js' %}"></script>
 {% endblock %}

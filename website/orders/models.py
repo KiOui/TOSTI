@@ -179,6 +179,15 @@ class Shift(models.Model):
     assignees = models.ManyToManyField(User)
 
     @property
+    def orders(self):
+        """
+        Get the orders of this shift.
+
+        :return: a Queryset with the orders of this shift.
+        """
+        return Order.objects.filter(shift=self).order_by("user", "created")
+
+    @property
     def number_of_orders(self):
         """
         Get the total number of orders in this shift.

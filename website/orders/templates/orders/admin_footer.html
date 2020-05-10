@@ -1,6 +1,6 @@
 {% load static %}
 
-{% if refresh %}
+{% if not refresh %}
     <footer class="page-footer navbar navbar-expand-md fixed-bottom" id="footer-container">
 {% endif %}
 <div class="container text-center">
@@ -27,11 +27,11 @@
         </div>
     </div>
 </div>
-{% if refresh %}
+{% if not refresh %}
     </footer>
 {% endif %}
 
-{% if refresh %}
+{% if not refresh %}
     <script>
         const FOOTER_CONTAINER = document.getElementById('footer-container');
         const FOOTER_CSRF_TOKEN = "{{ csrf_token }}";

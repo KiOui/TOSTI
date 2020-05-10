@@ -1,5 +1,6 @@
 {% load static %}
-{% if refresh %}
+
+{% if not refresh %}
     <div class="container-sm mb-5 text-center" id="header-container">
 {% endif %}
 <h1>{{ shift.venue.name }}</h1>
@@ -16,11 +17,11 @@
 </p>
 <p>{{ shift.number_of_orders }}/{{ shift.max_orders_total }} orders placed</p>
 <p>Shift open from {{ shift.start_date }} until {{ shift.end_date }}</p>
-{% if refresh %}
+{% if not refresh %}
     </div>
 {% endif %}
 
-{% if refresh %}
+{% if not refresh %}
     <script>
         const HEADER_CONTAINER = document.getElementById('header-container');
         const HEADER_CSRF_TOKEN = "{{ csrf_token }}";

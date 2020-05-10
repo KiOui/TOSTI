@@ -30,15 +30,124 @@ input.item-button {
     margin-left: 10px;
 }
 
-svg.item-icon {
-    flex-grow: 0;
-    margin: 5px;
-}
-
 p.item-name, p.item-price {
     margin: 0;
 }
 
 p.item-name {
     flex-grow: 1;
+}
+
+.item-orders {
+    list-style-type: none;
+    padding: 0;
+}
+
+.item-counter {
+    margin: 0 15px;
+}
+
+.item-list-div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.item-list li {
+    justify-content: center;
+}
+
+.item-icon {
+    flex-grow: 0;
+    margin-right: 20px;
+    margin-top: -5px;
+}
+
+div.item-list-div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.item-list li div input {
+    margin-right: 5px;
+}
+
+p.item-name, p.item-price, p.item-username {
+    margin: 0;
+}
+
+p.item-username {
+    margin-right: auto;
+}
+
+input.checkbox-paid {
+
+}
+
+input.checkbox-delivered {
+
+}
+
+.item-list {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.item-list li {
+
+}
+
+p.item-name {
+    flex-grow: 1;
+}
+
+@media screen and (max-width: 600px) {
+    p.item-name {
+        display: none;
+    }
+
+    p.item-price {
+        width: 100%;
+    }
+}
+
+
+#item-orders {
+    margin: 20px;
+    background-color: lightgray;
+}
+
+.status-button {
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.25rem;
+    font-size: 1rem;
+}
+
+.status-button:hover {
+    cursor: unset;
+}
+
+.cursor-pointer:hover {
+    cursor: pointer;
+}
+
+.user-icon {
+    margin-right: 5px;
+}
+
+@media screen and (max-width: 500px) {
+    .item-list {
+        font-size: 10pt !important;
+    }
+
+    .item-username {
+        font-size: 10pt !important;
+        overflow: hidden;
+    }
+
+    .btn {
+        font-size: 10pt !important;
+    }
 }

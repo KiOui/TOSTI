@@ -11,7 +11,11 @@ from .models import Shift, Product, Order
 from .forms import ShiftForm
 import urllib.parse
 
-from .templatetags.order_now import render_order_header, render_admin_footer
+from .templatetags.order_now import (
+    render_order_header,
+    render_admin_footer,
+    render_order_items,
+)
 
 User = get_user_model()
 
@@ -160,7 +164,7 @@ class JoinShiftView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
     def get(self, request, **kwargs):
         """
         GET request for JoinShiftView.
-        
+
         :param request: the request
         :param kwargs: keyword arguments
         :return: the Join shift view page for asking the user whether or not to join the shift
@@ -308,31 +312,6 @@ class ShiftAdminView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
         shift = kwargs.get("shift")
 
         return render(request, self.template_name, {"shift": shift})
-
-
-class ShiftStatusView(TemplateView):
-    """View for getting the orders of a shift."""
-
-    def post(self, request, **kwargs):
-        """
-        POST request for ShiftStatusView.
-
-        :param request: the request
-        :param kwargs: keyword arguments
-        :return: a response of the following format:
-        {
-            data: [orders]
-        }
-        """
-        shift = kwargs.get("shift")
-
-        orders = Order.objects.filter(shift=shift).order_by("user", "created")
-        json_data = []
-        for order in orders:
-            json_order = order.to_json()
-            json_order["own"] = order.user == request.user
-            json_data.append(json_order)
-        return JsonResponse({"data": json_data})
 
 
 class OrderUpdateView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
@@ -498,7 +477,7 @@ class RefreshHeaderView(TemplateView):
         """
         shift = kwargs.get("shift")
         header = get_template("orders/order_header.html").render(
-            render_order_header(shift, refresh=False)
+            render_order_header(shift, refresh=True)
         )
         return JsonResponse({"data": header})
 
@@ -521,6 +500,30 @@ class RefreshAdminFooterView(LoginRequiredMixin, PermissionRequiredMixin, Templa
         """
         shift = kwargs.get("shift")
         footer = get_template("orders/admin_footer.html").render(
-            render_admin_footer(shift, refresh=False)
+            render_admin_footer(shift, refresh=True)
+        )
+        return JsonResponse({"data": footer})
+
+
+class RefreshShiftOrderView(TemplateView):
+    """Refresh the orders view."""
+
+    permission_required = "is_staff"
+
+    def post(self, request, **kwargs):
+        """
+        POST request for refreshing the orders.
+
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: The orders in the following JSON format:
+        {
+            data: [orders]
+        }
+        """
+        shift = kwargs.get("shift")
+        admin = request.POST.get("admin", "false") == "true"
+        footer = get_template("orders/order_items.html").render(
+            render_order_items(shift, refresh=True, admin=admin, user=request.user)
         )
         return JsonResponse({"data": footer})

@@ -21,7 +21,7 @@ function replace_footer(footer) {
 }
 
 function update_footer() {
-    send_header_post_update(FOOTER_REFRESH_URL, FOOTER_CSRF_TOKEN, replace_footer);
+    send_footer_post_data(FOOTER_REFRESH_URL, FOOTER_CSRF_TOKEN, replace_footer);
 }
 
 function update_footer_continuous() {

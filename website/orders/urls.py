@@ -3,7 +3,6 @@ from .views import (
     ShiftView,
     OrderView,
     ShiftAdminView,
-    ShiftStatusView,
     OrderUpdateView,
     CreateShiftView,
     ProductListView,
@@ -14,6 +13,7 @@ from .views import (
     JoinShiftView,
     RefreshHeaderView,
     RefreshAdminFooterView,
+    RefreshShiftOrderView,
 )
 from .converters import ShiftConverter, VenueConverter
 
@@ -26,7 +26,6 @@ urlpatterns = [
     path("<shift:shift>/order", OrderView.as_view(), name="order"),
     path("shifts/<venue:venue>/create", CreateShiftView.as_view(), name="shift_create"),
     path("<shift:shift>/admin", ShiftAdminView.as_view(), name="shift_admin"),
-    path("<shift:shift>/status", ShiftStatusView.as_view(), name="shift_status"),
     path("update", OrderUpdateView.as_view(), name="order_update"),
     path("<shift:shift>/products", ProductListView.as_view(), name="product_list"),
     path("<shift:shift>/overview", ShiftOverview.as_view(), name="shift_overview"),
@@ -49,5 +48,10 @@ urlpatterns = [
         "<shift:shift>/refresh/footer",
         RefreshAdminFooterView.as_view(),
         name="shift_refresh_admin_footer",
+    ),
+    path(
+        "<shift:shift>/refresh/orders",
+        RefreshShiftOrderView.as_view(),
+        name="shift_refresh_orders",
     ),
 ]
