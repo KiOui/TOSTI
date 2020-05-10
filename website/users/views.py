@@ -15,6 +15,8 @@ class LoginView(TemplateView):
 
     template_name = "users/login.html"
 
+    remember_cookie = "_remember_username"
+
     def get(self, request, **kwargs):
         """
         GET request for the login view.
@@ -24,6 +26,9 @@ class LoginView(TemplateView):
         :return: a render of the login view
         """
         form = LoginForm()
+        remembered_username = request.COOKIES.get(self.remember_cookie, None)
+        if remembered_username is not None:
+            form.fields["username"].initial = remembered_username
 
         return render(request, self.template_name, {"form": form})
 
@@ -47,7 +52,12 @@ class LoginView(TemplateView):
                 request.META["HTTP_HOST"],
                 full_username,
             )
-            return redirect(verify_url)
+            response = redirect(verify_url)
+            if form.cleaned_data.get("remember"):
+                response.set_cookie(
+                    self.remember_cookie, form.cleaned_data.get("username")
+                )
+            return response
 
         return render(request, self.template_name, {"form": form})
 
