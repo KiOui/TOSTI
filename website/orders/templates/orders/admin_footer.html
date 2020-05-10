@@ -1,0 +1,19 @@
+<div class="container text-center">
+    <div class="row flex-grow-1">
+        <div class="col">
+            <div class="btn-ml m-auto cursor-pointer {% if shift.can_order %}bg-success{% else %}bg-danger{% endif %}" onclick="toggle_shift_activation(this);">
+                <i class="far fa-hand-paper"></i>
+            </div>
+        </div>
+        <div class="col">
+            <div class="btn-ml btn-on m-auto" onclick="add_time();">
+                <i class="far fa-clock"></i>
+            </div>
+        </div>
+        <div class="col">
+            <div class="btn-ml btn-on m-auto" onclick="add_capacity();">
+                <i class="fas fa-plus"></i>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,13 @@
+<h1>{{ shift.venue.name }}</h1>
+<p>
+    shift #{{ shift.pk }}
+    {% if shift.assignees %}
+        -
+        {% for assignee in shift.get_assignees %}
+            {{ assignee.get_short_name }}{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    {% else %}
+     - No assignees
+    {% endif %}
+</p>
+<p>Shift open from {{ shift.start_date }} until {{ shift.end_date }}</p>

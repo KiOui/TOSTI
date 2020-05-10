@@ -1,5 +1,5 @@
-{% extends 'orders/order_base.html' %}
-{% load static %}
+{% extends 'tosti/base.html' %}
+{% load static order_now %}
 
 {% block styles %}
     <link rel="stylesheet" href="{% static 'tosti/css/index.css' %}"/>
@@ -7,8 +7,11 @@
     <link rel="stylesheet" href="{% static 'orders/css/item-list-admin.css' %}"/>
 {% endblock %}
 
-{% block order_content %}
-    {% if user.is_staff %}
+{% block page %}
+    <div class="container-sm mb-5 text-center">
+        {% render_order_header shift %}
+    </div>
+    {% if user in shift.get_assignees %}
         <div class="container-sm">
             <div class="btn-ml btn-on bg-primary border-0 text-center" onclick="window.location.href = '{% url "orders:shift_admin" shift=shift %}';">
                 <h5>Admin view</h5>
@@ -29,6 +32,22 @@
         </div>
     </div>
 {% endblock %}
+
+{% if user not in shift.get_assignees and user.is_staff %}
+    {% block footer %}
+        <footer class="page-footer navbar navbar-expand-md fixed-bottom">
+            <div class="container text-center">
+                <div class="row flex-grow-1">
+                    <div class="col">
+                        <div class="btn-ml m-auto cursor-pointer btn-on" onclick="window.location.href = '';">
+                            <i class="fas fa-sign-in-alt"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    {% endblock %}
+{% endif %}
 
 {% block js %}
     <script>

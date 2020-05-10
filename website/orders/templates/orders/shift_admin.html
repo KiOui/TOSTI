@@ -1,5 +1,5 @@
-{% extends 'orders/order_base.html' %}
-{% load static %}
+{% extends 'tosti/base.html' %}
+{% load static order_now %}
 
 {% block styles %}
     <link rel="stylesheet" href="{% static 'orders/css/forms.css' %}"/>
@@ -7,7 +7,10 @@
     <link rel="stylesheet" href="{% static 'orders/css/item-list-admin.css' %}"/>
 {% endblock %}
 
-{% block order_content %}
+{% block page %}
+    <div class="container-sm mb-5 text-center">
+        {% render_order_header shift %}
+    </div>
     <div class="container-sm">
         <div class="btn-ml btn-on bg-primary border-0 text-center" onclick="window.location.href = '{% url "orders:shift_overview" shift=shift %}';">
             <h5>Order overview</h5>
@@ -27,25 +30,7 @@
 
 {% block footer %}
     <footer class="page-footer navbar navbar-expand-md fixed-bottom">
-        <div class="container text-center">
-            <div class="row flex-grow-1">
-                <div class="col">
-                    <div class="btn-ml m-auto cursor-pointer {% if shift.can_order %}bg-success{% else %}bg-danger{% endif %}" onclick="toggle_shift_activation(this);">
-                        <i class="far fa-hand-paper"></i>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="btn-ml btn-on m-auto" onclick="add_time();">
-                        <i class="far fa-clock"></i>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="btn-ml btn-on m-auto" onclick="add_capacity();">
-                        <i class="fas fa-plus"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {% include 'orders/admin_footer.html' with shift=shift %}
     </footer>
 {% endblock %}
 

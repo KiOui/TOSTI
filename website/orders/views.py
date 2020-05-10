@@ -144,53 +144,6 @@ class OrderView(LoginRequiredMixin, TemplateView):
             return response
 
 
-class OrderStatusView(LoginRequiredMixin, TemplateView):
-    """Order status view."""
-
-    template_name = "orders/order_status.html"
-
-    @staticmethod
-    def get_ordered_items(shift, user):
-        """
-        Get all ordered items of a user in JSON format.
-
-        :param shift: the shift
-        :param user: the user
-        :return: a list of ordered items in JSON format
-        """
-        ordered_items = Order.objects.filter(user=user, shift=shift)
-        json_list = list()
-        for item in ordered_items:
-            json_list.append(item.to_json())
-        return json_list
-
-    def get(self, request, **kwargs):
-        """
-        GET request for OrderStatusView.
-
-        :param request: the request
-        :param kwargs: keyword arguments
-        :return: a render of the order_status page
-        """
-        shift = kwargs.get("shift")
-
-        return render(request, self.template_name, {"shift": shift})
-
-    def post(self, request, **kwargs):
-        """
-        POST for OrderStatusView.
-
-        :param request: the request
-        :param kwargs: keyword arguments
-        :return: a JsonResponse with all ordered items in a list
-        """
-        shift = kwargs.get("shift")
-
-        ordered_items = OrderStatusView.get_ordered_items(shift, request.user)
-
-        return JsonResponse({"ordered_items": ordered_items})
-
-
 class ProductListView(LoginRequiredMixin, TemplateView):
     """Product list view for getting all available products per shift."""
 
