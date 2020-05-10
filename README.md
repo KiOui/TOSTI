@@ -1,6 +1,6 @@
 # TOSTI
 
-Welcome to the repository of Tartarus Order System for Take-away Items, TOSTI for short. This application is designed to provide [Tartarus](tartarus.science.ru.nl) with an online tool to order items.
+Welcome to the repository of Tartarus Order System for Take-away Items, TOSTI for short. This application is designed to provide [Tartarus](https://tartarus.science.ru.nl) with an online tool to order items.
 
 The current system features the following:
 
