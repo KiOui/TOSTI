@@ -8,9 +8,15 @@ register = template.Library()
 
 
 @register.inclusion_tag("orders/order_header.html")
-def render_order_header(shift):
+def render_order_header(shift, refresh=True):
     """Render order header."""
-    return {"shift": shift}
+    return {"shift": shift, "refresh": refresh}
+
+
+@register.inclusion_tag("orders/admin_footer.html")
+def render_admin_footer(shift, refresh=True):
+    """Render order footer."""
+    return {"shift": shift, "refresh": refresh}
 
 
 @register.inclusion_tag("orders/order_now.html")

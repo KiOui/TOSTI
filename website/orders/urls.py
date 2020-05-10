@@ -11,6 +11,9 @@ from .views import (
     ToggleShiftActivationView,
     AddShiftCapacityView,
     AddShiftTimeView,
+    JoinShiftView,
+    RefreshHeaderView,
+    RefreshAdminFooterView,
 )
 from .converters import ShiftConverter, VenueConverter
 
@@ -35,5 +38,16 @@ urlpatterns = [
         "<shift:shift>/add-capacity",
         AddShiftCapacityView.as_view(),
         name="shift_add_capacity",
+    ),
+    path("<shift:shift>/join", JoinShiftView.as_view(), name="shift_join"),
+    path(
+        "<shift:shift>/refresh/header",
+        RefreshHeaderView.as_view(),
+        name="shift_refresh_header",
+    ),
+    path(
+        "<shift:shift>/refresh/footer",
+        RefreshAdminFooterView.as_view(),
+        name="shift_refresh_admin_footer",
     ),
 ]

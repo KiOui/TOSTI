@@ -77,28 +77,36 @@ function add_capacity() {
     send_post(ADD_CAPACITY_URL, CSRF_TOKEN, succeeded_add_capacity, display_error);
 }
 
-function succeeded_add_time() {
+function succeeded_add_time(data) {
     ERROR_CONTAINER.style.display = "none";
     SUCCESS_CONTAINER.innerHTML = "Added 5 minutes to the end time of this shift";
     SUCCESS_CONTAINER.style.display = "";
+    update_page();
 }
 
-function succeeded_add_capacity() {
+function succeeded_add_capacity(data) {
     ERROR_CONTAINER.style.display = "none";
     SUCCESS_CONTAINER.innerHTML = "Added 5 capacity to this shift";
     SUCCESS_CONTAINER.style.display = "";
+    update_page();
+}
+
+function update_page() {
+    if (typeof(update_header) !== 'undefined') {
+        update_header();
+    }
+    if (typeof(update_footer) !== 'undefined') {
+        update_footer();
+    }
 }
 
 $(document).ready(function() {
-    if (typeof(SUCCESS_CONTAINER) !== 'undefined' &&
+    if (!(typeof(SUCCESS_CONTAINER) !== 'undefined' &&
         typeof(CSRF_TOKEN) !== 'undefined' &&
         typeof(ERROR_CONTAINER) !== 'undefined' &&
         typeof(TOGGLE_SHIFT_URL) !== 'undefined' &&
         typeof(ADD_TIME_URL) !== 'undefined' &&
-        typeof(ADD_CAPACITY_URL) !== 'undefined') {
-
-    }
-    else {
+        typeof(ADD_CAPACITY_URL) !== 'undefined')) {
         console.warn("One of the required javascript variables is not defined, footer buttons are disabled.")
     }
 });

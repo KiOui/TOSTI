@@ -1,13 +1,19 @@
 import json
 import datetime
 
+from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
+from django.template.loader import get_template
 from django.views.generic import TemplateView
 from .models import Shift, Product, Order
 from .forms import ShiftForm
 import urllib.parse
+
+from .templatetags.order_now import render_order_header, render_admin_footer
+
+User = get_user_model()
 
 
 class ShiftView(LoginRequiredMixin, TemplateView):
@@ -144,6 +150,54 @@ class OrderView(LoginRequiredMixin, TemplateView):
             return response
 
 
+class JoinShiftView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
+    """Admin view for joining shifts."""
+
+    template_name = "orders/join_shift.html"
+
+    permission_required = "is_staff"
+
+    def get(self, request, **kwargs):
+        """
+        GET request for JoinShiftView.
+        
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: the Join shift view page for asking the user whether or not to join the shift
+        """
+        shift = kwargs.get("shift")
+
+        assignees = shift.assignees.all()
+
+        if request.user not in assignees:
+            return render(request, self.template_name, {"shift": shift})
+        else:
+            return redirect("orders:shift_admin", shift=shift)
+
+    def post(self, request, **kwargs):
+        """
+        POST request for JoinShiftView.
+
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: the Join shift view page for asking the user whether or not to join the shift, if they agree this view
+        will redirect to the shift admin page, otherwise it will redirect to the index page
+        """
+        shift = kwargs.get("shift")
+
+        confirm = request.POST.get("confirm", None)
+        if confirm == "Yes":
+            assignees = shift.assignees.all()
+            if request.user not in assignees:
+                shift.assignees.add(request.user)
+                shift.save()
+            return redirect("orders:shift_admin", shift=shift)
+        elif confirm == "No":
+            return redirect("index")
+        else:
+            return render(request, self.template_name, {"shift": shift})
+
+
 class ProductListView(LoginRequiredMixin, TemplateView):
     """Product list view for getting all available products per shift."""
 
@@ -212,6 +266,7 @@ class CreateShiftView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView)
         venue = kwargs.get("venue")
 
         form = ShiftForm(venue=venue)
+        form.set_initial_users(User.objects.filter(pk=request.user.pk))
 
         return render(request, self.template_name, {"venue": venue, "form": form})
 
@@ -425,3 +480,47 @@ class AddShiftTimeView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView
         shift.end_date = shift.end_date + self.add_amount
         shift.save()
         return JsonResponse({"error": False})
+
+
+class RefreshHeaderView(TemplateView):
+    """Refresh for the order header."""
+
+    def post(self, request, **kwargs):
+        """
+        POST request for refreshing the order header.
+
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: The header in the following JSON format:
+        {
+            data: [header]
+        }
+        """
+        shift = kwargs.get("shift")
+        header = get_template("orders/order_header.html").render(
+            render_order_header(shift, refresh=False)
+        )
+        return JsonResponse({"data": header})
+
+
+class RefreshAdminFooterView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
+    """Refresh the administrator footer."""
+
+    permission_required = "is_staff"
+
+    def post(self, request, **kwargs):
+        """
+        POST request for refreshing the admin footer.
+
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: The footer in the following JSON format:
+        {
+            data: [footer]
+        }
+        """
+        shift = kwargs.get("shift")
+        footer = get_template("orders/admin_footer.html").render(
+            render_admin_footer(shift, refresh=False)
+        )
+        return JsonResponse({"data": footer})

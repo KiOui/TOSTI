@@ -72,3 +72,9 @@ p.btn-note {
 .tosti-title {
     letter-spacing: 20px;
 }
+
+@media screen and (max-width: 500px) {
+    h1 {
+        font-size: 2.5rem;
+    }
+}

@@ -1,3 +1,7 @@
+{% load static %}
+{% if refresh %}
+    <div class="container-sm mb-5 text-center" id="header-container">
+{% endif %}
 <h1>{{ shift.venue.name }}</h1>
 <p>
     shift #{{ shift.pk }}
@@ -10,4 +14,17 @@
      - No assignees
     {% endif %}
 </p>
+<p>{{ shift.number_of_orders }}/{{ shift.max_orders_total }} orders placed</p>
 <p>Shift open from {{ shift.start_date }} until {{ shift.end_date }}</p>
+{% if refresh %}
+    </div>
+{% endif %}
+
+{% if refresh %}
+    <script>
+        const HEADER_CONTAINER = document.getElementById('header-container');
+        const HEADER_CSRF_TOKEN = "{{ csrf_token }}";
+        const HEADER_REFRESH_URL = "{% url 'orders:shift_refresh_header' shift=shift %}";
+    </script>
+    <script src="{% static 'orders/js/asynch-update-header.js' %}"></script>
+{% endif %}

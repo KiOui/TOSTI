@@ -1,3 +1,8 @@
+{% load static %}
+
+{% if refresh %}
+    <footer class="page-footer navbar navbar-expand-md fixed-bottom" id="footer-container">
+{% endif %}
 <div class="container text-center">
     <div class="row flex-grow-1">
         <div class="col">
@@ -15,5 +20,22 @@
                 <i class="fas fa-plus"></i>
             </div>
         </div>
+        <div class="col">
+            <div class="btn-ml btn-on m-auto" onclick="window.location.href = '{% url "orders:shift_overview" shift=shift %}';">
+                <i class="fas fa-users"></i>
+            </div>
+        </div>
     </div>
 </div>
+{% if refresh %}
+    </footer>
+{% endif %}
+
+{% if refresh %}
+    <script>
+        const FOOTER_CONTAINER = document.getElementById('footer-container');
+        const FOOTER_CSRF_TOKEN = "{{ csrf_token }}";
+        const FOOTER_REFRESH_URL = "{% url 'orders:shift_refresh_admin_footer' shift=shift %}";
+    </script>
+    <script src="{% static 'orders/js/asynch-update-admin-footer.js' %}"></script>
+{% endif %}

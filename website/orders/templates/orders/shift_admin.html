@@ -8,14 +8,8 @@
 {% endblock %}
 
 {% block page %}
-    <div class="container-sm mb-5 text-center">
+    <div class="container-sm mb-5 text-center" id="header-container">
         {% render_order_header shift %}
-    </div>
-    <div class="container-sm">
-        <div class="btn-ml btn-on bg-primary border-0 text-center" onclick="window.location.href = '{% url "orders:shift_overview" shift=shift %}';">
-            <h5>Order overview</h5>
-            <i class="fas fa-users"></i>
-        </div>
     </div>
     <div class="container-sm">
         <p id="message-success" class="alert alert-success" style="display: none;"></p>
@@ -29,9 +23,7 @@
 {% endblock %}
 
 {% block footer %}
-    <footer class="page-footer navbar navbar-expand-md fixed-bottom">
-        {% include 'orders/admin_footer.html' with shift=shift %}
-    </footer>
+    {% render_admin_footer shift %}
 {% endblock %}
 
 {% block js %}

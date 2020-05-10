@@ -11,7 +11,7 @@ function get_orders(data_url, csrf_token, callback_ok, callback_error, /*, args 
         };
         $.ajax({type: 'POST', url: data_url, data, dataType:'json', asynch: true, success:
             function(data) {
-                args.unshift(data.data);
+                args.unshift(data);
                 callback_ok.apply(this, args);
             }}).fail(function() {
                 args.unshift("Error while getting order data.");
@@ -25,7 +25,8 @@ function update_order_error(error, element) {
 
 }
 
-function update_order_data(orders, element) {
+function update_order_data(data, element) {
+    let orders = data.data;
     let base = document.createElement('ol');
     base.classList.add('item-list');
     for (let i = 0; i < orders.length; i++) {
