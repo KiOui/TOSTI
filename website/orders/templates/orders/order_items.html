@@ -7,14 +7,16 @@
     <div id="item-orders">
         <ul class="item-orders">
             {% for order in shift.orders %}
-                <li class="pt-2 pb-2">
-                    <div class="item-list-div">
+                <li class="pt-2 pb-2 item-list">
+                    <div class="information-row">
                         <p class="item-counter">{{ forloop.counter }}.</p>
                         <i class="fas fa-{{ order.product.icon }} item-icon"></i>
                         <p class="item-username">{{ order.user }}</p>
                         {% if user == order.user %}
                             <i class="fas fa-user user-icon"></i>
                         {% endif %}
+                    </div>
+                    <div class="button-row">
                         {% if admin %}
                             <input type="button" class="checkbox-paid btn mr-2 {% if order.paid %}btn-success{% else %}btn-danger{% endif %}" onclick="update_order(this, {{ order.id }}, 'paid', update_checkbox);" value="Paid"/>
                             <input type="button" class="checkbox-delivered btn mr-2 {% if order.delivered %}btn-success{% else %}btn-danger{% endif %}" onclick="update_order(this, {{ order.id }}, 'delivered', update_checkbox);" value="Delivered"/>
