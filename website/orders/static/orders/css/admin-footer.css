@@ -1,4 +1,8 @@
 
+.font-footer {
+    font-size: 1rem;
+}
+
 @media screen and (max-width: 767px) {
     .expand-mobile {
         flex-basis: unset;

@@ -8,21 +8,25 @@
         <div class="col expand-mobile">
             <div id="shift-status" class="btn-ml m-auto cursor-pointer {% if shift.can_order %}bg-success{% else %}bg-danger{% endif %}" onclick="toggle_shift_activation(this);">
                 <i class="far fa-hand-paper"></i>
+                <p class="font-footer">Allow/disallow orders</p>
             </div>
         </div>
         <div class="col expand-mobile">
             <div class="btn-ml btn-on m-auto" onclick="add_time();">
                 <i class="far fa-clock"></i> + 5
+                <p class="font-footer">Postpone end time</p>
             </div>
         </div>
         <div class="col expand-mobile">
             <div class="btn-ml btn-on m-auto" onclick="add_capacity();">
                 <i class="fas fa-list"></i> + 5
+                <p class="font-footer">Allow more orders</p>
             </div>
         </div>
         <div class="col expand-mobile">
             <div class="btn-ml btn-on m-auto w-100" onclick="window.location.href = '{% url "orders:shift_overview" shift=shift %}';">
                 <i class="fas fa-users"></i>
+                <p class="font-footer">Go to order page</p>
             </div>
         </div>
     </div>
