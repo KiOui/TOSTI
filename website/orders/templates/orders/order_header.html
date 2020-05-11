@@ -6,7 +6,7 @@
 <h1>{{ shift.venue.name }}</h1>
 <p class="my-4 mx-auto" style="font-size: 1rem; max-width: 400px;">
     shift #{{ shift.pk }}
-    {% if shift.assignees|length > 0 %}
+    {% if shift.get_assignees %}
         -
         {% for assignee in shift.get_assignees %}
             {{ assignee.get_short_name }}{% if not forloop.last %}, {% endif %}
