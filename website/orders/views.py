@@ -13,7 +13,6 @@ import urllib.parse
 
 from .templatetags.order_now import (
     render_order_header,
-    render_admin_footer,
     render_order_items,
 )
 
