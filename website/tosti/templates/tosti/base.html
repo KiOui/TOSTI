@@ -92,11 +92,16 @@
     <div class="page">
         {% block page %}{% endblock %}
     </div>
-    <footer class="page-footer font-small mt-5 fixed-bottom">
-        <div class="footer-copyright text-center py-3">© 2020 Copyright:
-            <a href="/">TOSTI</a>
-        </div>
-    </footer>
+    <div class="pb-2 pt-2">
+    </div>
+    {% block footer %}
+        <footer class="page-footer navbar navbar-expand-md fixed-bottom">
+                <div class="container text-center footer-copyright py-1 justify-content-center">
+                    <p class="p-0 m-0">© 2020 Copyright: <a href="/">TOSTI</a></p>
+                </div>
+            </div>
+        </footer>
+    {% endblock %}
     <script src="{% static 'tosti/js/bootstrap/bootstrap.js' %}"></script>
     {%  block js %}{%  endblock %}
 </body>

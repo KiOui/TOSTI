@@ -1,6 +1,5 @@
 body {
     font-family: 'Neucha', cursive;
-    margin-bottom: 50px;
 }
 
 .page {
@@ -87,5 +86,10 @@ p.btn-note {
 @media screen and (max-width: 767px) {
     .extra-margin-top-mobile {
         margin-top: 30px;
+ }
+
+@media screen and (max-width: 500px) {
+    h1 {
+        font-size: 2.5rem;
     }
 }
