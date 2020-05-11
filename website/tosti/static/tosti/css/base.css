@@ -72,6 +72,22 @@ p.btn-note {
     letter-spacing: 20px;
 }
 
+.drop-out-header {
+    position: absolute;
+    margin-top: 20px;
+    margin-left: -60px;
+}
+
+.drop-out-header-mobile {
+    position: absolute;
+    margin-top: -20px;
+}
+
+@media screen and (max-width: 767px) {
+    .extra-margin-top-mobile {
+        margin-top: 30px;
+ }
+
 @media screen and (max-width: 500px) {
     h1 {
         font-size: 2.5rem;
