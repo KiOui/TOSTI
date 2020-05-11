@@ -1,35 +1,30 @@
-{% extends 'orders/order_base.html' %}
-{% load static %}
+{% extends 'tosti/base.html' %}
+{% load static order_now %}
 
 {% block styles %}
     <link rel="stylesheet" href="{% static 'orders/css/forms.css' %}"/>
     <link rel="stylesheet" href="{% static 'tosti/css/index.css' %}"/>
-    <link rel="stylesheet" href="{% static 'orders/css/item-list-admin.css' %}"/>
 {% endblock %}
 
-{% block order_content %}
-    <div class="container-sm">
-        <div class="btn-ml btn-on bg-primary border-0 text-center" onclick="window.location.href = '{% url "orders:shift_overview" shift=shift %}';">
-            <h5>Order overview</h5>
-            <i class="fas fa-users"></i>
-        </div>
+{% block page %}
+    {% render_order_header shift %}
+    <div class="container">
+        <p id="message-success" class="alert alert-success" style="display: none;"></p>
     </div>
-    <div class="container-sm">
-        <h1>Orders</h1>
-        <p id="update-error" class="alert-danger"></p>
-        <div id="item-orders">
+    {% render_order_items shift admin=True %}
+{% endblock %}
 
-        </div>
-    </div>
+{% block footer %}
+    {% render_admin_footer shift %}
 {% endblock %}
 
 {% block js %}
     <script>
-        const ITEM_CONTAINER = document.getElementById('item-orders');
-        const ORDER_URL = "{% url 'orders:shift_status' shift=shift %}";
+        const SUCCESS_CONTAINER = document.getElementById('message-success');
+        const TOGGLE_SHIFT_URL = "{% url 'orders:shift_toggle' shift=shift %}";
+        const ADD_TIME_URL = "{% url 'orders:shift_add_time' shift=shift %}";
+        const ADD_CAPACITY_URL = "{% url 'orders:shift_add_capacity' shift=shift %}";
         const CSRF_TOKEN = "{{ csrf_token }}";
-        const ORDER_UPDATE_URL = "{% url 'orders:order_update' %}";
-        const ERROR_CONTAINER = document.getElementById('update-error');
     </script>
-    <script src="{% static 'orders/js/asynch-update-orders-admin.js' %}"></script>
+    <script src="{% static 'orders/js/asynch-alter-shift-state.js' %}"></script>
 {% endblock %}

@@ -1,42 +1,42 @@
-{% extends 'orders/order_base.html' %}
-{% load static %}
+{% extends 'tosti/base.html' %}
+{% load static order_now %}
 
 {% block styles %}
     <link rel="stylesheet" href="{% static 'tosti/css/index.css' %}"/>
     <link rel="stylesheet" href="{% static 'orders/css/forms.css' %}"/>
-    <link rel="stylesheet" href="{% static 'orders/css/item-list-admin.css' %}"/>
 {% endblock %}
 
-{% block order_content %}
-    {% if user.is_staff %}
-        <div class="container-sm">
-            <div class="btn-ml btn-on bg-primary border-0 text-center" onclick="window.location.href = '{% url "orders:shift_admin" shift=shift %}';">
-                <h5>Admin view</h5>
-                <i class="fas fa-tools"></i>
+{% block page %}
+    {% render_order_header shift %}
+    {% render_order_items shift user=request.user %}
+{% endblock %}
+
+{% block footer %}
+    {% if user.is_staff and user not in shift.get_assignees %}
+        <footer class="page-footer navbar navbar-expand-md fixed-bottom">
+            <div class="container text-center">
+                <div class="row flex-grow-1">
+                    <div class="col">
+                        <div class="btn-ml m-auto cursor-pointer btn-on" onclick="window.location.href = '{% url 'orders:shift_join' shift=shift %}';">
+                            <i class="fas fa-sign-in-alt"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
+        </footer>
+    {% elif user.is_staff and user in shift.get_assignees %}
+        <footer class="page-footer navbar navbar-expand-md fixed-bottom">
+            <div class="container text-center">
+                <div class="row flex-grow-1">
+                    <div class="col">
+                        <div class="btn-ml m-auto cursor-pointer btn-on" onclick="window.location.href = '{% url "orders:shift_admin" shift=shift %}';">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    {% else %}
+        {{ block.super }}
     {% endif %}
-    <div class="container-sm">
-        <h1>Orders</h1>
-        <p id="update-error" class="alert-danger"></p>
-        <div id="item-orders">
-        </div>
-    </div>
-    <div class="container-sm">
-        <div class="btn-ml btn-on" onclick="window.location.href = '{% url "orders:order" shift=shift %}';">
-            <h2>Order items</h2>
-            <p>Click to order items</p>
-        </div>
-    </div>
-{% endblock %}
-
-{% block js %}
-    <script>
-        const ITEM_CONTAINER = document.getElementById('item-orders');
-        const ORDER_URL = "{% url 'orders:shift_status' shift=shift %}";
-        const CSRF_TOKEN = "{{ csrf_token }}";
-        const ORDER_UPDATE_URL = "{% url 'orders:order_update' %}";
-        const ERROR_CONTAINER = document.getElementById('update-error');
-    </script>
-    <script src="{% static 'orders/js/asynch-update-orders.js' %}"></script>
 {% endblock %}
