@@ -9,7 +9,11 @@
     width: 100%;
 }
 
-.centered-form input {
+.centered-form label {
+    margin-right: 5px;
+}
+
+.centered-form input[type=text], .centered-form input[type=submit] {
     width: 100%;
     margin-left: 0;
     margin-right: 0;
