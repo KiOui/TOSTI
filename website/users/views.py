@@ -15,7 +15,7 @@ class LoginView(TemplateView):
 
     template_name = "users/login.html"
 
-    remember_cookie = "_remember_username"
+    remember_cookie = "_remembered_username"
 
     def get(self, request, **kwargs):
         """
