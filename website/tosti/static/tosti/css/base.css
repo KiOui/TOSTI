@@ -75,17 +75,17 @@ p.btn-note {
 
 .drop-out-header {
     position: absolute;
-    margin-top: 20px;
+    margin-top: 30px;
     margin-left: -50px;
 }
 
 .drop-out-header-mobile {
     position: absolute;
-    margin-top: -30px;
+    margin-top: -20px;
 }
 
 @media screen and (max-width: 767px) {
     .extra-margin-top-mobile {
-        margin-top: 20px;
+        margin-top: 30px;
     }
 }
