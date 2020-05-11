@@ -6,7 +6,9 @@ class LoginForm(forms.Form):
     """Form for running a profile."""
 
     username = forms.CharField(label="Science username")
-    remember = forms.BooleanField(label="Remember username", initial=True)
+    remember = forms.BooleanField(
+        label="Remember username", initial=True, required=False
+    )
 
     def clean_username(self):
         """
