@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "tosti"
 version = "0.1.0"
-description = ""
-authors = ["Lars van Rhijn <larsvanrhijn@gmail.com>"]
+description = "Tartarus Order System for Take-away Items"
+authors = ["Tartarus WWWcie <www-tartarus@science.ru.nl>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
