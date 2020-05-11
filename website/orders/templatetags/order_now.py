@@ -7,6 +7,24 @@ from venues.models import Venue
 register = template.Library()
 
 
+@register.inclusion_tag("orders/order_header.html")
+def render_order_header(shift, refresh=False):
+    """Render order header."""
+    return {"shift": shift, "refresh": refresh}
+
+
+@register.inclusion_tag("orders/admin_footer.html")
+def render_admin_footer(shift, refresh=False):
+    """Render order footer."""
+    return {"shift": shift, "refresh": refresh}
+
+
+@register.inclusion_tag("orders/order_items.html")
+def render_order_items(shift, refresh=False, admin=False, user=None):
+    """Render order items."""
+    return {"shift": shift, "refresh": refresh, "admin": admin, "user": user}
+
+
 @register.inclusion_tag("orders/order_now.html")
 def render_order_now_button(shift):
     """Render order now button."""

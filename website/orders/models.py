@@ -9,6 +9,7 @@ from django.core.validators import MinValueValidator
 from django.db import models
 
 from venues.models import Venue
+from itertools import chain
 
 User = get_user_model()
 
@@ -177,6 +178,24 @@ class Shift(models.Model):
     )
 
     assignees = models.ManyToManyField(User)
+
+    @property
+    def orders(self):
+        """
+        Get the orders of this shift.
+
+        :return: a chain object with the ordered orders of this shift.
+        """
+        staff_users = User.objects.filter(is_staff=True)
+        normal_users = User.objects.filter(is_staff=False)
+        ordered_staff_orders = Order.objects.filter(
+            shift=self, user__in=staff_users
+        ).order_by("created")
+        ordered_normal_orders = Order.objects.filter(
+            shift=self, user__in=normal_users
+        ).order_by("created")
+        ordered_orders = chain(ordered_staff_orders, ordered_normal_orders)
+        return ordered_orders
 
     @property
     def number_of_orders(self):

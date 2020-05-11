@@ -1,12 +1,15 @@
-{% extends 'orders/order_base.html' %}
-{% load static %}
+{% extends 'tosti/base.html' %}
+{% load static order_now %}
 
 {% block styles %}
     <link rel="stylesheet" href="{% static 'orders/css/item-list.css' %}"/>
     <link rel="stylesheet" href="{% static 'tosti/css/index.css' %}"/>
 {% endblock %}
 
-{% block order_content %}
+{% block page %}
+    <div class="container-sm mb-5 text-center">
+        {% render_order_header shift %}
+    </div>
     <div class="container-sm mb-5 text-center">
         {% if already_ordered %}
             <div class="btn-ml btn-on" onclick="window.location.href = '{% url "orders:shift_overview" shift=shift %}';">
