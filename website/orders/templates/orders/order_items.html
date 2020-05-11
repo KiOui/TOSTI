@@ -19,7 +19,7 @@
                     <div class="button-row">
                         {% if admin %}
                             <input type="button" class="checkbox-paid btn mr-2 {% if order.paid %}btn-success{% else %}btn-danger{% endif %}" onclick="update_order(this, {{ order.id }}, 'paid', update_checkbox);" value="Paid"/>
-                            <input type="button" class="checkbox-delivered btn mr-2 {% if order.delivered %}btn-success{% else %}btn-danger{% endif %}" onclick="update_order(this, {{ order.id }}, 'delivered', update_checkbox);" value="Delivered"/>
+                            <input type="button" class="checkbox-delivered btn {% if order.delivered %}btn-success{% else %}btn-danger{% endif %}" onclick="update_order(this, {{ order.id }}, 'delivered', update_checkbox);" value="Delivered"/>
                         {% else %}
                             {% if order.user == user %}
                                 {% if order.delivered and order.paid %}
