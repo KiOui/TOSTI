@@ -495,14 +495,11 @@ class RefreshAdminFooterView(LoginRequiredMixin, PermissionRequiredMixin, Templa
         :param kwargs: keyword arguments
         :return: The footer in the following JSON format:
         {
-            data: [footer]
+            status: [shift.can_order]
         }
         """
         shift = kwargs.get("shift")
-        footer = get_template("orders/admin_footer.html").render(
-            render_admin_footer(shift, refresh=True)
-        )
-        return JsonResponse({"data": footer})
+        return JsonResponse({"status": shift.can_order})
 
 
 class RefreshShiftOrderView(TemplateView):

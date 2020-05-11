@@ -16,8 +16,15 @@ function send_footer_post_data(data_url, csrf_token, callback/*, args */) {
     )
 }
 
-function replace_footer(footer) {
-    FOOTER_CONTAINER.innerHTML = footer.data;
+function replace_footer(data) {
+    if (data.status) {
+        FOOTER_SHIFT_STATUS.classList.remove('bg-danger');
+        FOOTER_SHIFT_STATUS.classList.add('bg-success');
+    }
+    else {
+        FOOTER_SHIFT_STATUS.classList.remove('bg-success');
+        FOOTER_SHIFT_STATUS.classList.add('bg-danger');
+    }
 }
 
 function update_footer() {
@@ -30,9 +37,9 @@ function update_footer_continuous() {
 }
 
 $(document).ready(function() {
-    if (typeof(FOOTER_CONTAINER) !== 'undefined' &&
-        typeof(FOOTER_CSRF_TOKEN) !== 'undefined' &&
-        typeof(FOOTER_REFRESH_URL) !== 'undefined') {
+    if (typeof(FOOTER_CSRF_TOKEN) !== 'undefined' &&
+        typeof(FOOTER_REFRESH_URL) !== 'undefined' &&
+        typeof(FOOTER_SHIFT_STATUS) !== 'undefined') {
         update_footer_continuous();
     }
     else {

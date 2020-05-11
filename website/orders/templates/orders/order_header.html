@@ -1,12 +1,12 @@
 {% load static %}
 
 {% if not refresh %}
-    <div class="container-sm mb-5 text-center" id="header-container">
+    <div class="container-sm mb-2 text-center" id="header-container">
 {% endif %}
 <h1>{{ shift.venue.name }}</h1>
-<p>
+<p class="my-4 mx-auto" style="font-size: 1rem; max-width: 400px;">
     shift #{{ shift.pk }}
-    {% if shift.assignees %}
+    {% if shift.assignees|length > 0 %}
         -
         {% for assignee in shift.get_assignees %}
             {{ assignee.get_short_name }}{% if not forloop.last %}, {% endif %}
@@ -14,9 +14,11 @@
     {% else %}
      - No assignees
     {% endif %}
+    - {{ shift.number_of_orders }}/{{ shift.max_orders_total }} - {{ shift.start_date }} until {{ shift.end_date }}
 </p>
-<p>{{ shift.number_of_orders }}/{{ shift.max_orders_total }} orders placed</p>
-<p>Shift open from {{ shift.start_date }} until {{ shift.end_date }}</p>
+{% if not shift.can_order %}
+    <p class="alert alert-danger"><i class="far fa-hand-paper"></i><br>This shift does not accept orders at this moment.</p>
+{% endif %}
 {% if not refresh %}
     </div>
 {% endif %}

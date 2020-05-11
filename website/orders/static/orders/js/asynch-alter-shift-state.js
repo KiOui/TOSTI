@@ -53,18 +53,27 @@ function update_toggle(data, element) {
         element.classList.remove(['bg-success']);
         element.classList.add('bg-danger');
     }
+    update_page();
 }
 
 function toggle_shift_activation(element) {
+    remove_success_message();
     send_post_toggle(TOGGLE_SHIFT_URL, CSRF_TOKEN, update_toggle, element.classList.contains('bg-danger'), element);
 }
 
 function add_time() {
+    remove_success_message();
     send_post(ADD_TIME_URL, CSRF_TOKEN, succeeded_add_time);
 }
 
 function add_capacity() {
+    remove_success_message();
     send_post(ADD_CAPACITY_URL, CSRF_TOKEN, succeeded_add_capacity);
+}
+
+function remove_success_message() {
+    SUCCESS_CONTAINER.innerHTML = "";
+    SUCCESS_CONTAINER.style.display = "none";
 }
 
 function succeeded_add_time(data) {
