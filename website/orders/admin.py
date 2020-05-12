@@ -83,7 +83,7 @@ class OrderInline(admin.TabularInline):
         "order_price",
         "created",
         "paid_at",
-        "delivered_at",
+        "ready_at",
     ]
     extra = 0
 
@@ -210,7 +210,7 @@ class OrderAdmin(ImportExportModelAdmin):
 
     date_hierarchy = "created"
 
-    readonly_fields = ["order_price", "created", "ready_at", "paid_at", "delivered_at"]
+    readonly_fields = ["order_price", "created", "ready_at", "paid_at"]
     list_display = [
         "user",
         "created",
@@ -218,7 +218,6 @@ class OrderAdmin(ImportExportModelAdmin):
         "product",
         "ready",
         "paid",
-        "delivered",
     ]
     list_filter = [
         OrderAdminUserFilter,
@@ -226,12 +225,11 @@ class OrderAdmin(ImportExportModelAdmin):
         "product",
         "ready",
         "paid",
-        "delivered",
         "shift__venue",
     ]
     search_fields = ["user", "shift"]
 
-    actions = ["set_ready", "set_paid", "set_delivered"]
+    actions = ["set_ready", "set_paid"]
 
     def set_ready(self, request, queryset):
         """
@@ -264,22 +262,6 @@ class OrderAdmin(ImportExportModelAdmin):
         return request
 
     set_paid.short_description = "Mark selected orders as paid"
-
-    def set_delivered(self, request, queryset):
-        """
-        Set orders in a QuerySet as delivered.
-
-        :param request: the request
-        :param queryset: a queryset of orders
-        :return: the request
-        """
-        messages.success(
-            request,
-            f"{queryset.filter(delivered=False).update(delivered=True)} orders were marked as delivered",
-        )
-        return request
-
-    set_delivered.short_description = "Mark selected orders as delivered"
 
     class Media:
         """Necessary to use AutocompleteFilter."""

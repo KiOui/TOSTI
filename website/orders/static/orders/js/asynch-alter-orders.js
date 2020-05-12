@@ -11,7 +11,7 @@ function update_order(checkbox, order_id, property, callback) {
             function(data) {
                 if (data.error) {
                     args.unshift(data.error);
-                    console.warning("Updating order failed");
+                    console.error("Updating order failed");
                 }
                 else {
                     args.unshift(checkbox);

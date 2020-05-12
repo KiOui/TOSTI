@@ -396,9 +396,6 @@ class Order(models.Model):
     paid = models.BooleanField(default=False, null=False)
     paid_at = models.DateTimeField(null=True, blank=True)
 
-    delivered = models.BooleanField(default=False, null=False)
-    delivered_at = models.DateTimeField(null=True, blank=True)
-
     def to_json(self):
         """
         Convert this object to JSON.
@@ -411,7 +408,7 @@ class Order(models.Model):
             "product": self.product.to_json(),
             "price": self.order_price,
             "paid": self.paid,
-            "delivered": self.delivered,
+            "ready": self.ready,
         }
 
     def __str__(self):
@@ -461,9 +458,6 @@ class Order(models.Model):
                     f"products of this kind in this shift."
                 }
             )
-
-        if self.delivered and not self.ready:
-            errors.update({"delivered": f"Product can't be delivered but not ready"})
 
         if errors:
             raise ValidationError(errors)
