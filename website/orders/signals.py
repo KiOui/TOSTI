@@ -1,7 +1,6 @@
 from datetime import datetime
 
 import pytz
-from django.conf import settings
 from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 from django.conf import settings
