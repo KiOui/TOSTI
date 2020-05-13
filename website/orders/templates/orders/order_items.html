@@ -19,20 +19,20 @@
                     <div class="button-row">
                         {% if admin %}
                             <input type="button" class="checkbox-paid btn mr-2 {% if order.paid %}btn-success{% else %}btn-danger{% endif %}" onclick="update_order(this, {{ order.id }}, 'paid', update_checkbox);" value="Paid"/>
-                            <input type="button" class="checkbox-delivered btn {% if order.delivered %}btn-success{% else %}btn-danger{% endif %}" onclick="update_order(this, {{ order.id }}, 'delivered', update_checkbox);" value="Delivered"/>
+                            <input type="button" class="checkbox-ready btn {% if order.ready %}btn-success{% else %}btn-danger{% endif %}" onclick="update_order(this, {{ order.id }}, 'ready', update_checkbox);" value="Ready"/>
                         {% else %}
                             {% if order.user == user %}
-                                {% if order.delivered and order.paid %}
+                                {% if order.ready and order.paid %}
                                     <div class="status-button mr-2 bg-success text-white">Done</div>
-                                {% elif order.delivered and not order.paid %}
+                                {% elif order.ready and not order.paid %}
                                     <div class="status-button mr-2 bg-warning">Done</div>
-                                {% elif not order.delivered and order.paid %}
+                                {% elif not order.ready and order.paid %}
                                     <div class="status-button mr-2 bg-warning">Processing</div>
                                 {% else %}
                                     <div class="status-button mr-2 bg-danger text-white">Not payed</div>
                                 {% endif %}
                             {% else %}
-                                {% if order.delivered %}
+                                {% if order.ready %}
                                     <div class="status-button mr-2 bg-success text-white">Done</div>
                                 {% else %}
                                     <div class="status-button mr-2 bg-warning">Processing</div>

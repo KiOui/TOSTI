@@ -325,7 +325,7 @@ class OrderUpdateView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView)
         This view expects JSON of the following type:
         {
             order: [order_id],
-            property: [delivered | paid],
+            property: [ready | paid],
             value: [true | false]
         }
         :param request: the request
@@ -353,10 +353,10 @@ class OrderUpdateView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView)
         except Order.DoesNotExist:
             return JsonResponse({"error": "That order does not exist"})
 
-        if order_property == "delivered":
-            order.delivered = value
+        if order_property == "ready":
+            order.ready = value
             order.save()
-            return JsonResponse({"value": order.delivered})
+            return JsonResponse({"value": order.ready})
         elif order_property == "paid":
             order.paid = value
             order.save()

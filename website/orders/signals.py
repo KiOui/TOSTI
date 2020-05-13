@@ -4,13 +4,14 @@ import pytz
 from django.conf import settings
 from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
+from django.conf import settings
 
 from orders.models import Order
 
 
 @receiver(pre_save, sender=Order)
 def set_order_paid_at_if_paid(sender, instance, **kwargs):
-    """Save when a order was delivered when it is set to delivered."""
+    """Save when a order was paid when it is set to paid."""
     try:
         obj = sender.objects.get(pk=instance.pk)
     except sender.DoesNotExist:
@@ -34,8 +35,8 @@ def set_order_ready_at_if_ready(sender, instance, **kwargs):
     else:
         if instance.ready and not obj.ready:
             timezone = pytz.timezone(settings.TIME_ZONE)
-            localized_now = timezone.localize(datetime.now())
-            instance.ready_at = localized_now
+            localized_time = timezone.localize(datetime.now())
+            instance.ready_at = localized_time
         if not instance.ready and obj.ready:
             instance.ready_at = None
 
