@@ -18,8 +18,8 @@ def set_order_paid_at_if_paid(sender, instance, **kwargs):
     else:
         if instance.paid and not obj.paid:
             timezone = pytz.timezone(settings.TIME_ZONE)
-            localized_time = timezone.localize(datetime.now())
-            instance.paid_at = localized_time
+            localized_now = timezone.localize(datetime.now())
+            instance.paid_at = localized_now
         if not instance.paid and obj.paid:
             instance.paid_at = None
 

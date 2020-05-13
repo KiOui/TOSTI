@@ -1,5 +1,6 @@
+import pytz
 from django import template
-from django.utils import timezone
+from django.conf import settings
 from django.utils.datetime_safe import datetime
 
 from venues.models import Venue
@@ -21,14 +22,13 @@ def render_start_shift_buttons(venues=None):
 @register.filter
 def currently_active_shift_for_venue(venue):
     """Get the currently active shift for a venue (if it exists)."""
-    today = timezone.now().date()
-    start = datetime(today.year, today.month, today.day)
+    timezone = pytz.timezone(settings.TIME_ZONE)
+    today = timezone.localize(datetime.now())
+    start = timezone.localize(datetime(today.year, today.month, today.day))
 
-    if venue.shift_set.filter(
-        start_date__lte=timezone.now(), end_date__gte=timezone.now()
-    ).exists():
+    if venue.shift_set.filter(start_date__lte=today, end_date__gte=today).exists():
         return venue.shift_set.filter(
-            start_date__lte=timezone.now(), end_date__gte=timezone.now()
+            start_date__lte=today, end_date__gte=today
         ).first()
     elif venue.shift_set.filter(start_date__gte=start).exists():
         return venue.shift_set.filter(start_date__gte=start).first()

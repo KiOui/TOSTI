@@ -20,7 +20,10 @@ def get_default_start_time_shift():
 
     :return: the default start time of a shift
     """
-    return datetime.now().replace(hour=12, minute=15, second=0, microsecond=0)
+    timezone = pytz.timezone(settings.TIME_ZONE)
+    return timezone.localize(datetime.now()).replace(
+        hour=12, minute=15, second=0, microsecond=0
+    )
 
 
 def get_default_end_time_shift():
@@ -29,7 +32,10 @@ def get_default_end_time_shift():
 
     :return: the default end time of a shift
     """
-    return datetime.now().replace(hour=13, minute=15, second=0, microsecond=0)
+    timezone = pytz.timezone(settings.TIME_ZONE)
+    return timezone.localize(datetime.now()).replace(
+        hour=13, minute=15, second=0, microsecond=0
+    )
 
 
 class Product(models.Model):
@@ -255,7 +261,9 @@ class Shift(models.Model):
 
         :return: the start time of this object in string format
         """
-        return f"{self.start_date.strftime(self.TIME_FORMAT)}"
+        timezone = pytz.timezone(settings.TIME_ZONE)
+        localized = datetime.fromtimestamp(self.start_date.timestamp(), tz=timezone)
+        return f"{localized.strftime(self.TIME_FORMAT)}"
 
     @property
     def end_time(self):
@@ -264,7 +272,9 @@ class Shift(models.Model):
 
         :return: the end time of this object in string format
         """
-        return f"{self.end_date.strftime(self.TIME_FORMAT)}"
+        timezone = pytz.timezone(settings.TIME_ZONE)
+        localized = datetime.fromtimestamp(self.end_date.timestamp(), tz=timezone)
+        return f"{localized.strftime(self.TIME_FORMAT)}"
 
     @property
     def get_assignees(self):
