@@ -8,7 +8,7 @@
                 </div>
             {% elif venue_shift %}
                 <div class="btn-ml btn-on" onclick="window.location.href = '{% url 'orders:shift_admin' shift=venue_shift %}';">
-                    <p>Check out previous at {{ next_venue.venue.name }}</p>
+                    <p>Check out today's last shift at {{ next_venue.venue.name }}</p>
                 </div>
             {% else %}
                 <div class="btn-ml btn-on" onclick="window.location.href = '{% url 'orders:shift_create' venue=next_venue.venue%}';">
