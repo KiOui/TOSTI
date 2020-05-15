@@ -3,7 +3,6 @@ import datetime
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .permissions import StaffRequiredMixin
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.template.loader import get_template
@@ -154,7 +153,7 @@ class OrderView(LoginRequiredMixin, TemplateView):
             return response
 
 
-class JoinShiftView(StaffRequiredMixin, TemplateView):
+class JoinShiftView(LoginRequiredMixin, TemplateView):
     """Admin view for joining shifts."""
 
     template_name = "orders/join_shift.html"
@@ -250,7 +249,7 @@ class ProductListView(LoginRequiredMixin, TemplateView):
         )
 
 
-class CreateShiftView(StaffRequiredMixin, TemplateView):
+class CreateShiftView(LoginRequiredMixin, TemplateView):
     """Page for starting a shift."""
 
     template_name = "orders/create_shift.html"
@@ -290,7 +289,7 @@ class CreateShiftView(StaffRequiredMixin, TemplateView):
         return render(request, self.template_name, {"venue": venue, "form": form})
 
 
-class ShiftAdminView(StaffRequiredMixin, TemplateView):
+class ShiftAdminView(LoginRequiredMixin, TemplateView):
     """Admin view for starting shifts."""
 
     template_name = "orders/shift_admin.html"
@@ -308,7 +307,7 @@ class ShiftAdminView(StaffRequiredMixin, TemplateView):
         return render(request, self.template_name, {"shift": shift})
 
 
-class OrderUpdateView(StaffRequiredMixin, TemplateView):
+class OrderUpdateView(LoginRequiredMixin, TemplateView):
     """View for updating orders via asynchronous POST requests."""
 
     def post(self, request, **kwargs):
@@ -376,7 +375,7 @@ class ShiftOverview(TemplateView, LoginRequiredMixin):
         return render(request, self.template_name, {"shift": shift})
 
 
-class ToggleShiftActivationView(StaffRequiredMixin, TemplateView):
+class ToggleShiftActivationView(LoginRequiredMixin, TemplateView):
     """Toggle the shift activation via a POST request."""
 
     def post(self, request, **kwargs):
@@ -399,7 +398,7 @@ class ToggleShiftActivationView(StaffRequiredMixin, TemplateView):
         return JsonResponse({"active": shift.can_order})
 
 
-class AddShiftCapacityView(StaffRequiredMixin, TemplateView):
+class AddShiftCapacityView(LoginRequiredMixin, TemplateView):
     """Add shift capacity view."""
 
     add_amount = 5
@@ -423,7 +422,7 @@ class AddShiftCapacityView(StaffRequiredMixin, TemplateView):
         return JsonResponse({"error": False})
 
 
-class AddShiftTimeView(StaffRequiredMixin, TemplateView):
+class AddShiftTimeView(LoginRequiredMixin, TemplateView):
     """Add shift time view."""
 
     add_amount = datetime.timedelta(minutes=5)
@@ -468,7 +467,7 @@ class RefreshHeaderView(TemplateView):
         return JsonResponse({"data": header})
 
 
-class RefreshAdminFooterView(StaffRequiredMixin, TemplateView):
+class RefreshAdminFooterView(LoginRequiredMixin, TemplateView):
     """Refresh the administrator footer."""
 
     def post(self, request, **kwargs):
