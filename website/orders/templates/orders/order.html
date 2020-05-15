@@ -1,33 +1,32 @@
-{% extends 'tosti/base.html' %}
+{% extends 'tosti/sidebar.html' %}
 {% load static order_now %}
 
 {% block styles %}
+    <link rel="stylesheet" href="{% static 'orders/css/order-list.css' %}"/>
     <link rel="stylesheet" href="{% static 'orders/css/item-list.css' %}"/>
     <link rel="stylesheet" href="{% static 'tosti/css/index.css' %}"/>
 {% endblock %}
 
-{% block page %}
+{% block content %}
     <div class="container-sm mb-5 text-center">
         {% render_order_header shift %}
     </div>
     <div class="container-sm mb-5 text-center">
-        {% if already_ordered %}
-            <div class="btn-ml btn-on" onclick="window.location.href = '{% url "orders:shift_overview" shift=shift %}';">
-                <h4>You have already ordered items</h4>
-                <i class="fas fa-arrow-left"></i>
-                <p>Back to overview</p>
-            </div>
-            <p>Or order more items below</p>
-        {% else %}
-            <p>Order your items below</p>
-        {% endif %}
+        <p>Order your items below</p>
         <p class="alert-danger" id="update-error"></p>
         {% if error %}
             <p class="alert-danger">{{ error }}</p>
         {% endif %}
         <div id="product-list">
         </div>
+        <div class="btn-ml btn-on" onclick="window.location.href = '{% url "orders:shift_overview" shift=shift %}';">
+            <h4>Back to shift overview</h4>
+            <i class="fas fa-arrow-left"></i>
+        </div>
     </div>
+{% endblock %}
+
+{% block sidebar %}
     <div class="container-sm text-center pb-5">
         <h1>Items in cart</h1>
         <p>Manage the items in your cart below</p>
@@ -35,7 +34,7 @@
         </div>
         <form method="POST">
             {% csrf_token %}
-            <input type="submit" value="Order" class="btn btn-success" id="order-button" style="display: none"/>
+            <input type="submit" value="Order items" class="btn-on btn-ml" id="order-button" style="display: none"/>
         </form>
     </div>
 {% endblock %}

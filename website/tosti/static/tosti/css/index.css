@@ -4,6 +4,7 @@
     padding: 10px;
     max-width: 400px;
     margin: 40px auto;
+    width: 100%;
     transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 

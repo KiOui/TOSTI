@@ -53,62 +53,71 @@ function update_page_data(data) {
 }
 
 function construct_products_section() {
-    let base = document.createElement('div');
-    base.classList.add('product-list');
+    let base = document.createElement('ul');
+    base.classList.add('order-list');
     for (let i = 0; i < PRODUCTS.length; i++) {
-        let list_item = create_element('div', ['btn-ml'], '');
+        let list_item = create_element('li', ['order-item', 'pt-2', 'pb-2', 'mt-2', 'mb-2'], '');
         let icon = create_element('i', ['fas', 'fa-'+PRODUCTS[i].icon], '');
-        let name = create_element('h2', ['item-name'], 'Add ' + PRODUCTS[i].name);
+        let name = create_element('p', ['order-name'], PRODUCTS[i].name);
+        let button = create_element('input', ['btn', 'btn-success', 'ml-2'], "");
+        button.type = 'button';
+        button.value = "Add";
+        button.setAttribute('onclick', "add_product(" + PRODUCTS[i].id + ")");
+        let price = create_element('p', ['item-price'], '€' + PRODUCTS[i].price);
 
         list_item.appendChild(icon);
         list_item.appendChild(name);
-        console.log(get_amount_of_item_orders(PRODUCTS[i].id));
-        if ((MAX_ORDERS === null || get_amount_of_cart_items() < MAX_ORDERS) &&
-            (PRODUCTS[i].max_allowed === null || get_amount_of_item_orders(PRODUCTS[i].id) < PRODUCTS[i].max_allowed)) {
-            let price = create_element('p', ['item-price'], '€' + PRODUCTS[i].price);
-            list_item.appendChild(price);
-            list_item.setAttribute('onclick', "add_product(" + PRODUCTS[i].id + ")");
-            list_item.classList.add('btn-on');
-        }
-        else {
-            let maximum = create_element('p', [], 'Maximum reached');
-            list_item.appendChild(maximum);
-            list_item.classList.add('btn-off');
+        list_item.appendChild(price);
+        list_item.appendChild(button);
+        if (!(MAX_ORDERS !== null && get_amount_of_cart_items() >= MAX_ORDERS) && PRODUCTS[i].max_allowed !== null && get_amount_of_item_orders(PRODUCTS[i].id) >= PRODUCTS[i].max_allowed) {
+            let overlay = create_element('div', ['item-overlay'], "");
+            let overlay_text = create_element('p', ['alert', 'alert-warning'], "You have ordered the maximum of this item.");
+            overlay.appendChild(overlay_text);
+            list_item.appendChild(overlay);
         }
         base.appendChild(list_item);
     }
 
     if (PRODUCTS.length === 0) {
-        PRODUCT_CONTAINER.innerHTML = "<p class='alert-warning'>There are no products you can order.</p>";
+        PRODUCT_CONTAINER.innerHTML = "<p class='alert alert-warning'>There are no products you can order.</p>";
     }
     else {
         PRODUCT_CONTAINER.innerHTML = "";
         PRODUCT_CONTAINER.append(base);
     }
+
+    if (MAX_ORDERS !== null && get_amount_of_cart_items() >= MAX_ORDERS) {
+        let overlay = create_element('div', ['item-overlay'], "");
+        let overlay_text = create_element('p', ['alert', 'alert-warning'], "You have ordered the maximum amount of orders you can place this shift.");
+        overlay.appendChild(overlay_text);
+        base.append(overlay);
+    }
 }
 
 function construct_order_section() {
-    let base = document.createElement('div');
-    base.classList.add('product-list');
+    let base = document.createElement('ul');
+    base.classList.add('order-list');
     let cart = get_cart_list();
     for (let i = 0; i < cart.length; i++) {
         let product = find_product_details(cart[i]);
         if (product !== null) {
-            let list_item = create_element('div', ['btn-ml', 'btn-on'], '');
-            list_item.setAttribute('onclick', "delete_product(" + product.id + ")");
+            let list_item = create_element('li', ['order-item'], '');
             let icon = create_element('i', ['fas', 'fa-' + product.icon], '');
-            let name = create_element('h2', ['item-name'], 'Click to remove ' + product.name);
-            let price = create_element('p', ['item-price'], '€' + product.price);
+            let name = create_element('p', ['order-name'], product.name);
+            let button = create_element('input', ['btn', 'btn-danger', 'ml-2'], "");
+            button.type = 'button';
+            button.value = "Remove";
+            button.setAttribute('onclick', "delete_product(" + product.id + ")");
 
             list_item.appendChild(icon);
             list_item.appendChild(name);
-            list_item.appendChild(price);
+            list_item.appendChild(button);
             base.appendChild(list_item);
         }
     }
 
     if (cart.length === 0) {
-        ORDER_CONTAINER.innerHTML = "<p class='alert-warning'>You have not ordered any items yet.</p>";
+        ORDER_CONTAINER.innerHTML = "<p class='alert alert-warning'>There are no items in your cart.</p>";
     }
     else {
         ORDER_CONTAINER.innerHTML = "";
@@ -121,7 +130,6 @@ function delete_product(product_id) {
     for (let i = 0; i < cart.length; i++) {
         if (cart[i] === product_id) {
             cart.splice(i, 1);
-            console.log(cart);
             set_cart_list(cart);
             refresh();
             return;
