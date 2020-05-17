@@ -29,6 +29,12 @@
                 <p class="font-footer">Go to order page</p>
             </div>
         </div>
+        <div class="col expand-mobile">
+            <div class="btn-ml btn-on m-auto w-100" onclick="window.location.href = '{% url "admin:orders_shift_change" shift.id %}';">
+                <i class="fas fa-sitemap"></i>
+                <p class="font-footer">Go to site admin</p>
+            </div>
+        </div>
     </div>
     <button class="navbar-toggler m-auto" style="border: 0" type="button" data-toggle="collapse" data-target="#footer-menu">
         <i class="fas fa-caret-up text-white"></i>
