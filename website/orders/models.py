@@ -324,7 +324,6 @@ class Shift(models.Model):
         )
         if overlapping_start > 0 or overlapping_end > 0:
             raise ValueError("Overlapping shifts for the same venue are not allowed.")
-
         super(Shift, self).save(*args, **kwargs)
 
     def user_can_order_amount(self, user, amount=1):
@@ -433,14 +432,17 @@ class Order(models.Model):
         """Check whether this order is valid and can be saved."""
         super().clean()
         errors = {}
-
+        timezone = pytz.timezone(settings.TIME_ZONE)
+        localized_time = timezone.localize(datetime.now())
         if not self.created and not self.shift.can_order:
             errors.update({"shift": "You can't order for this shift"})
 
-        if self.created and not (
-            self.shift.start_date < self.created < self.shift.end_date
+        if not self.created and not (
+            self.shift.start_date < localized_time < self.shift.end_date
         ):
-            errors.update({"shift": "You can't order for this shift"})
+            errors.update(
+                {"shift": "You can't order for this shift because of time restrictions"}
+            )
 
         if (
             self.shift.max_orders_per_user is not None

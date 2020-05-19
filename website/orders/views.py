@@ -62,8 +62,6 @@ class OrderView(LoginRequiredMixin, TemplateView):
             return "You can not order more products"
         if not product.user_can_order_amount(user, shift):
             return "You can not order more {}".format(product.name)
-        if not shift.can_order:
-            return "You can not order products for this shift"
         if not product.available:
             return "Product {} is not available".format(product.name)
         return True
@@ -80,6 +78,10 @@ class OrderView(LoginRequiredMixin, TemplateView):
         """
         if not shift.user_can_order_amount(user, amount=len(order_list)):
             return "You can't order that much products in this shift"
+        if not shift.can_order:
+            return "You can not order products for this shift"
+        if not shift.is_active:
+            return "This shift is not active"
         for order in order_list:
             error_msg = OrderView.can_order(shift, order, user)
             if isinstance(error_msg, str):
