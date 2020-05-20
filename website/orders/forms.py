@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth import get_user_model
 from .models import Shift
+from datetime import datetime, timedelta
 
 
 User = get_user_model()
@@ -20,6 +21,10 @@ class ShiftForm(forms.ModelForm):
         super(ShiftForm, self).__init__(*args, **kwargs)
         self.fields["venue"].initial = venue
         self.fields["assignees"].queryset = User.objects.filter(is_staff=True)
+        now = datetime.now()
+        self.fields["start_date"].initial = now - timedelta(
+            seconds=now.second, microseconds=now.microsecond
+        )
 
     def set_initial_users(self, users):
         """
