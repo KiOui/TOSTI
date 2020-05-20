@@ -5,6 +5,7 @@ from django.contrib import admin, messages
 from django.contrib.admin import widgets
 from django.contrib.auth import get_user_model
 from django.db.models import Q
+from django.urls import reverse
 from import_export.admin import ImportExportModelAdmin
 
 from orders.models import Product, Order, Shift
@@ -140,6 +141,15 @@ class ShiftAdmin(ImportExportModelAdmin):
     search_fields = ["start_date", "venue"]
 
     actions = ["close_shift"]
+
+    def view_on_site(self, obj):
+        """
+        Get the URL for the frontend view of this shift.
+
+        :param obj: the shift object
+        :return: the url to the frontend view of the shift
+        """
+        return reverse("orders:shift_admin", kwargs={"shift": obj})
 
     def close_shift(self, request, queryset):
         """
