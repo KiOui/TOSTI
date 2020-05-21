@@ -1,6 +1,9 @@
+import pytz
 from django import forms
+from django.conf import settings
 from django.contrib.auth import get_user_model
-from .models import Shift
+from .models import Shift, get_default_end_time_shift, get_default_start_time_shift
+from datetime import datetime, timedelta
 
 
 User = get_user_model()
@@ -20,6 +23,14 @@ class ShiftForm(forms.ModelForm):
         super(ShiftForm, self).__init__(*args, **kwargs)
         self.fields["venue"].initial = venue
         self.fields["assignees"].queryset = User.objects.filter(is_staff=True)
+        timezone = pytz.timezone(settings.TIME_ZONE)
+        now = timezone.localize(datetime.now())
+        start_time = now - timedelta(seconds=now.second, microseconds=now.microsecond)
+        self.fields["start_date"].initial = start_time
+        if now >= get_default_end_time_shift() or now <= get_default_start_time_shift() - timedelta(
+            minutes=30
+        ):
+            self.fields["end_date"].initial = start_time + timedelta(hours=1)
 
     def set_initial_users(self, users):
         """
