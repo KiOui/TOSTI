@@ -208,8 +208,8 @@ class Shift(models.Model):
         """
         Get a list with all products and amounts that are not ready.
 
-        :return: a list of products with a amount object variable indicating the products and amounts that are not ready
-        for this shift
+        :return: a list of products with a amount object variable indicating the products and amounts that are not
+        ready for this shift
         """
         distinct_ordered_items = Product.objects.filter(
             order__shift_id=self, order__ready=False
