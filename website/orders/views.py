@@ -470,6 +470,27 @@ class RefreshHeaderView(TemplateView):
         return JsonResponse({"data": header})
 
 
+class RefreshProductOverviewView(TemplateView):
+    """Refresh for the order header."""
+
+    def post(self, request, **kwargs):
+        """
+        POST request for refreshing the product overview on the admin page.
+
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: The product overview in the following JSON format:
+        {
+            data: [header]
+        }
+        """
+        shift = kwargs.get("shift")
+        overview = get_template("orders/item_overview.html").render(
+            render_order_header(shift, refresh=True)
+        )
+        return JsonResponse({"data": overview})
+
+
 class RefreshAdminFooterView(StaffRequiredMixin, TemplateView):
     """Refresh the administrator footer."""
 
