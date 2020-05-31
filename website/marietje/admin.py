@@ -1,5 +1,12 @@
 from django.contrib import admin
-from .models import SpotifyAuthCode
+from .models import SpotifySettings
+from .forms import SpotifySettingsAdminForm
 
 
-admin.site.register(SpotifyAuthCode)
+class SpotifySettingsAdmin(admin.ModelAdmin):
+    """Spotify Settings admin."""
+
+    form = SpotifySettingsAdminForm
+
+
+admin.site.register(SpotifySettings, SpotifySettingsAdmin)

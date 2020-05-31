@@ -5,7 +5,7 @@ from spotipy import SpotifyOAuth
 from spotipy.client import Spotify
 
 
-class SpotifyAuthCode(models.Model):
+class SpotifySettings(models.Model):
     """Spotify Auth model."""
 
     SCOPE = (
@@ -15,10 +15,11 @@ class SpotifyAuthCode(models.Model):
         "streaming, app-remote-control"
     )
 
-    display_name = models.CharField(max_length=256, null=True)
+    display_name = models.CharField(max_length=256, null=True, blank=True)
+    playback_device_id = models.CharField(max_length=256, null=True, blank=True)
     client_id = models.CharField(max_length=256, null=False, blank=False, unique=True)
     client_secret = models.CharField(max_length=256, null=False, blank=False)
-    redirect_uri = models.CharField(max_length=512, null=False)
+    redirect_uri = models.CharField(max_length=512, null=False, blank=False)
 
     @property
     def cache_path(self):

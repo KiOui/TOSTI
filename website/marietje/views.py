@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
 from .forms import SpotifyTokenForm
 from django.urls import reverse
-from .models import SpotifyAuthCode
+from .models import SpotifySettings
 
 COOKIE_CLIENT_ID = "client_id"
 
@@ -20,7 +20,7 @@ class NowPlayingView(TemplateView):
         :param kwargs: keyword arguments
         :return: a render of the now playing page
         """
-        sp = SpotifyAuthCode.objects.get(pk=1).spotify
+        sp = SpotifySettings.objects.get(pk=1).spotify
         print(sp.devices())
         return render(request, self.template_name)
 
@@ -51,7 +51,7 @@ class SpofityAuthorizeView(TemplateView):
         """
         form = SpotifyTokenForm(request.POST)
         if form.is_valid():
-            spotify_auth_code, _ = SpotifyAuthCode.objects.get_or_create(
+            spotify_auth_code, _ = SpotifySettings.objects.get_or_create(
                 client_id=form.cleaned_data.get("client_id")
             )
             spotify_auth_code.client_secret = form.cleaned_data.get("client_secret")
@@ -82,8 +82,8 @@ class SpotifyTokenView(TemplateView):
         if code is not None:
             client_id = request.COOKIES.get(COOKIE_CLIENT_ID, None)
             try:
-                spotify_auth_code = SpotifyAuthCode.objects.get(client_id=client_id)
-            except SpotifyAuthCode.DoesNotExist:
+                spotify_auth_code = SpotifySettings.objects.get(client_id=client_id)
+            except SpotifySettings.DoesNotExist:
                 return render(
                     request, self.template_name, {"error": "Client ID was not found."}
                 )

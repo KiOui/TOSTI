@@ -1,5 +1,5 @@
 from django.urls.converters import IntConverter
-from .models import SpotifyAuthCode
+from .models import SpotifySettings
 
 
 class SpotifyAuthCodeConverter(IntConverter):
@@ -13,8 +13,8 @@ class SpotifyAuthCodeConverter(IntConverter):
         :return: a SpotifyAuthCode or ValueError
         """
         try:
-            return SpotifyAuthCode.objects.get(id=int(value))
-        except SpotifyAuthCode.DoesNotExist:
+            return SpotifySettings.objects.get(id=int(value))
+        except SpotifySettings.DoesNotExist:
             raise ValueError
 
     def to_url(self, obj):
