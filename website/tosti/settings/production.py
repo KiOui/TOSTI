@@ -65,4 +65,4 @@ if os.environ.get("DJANGO_EMAIL_HOST"):
 if os.environ.get("DJANGO_SPOTIFY_CACHE_PATH"):
     SPOTIFY_CACHE_PATH = os.environ.get("DJANGO_SPOTIFY_CACHE_PATH")
 else:
-    SPOTIFY_CACHE_PATH = os.path.join(BASE_DIR, 'cache')
+    SPOTIFY_CACHE_PATH = os.path.join(BASE_DIR, "cache")  # noqa

@@ -2,4 +2,6 @@ from django.apps import AppConfig
 
 
 class MarietjeConfig(AppConfig):
-    name = 'marietje'
+    """App config for Marietje app."""
+
+    name = "marietje"

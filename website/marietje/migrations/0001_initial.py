@@ -7,18 +7,25 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='SpotifyAuthCode',
+            name="SpotifyAuthCode",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('display_name', models.CharField(max_length=256, null=True)),
-                ('client_id', models.CharField(max_length=256, unique=True)),
-                ('client_secret', models.CharField(max_length=256)),
-                ('redirect_uri', models.CharField(max_length=512)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("display_name", models.CharField(max_length=256, null=True)),
+                ("client_id", models.CharField(max_length=256, unique=True)),
+                ("client_secret", models.CharField(max_length=256)),
+                ("redirect_uri", models.CharField(max_length=512)),
             ],
         ),
     ]
