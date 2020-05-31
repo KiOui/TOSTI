@@ -30,3 +30,5 @@ LOGGING = {
         "": {"handlers": ["console"], "level": "INFO", "propagate": True,},  # noqa
     },  # noqa
 }
+
+SPOTIFY_CACHE_PATH = os.path.join(BASE_DIR, "cache")
