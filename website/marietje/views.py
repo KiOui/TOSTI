@@ -20,9 +20,11 @@ class NowPlayingView(TemplateView):
         :param kwargs: keyword arguments
         :return: a render of the now playing page
         """
-        sp = SpotifySettings.objects.get(pk=1).spotify
-        print(sp.devices())
-        return render(request, self.template_name)
+        venue = kwargs.get("venue")
+        if not venue.has_player:
+            return render(request, self.template_name, {"disabled": True, "venue": venue})
+
+        return render(request, self.template_name, {"disabled": False})
 
 
 class SpofityAuthorizeView(TemplateView):
@@ -87,7 +89,7 @@ class SpotifyTokenView(TemplateView):
                 return render(
                     request, self.template_name, {"error": "Client ID was not found."}
                 )
-            # Generate the first access token and store to cache
+            # Generate the first access token and store in cache
             access_token = spotify_auth_code.auth.get_access_token(code=code)
             if access_token is not None:
                 response = redirect(
@@ -126,4 +128,4 @@ class SpotifyAuthorizeSucceededView(TemplateView):
         :return: a render of the authorize succeeded page
         """
         auth = kwargs.get("auth")
-        return render(request, self.template_name, {"username": auth.get_display_name})
+        return render(request, self.template_name, {"username": auth.get_display_name, "auth": auth})

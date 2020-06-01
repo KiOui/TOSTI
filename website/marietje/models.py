@@ -66,3 +66,20 @@ class SpotifySettings(models.Model):
             self.display_name = self.spotify.me()["display_name"]
             self.save()
         return self.display_name
+
+    def __str__(self):
+        """
+        Convert this object to string.
+
+        :return: the display name if it is not None, the client id otherwise
+        """
+        if self.display_name is not None:
+            return self.display_name
+        else:
+            return self.client_id
+
+    class Meta:
+        """Meta class."""
+
+        verbose_name = "Spotify settings"
+        verbose_name_plural = "Spotify settings"
