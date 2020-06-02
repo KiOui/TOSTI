@@ -204,6 +204,52 @@ class Shift(models.Model):
         return ordered_orders
 
     @property
+    def products_open(self):
+        """
+        Get a list with all products and amounts that are not ready.
+
+        :return: a list of products with a amount object variable indicating the products and amounts that are not
+        ready for this shift
+        """
+        distinct_ordered_items = Product.objects.filter(
+            order__shift_id=self, order__ready=False
+        ).distinct()
+        for item in distinct_ordered_items:
+            item.amount = Order.objects.filter(
+                product=item, ready=False, shift=self
+            ).count()
+        return distinct_ordered_items
+
+    @property
+    def products_closed(self):
+        """
+        Get a list with all products and amounts that are ready.
+
+        :return: a list of products with a amount object variable indicating the products and amounts that are ready
+        for this shift
+        """
+        distinct_ordered_items = Product.objects.filter(
+            order__shift_id=self, order__ready=True
+        ).distinct()
+        for item in distinct_ordered_items:
+            item.amount = Order.objects.filter(
+                product=item, ready=True, shift=self
+            ).count()
+        return distinct_ordered_items
+
+    @property
+    def products_total(self):
+        """
+        Get a list with all products and amounts.
+
+        :return: a list of products with a amount object variable indicating the products and amounts for this shift
+        """
+        distinct_ordered_items = Product.objects.filter(order__shift_id=self).distinct()
+        for item in distinct_ordered_items:
+            item.amount = Order.objects.filter(product=item, shift=self).count()
+        return distinct_ordered_items
+
+    @property
     def number_of_orders(self):
         """
         Get the total number of orders in this shift.
