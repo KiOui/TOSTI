@@ -25,6 +25,12 @@ def render_order_items(shift, refresh=False, admin=False, user=None):
     return {"shift": shift, "refresh": refresh, "admin": admin, "user": user}
 
 
+@register.inclusion_tag("orders/item_overview.html")
+def render_item_overview(shift, refresh=False):
+    """Render item overview."""
+    return {"shift": shift, "refresh": refresh}
+
+
 @register.inclusion_tag("orders/order_now.html")
 def render_order_now_button(shift):
     """Render order now button."""
