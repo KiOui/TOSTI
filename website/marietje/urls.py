@@ -4,6 +4,8 @@ from .views import (
     SpofityAuthorizeView,
     SpotifyTokenView,
     SpotifyAuthorizeSucceededView,
+    PlayerRefreshView,
+    search_view,
 )
 from .converters import SpotifyAuthCodeConverter
 from venues.converters import VenueConverter
@@ -20,5 +22,9 @@ urlpatterns = [
         "admin/succeeded/<auth:auth>",
         SpotifyAuthorizeSucceededView.as_view(),
         name="authorization_succeeded",
-    )
+    ),
+    path(
+        "player/<auth:auth>/refresh", PlayerRefreshView.as_view(), name="player_refresh"
+    ),
+    path("player/<auth:auth>/search", search_view, name="player_search"),
 ]

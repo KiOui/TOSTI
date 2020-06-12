@@ -1,8 +1,12 @@
 import os
+
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.conf import settings
 from spotipy import SpotifyOAuth
 from spotipy.client import Spotify
+
+User = get_user_model()
 
 
 class SpotifySettings(models.Model):
@@ -21,6 +25,31 @@ class SpotifySettings(models.Model):
     client_id = models.CharField(max_length=256, null=False, blank=False, unique=True)
     client_secret = models.CharField(max_length=256, null=False, blank=False)
     redirect_uri = models.CharField(max_length=512, null=False, blank=False)
+
+    @property
+    def configured(self):
+        """
+        Check if this object is ready to play music.
+
+        :return: True if this object is ready for music playback, False otherwise
+        """
+        return self.playback_device_id is not None
+
+    @property
+    def currently_playing(self):
+        if not self.configured:
+            raise RuntimeError("This Spotify settings object is not configured yet.")
+
+        currently_playing = self.spotify.currently_playing()
+
+        if currently_playing is None:
+            return {"image": "", "name": "No currently playing track", "artists": ""}
+
+        image = currently_playing["item"]["album"]["images"][0]["url"]
+        name = currently_playing["item"]["name"]
+        artists = [x["name"] for x in currently_playing["item"]["artists"]]
+
+        return {"image": image, "name": name, "artists": artists}
 
     @property
     def cache_path(self):
@@ -83,3 +112,26 @@ class SpotifySettings(models.Model):
 
         verbose_name = "Spotify settings"
         verbose_name_plural = "Spotify settings"
+
+
+class SpotifyArtist(models.Model):
+
+    artist_name = models.CharField(max_length=2048, blank=False, null=False)
+    artist_id = models.CharField(max_length=2048, blank=False, null=False)
+
+
+class SpotifyQueueItem(models.Model):
+
+    track_id = models.CharField(max_length=256, blank=False, null=False)
+    spotify_settings_object = models.ForeignKey(
+        SpotifySettings, null=False, on_delete=models.CASCADE
+    )
+    track_name = models.CharField(max_length=1024, blank=False, null=False)
+    track_artists = models.ManyToManyField(SpotifyArtist)
+    added = models.DateTimeField(auto_created=True)
+    requested_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+
+    class Meta:
+        """Meta class."""
+
+        ordering = ["added", "track_name"]

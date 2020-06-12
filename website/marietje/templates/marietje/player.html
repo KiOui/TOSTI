@@ -1,0 +1,31 @@
+{% load static %}
+
+{% if not refresh %}
+    <div class="player" id="player-container">
+{% endif %}
+<h2>Now playing</h2>
+<div class="w-50 mx-auto mb-2">
+    <img class="w-100" src="{{ player.image }}"/>
+</div>
+<p>{{ player.name }}</p>
+<p>
+    {% for artist in player.artists %}
+        {% if forloop.last %}
+            {{ artist }}
+        {% else %}
+            {{ artist }} -
+        {% endif %}
+    {% endfor %}
+</p>
+{% if not refresh %}
+    </div>
+{% endif %}
+
+{% if not refresh %}
+    <script>
+        const PLAYER_CONTAINER = document.getElementById('player-container');
+        const PLAYER_CSRF_TOKEN = "{{ csrf_token }}";
+        const PLAYER_REFRESH_URL = "{% url 'marietje:player_refresh' auth=auth %}";
+    </script>
+    <script src="{% static 'marietje/js/asynch-update-player.js' %}"></script>
+{% endif %}

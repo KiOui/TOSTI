@@ -1,4 +1,6 @@
+from django.http import JsonResponse, Http404
 from django.shortcuts import render, redirect
+from django.template.loader import get_template
 from django.views.generic import TemplateView
 from .forms import SpotifyTokenForm
 from django.urls import reverse
@@ -21,10 +23,22 @@ class NowPlayingView(TemplateView):
         :return: a render of the now playing page
         """
         venue = kwargs.get("venue")
-        if not venue.has_player:
-            return render(request, self.template_name, {"disabled": True, "venue": venue})
+        if not venue.has_player or not venue.spotify_player.configured:
+            return render(
+                request, self.template_name, {"disabled": True, "venue": venue}
+            )
 
-        return render(request, self.template_name, {"disabled": False})
+        # sp.add_to_queue("3bVsLxHgCVzUWBVIZpAnWN", device_id=venue.spotify_player.playback_device_id)
+
+        return render(
+            request,
+            self.template_name,
+            {
+                "disabled": False,
+                "player": venue.spotify_player.currently_playing,
+                "auth": venue.spotify_player,
+            },
+        )
 
 
 class SpofityAuthorizeView(TemplateView):
@@ -128,4 +142,56 @@ class SpotifyAuthorizeSucceededView(TemplateView):
         :return: a render of the authorize succeeded page
         """
         auth = kwargs.get("auth")
-        return render(request, self.template_name, {"username": auth.get_display_name, "auth": auth})
+        return render(
+            request,
+            self.template_name,
+            {"username": auth.get_display_name, "auth": auth},
+        )
+
+
+class PlayerRefreshView(TemplateView):
+    """Refresh the player."""
+
+    def post(self, request, **kwargs):
+        """
+        POST request for refreshing the player.
+
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: The player in the following JSON format:
+        {
+            data: [player]
+        }
+        """
+        spotify = kwargs.get("auth")
+        player = get_template("marietje/player.html").render(
+            {"player": spotify.currently_playing, "auth": spotify}
+        )
+        return JsonResponse({"data": player})
+
+
+def search_view(request, **kwargs):
+
+    if request.method == "POST":
+        query = request.POST.get("query", None)
+        request_id = request.POST.get("id", "")
+        try:
+            maximum = int(request.POST.get("maximum", 5))
+        except ValueError:
+            maximum = 5
+
+        if query is not None:
+            spotify = kwargs.get("auth")
+            result = spotify.spotify.search(query, limit=maximum, type="track")
+            result = sorted(result["tracks"]["items"], key=lambda x: -x["popularity"])
+            trimmed_result = [
+                {"name": x["name"], "artists": [y["name"] for y in x["artists"]]}
+                for x in result
+            ]
+            return JsonResponse(
+                {"query": query, "id": request_id, "result": trimmed_result}
+            )
+        else:
+            return JsonResponse({"query": "", "id": request_id, "result": []})
+    else:
+        return Http404("This view can only be called with a POST request.")

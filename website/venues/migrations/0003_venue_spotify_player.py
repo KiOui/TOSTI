@@ -7,14 +7,18 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('marietje', '0004_auto_20200601_0940'),
-        ('venues', '0002_remove_venue_image'),
+        ("marietje", "0004_auto_20200601_0940"),
+        ("venues", "0002_remove_venue_image"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='venue',
-            name='spotify_player',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='marietje.SpotifySettings'),
+            model_name="venue",
+            name="spotify_player",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="marietje.SpotifySettings",
+            ),
         ),
     ]

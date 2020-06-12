@@ -6,12 +6,15 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('marietje', '0003_auto_20200531_2340'),
+        ("marietje", "0003_auto_20200531_2340"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='spotifysettings',
-            options={'verbose_name': 'Spotify settings', 'verbose_name_plural': 'Spotify settings'},
+            name="spotifysettings",
+            options={
+                "verbose_name": "Spotify settings",
+                "verbose_name_plural": "Spotify settings",
+            },
         ),
     ]

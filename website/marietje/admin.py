@@ -12,7 +12,7 @@ class SpotifySettingsAdmin(admin.ModelAdmin):
     list_display = ["display_name", "playback_device_name", "client_id"]
     form = SpotifySettingsAdminForm
 
-    def add_view(self, request, form_url='', extra_context=None):
+    def add_view(self, request, form_url="", extra_context=None):
         """
         Add view of the Spotify Settings Admin.
 
@@ -23,4 +23,3 @@ class SpotifySettingsAdmin(admin.ModelAdmin):
         :return: a redirect to the authorize page
         """
         return redirect("marietje:authorize")
-
