@@ -1,20 +1,25 @@
 import logging
 
 import spotipy
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse, Http404
 from django.shortcuts import render, redirect
 from django.template.loader import get_template, render_to_string
 from django.views.generic import TemplateView
+
+from orders.permissions import StaffRequiredMixin
 from .forms import SpotifyTokenForm
 from django.urls import reverse
-from .models import SpotifySettings, SpotifyArtist, SpotifyQueueItem
+from .models import SpotifySettings, SpotifyQueueItem
 from .services import create_track_database_information
 from .templatetags.queue import render_queue_list
+from django.contrib.admin.views.decorators import staff_member_required
 
 COOKIE_CLIENT_ID = "client_id"
 
 
-class NowPlayingView(TemplateView):
+class NowPlayingView(TemplateView, LoginRequiredMixin):
     """Now playing view."""
 
     template_name = "marietje/now_playing.html"
@@ -44,7 +49,7 @@ class NowPlayingView(TemplateView):
         )
 
 
-class SpofityAuthorizeView(TemplateView):
+class SpofityAuthorizeView(TemplateView, StaffRequiredMixin):
     """Authorize a Spotify account."""
 
     template_name = "marietje/authorize.html"
@@ -84,7 +89,7 @@ class SpofityAuthorizeView(TemplateView):
         return render(request, self.template_name, {"form": form})
 
 
-class SpotifyTokenView(TemplateView):
+class SpotifyTokenView(TemplateView, StaffRequiredMixin):
     """Get a Spotify account token."""
 
     template_name = "marietje/token.html"
@@ -131,7 +136,7 @@ class SpotifyTokenView(TemplateView):
             )
 
 
-class SpotifyAuthorizeSucceededView(TemplateView):
+class SpotifyAuthorizeSucceededView(TemplateView, StaffRequiredMixin):
     """Authorize succeeded view."""
 
     template_name = "marietje/authorize_succeeded.html"
@@ -152,8 +157,21 @@ class SpotifyAuthorizeSucceededView(TemplateView):
         )
 
 
-class PlayerRefreshView(TemplateView):
+class PlayerRefreshView(TemplateView, LoginRequiredMixin):
     """Refresh the player."""
+
+    @staticmethod
+    def render_template(spotify, request):
+        """
+        Render the player template.
+
+        :param spotify: a SpotifySettings object
+        :param request: the request
+        :return: a render of the player.html template
+        """
+        return get_template("marietje/player.html").render(
+            {"player": spotify.currently_playing, "auth": spotify, "request": request}
+        )
 
     def post(self, request, **kwargs):
         """
@@ -167,13 +185,10 @@ class PlayerRefreshView(TemplateView):
         }
         """
         spotify = kwargs.get("auth")
-        player = get_template("marietje/player.html").render(
-            {"player": spotify.currently_playing, "auth": spotify}
-        )
-        return JsonResponse({"data": player})
+        return JsonResponse({"data": self.render_template(spotify, request)})
 
 
-class QueueRefreshView(TemplateView):
+class QueueRefreshView(TemplateView, LoginRequiredMixin):
     """Refresh the queue."""
 
     def post(self, request, **kwargs):
@@ -194,8 +209,20 @@ class QueueRefreshView(TemplateView):
         return JsonResponse({"data": queue})
 
 
+@login_required
 def search_view(request, **kwargs):
+    """
+    Call the spotify API to search for a track.
 
+    :param request: the request
+    :param kwargs: keyword arguments
+    :return: a JsonResponse object of the following form:
+    {
+        query: [queried string],
+        id: [request id],
+        result: [rendered result HTML element]
+    }
+    """
     if request.method == "POST":
         query = request.POST.get("query", None)
         request_id = request.POST.get("id", "")
@@ -228,8 +255,19 @@ def search_view(request, **kwargs):
         return Http404("This view can only be called with a POST request.")
 
 
+@login_required
 def add_view(request, **kwargs):
+    """
+    Call the spotify API to add a track to the queue.
 
+    :param request: the request
+    :param kwargs: keyword arguments
+    :return: a JsonResponse object of the following form
+    {
+        error: [True|False],
+        msg: [Message]
+    }
+    """
     if request.method == "POST":
         track_id = request.POST.get("id", None)
         if track_id is not None:
@@ -253,5 +291,93 @@ def add_view(request, **kwargs):
             return JsonResponse({"error": False, "msg": "Track added to queue"})
         else:
             return JsonResponse({"error": True, "msg": "No track ID specified"})
+    else:
+        return Http404("This view can only be called with a POST request.")
+
+
+@staff_member_required
+def play_view(request, **kwargs):
+    """
+    Call the spotify API for starting the playback.
+
+    :param request: the request
+    :param kwargs: keyword arguments
+    :return: a JsonResponse object with the refreshed player
+    """
+    if request.method == "POST":
+        spotify = kwargs.get("auth")
+        try:
+            spotify.spotify.start_playback(device_id=spotify.playback_device_id)
+        except spotipy.exceptions.SpotifyException as e:
+            logging.error(e)
+        return JsonResponse(
+            {"data": PlayerRefreshView.render_template(spotify, request)}
+        )
+    else:
+        return Http404("This view can only be called with a POST request.")
+
+
+@staff_member_required
+def pause_view(request, **kwargs):
+    """
+    Call the spotify API for pausing the playback.
+
+    :param request: the request
+    :param kwargs: keyword arguments
+    :return: a JsonResponse object with the refreshed player
+    """
+    if request.method == "POST":
+        spotify = kwargs.get("auth")
+        try:
+            spotify.spotify.pause_playback(spotify.playback_device_id)
+        except spotipy.exceptions.SpotifyException as e:
+            logging.error(e)
+        return JsonResponse(
+            {"data": PlayerRefreshView.render_template(spotify, request)}
+        )
+    else:
+        return Http404("This view can only be called with a POST request.")
+
+
+@staff_member_required
+def next_view(request, **kwargs):
+    """
+    Call the spotify API for the next track.
+
+    :param request: the request
+    :param kwargs: keyword arguments
+    :return: a JsonResponse object with the refreshed player
+    """
+    if request.method == "POST":
+        spotify = kwargs.get("auth")
+        try:
+            spotify.spotify.next_track()
+        except spotipy.exceptions.SpotifyException as e:
+            logging.error(e)
+        return JsonResponse(
+            {"data": PlayerRefreshView.render_template(spotify, request)}
+        )
+    else:
+        return Http404("This view can only be called with a POST request.")
+
+
+@staff_member_required
+def previous_view(request, **kwargs):
+    """
+    Call the spotify API for the previous track.
+
+    :param request: the request
+    :param kwargs: keyword arguments
+    :return: a JsonResponse object with the refreshed player
+    """
+    if request.method == "POST":
+        spotify = kwargs.get("auth")
+        try:
+            spotify.spotify.previous_track()
+        except spotipy.exceptions.SpotifyException as e:
+            logging.error(e)
+        return JsonResponse(
+            {"data": PlayerRefreshView.render_template(spotify, request)}
+        )
     else:
         return Http404("This view can only be called with a POST request.")

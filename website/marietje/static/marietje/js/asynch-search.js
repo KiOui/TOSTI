@@ -4,14 +4,22 @@ let typingInterval = 200;
 let current_search_index = 0;
 
 function display_message(data) {
-
+	MESSAGE_FIELD.innerHTML = "";
+	if (data.error) {
+		MESSAGE_FIELD.appendChild(create_element('p', ['alert', 'alert-danger'], data.msg));
+	}
+	else {
+		MESSAGE_FIELD.appendChild(create_element('p', ['alert', 'alert-success'], data.msg));
+	}
+	if (typeof(update_queue) !== 'undefined') {
+		update_queue();
+	}
 }
 
 function add_to_queue(track_id, callback/*, args */) {
 	let args = Array.prototype.slice.call(arguments, 2);
     let csrf_token = get_cookie('csrftoken');
 	jQuery(function($) {
-		current_search_index = current_search_index + 1;
 		let data = {
 			'id': track_id,
             'csrfmiddlewaretoken': csrf_token
@@ -57,7 +65,8 @@ $(document).ready(function() {
 	if (typeof(QUERY_FIELD) !== 'undefined' &&
         typeof(RESULT_FIELD) !== 'undefined' &&
 		typeof(SEARCH_URL) !== 'undefined' &&
-		typeof(ADD_URL) !== 'undefined') {
+		typeof(ADD_URL) !== 'undefined' &&
+		typeof(MESSAGE_FIELD) !== 'undefined') {
 		QUERY_FIELD.addEventListener('keyup', () => {
 			clearTimeout(typingTimer);
 			let inputted = QUERY_FIELD.value;

@@ -2,6 +2,7 @@
 
 {% if not refresh %}
     <link rel="stylesheet" href="{% static 'marietje/css/search.css' %}"/>
+    <div id="search-message" class="alert"></div>
     <input id="search" type="text" maxlength="100" placeholder="Search a track" class="container-fluid"/>
     <div id="results" style="display: none">
 {% endif %}
@@ -27,6 +28,7 @@
         const RESULT_FIELD = document.getElementById('results');
         const SEARCH_URL = "{% url "marietje:player_search" auth=auth %}";
         const ADD_URL = "{% url "marietje:player_add" auth=auth %}";
+        const MESSAGE_FIELD = document.getElementById('search-message');
     </script>
     <script src="{% static 'marietje/js/asynch-search.js' %}"></script>
 {% endif %}

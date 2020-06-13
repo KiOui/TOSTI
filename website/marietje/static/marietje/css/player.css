@@ -1,0 +1,17 @@
+.player-controls {
+    display: flex;
+    margin: auto;
+    width: 150px;
+    font-size: 16pt;
+}
+
+.player-controls svg {
+    flex-basis: 0;
+    flex-grow: 1;
+    align-items: center;
+    text-align: center;
+}
+
+.player-controls svg:hover {
+    cursor: pointer;
+}

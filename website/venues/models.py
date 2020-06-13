@@ -13,6 +13,11 @@ class Venue(models.Model):
 
     @property
     def has_player(self):
+        """
+        Check if a Venue has a player.
+
+        :return: True if the spotify_player variable is not None
+        """
         return self.spotify_player is not None
 
     def __str__(self):

@@ -37,19 +37,40 @@ class SpotifySettings(models.Model):
 
     @property
     def currently_playing(self):
+        """
+        Get currently playing music information.
+
+        :return: a dictionary with the following content:
+        {
+            image: [link to image of track],
+            name: [name of currently playing track],
+            artists: [list of artist names],
+            is_playing: [True|False]
+        }
+        """
         if not self.configured:
             raise RuntimeError("This Spotify settings object is not configured yet.")
 
         currently_playing = self.spotify.currently_playing()
 
         if currently_playing is None:
-            return {"image": "", "name": "No currently playing track", "artists": ""}
+            return {
+                "image": "",
+                "name": "No currently playing track",
+                "artists": "",
+                "is_playing": False,
+            }
 
         image = currently_playing["item"]["album"]["images"][0]["url"]
         name = currently_playing["item"]["name"]
         artists = [x["name"] for x in currently_playing["item"]["artists"]]
 
-        return {"image": image, "name": name, "artists": artists}
+        return {
+            "image": image,
+            "name": name,
+            "artists": artists,
+            "is_playing": currently_playing["is_playing"],
+        }
 
     @property
     def cache_path(self):
@@ -115,6 +136,7 @@ class SpotifySettings(models.Model):
 
 
 class SpotifyArtist(models.Model):
+    """Spotify Artist model."""
 
     artist_name = models.CharField(
         max_length=2048, blank=False, null=False, unique=True
@@ -122,20 +144,32 @@ class SpotifyArtist(models.Model):
     artist_id = models.CharField(max_length=2048, blank=False, null=False)
 
     def __str__(self):
+        """
+        Convert this object to string.
+
+        :return: the artist name of this object
+        """
         return self.artist_name
 
 
 class SpotifyTrack(models.Model):
+    """Spotify Track model."""
 
     track_id = models.CharField(max_length=256, blank=False, null=False, unique=True)
     track_name = models.CharField(max_length=1024, blank=False, null=False)
     track_artists = models.ManyToManyField(SpotifyArtist)
 
     def __str__(self):
+        """
+        Convert this object to string.
+
+        :return: the track name of this object
+        """
         return self.track_name
 
 
 class SpotifyQueueItem(models.Model):
+    """Spotify Queue Item model."""
 
     track = models.ForeignKey(SpotifyTrack, on_delete=models.SET_NULL, null=True)
     spotify_settings_object = models.ForeignKey(

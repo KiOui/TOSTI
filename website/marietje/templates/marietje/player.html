@@ -2,6 +2,7 @@
 
 {% if not refresh %}
     <div class="player" id="player-container">
+    <link rel="stylesheet" href="{% static 'marietje/css/player.css' %}"/>
 {% endif %}
 <h2>Now playing</h2>
 <div class="w-50 mx-auto mb-2">
@@ -17,6 +18,17 @@
         {% endif %}
     {% endfor %}
 </p>
+{% if request.user.is_staff %}
+    <div class="player-controls mb-5">
+        <i class="fas fa-backward" onclick="send_post('{% url "marietje:player_previous" auth=auth %}', refresh_if_ready)"></i>
+        {% if player.is_playing %}
+            <i class="fas fa-pause" onclick="send_post('{% url "marietje:player_pause" auth=auth %}', refresh_if_ready)"></i>
+        {% else %}
+            <i class="fas fa-play" onclick="send_post('{% url "marietje:player_play" auth=auth %}', refresh_if_ready)"></i>
+        {% endif %}
+        <i class="fas fa-forward" onclick="send_post('{% url "marietje:player_next" auth=auth %}', refresh_if_ready)"></i>
+    </div>
+{% endif %}
 {% if not refresh %}
     </div>
 {% endif %}
@@ -28,4 +40,5 @@
         const PLAYER_REFRESH_URL = "{% url 'marietje:player_refresh' auth=auth %}";
     </script>
     <script src="{% static 'marietje/js/asynch-update-player.js' %}"></script>
+    <script src="{% static 'marietje/js/asynch-controls.js' %}"></script>
 {% endif %}

@@ -8,6 +8,10 @@ from .views import (
     QueueRefreshView,
     search_view,
     add_view,
+    next_view,
+    previous_view,
+    play_view,
+    pause_view,
 )
 from .converters import SpotifyAuthCodeConverter
 from venues.converters import VenueConverter
@@ -35,4 +39,8 @@ urlpatterns = [
     ),
     path("player/<auth:auth>/search", search_view, name="player_search"),
     path("player/<auth:auth>/add", add_view, name="player_add"),
+    path("player/<auth:auth>/play", play_view, name="player_play"),
+    path("player/<auth:auth>/pause", pause_view, name="player_pause"),
+    path("player/<auth:auth>/next", next_view, name="player_next"),
+    path("player/<auth:auth>/previous", previous_view, name="player_previous"),
 ]
