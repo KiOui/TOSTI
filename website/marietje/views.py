@@ -1,10 +1,15 @@
+import logging
+
+import spotipy
 from django.http import JsonResponse, Http404
 from django.shortcuts import render, redirect
-from django.template.loader import get_template
+from django.template.loader import get_template, render_to_string
 from django.views.generic import TemplateView
 from .forms import SpotifyTokenForm
 from django.urls import reverse
-from .models import SpotifySettings
+from .models import SpotifySettings, SpotifyArtist, SpotifyQueueItem
+from .services import create_track_database_information
+from .templatetags.queue import render_queue_list
 
 COOKIE_CLIENT_ID = "client_id"
 
@@ -27,8 +32,6 @@ class NowPlayingView(TemplateView):
             return render(
                 request, self.template_name, {"disabled": True, "venue": venue}
             )
-
-        # sp.add_to_queue("3bVsLxHgCVzUWBVIZpAnWN", device_id=venue.spotify_player.playback_device_id)
 
         return render(
             request,
@@ -170,6 +173,27 @@ class PlayerRefreshView(TemplateView):
         return JsonResponse({"data": player})
 
 
+class QueueRefreshView(TemplateView):
+    """Refresh the queue."""
+
+    def post(self, request, **kwargs):
+        """
+        POST request for refreshing the queue.
+
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: The player in the following JSON format:
+        {
+            data: [queue]
+        }
+        """
+        spotify = kwargs.get("auth")
+        queue = get_template("marietje/queue.html").render(
+            render_queue_list(spotify, refresh=True)
+        )
+        return JsonResponse({"data": queue})
+
+
 def search_view(request, **kwargs):
 
     if request.method == "POST":
@@ -185,13 +209,49 @@ def search_view(request, **kwargs):
             result = spotify.spotify.search(query, limit=maximum, type="track")
             result = sorted(result["tracks"]["items"], key=lambda x: -x["popularity"])
             trimmed_result = [
-                {"name": x["name"], "artists": [y["name"] for y in x["artists"]]}
+                {
+                    "name": x["name"],
+                    "artists": [y["name"] for y in x["artists"]],
+                    "id": x["id"],
+                }
                 for x in result
             ]
+            rendered_results = render_to_string(
+                "marietje/search.html", {"refresh": True, "tracks": trimmed_result}
+            )
             return JsonResponse(
-                {"query": query, "id": request_id, "result": trimmed_result}
+                {"query": query, "id": request_id, "result": rendered_results}
             )
         else:
-            return JsonResponse({"query": "", "id": request_id, "result": []})
+            return JsonResponse({"query": "", "id": request_id, "result": ""})
+    else:
+        return Http404("This view can only be called with a POST request.")
+
+
+def add_view(request, **kwargs):
+
+    if request.method == "POST":
+        track_id = request.POST.get("id", None)
+        if track_id is not None:
+            spotify = kwargs.get("auth")
+            try:
+                track_info = spotify.spotify.track(track_id)
+                track = create_track_database_information(track_info)
+                SpotifyQueueItem.objects.create(
+                    track=track,
+                    spotify_settings_object=spotify,
+                    requested_by=request.user,
+                )
+                spotify.spotify.add_to_queue(
+                    track_id, device_id=spotify.playback_device_id
+                )
+            except spotipy.exceptions.SpotifyException as e:
+                logging.error(e)
+                return JsonResponse(
+                    {"error": True, "msg": "The track could not be added to the queue"}
+                )
+            return JsonResponse({"error": False, "msg": "Track added to queue"})
+        else:
+            return JsonResponse({"error": True, "msg": "No track ID specified"})
     else:
         return Http404("This view can only be called with a POST request.")

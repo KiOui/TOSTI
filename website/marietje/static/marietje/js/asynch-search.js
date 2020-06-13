@@ -3,12 +3,31 @@ let typingInterval = 200;
 
 let current_search_index = 0;
 
-function construct_list(data) {
+function display_message(data) {
 
 }
 
+function add_to_queue(track_id, callback/*, args */) {
+	let args = Array.prototype.slice.call(arguments, 2);
+    let csrf_token = get_cookie('csrftoken');
+	jQuery(function($) {
+		current_search_index = current_search_index + 1;
+		let data = {
+			'id': track_id,
+            'csrfmiddlewaretoken': csrf_token
+		};
+		$.ajax({type: 'POST', url: ADD_URL, data, dataType:'json', asynch: true, success:
+		function(data) {
+			args.unshift(data);
+			callback.apply(this, args);
+		}}).fail(function() {
+			console.log("Error while adding " + track_id + " to queue");
+		});
+	});
+}
+
 function update_search_list(data) {
-	RESULT_FIELD.innerHTML = construct_list(data);
+	RESULT_FIELD.innerHTML = data;
 }
 
 function query(search, callback/*, args */) {
@@ -24,7 +43,7 @@ function query(search, callback/*, args */) {
 		};
 		$.ajax({type: 'POST', url: SEARCH_URL, data, dataType:'json', asynch: true, success:
 		function(data) {
-            if (data.id === current_search_index && search === data.query) {
+            if (parseInt(data.id) === current_search_index && search === data.query) {
 				args.unshift(data.result);
                 callback.apply(this, args);
             }
@@ -37,7 +56,8 @@ function query(search, callback/*, args */) {
 $(document).ready(function() {
 	if (typeof(QUERY_FIELD) !== 'undefined' &&
         typeof(RESULT_FIELD) !== 'undefined' &&
-		typeof(SEARCH_URL) !== 'undefined') {
+		typeof(SEARCH_URL) !== 'undefined' &&
+		typeof(ADD_URL) !== 'undefined') {
 		QUERY_FIELD.addEventListener('keyup', () => {
 			clearTimeout(typingTimer);
 			let inputted = QUERY_FIELD.value;

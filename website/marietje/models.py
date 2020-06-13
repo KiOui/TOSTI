@@ -116,22 +116,35 @@ class SpotifySettings(models.Model):
 
 class SpotifyArtist(models.Model):
 
-    artist_name = models.CharField(max_length=2048, blank=False, null=False)
+    artist_name = models.CharField(
+        max_length=2048, blank=False, null=False, unique=True
+    )
     artist_id = models.CharField(max_length=2048, blank=False, null=False)
+
+    def __str__(self):
+        return self.artist_name
+
+
+class SpotifyTrack(models.Model):
+
+    track_id = models.CharField(max_length=256, blank=False, null=False, unique=True)
+    track_name = models.CharField(max_length=1024, blank=False, null=False)
+    track_artists = models.ManyToManyField(SpotifyArtist)
+
+    def __str__(self):
+        return self.track_name
 
 
 class SpotifyQueueItem(models.Model):
 
-    track_id = models.CharField(max_length=256, blank=False, null=False)
+    track = models.ForeignKey(SpotifyTrack, on_delete=models.SET_NULL, null=True)
     spotify_settings_object = models.ForeignKey(
         SpotifySettings, null=False, on_delete=models.CASCADE
     )
-    track_name = models.CharField(max_length=1024, blank=False, null=False)
-    track_artists = models.ManyToManyField(SpotifyArtist)
-    added = models.DateTimeField(auto_created=True)
+    added = models.DateTimeField(auto_now_add=True)
     requested_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
     class Meta:
         """Meta class."""
 
-        ordering = ["added", "track_name"]
+        ordering = ["-added"]

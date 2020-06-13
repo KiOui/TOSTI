@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.shortcuts import redirect
 
-from .models import SpotifySettings
+from .models import SpotifySettings, SpotifyTrack, SpotifyArtist, SpotifyQueueItem
 from .forms import SpotifySettingsAdminForm
 
 
@@ -23,3 +23,24 @@ class SpotifySettingsAdmin(admin.ModelAdmin):
         :return: a redirect to the authorize page
         """
         return redirect("marietje:authorize")
+
+
+@admin.register(SpotifyArtist)
+class SpotifyArtistAdmin(admin.ModelAdmin):
+    """Spotify Artist admin."""
+
+    list_display = ["artist_name", "artist_id"]
+
+
+@admin.register(SpotifyTrack)
+class SpotifyArtistAdmin(admin.ModelAdmin):
+    """Spotify Track admin."""
+
+    list_display = ["track_name", "track_id"]
+
+
+@admin.register(SpotifyQueueItem)
+class SpotifyQueueItemAdmin(admin.ModelAdmin):
+    """Spotify Queue item admin."""
+
+    list_display = ["track", "spotify_settings_object", "requested_by", "added"]
