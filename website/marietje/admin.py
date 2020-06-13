@@ -33,7 +33,7 @@ class SpotifyArtistAdmin(admin.ModelAdmin):
 
 
 @admin.register(SpotifyTrack)
-class SpotifyArtistAdmin(admin.ModelAdmin):
+class SpotifyTrackAdmin(admin.ModelAdmin):
     """Spotify Track admin."""
 
     list_display = ["track_name", "track_id"]
