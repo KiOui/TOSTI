@@ -327,7 +327,13 @@ def play_view(request, **kwargs):
             spotify.spotify.start_playback(device_id=spotify.playback_device_id)
         except spotipy.exceptions.SpotifyException as e:
             logging.error(e)
-        return JsonResponse({})
+            return JsonResponse(
+                {
+                    "error": True,
+                    "msg": "Failed to start playback, is the registered Spotify device online?",
+                }
+            )
+        return JsonResponse({"error": False})
     else:
         return Http404("This view can only be called with a POST request.")
 
@@ -347,7 +353,13 @@ def pause_view(request, **kwargs):
             spotify.spotify.pause_playback(spotify.playback_device_id)
         except spotipy.exceptions.SpotifyException as e:
             logging.error(e)
-        return JsonResponse({})
+            return JsonResponse(
+                {
+                    "error": True,
+                    "msg": "Failed to pause playback, is the registered Spotify device online?",
+                }
+            )
+        return JsonResponse({"error": False})
     else:
         return Http404("This view can only be called with a POST request.")
 
@@ -367,7 +379,13 @@ def next_view(request, **kwargs):
             spotify.spotify.next_track()
         except spotipy.exceptions.SpotifyException as e:
             logging.error(e)
-        return JsonResponse({})
+            return JsonResponse(
+                {
+                    "error": True,
+                    "msg": "Failed to skip track, is the registered Spotify device online?",
+                }
+            )
+        return JsonResponse({"error": False})
     else:
         return Http404("This view can only be called with a POST request.")
 
@@ -387,6 +405,12 @@ def previous_view(request, **kwargs):
             spotify.spotify.previous_track()
         except spotipy.exceptions.SpotifyException as e:
             logging.error(e)
-        return JsonResponse({})
+            return JsonResponse(
+                {
+                    "error": True,
+                    "msg": "Failed to rewind track, is the registered Spotify device online?",
+                }
+            )
+        return JsonResponse({"error": False})
     else:
         return Http404("This view can only be called with a POST request.")

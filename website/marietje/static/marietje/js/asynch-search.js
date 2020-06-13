@@ -11,9 +11,7 @@ function display_message(data) {
 	else {
 		MESSAGE_FIELD.appendChild(create_element('p', ['alert', 'alert-success'], data.msg));
 	}
-	if (typeof(update_queue) !== 'undefined') {
-		update_queue();
-	}
+	update_update_list();
 }
 
 function add_to_queue(track_id, callback/*, args */) {
