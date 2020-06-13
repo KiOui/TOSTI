@@ -18,7 +18,7 @@
         {% endif %}
     {% endfor %}
 </p>
-{% if request.user.is_staff %}
+{% if request and request.user.is_staff %}
     <div class="player-controls mb-5">
         <i class="fas fa-backward" onclick="send_post('{% url "marietje:player_previous" auth=auth %}', refresh_if_ready)"></i>
         {% if player.is_playing %}

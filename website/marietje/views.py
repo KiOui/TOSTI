@@ -9,6 +9,7 @@ from django.template.loader import get_template, render_to_string
 from django.views.generic import TemplateView
 
 from orders.permissions import StaffRequiredMixin
+from venues.models import Venue
 from .forms import SpotifyTokenForm
 from django.urls import reverse
 from .models import SpotifySettings, SpotifyQueueItem
@@ -19,7 +20,25 @@ from django.contrib.admin.views.decorators import staff_member_required
 COOKIE_CLIENT_ID = "client_id"
 
 
-class NowPlayingView(TemplateView, LoginRequiredMixin):
+class IndexView(TemplateView):
+    """Index view for marietje."""
+
+    template_name = "marietje/index.html"
+
+    def get(self, request, **kwargs):
+        """
+        GET request for IndexView.
+
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: a render of the index page
+        """
+        return render(
+            request, self.template_name, {"venues": Venue.objects.filter(active=True)}
+        )
+
+
+class NowPlayingView(LoginRequiredMixin, TemplateView):
     """Now playing view."""
 
     template_name = "marietje/now_playing.html"
@@ -49,7 +68,7 @@ class NowPlayingView(TemplateView, LoginRequiredMixin):
         )
 
 
-class SpofityAuthorizeView(TemplateView, StaffRequiredMixin):
+class SpofityAuthorizeView(StaffRequiredMixin, TemplateView):
     """Authorize a Spotify account."""
 
     template_name = "marietje/authorize.html"
@@ -89,7 +108,7 @@ class SpofityAuthorizeView(TemplateView, StaffRequiredMixin):
         return render(request, self.template_name, {"form": form})
 
 
-class SpotifyTokenView(TemplateView, StaffRequiredMixin):
+class SpotifyTokenView(StaffRequiredMixin, TemplateView):
     """Get a Spotify account token."""
 
     template_name = "marietje/token.html"
@@ -136,7 +155,7 @@ class SpotifyTokenView(TemplateView, StaffRequiredMixin):
             )
 
 
-class SpotifyAuthorizeSucceededView(TemplateView, StaffRequiredMixin):
+class SpotifyAuthorizeSucceededView(StaffRequiredMixin, TemplateView):
     """Authorize succeeded view."""
 
     template_name = "marietje/authorize_succeeded.html"
@@ -157,7 +176,7 @@ class SpotifyAuthorizeSucceededView(TemplateView, StaffRequiredMixin):
         )
 
 
-class PlayerRefreshView(TemplateView, LoginRequiredMixin):
+class PlayerRefreshView(LoginRequiredMixin, TemplateView):
     """Refresh the player."""
 
     @staticmethod
@@ -188,7 +207,7 @@ class PlayerRefreshView(TemplateView, LoginRequiredMixin):
         return JsonResponse({"data": self.render_template(spotify, request)})
 
 
-class QueueRefreshView(TemplateView, LoginRequiredMixin):
+class QueueRefreshView(LoginRequiredMixin, TemplateView):
     """Refresh the queue."""
 
     def post(self, request, **kwargs):

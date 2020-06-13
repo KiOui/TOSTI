@@ -1,5 +1,6 @@
 from django.urls import path, register_converter
 from .views import (
+    IndexView,
     NowPlayingView,
     SpofityAuthorizeView,
     SpotifyTokenView,
@@ -21,6 +22,7 @@ register_converter(VenueConverter, "venue")
 register_converter(SpotifyAuthCodeConverter, "auth")
 
 urlpatterns = [
+    path("index", IndexView.as_view(), name="index"),
     path("player/<venue:venue>", NowPlayingView.as_view(), name="now_playing"),
     path("admin/authorize", SpofityAuthorizeView.as_view(), name="authorize"),
     path("admin/token", SpotifyTokenView.as_view(), name="add_token"),
