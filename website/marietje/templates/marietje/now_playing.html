@@ -10,16 +10,17 @@
         {% else %}
             <div class="row flex-row-reverse">
                 <div class="col-md-5">
-                    {% include 'marietje/player.html' with player=player refresh=False %}
+                    <h2>Now playing</h2>
+                    {% render_player venue controls=request.user.is_staff %}
                 </div>
                 <div class="col-md">
                     <div class="mb-5">
                         <h2>Add a song</h2>
                         <p>Search a track below and add it to the queue.</p>
-                        {% include 'marietje/search.html' with refresh=False %}
+                        {% include 'marietje/search.html' with auth=venue.spotify_player refresh=False %}
                     </div>
                     <div class="mb-5">
-                        {% render_queue_list auth refresh=False %}
+                        {% render_queue_list venue refresh=False %}
                     </div>
                 </div>
             </div>

@@ -1,32 +1,35 @@
 {% load static %}
 
 {% if not refresh %}
-    <div class="player" id="player-container">
     <link rel="stylesheet" href="{% static 'marietje/css/player.css' %}"/>
+    <div class="player" id="player-container-{{ venue.id }}">
 {% endif %}
-<h2>Now playing</h2>
-<div class="w-50 mx-auto mb-2">
-    <img class="w-100" src="{{ player.image }}"/>
-</div>
-<p>{{ player.name }}</p>
-<p>
-    {% for artist in player.artists %}
-        {% if forloop.last %}
-            {{ artist }}
-        {% else %}
-            {{ artist }} -
-        {% endif %}
-    {% endfor %}
-</p>
-{% if request and request.user.is_staff %}
+{% if venue.spotify_player.currently_playing %}
+    <div class="w-50 mx-auto mb-2">
+        <img class="w-100" src="{{ venue.spotify_player.currently_playing.image }}"/>
+    </div>
+    <p>{{ venue.spotify_player.currently_playing.name }}</p>
+    <p>
+        {% for artist in venue.spotify_player.currently_playing.artists %}
+            {% if forloop.last %}
+                {{ artist }}
+            {% else %}
+                {{ artist }} -
+            {% endif %}
+        {% endfor %}
+    </p>
+{% else %}
+    <p>No currently playing track</p>
+{% endif %}
+{% if controls %}
     <div class="player-controls mb-5">
-        <i class="fas fa-backward" onclick="send_post('{% url "marietje:player_previous" auth=auth %}', refresh_if_ready)"></i>
-        {% if player.is_playing %}
-            <i class="fas fa-pause" onclick="send_post('{% url "marietje:player_pause" auth=auth %}', refresh_if_ready)"></i>
+        <i class="fas fa-backward" onclick="update_and_callback('{% url "marietje:player_previous" auth=venue.spotify_player %}', {}, update_update_list)"></i>
+        {% if venue.spotify_player.currently_playing.is_playing %}
+            <i class="fas fa-pause" onclick="update_and_callback('{% url "marietje:player_pause" auth=venue.spotify_player %}', {}, update_update_list)"></i>
         {% else %}
-            <i class="fas fa-play" onclick="send_post('{% url "marietje:player_play" auth=auth %}', refresh_if_ready)"></i>
+            <i class="fas fa-play" onclick="update_and_callback('{% url "marietje:player_play" auth=venue.spotify_player %}', {}, update_update_list)"></i>
         {% endif %}
-        <i class="fas fa-forward" onclick="send_post('{% url "marietje:player_next" auth=auth %}', refresh_if_ready)"></i>
+        <i class="fas fa-forward" onclick="update_and_callback('{% url "marietje:player_next" auth=venue.spotify_player %}', {}, update_update_list)"></i>
     </div>
 {% endif %}
 {% if not refresh %}
@@ -35,10 +38,13 @@
 
 {% if not refresh %}
     <script>
-        const PLAYER_CONTAINER = document.getElementById('player-container');
-        const PLAYER_CSRF_TOKEN = "{{ csrf_token }}";
-        const PLAYER_REFRESH_URL = "{% url 'marietje:player_refresh' auth=auth %}";
+        add_update_list(
+            update_and_replace,
+            [
+                "{% url 'marietje:player_refresh' venue=venue %}",
+                document.getElementById('player-container-{{ venue.id }}'),
+                {'controls': {% if controls %}true{% else %}false{% endif %}}
+            ]
+        );
     </script>
-    <script src="{% static 'marietje/js/asynch-update-player.js' %}"></script>
-    <script src="{% static 'marietje/js/asynch-controls.js' %}"></script>
 {% endif %}

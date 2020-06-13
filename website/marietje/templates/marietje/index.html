@@ -1,5 +1,5 @@
 {% extends 'tosti/base.html' %}
-{% load static %}
+{% load static queue %}
 
 {% block page %}
     <div class="container-sm">
@@ -7,10 +7,18 @@
         <p class="text-left">Marietje is the music control system for the student canteens in the Huygens building.
         Marietje was first using a database of songs uploaded by students but is now running off of the Spotify API.
         Select a venue below to add music to the playlist.</p>
-        {% for venue in venues %}
-            {% if venue.has_player %}
-                <a href="{% url 'marietje:now_playing' venue=venue %}">Go to {{ venue }}</a>
-            {% endif %}
-        {% endfor %}
+        <div class="card-deck justify-content-center">
+            {% for venue in venues %}
+                {% if venue.has_player %}
+                    <div class="card" style="max-width: 33%">
+                        <div class="card-body">
+                            <h2>{{ venue }}</h2>
+                            {% render_player venue controls=True %}
+                            <a href="{% url 'marietje:now_playing' venue=venue %}" class="w-100 btn btn-primary">Go to {{ venue }}</a>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
     </div>
 {% endblock %}

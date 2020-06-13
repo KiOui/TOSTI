@@ -32,10 +32,12 @@ urlpatterns = [
         name="authorization_succeeded",
     ),
     path(
-        "player/<auth:auth>/refresh", PlayerRefreshView.as_view(), name="player_refresh"
+        "player/<venue:venue>/refresh",
+        PlayerRefreshView.as_view(),
+        name="player_refresh",
     ),
     path(
-        "player/<auth:auth>/queue/refresh",
+        "player/<venue:venue>/queue/refresh",
         QueueRefreshView.as_view(),
         name="queue_refresh",
     ),

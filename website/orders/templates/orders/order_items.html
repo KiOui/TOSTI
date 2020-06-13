@@ -1,7 +1,7 @@
 {% load static %}
 
 {% if not refresh %}
-    <div class="container-sm" id="order-container">
+    <div class="container-sm" id="order-container-{{ shift.id }}">
 {% endif %}
     <h1>Orders</h1>
     <div id="item-orders">
@@ -18,8 +18,8 @@
                     </div>
                     <div class="button-row">
                         {% if admin %}
-                            <input type="button" class="checkbox-paid btn mr-2 {% if order.paid %}btn-success{% else %}btn-danger{% endif %}" onclick="update_order(this, {{ order.id }}, 'paid', update_checkbox);" value="Paid"/>
-                            <input type="button" class="checkbox-ready btn {% if order.ready %}btn-success{% else %}btn-danger{% endif %}" onclick="update_order(this, {{ order.id }}, 'ready', update_checkbox);" value="Ready"/>
+                            <input type="button" class="checkbox-paid btn mr-2 {% if order.paid %}btn-success{% else %}btn-danger{% endif %}" onclick="update_order('{% url "orders:order_update" %}', this, {{ order.id }}, 'paid', update_checkbox);" value="Paid"/>
+                            <input type="button" class="checkbox-ready btn {% if order.ready %}btn-success{% else %}btn-danger{% endif %}" onclick="update_order('{% url "orders:order_update" %}', this, {{ order.id }}, 'ready', update_checkbox);" value="Ready"/>
                         {% else %}
                             {% if order.user == user %}
                                 {% if order.ready and order.paid %}
@@ -64,17 +64,13 @@
 {% if not refresh %}
     <link rel="stylesheet" href="{% static 'orders/css/item-list.css' %}"/>
     <script>
-        const ORDER_CONTAINER = document.getElementById('order-container');
-        const ORDER_CSRF_TOKEN = "{{ csrf_token }}";
-        const ORDER_REFRESH_URL = "{% url 'orders:shift_refresh_orders' shift=shift %}";
-        {% if admin %}
-            const ORDER_REFRESH_ADMIN = true;
-            const ORDER_UPDATE_URL = "{% url 'orders:order_update' %}";
-        {% else %}
-            const ORDER_REFRESH_ADMIN = false;
-        {% endif %}
+        add_update_list(update_and_replace,
+            ["{% url 'orders:shift_refresh_orders' shift=shift %}",
+                document.getElementById('order-container-{{ shift.id }}'),
+                {"admin": {% if admin %}true{% else %}false{% endif %}}
+            ]
+        );
     </script>
-    <script src="{% static 'orders/js/asynch-update-orders.js' %}"></script>
     {% if admin %}
         <script src="{% static 'orders/js/asynch-alter-orders.js' %}"></script>
     {% endif %}

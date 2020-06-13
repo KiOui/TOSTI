@@ -54,12 +54,7 @@ class SpotifySettings(models.Model):
         currently_playing = self.spotify.currently_playing()
 
         if currently_playing is None:
-            return {
-                "image": "",
-                "name": "No currently playing track",
-                "artists": "",
-                "is_playing": False,
-            }
+            return False
 
         image = currently_playing["item"]["album"]["images"][0]["url"]
         name = currently_playing["item"]["name"]

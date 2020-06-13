@@ -14,7 +14,7 @@ from .forms import SpotifyTokenForm
 from django.urls import reverse
 from .models import SpotifySettings, SpotifyQueueItem
 from .services import create_track_database_information
-from .templatetags.queue import render_queue_list
+from .templatetags.queue import render_queue_list, render_player
 from django.contrib.admin.views.decorators import staff_member_required
 
 COOKIE_CLIENT_ID = "client_id"
@@ -57,15 +57,7 @@ class NowPlayingView(LoginRequiredMixin, TemplateView):
                 request, self.template_name, {"disabled": True, "venue": venue}
             )
 
-        return render(
-            request,
-            self.template_name,
-            {
-                "disabled": False,
-                "player": venue.spotify_player.currently_playing,
-                "auth": venue.spotify_player,
-            },
-        )
+        return render(request, self.template_name, {"disabled": False, "venue": venue},)
 
 
 class SpofityAuthorizeView(StaffRequiredMixin, TemplateView):
@@ -180,16 +172,19 @@ class PlayerRefreshView(LoginRequiredMixin, TemplateView):
     """Refresh the player."""
 
     @staticmethod
-    def render_template(spotify, request):
+    def render_template(venue, request, controls=False):
         """
         Render the player template.
 
-        :param spotify: a SpotifySettings object
+        :param venue: a Venue object
         :param request: the request
+        :param controls: whether or not to display the controls
         :return: a render of the player.html template
         """
         return get_template("marietje/player.html").render(
-            {"player": spotify.currently_playing, "auth": spotify, "request": request}
+            render_player(
+                venue, refresh=True, controls=request.user.is_staff and controls
+            )
         )
 
     def post(self, request, **kwargs):
@@ -203,8 +198,11 @@ class PlayerRefreshView(LoginRequiredMixin, TemplateView):
             data: [player]
         }
         """
-        spotify = kwargs.get("auth")
-        return JsonResponse({"data": self.render_template(spotify, request)})
+        venue = kwargs.get("venue")
+        controls = request.POST.get("controls", "false") == "true"
+        return JsonResponse(
+            {"data": self.render_template(venue, request, controls=controls)}
+        )
 
 
 class QueueRefreshView(LoginRequiredMixin, TemplateView):
@@ -221,9 +219,9 @@ class QueueRefreshView(LoginRequiredMixin, TemplateView):
             data: [queue]
         }
         """
-        spotify = kwargs.get("auth")
+        venue = kwargs.get("venue")
         queue = get_template("marietje/queue.html").render(
-            render_queue_list(spotify, refresh=True)
+            render_queue_list(venue, refresh=True)
         )
         return JsonResponse({"data": queue})
 
@@ -321,7 +319,7 @@ def play_view(request, **kwargs):
 
     :param request: the request
     :param kwargs: keyword arguments
-    :return: a JsonResponse object with the refreshed player
+    :return: nothing
     """
     if request.method == "POST":
         spotify = kwargs.get("auth")
@@ -329,9 +327,7 @@ def play_view(request, **kwargs):
             spotify.spotify.start_playback(device_id=spotify.playback_device_id)
         except spotipy.exceptions.SpotifyException as e:
             logging.error(e)
-        return JsonResponse(
-            {"data": PlayerRefreshView.render_template(spotify, request)}
-        )
+        return JsonResponse({})
     else:
         return Http404("This view can only be called with a POST request.")
 
@@ -343,7 +339,7 @@ def pause_view(request, **kwargs):
 
     :param request: the request
     :param kwargs: keyword arguments
-    :return: a JsonResponse object with the refreshed player
+    :return: nothing
     """
     if request.method == "POST":
         spotify = kwargs.get("auth")
@@ -351,9 +347,7 @@ def pause_view(request, **kwargs):
             spotify.spotify.pause_playback(spotify.playback_device_id)
         except spotipy.exceptions.SpotifyException as e:
             logging.error(e)
-        return JsonResponse(
-            {"data": PlayerRefreshView.render_template(spotify, request)}
-        )
+        return JsonResponse({})
     else:
         return Http404("This view can only be called with a POST request.")
 
@@ -365,7 +359,7 @@ def next_view(request, **kwargs):
 
     :param request: the request
     :param kwargs: keyword arguments
-    :return: a JsonResponse object with the refreshed player
+    :return: nothing
     """
     if request.method == "POST":
         spotify = kwargs.get("auth")
@@ -373,9 +367,7 @@ def next_view(request, **kwargs):
             spotify.spotify.next_track()
         except spotipy.exceptions.SpotifyException as e:
             logging.error(e)
-        return JsonResponse(
-            {"data": PlayerRefreshView.render_template(spotify, request)}
-        )
+        return JsonResponse({})
     else:
         return Http404("This view can only be called with a POST request.")
 
@@ -387,7 +379,7 @@ def previous_view(request, **kwargs):
 
     :param request: the request
     :param kwargs: keyword arguments
-    :return: a JsonResponse object with the refreshed player
+    :return: nothing
     """
     if request.method == "POST":
         spotify = kwargs.get("auth")
@@ -395,8 +387,6 @@ def previous_view(request, **kwargs):
             spotify.spotify.previous_track()
         except spotipy.exceptions.SpotifyException as e:
             logging.error(e)
-        return JsonResponse(
-            {"data": PlayerRefreshView.render_template(spotify, request)}
-        )
+        return JsonResponse({})
     else:
         return Http404("This view can only be called with a POST request.")
