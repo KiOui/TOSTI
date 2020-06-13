@@ -10,10 +10,10 @@
         <div class="card-deck justify-content-center">
             {% for venue in venues %}
                 {% if venue.has_player %}
-                    <div class="card" style="max-width: 33%">
+                    <div class="card mx-auto mx-md-2 mb-3" style="max-width: 33%; min-width: 300px;">
                         <div class="card-body">
                             <h2>{{ venue }}</h2>
-                            {% render_player venue controls=True %}
+                            {% render_player venue controls=request.user.is_staff %}
                             <a href="{% url 'marietje:now_playing' venue=venue %}" class="w-100 btn btn-primary">Go to {{ venue }}</a>
                         </div>
                     </div>
