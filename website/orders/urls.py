@@ -14,6 +14,7 @@ from .views import (
     RefreshHeaderView,
     RefreshAdminFooterView,
     RefreshShiftOrderView,
+    RefreshProductOverviewView,
 )
 from .converters import ShiftConverter, VenueConverter
 
@@ -48,6 +49,11 @@ urlpatterns = [
         "<shift:shift>/refresh/footer",
         RefreshAdminFooterView.as_view(),
         name="shift_refresh_admin_footer",
+    ),
+    path(
+        "<shift:shift>/refresh/overview",
+        RefreshProductOverviewView.as_view(),
+        name="shift_refresh_product_overview",
     ),
     path(
         "<shift:shift>/refresh/orders",
