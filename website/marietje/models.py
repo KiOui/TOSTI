@@ -108,6 +108,7 @@ class SpotifySettings(models.Model):
         :return: the display name of the user authenticated
         """
         if self.display_name is None:
+            print(self.spotify)
             self.display_name = self.spotify.me()["display_name"]
             self.save()
         return self.display_name
