@@ -3,7 +3,7 @@
 
 {% block page %}
     <div class="container-sm mb-5">
-        <h1 class="mb-5"><i class="fab fa-spotify"></i> Spotify Control panel</h1>
+        <h1 class="mb-5"><i class="fab fa-spotify"></i> Marietje - {{ venue.name }}</h1>
         {% if disabled %}
             <p class="alert alert-warning">There is no player specified for {{ venue.name }}. Contact an administrator
             to specify one for this venue.</p>
