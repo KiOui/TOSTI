@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.shortcuts import redirect
 
-from .models import SpotifySettings, SpotifyTrack, SpotifyArtist, SpotifyQueueItem
+from .models import SpotifySettings
 from .forms import SpotifySettingsAdminForm
 
 
