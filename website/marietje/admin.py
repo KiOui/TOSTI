@@ -6,15 +6,15 @@ from .forms import SpotifySettingsAdminForm
 
 
 @admin.register(SpotifyAccount)
-class SpotifySettingsAdmin(admin.ModelAdmin):
-    """Spotify Settings admin."""
+class SpotifyAccountAdmin(admin.ModelAdmin):
+    """Spotify account admin."""
 
     list_display = ["display_name", "playback_device_name", "client_id"]
     form = SpotifySettingsAdminForm
 
     def add_view(self, request, form_url="", extra_context=None):
         """
-        Add view of the Spotify Settings Admin.
+        Add view of the Spotify Account Admin.
 
         This function redirects to the authorize page
         :param request: the request
