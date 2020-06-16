@@ -1,0 +1,27 @@
+{% extends 'tosti/base.html' %}
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'users/css/centered-container.css' %}"/>
+{% endblock %}
+
+{% block page %}
+    <div class="container-sm flex-container">
+        <div class="container-centered">
+            <h1>Account</h1>
+            <p>The details of your account can be changed below.</p>
+            {% if succeeded %}
+                <p class="alert alert-success">Your details were saved succesfully.</p>
+            {% endif %}
+            <form class="centered-form" method="POST">
+                {% csrf_token %}
+                {{ form }}
+                <input type="submit" value="Change details" class="btn btn-primary"/>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}

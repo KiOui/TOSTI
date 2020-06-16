@@ -17,4 +17,25 @@ class LoginForm(forms.Form):
         :return: the cleaned username variable
         """
         username = self.cleaned_data.get("username")
-        return quote(username)
+        return quote(username.lower())
+
+
+class AccountForm(forms.Form):
+    """Form for changing account details."""
+
+    username = forms.CharField(
+        label="Username",
+        help_text="This is your username used to log you in to this website. "
+        "Your username can not be changed.",
+        widget=forms.TextInput(attrs={"readonly": "readonly"}),
+    )
+    first_name = forms.CharField(
+        label="First name",
+        help_text="If you have a first name registered, it will be "
+        "displayed instead of your username.",
+    )
+    last_name = forms.CharField(
+        label="Last name",
+        help_text="If you have a first name and last name registered, they "
+        "will both be displayed instead of your username.",
+    )

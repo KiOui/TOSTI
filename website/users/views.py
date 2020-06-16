@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model, login, logout
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.generic import TemplateView
-from .forms import LoginForm
+from .forms import LoginForm, AccountForm
 from .services import get_openid_request_url, get_full_user_id
 from django.conf import settings
 from .services import verify_request
@@ -116,3 +116,52 @@ class LogoutView(TemplateView):
             if next_page:
                 return redirect(next_page)
             return redirect("/")
+
+
+class AccountView(TemplateView):
+    """Account view."""
+
+    template_name = "users/account.html"
+
+    def get(self, request, **kwargs):
+        """
+        GET request for the account view.
+
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: a render of the account view
+        """
+        form = AccountForm(
+            initial={
+                "first_name": request.user.first_name,
+                "last_name": request.user.last_name,
+                "username": request.user.username,
+            }
+        )
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request, **kwargs):
+        """
+        POST request for account view.
+
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: a render of the account view, also changes first/last name if form is correct
+        """
+        form = AccountForm(request.POST)
+        if form.is_valid():
+            request.user.first_name = form.cleaned_data.get("first_name")
+            request.user.last_name = form.cleaned_data.get("last_name")
+            request.user.save()
+            form = AccountForm(
+                initial={
+                    "first_name": request.user.first_name,
+                    "last_name": request.user.last_name,
+                    "username": request.user.username,
+                }
+            )
+            return render(
+                request, self.template_name, {"form": form, "succeeded": True}
+            )
+
+        return render(request, self.template_name, {"form": form})
