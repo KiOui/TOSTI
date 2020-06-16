@@ -1,4 +1,7 @@
 
+let update_timer = null;
+let update_list = [];
+
 function create_element(tag_name, class_list, text) {
     let element = document.createElement(tag_name);
     for (let i = 0; i < class_list.length; i++) {
@@ -44,3 +47,53 @@ function set_list_cookie(name, list, days) {
         return false;
     }
 }
+
+function update_and_replace(data_url, container, data) {
+    let csrf_token = get_cookie('csrftoken');
+    jQuery(function($) {
+        data.csrfmiddlewaretoken = csrf_token;
+        $.ajax({type: 'POST', url: data_url, data, dataType:'json', asynch: true, success:
+            function(data) {
+                replace_container(container, data.data)
+            }}).fail(function() {
+                console.error("Failed to update " + container);
+            });
+        }
+    )
+}
+
+function update_and_callback(data_url, data, callback/*, args */) {
+    let args = Array.prototype.slice.call(arguments, 3);
+    let csrf_token = get_cookie('csrftoken');
+    jQuery(function($) {
+        data.csrfmiddlewaretoken = csrf_token;
+        $.ajax({type: 'POST', url: data_url, data, dataType:'json', asynch: true, success:
+            function(data) {
+                args.unshift(data);
+                callback.apply(this, args);
+            }}).fail(function() {
+                console.error("Failed to update " + container);
+            });
+        }
+    )
+}
+
+function replace_container(container, data) {
+    container.innerHTML = data;
+}
+
+function add_update_list(func, args) {
+    update_list.push({func: func, args: args});
+}
+
+function update_update_list() {
+    clearTimeout(update_timer);
+    for (let i = 0; i < update_list.length; i++) {
+        update_list[i].func.apply(this, update_list[i].args);
+    }
+    update_timer = setTimeout(update_update_list, 5000);
+}
+
+$(document).ready(function() {
+    update_update_list();
+});

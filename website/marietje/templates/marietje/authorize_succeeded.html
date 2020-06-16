@@ -1,0 +1,14 @@
+{% extends 'tosti/base.html' %}
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'users/css/centered-container.css' %}"/>
+{% endblock %}
+
+{% block page %}
+    <div class="container-sm">
+        <h1 class="mb-3"><i class="fab fa-spotify"></i> Spotify Authorization</h1>
+        <p class="text-left">Authorization finished successfully! You are now authorized for the account {{ username }}.
+        Continue in the <a href="{% url "admin:marietje_spotifyaccount_change" spotify.id %}">administration view</a> for further setup.</p>
+    </div>
+{% endblock %}

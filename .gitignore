@@ -142,3 +142,6 @@ docker-compose.yml
 /database_init/*.sql
 /log
 
+# Settings cache (Spotify)
+/website/cache
+

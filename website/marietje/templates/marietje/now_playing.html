@@ -1,0 +1,29 @@
+{% extends 'tosti/base.html' %}
+{% load static queue %}
+
+{% block page %}
+    <div class="container-sm mb-5">
+        <h1 class="mb-5"><i class="fab fa-spotify"></i> Marietje - {{ venue.name }}</h1>
+        {% if disabled %}
+            <p class="alert alert-warning">There is no player specified for {{ venue.name }}. Contact an administrator
+            to specify one for this venue.</p>
+        {% else %}
+            <div class="row flex-row-reverse">
+                <div class="col-md-5">
+                    <h2>Now playing</h2>
+                    {% render_player spotify controls=request.user.is_staff %}
+                </div>
+                <div class="col-md">
+                    <div class="mb-5">
+                        <h2>Add a song</h2>
+                        <p>Search a track below and add it to the queue.</p>
+                        {% include 'marietje/search.html' with spotify=spotify refresh=False %}
+                    </div>
+                    <div class="mb-5">
+                        {% render_queue_list spotify refresh=False %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

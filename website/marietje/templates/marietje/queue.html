@@ -1,0 +1,37 @@
+{% load static %}
+
+{% if not refresh %}
+    <link rel="stylesheet" href="{% static 'marietje/css/search.css' %}"/>
+    <h2>Queued songs</h2>
+    <p>Only songs queued in Marietje are displayed here.</p>
+    <div id="queue-container-{{ spotify.id }}">
+{% endif %}
+{% if queue %}
+    <div class="d-flex my-2">
+        <div class="flex-equal-width">Track</div>
+        <div class="flex-equal-width">Artists</div>
+        <div class="flex-equal-width">Requested by</div>
+        <div class="flex-equal-width">Added at</div>
+    </div>
+    <div class="border"></div>
+    {% for item in queue %}
+        <div class="d-flex my-2">
+            <div class="flex-equal-width">{{ item.track.track_name }}</div>
+            <div class="flex-equal-width">{% for artist in item.track.track_artists.all %}{{ artist.artist_name }}{% if not forloop.last %}, {% endif %}{% endfor %}</div>
+            <div class="flex-equal-width">{{ item.requested_by }}</div>
+            <div class="flex-equal-width">{{ item.added }}</div>
+        </div>
+        <div class="border"></div>
+    {% endfor %}
+{% else %}
+    <p class="alert alert-warning">There is currently no track in the queue</p>
+{% endif %}
+{% if not refresh %}
+    </div>
+{% endif %}
+
+{% if not refresh %}
+    <script>
+        add_update_list(update_and_replace, ["{% url 'marietje:queue_refresh' spotify=spotify %}", document.getElementById('queue-container-{{ spotify.id }}'), {}]);
+    </script>
+{% endif %}
