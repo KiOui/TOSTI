@@ -1,0 +1,25 @@
+{% extends 'tosti/base.html' %}
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'users/css/centered-container.css' %}"/>
+{% endblock %}
+
+{% block page %}
+    <div class="container-sm">
+        <h1 class="mb-3"><i class="fab fa-spotify"></i> Spotify Authorization</h1>
+        <p class="text-left">Spotify can be connected to this application via the OAuth2 protocol. Connecting your Spotify
+        account will enable you to control it from the web pages within this application. The steps to take to connect
+        Spotify with this explanation are stated below.</p>
+        <ol style="font-size: 1.5rem;">
+            <li>First you need to create a Free or Paid Spotify account at <a href="https://spotify.com">the spotify website</a>.</li>
+            <li>Next, you need to log in to the <a href="https://developer.spotify.com/dashboard">Spotify developer portal</a> and agree with the terms of service.</li>
+            <li>Now, you need to <a href="https://developer.spotify.com/documentation/general/guides/app-settings/#register-your-app">register an application</a> and add this web URL ("{{ request.scheme }}://{{ request.get_host }}{% url "marietje:add_token" %}") to the authorized redirect URLs of the application.</li>
+        </ol>
+        <form method="POST" class="centered-form">
+            {% csrf_token %}
+            {{ form }}
+            <input class="btn btn-primary" type="submit" value="Authorize"/>
+        </form>
+    </div>
+{% endblock %}

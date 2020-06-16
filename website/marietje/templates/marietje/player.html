@@ -1,0 +1,50 @@
+{% load static %}
+
+{% if not refresh %}
+    <link rel="stylesheet" href="{% static 'marietje/css/player.css' %}"/>
+    <div class="player" id="player-container-{{ spotify.id }}">
+{% endif %}
+{% if spotify.currently_playing %}
+    <div class="w-50 mx-auto mb-2">
+        <img class="w-100" src="{{ spotify.currently_playing.image }}"/>
+    </div>
+    <p>{{ spotify.currently_playing.name }}</p>
+    <p>
+        {% for artist in spotify.currently_playing.artists %}
+            {% if forloop.last %}
+                {{ artist }}
+            {% else %}
+                {{ artist }} -
+            {% endif %}
+        {% endfor %}
+    </p>
+{% else %}
+    <p>No currently playing track</p>
+{% endif %}
+{% if controls %}
+    <div class="player-controls mb-5">
+        <i class="fas fa-backward" onclick="update_and_callback('{% url "marietje:player_previous" spotify=spotify %}', {}, update_update_list)"></i>
+        {% if spotify.currently_playing.is_playing %}
+            <i class="fas fa-pause" onclick="update_and_callback('{% url "marietje:player_pause" spotify=spotify %}', {}, update_update_list)"></i>
+        {% else %}
+            <i class="fas fa-play" onclick="update_and_callback('{% url "marietje:player_play" spotify=spotify %}', {}, update_update_list)"></i>
+        {% endif %}
+        <i class="fas fa-forward" onclick="update_and_callback('{% url "marietje:player_next" spotify=spotify %}', {}, update_update_list)"></i>
+    </div>
+{% endif %}
+{% if not refresh %}
+    </div>
+{% endif %}
+
+{% if not refresh %}
+    <script>
+        add_update_list(
+            update_and_replace,
+            [
+                "{% url 'marietje:player_refresh' spotify=spotify %}",
+                document.getElementById('player-container-{{ spotify.id }}'),
+                {'controls': {% if controls %}true{% else %}false{% endif %}}
+            ]
+        );
+    </script>
+{% endif %}

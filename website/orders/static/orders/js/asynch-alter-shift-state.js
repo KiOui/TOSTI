@@ -89,11 +89,8 @@ function succeeded_add_capacity(data) {
 }
 
 function update_page() {
-    if (typeof(update_header) !== 'undefined') {
-        update_header();
-    }
-    if (typeof(update_footer) !== 'undefined') {
-        update_footer();
+    if (typeof(update_update_list) !== 'undefined') {
+        update_update_list();
     }
 }
 

@@ -61,3 +61,8 @@ if os.environ.get("DJANGO_EMAIL_HOST"):
     EMAIL_HOST_PASSWORD = os.environ.get("DJANGO_EMAIL_HOST_PASSWORD")
     EMAIL_USE_TLS = os.environ.get("DJANGO_EMAIL_USE_TLS", False) == "True"
     EMAIL_USE_SSL = os.environ.get("DJANGO_EMAIL_USE_SSL", False) == "True"
+
+if os.environ.get("DJANGO_SPOTIFY_CACHE_PATH"):
+    SPOTIFY_CACHE_PATH = os.environ.get("DJANGO_SPOTIFY_CACHE_PATH")
+else:
+    SPOTIFY_CACHE_PATH = os.path.join(BASE_DIR, "cache")  # noqa

@@ -6,7 +6,7 @@
 <div class="container text-center">
     <div class="row flex-grow-1 navbar-collapse collapse" id="footer-menu">
         <div class="col expand-mobile">
-            <div id="shift-status" class="btn-ml m-auto cursor-pointer {% if shift.can_order %}bg-success{% else %}bg-danger{% endif %}" onclick="toggle_shift_activation(this);">
+            <div id="shift-status-{{ shift.id }}" class="btn-ml m-auto cursor-pointer {% if shift.can_order %}bg-success{% else %}bg-danger{% endif %}" onclick="toggle_shift_activation(this);">
                 <i class="far fa-hand-paper"></i>
                 <p class="font-footer">Allow/disallow orders</p>
             </div>
@@ -46,10 +46,14 @@
 
 {% if not refresh %}
     <link rel="stylesheet" href="{% static 'orders/css/admin-footer.css' %}"/>
-    <script>
-        const FOOTER_CSRF_TOKEN = "{{ csrf_token }}";
-        const FOOTER_REFRESH_URL = "{% url 'orders:shift_refresh_admin_footer' shift=shift %}";
-        const FOOTER_SHIFT_STATUS = document.getElementById('shift-status');
-    </script>
     <script src="{% static 'orders/js/asynch-update-admin-footer.js' %}"></script>
+    <script>
+        add_update_list(update_and_callback,
+            ["{% url 'orders:shift_refresh_admin_footer' shift=shift %}",
+                {},
+                replace_footer,
+                document.getElementById('shift-status-{{ shift.id }}')
+            ]
+        );
+    </script>
 {% endif %}
