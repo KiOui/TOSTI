@@ -5,19 +5,15 @@ register = template.Library()
 
 
 @register.inclusion_tag("marietje/queue.html")
-def render_queue_list(venue, refresh=False, max_items=10):
+def render_queue_list(spotify, refresh=False, max_items=10):
     """Render queue."""
-    if venue.spotify_player is None:
-        raise ValueError("No spotify player specified for this venue")
-    queue = SpotifyQueueItem.objects.filter(
-        spotify_settings_object=venue.spotify_player
-    ).order_by("-added")[:max_items]
-    return {"queue": queue, "refresh": refresh, "venue": venue}
+    queue = SpotifyQueueItem.objects.filter(spotify_settings_object=spotify).order_by(
+        "-added"
+    )[:max_items]
+    return {"queue": queue, "refresh": refresh, "spotify": spotify}
 
 
 @register.inclusion_tag("marietje/player.html")
-def render_player(venue, refresh=False, controls=False):
+def render_player(spotify, refresh=False, controls=False):
     """Render queue."""
-    if venue.spotify_player is None:
-        raise ValueError("No spotify player specified for this venue")
-    return {"refresh": refresh, "venue": venue, "controls": controls}
+    return {"refresh": refresh, "spotify": spotify, "controls": controls}

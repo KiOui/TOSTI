@@ -12,7 +12,7 @@ from orders.permissions import StaffRequiredMixin
 from venues.models import Venue
 from .forms import SpotifyTokenForm
 from django.urls import reverse
-from .models import SpotifySettings, SpotifyQueueItem
+from .models import SpotifyAccount, SpotifyQueueItem
 from .services import create_track_database_information
 from .templatetags.queue import render_queue_list, render_player
 from django.contrib.admin.views.decorators import staff_member_required
@@ -34,7 +34,7 @@ class IndexView(TemplateView):
         :return: a render of the index page
         """
         return render(
-            request, self.template_name, {"venues": Venue.objects.filter(active=True)}
+            request, self.template_name, {"players": SpotifyAccount.objects.all()}
         )
 
 
@@ -52,12 +52,17 @@ class NowPlayingView(LoginRequiredMixin, TemplateView):
         :return: a render of the now playing page
         """
         venue = kwargs.get("venue")
-        if not venue.has_player or not venue.spotify_player.configured:
+        player = SpotifyAccount.get_player(venue)
+        if player is None or not player.configured:
             return render(
                 request, self.template_name, {"disabled": True, "venue": venue}
             )
 
-        return render(request, self.template_name, {"disabled": False, "venue": venue},)
+        return render(
+            request,
+            self.template_name,
+            {"disabled": False, "venue": venue, "spotify": player},
+        )
 
 
 class SpofityAuthorizeView(StaffRequiredMixin, TemplateView):
@@ -86,7 +91,7 @@ class SpofityAuthorizeView(StaffRequiredMixin, TemplateView):
         """
         form = SpotifyTokenForm(request.POST)
         if form.is_valid():
-            spotify_auth_code, _ = SpotifySettings.objects.get_or_create(
+            spotify_auth_code, _ = SpotifyAccount.objects.get_or_create(
                 client_id=form.cleaned_data.get("client_id")
             )
             spotify_auth_code.client_secret = form.cleaned_data.get("client_secret")
@@ -117,8 +122,8 @@ class SpotifyTokenView(StaffRequiredMixin, TemplateView):
         if code is not None:
             client_id = request.COOKIES.get(COOKIE_CLIENT_ID, None)
             try:
-                spotify_auth_code = SpotifySettings.objects.get(client_id=client_id)
-            except SpotifySettings.DoesNotExist:
+                spotify_auth_code = SpotifyAccount.objects.get(client_id=client_id)
+            except SpotifyAccount.DoesNotExist:
                 return render(
                     request, self.template_name, {"error": "Client ID was not found."}
                 )
@@ -126,7 +131,7 @@ class SpotifyTokenView(StaffRequiredMixin, TemplateView):
             access_token = spotify_auth_code.auth.get_access_token(code=code)
             if access_token is not None:
                 response = redirect(
-                    "marietje:authorization_succeeded", auth=spotify_auth_code
+                    "marietje:authorization_succeeded", spotify=spotify_auth_code
                 )
             else:
                 response = render(
@@ -160,11 +165,11 @@ class SpotifyAuthorizeSucceededView(StaffRequiredMixin, TemplateView):
         :param kwargs: keyword arguments
         :return: a render of the authorize succeeded page
         """
-        auth = kwargs.get("auth")
+        spotify = kwargs.get("spotify")
         return render(
             request,
             self.template_name,
-            {"username": auth.get_display_name, "auth": auth},
+            {"username": spotify.get_display_name, "spotify": spotify},
         )
 
 
@@ -172,7 +177,7 @@ class PlayerRefreshView(LoginRequiredMixin, TemplateView):
     """Refresh the player."""
 
     @staticmethod
-    def render_template(venue, request, controls=False):
+    def render_template(spotify, request, controls=False):
         """
         Render the player template.
 
@@ -183,7 +188,7 @@ class PlayerRefreshView(LoginRequiredMixin, TemplateView):
         """
         return get_template("marietje/player.html").render(
             render_player(
-                venue, refresh=True, controls=request.user.is_staff and controls
+                spotify, refresh=True, controls=request.user.is_staff and controls
             )
         )
 
@@ -198,10 +203,10 @@ class PlayerRefreshView(LoginRequiredMixin, TemplateView):
             data: [player]
         }
         """
-        venue = kwargs.get("venue")
+        spotify = kwargs.get("spotify")
         controls = request.POST.get("controls", "false") == "true"
         return JsonResponse(
-            {"data": self.render_template(venue, request, controls=controls)}
+            {"data": self.render_template(spotify, request, controls=controls)}
         )
 
 
@@ -219,9 +224,9 @@ class QueueRefreshView(LoginRequiredMixin, TemplateView):
             data: [queue]
         }
         """
-        venue = kwargs.get("venue")
+        spotify = kwargs.get("spotify")
         queue = get_template("marietje/queue.html").render(
-            render_queue_list(venue, refresh=True)
+            render_queue_list(spotify, refresh=True)
         )
         return JsonResponse({"data": queue})
 
@@ -249,7 +254,7 @@ def search_view(request, **kwargs):
             maximum = 5
 
         if query is not None:
-            spotify = kwargs.get("auth")
+            spotify = kwargs.get("spotify")
             result = spotify.spotify.search(query, limit=maximum, type="track")
             result = sorted(result["tracks"]["items"], key=lambda x: -x["popularity"])
             trimmed_result = [
@@ -288,7 +293,7 @@ def add_view(request, **kwargs):
     if request.method == "POST":
         track_id = request.POST.get("id", None)
         if track_id is not None:
-            spotify = kwargs.get("auth")
+            spotify = kwargs.get("spotify")
             try:
                 track_info = spotify.spotify.track(track_id)
                 track = create_track_database_information(track_info)
@@ -322,7 +327,7 @@ def play_view(request, **kwargs):
     :return: nothing
     """
     if request.method == "POST":
-        spotify = kwargs.get("auth")
+        spotify = kwargs.get("spotify")
         try:
             spotify.spotify.start_playback(device_id=spotify.playback_device_id)
         except spotipy.exceptions.SpotifyException as e:
@@ -348,7 +353,7 @@ def pause_view(request, **kwargs):
     :return: nothing
     """
     if request.method == "POST":
-        spotify = kwargs.get("auth")
+        spotify = kwargs.get("spotify")
         try:
             spotify.spotify.pause_playback(spotify.playback_device_id)
         except spotipy.exceptions.SpotifyException as e:
@@ -374,7 +379,7 @@ def next_view(request, **kwargs):
     :return: nothing
     """
     if request.method == "POST":
-        spotify = kwargs.get("auth")
+        spotify = kwargs.get("spotify")
         try:
             spotify.spotify.next_track()
         except spotipy.exceptions.SpotifyException as e:
@@ -400,7 +405,7 @@ def previous_view(request, **kwargs):
     :return: nothing
     """
     if request.method == "POST":
-        spotify = kwargs.get("auth")
+        spotify = kwargs.get("spotify")
         try:
             spotify.spotify.previous_track()
         except spotipy.exceptions.SpotifyException as e:

@@ -7,13 +7,13 @@
         <p class="text-left">Marietje is the music control system for the student canteens in the Huygens building. You
             can add songs to the queue of the canteens by selecting a canteen below and adding your song.</p>
         <div class="card-deck justify-content-center">
-            {% for venue in venues %}
-                {% if venue.has_player %}
+            {% for player in players %}
+                {% if player.configured and player.venue and player.venue.active %}
                     <div class="card mx-auto mx-md-2 mb-3" style="max-width: 33%; min-width: 300px;">
                         <div class="card-body">
-                            <h2>{{ venue }}</h2>
-                            {% render_player venue controls=request.user.is_staff %}
-                            <a href="{% url 'marietje:now_playing' venue=venue %}" class="w-100 btn btn-primary">Go to {{ venue }}</a>
+                            <h2>{{ player.venue }}</h2>
+                            {% render_player player controls=request.user.is_staff %}
+                            <a href="{% url 'marietje:now_playing' venue=player.venue %}" class="w-100 btn btn-primary">Go to {{ player.venue }}</a>
                         </div>
                     </div>
                 {% endif %}

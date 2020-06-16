@@ -1,11 +1,11 @@
 from django.contrib import admin
 from django.shortcuts import redirect
 
-from .models import SpotifySettings
+from .models import SpotifyAccount
 from .forms import SpotifySettingsAdminForm
 
 
-@admin.register(SpotifySettings)
+@admin.register(SpotifyAccount)
 class SpotifySettingsAdmin(admin.ModelAdmin):
     """Spotify Settings admin."""
 

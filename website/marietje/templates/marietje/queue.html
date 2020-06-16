@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="{% static 'marietje/css/search.css' %}"/>
     <h2>Queued songs</h2>
     <p>Only songs queued in Marietje are displayed here.</p>
-    <div id="queue-container-{{ venue.id }}">
+    <div id="queue-container-{{ spotify.id }}">
 {% endif %}
 {% if queue %}
     <div class="d-flex my-2">
@@ -32,6 +32,6 @@
 
 {% if not refresh %}
     <script>
-        add_update_list(update_and_replace, ["{% url 'marietje:queue_refresh' venue=venue %}", document.getElementById('queue-container-{{ venue.id }}'), {}]);
+        add_update_list(update_and_replace, ["{% url 'marietje:queue_refresh' spotify=spotify %}", document.getElementById('queue-container-{{ spotify.id }}'), {}]);
     </script>
 {% endif %}

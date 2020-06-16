@@ -9,6 +9,6 @@
     <div class="container-sm">
         <h1 class="mb-3"><i class="fab fa-spotify"></i> Spotify Authorization</h1>
         <p class="text-left">Authorization finished successfully! You are now authorized for the account {{ username }}.
-        Continue in the <a href="{% url "admin:marietje_spotifysettings_change" auth.id %}">administration view</a> for further setup.</p>
+        Continue in the <a href="{% url "admin:marietje_spotifyaccount_change" spotify.id %}">administration view</a> for further setup.</p>
     </div>
 {% endblock %}

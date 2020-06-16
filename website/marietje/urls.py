@@ -14,12 +14,12 @@ from .views import (
     play_view,
     pause_view,
 )
-from .converters import SpotifyAuthCodeConverter
+from .converters import SpotifyAccountConverter
 from venues.converters import VenueConverter
 
 
 register_converter(VenueConverter, "venue")
-register_converter(SpotifyAuthCodeConverter, "auth")
+register_converter(SpotifyAccountConverter, "spotify")
 
 urlpatterns = [
     path("index", IndexView.as_view(), name="index"),
@@ -27,24 +27,24 @@ urlpatterns = [
     path("admin/authorize", SpofityAuthorizeView.as_view(), name="authorize"),
     path("admin/token", SpotifyTokenView.as_view(), name="add_token"),
     path(
-        "admin/succeeded/<auth:auth>",
+        "admin/succeeded/<spotify:spotify>",
         SpotifyAuthorizeSucceededView.as_view(),
         name="authorization_succeeded",
     ),
     path(
-        "player/<venue:venue>/refresh",
+        "player/<spotify:spotify>/refresh",
         PlayerRefreshView.as_view(),
         name="player_refresh",
     ),
     path(
-        "player/<venue:venue>/queue/refresh",
+        "player/<spotify:spotify>/queue/refresh",
         QueueRefreshView.as_view(),
         name="queue_refresh",
     ),
-    path("player/<auth:auth>/search", search_view, name="player_search"),
-    path("player/<auth:auth>/add", add_view, name="player_add"),
-    path("player/<auth:auth>/play", play_view, name="player_play"),
-    path("player/<auth:auth>/pause", pause_view, name="player_pause"),
-    path("player/<auth:auth>/next", next_view, name="player_next"),
-    path("player/<auth:auth>/previous", previous_view, name="player_previous"),
+    path("player/<spotify:spotify>/search", search_view, name="player_search"),
+    path("player/<spotify:spotify>/add", add_view, name="player_add"),
+    path("player/<spotify:spotify>/play", play_view, name="player_play"),
+    path("player/<spotify:spotify>/pause", pause_view, name="player_pause"),
+    path("player/<spotify:spotify>/next", next_view, name="player_next"),
+    path("player/<spotify:spotify>/previous", previous_view, name="player_previous"),
 ]

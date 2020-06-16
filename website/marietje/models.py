@@ -5,11 +5,12 @@ from django.db import models
 from django.conf import settings
 from spotipy import SpotifyOAuth
 from spotipy.client import Spotify
+from venues.models import Venue
 
 User = get_user_model()
 
 
-class SpotifySettings(models.Model):
+class SpotifyAccount(models.Model):
     """Spotify Auth model."""
 
     SCOPE = (
@@ -25,6 +26,22 @@ class SpotifySettings(models.Model):
     client_id = models.CharField(max_length=256, null=False, blank=False, unique=True)
     client_secret = models.CharField(max_length=256, null=False, blank=False)
     redirect_uri = models.CharField(max_length=512, null=False, blank=False)
+    venue = models.OneToOneField(
+        Venue, on_delete=models.SET_NULL, null=True, blank=True
+    )
+
+    @staticmethod
+    def get_player(venue):
+        """
+        Get a corresponding SpotifyAccount of a venue.
+
+        :param venue: the venue to get the SpotifyAccount object for
+        :return: None if the SpotifyAccount object does not exists, The SpotifyAccount object otherwise
+        """
+        try:
+            return SpotifyAccount.objects.get(venue=venue)
+        except SpotifyAccount.DoesNotExist:
+            return None
 
     @property
     def configured(self):
@@ -169,7 +186,7 @@ class SpotifyQueueItem(models.Model):
 
     track = models.ForeignKey(SpotifyTrack, on_delete=models.SET_NULL, null=True)
     spotify_settings_object = models.ForeignKey(
-        SpotifySettings, null=False, on_delete=models.CASCADE
+        SpotifyAccount, null=False, on_delete=models.CASCADE
     )
     added = models.DateTimeField(auto_now_add=True)
     requested_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)

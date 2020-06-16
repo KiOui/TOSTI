@@ -1,5 +1,5 @@
 from django import forms
-from .models import SpotifySettings
+from .models import SpotifyAccount
 
 
 class SpotifyTokenForm(forms.Form):
@@ -100,5 +100,5 @@ class SpotifySettingsAdminForm(forms.ModelForm):
     class Meta:
         """Meta class."""
 
-        model = SpotifySettings
+        model = SpotifyAccount
         exclude = ["playback_device_name"]
