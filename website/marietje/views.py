@@ -9,7 +9,6 @@ from django.template.loader import get_template, render_to_string
 from django.views.generic import TemplateView
 
 from orders.permissions import StaffRequiredMixin
-from venues.models import Venue
 from .forms import SpotifyTokenForm
 from django.urls import reverse
 from .models import SpotifyAccount, SpotifyQueueItem
