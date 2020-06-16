@@ -9,19 +9,19 @@ class SpotifyTokenForm(forms.Form):
     client_secret = forms.CharField(required=True, label="Client Secret")
 
 
-class SpotifySettingsAdminForm(forms.ModelForm):
+class SpotifyAccountAdminForm(forms.ModelForm):
     """Form for the administration of Spotify Settings."""
 
     playback_device_id = forms.ChoiceField(required=False)
 
     def __init__(self, *args, **kwargs):
         """
-        Initialise SpotifySettingsAdminForm.
+        Initialise SpotifyAccountAdminForm.
 
         :param args: arguments
         :param kwargs: keyword arguments
         """
-        super(SpotifySettingsAdminForm, self).__init__(*args, **kwargs)
+        super(SpotifyAccountAdminForm, self).__init__(*args, **kwargs)
         instance = kwargs.get("instance", None)
         if instance is not None:
             self.__original_playback_device_id = instance.playback_device_id
@@ -75,9 +75,9 @@ class SpotifySettingsAdminForm(forms.ModelForm):
         Save this form.
 
         :param commit: whether or not to call the save method
-        :return: an object of type SpotifySettings
+        :return: an object of type SpotifyAccount
         """
-        obj = super(SpotifySettingsAdminForm, self).save(commit=False)
+        obj = super(SpotifyAccountAdminForm, self).save(commit=False)
         if (
             obj.playback_device_id is not None
             and self.__original_playback_device_id != obj.playback_device_id
