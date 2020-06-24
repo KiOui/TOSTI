@@ -11,7 +11,7 @@ jobs:
         runs-on: ubuntu-18.04
         env:
             DOCKER_LATEST: docker.pkg.github.com/kioui/tosti/tosti:latest
-            DOCKER_TAG_PRODUCTION: docker.pkg.github.com/kioui/tosti/tosti:${{ github.ref }}
+            DOCKER_TAG_PRODUCTION: docker.pkg.github.com/kioui/tosti/tosti:${{ github.sha }}
         steps:
             - name: Checkout repository
               uses: actions/checkout@v2
