@@ -10,8 +10,8 @@ jobs:
         name: "Build Production Docker Image"
         runs-on: "ubuntu-latest"
         env:
-            DOCKER_LATEST: {{ secrets.DOCKER_URL }}:latest
-            DOCKER_TAG_PRODUCTION: {{ secrets.DOCKER_URL }}:${{ github.sha }}
+            DOCKER_LATEST: ${{ secrets.DOCKER_URL }}:latest
+            DOCKER_TAG_PRODUCTION: ${{ secrets.DOCKER_URL }}:${{ github.sha }}
         steps:
             - name: "Checkout repository"
               uses: "actions/checkout@v2"
