@@ -66,3 +66,6 @@ if os.environ.get("DJANGO_SPOTIFY_CACHE_PATH"):
     SPOTIFY_CACHE_PATH = os.environ.get("DJANGO_SPOTIFY_CACHE_PATH")
 else:
     SPOTIFY_CACHE_PATH = os.path.join(BASE_DIR, "cache")  # noqa
+
+if os.environ.get("GOOGLE_ANALYTICS_KEY"):
+    GOOGLE_ANALYTICS_KEY = os.environ.get("GOOGLE_ANALYTICS_KEY")
