@@ -10,8 +10,8 @@ jobs:
         name: "Build Production Docker Image"
         runs-on: "ubuntu-latest"
         env:
-            DOCKER_LATEST: docker.pkg.github.com/kioui/tosti/tosti:latest
-            DOCKER_TAG_PRODUCTION: docker.pkg.github.com/kioui/tosti/tosti:${{ github.sha }}
+            DOCKER_LATEST: {{ secrets.DOCKER_URL }}:latest
+            DOCKER_TAG_PRODUCTION: {{ secrets.DOCKER_URL }}:${{ github.sha }}
         steps:
             - name: "Checkout repository"
               uses: "actions/checkout@v2"
@@ -20,7 +20,7 @@ jobs:
               run: docker build --tag "${DOCKER_LATEST}" .
 
             - name: "Login to GitHub"
-              run: echo "${{ secrets.GH_TOKEN }}" | docker login docker.pkg.github.com -u KiOui --password-stdin
+              run: echo "${{ secrets.GH_TOKEN }}" | docker login docker.pkg.github.com -u "${{ secrets.GH_USER }}" --password-stdin
             
             - name: "Tag and publish"
               run: |
