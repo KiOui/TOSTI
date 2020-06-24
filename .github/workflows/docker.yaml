@@ -2,9 +2,8 @@
 
 name: Build Production Docker Image
 on:
-  push:
-    tags:
-      - v*
+push:
+  branches: [ master ]
 
 jobs:
     build-docker:
