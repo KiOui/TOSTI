@@ -2,27 +2,28 @@
 
 name: Build Production Docker Image
 on:
-  pull_request:
-    branches: [ master ]
+  push:
+    tags:
+      - v*
 
 jobs:
     build-docker:
-        name: Build Production Docker Image
-        runs-on: ubuntu-18.04
+        name: "Build Production Docker Image"
+        runs-on: "ubuntu-latest"
         env:
             DOCKER_LATEST: docker.pkg.github.com/kioui/tosti/tosti:latest
             DOCKER_TAG_PRODUCTION: docker.pkg.github.com/kioui/tosti/tosti:${{ github.sha }}
         steps:
-            - name: Checkout repository
-              uses: actions/checkout@v2
+            - name: "Checkout repository"
+              uses: "actions/checkout@v2"
 
-            - name: Build Docker images
+            - name: "Build Docker image"
               run: docker build --tag "${DOCKER_LATEST}" .
 
-            - name: Login to Docker Hub
+            - name: "Login to GitHub"
               run: echo "${{ secrets.GH_TOKEN }}" | docker login docker.pkg.github.com -u KiOui --password-stdin
             
-            - name: Tag and publish
+            - name: "Tag and publish"
               run: |
                   docker tag "${DOCKER_LATEST}" "${DOCKER_TAG_PRODUCTION}"
                   docker push "${DOCKER_TAG_PRODUCTION}"
