@@ -1,0 +1,30 @@
+---
+
+name: Build Production Docker Image
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+    build-docker:
+        name: Build Production Docker Image
+        runs-on: ubuntu-18.04
+        env:
+            DOCKER_LATEST: docker.pkg.github.com/kioui/tosti/tosti:latest
+            DOCKER_TAG_PRODUCTION: docker.pkg.github.com/kioui/tosti/tosti:${{ github.ref }}
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
+
+            - name: Build Docker images
+              run: docker build --tag "${DOCKER_LATEST}" .
+
+            - name: Login to Docker Hub
+              run: echo "${{ secrets.GH_TOKEN }}" | docker login docker.pkg.github.com -u KiOui --password-stdin
+            
+            - name: Tag and publish
+              run: |
+                  docker tag "${DOCKER_LATEST}" "${DOCKER_TAG_PRODUCTION}"
+                  docker push "${DOCKER_TAG_PRODUCTION}"
+                  docker push "${DOCKER_LATEST}"
