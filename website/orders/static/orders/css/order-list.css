@@ -1,0 +1,46 @@
+.order-list {
+    width: 100%;
+    display: flex;
+    list-style-type: none;
+    padding: 0;
+    justify-content: center;
+    flex-direction: column;
+    position: relative;
+}
+
+.order-item {
+    display: flex;
+    flex-direction: row;
+    padding: 5px;
+    align-items: center;
+    width: 100%;
+    position: relative;
+}
+
+.order-item p {
+    margin-bottom: 0;
+}
+
+.item-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.9);
+    display: flex;
+}
+
+.order-name {
+    margin-right: auto;
+}
+
+.order-item svg {
+    margin-right: 5px;
+}
+
+.order-item input {
+    margin-left: 5px;
+}

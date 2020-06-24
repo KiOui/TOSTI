@@ -6,12 +6,13 @@
     <title>
         {% block title %}TOSTI{% endblock %}
     </title>
+    {% include 'tosti/analytics.html' %}
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" type="image/png" href="#"/>
     <link href="https://fonts.googleapis.com/css2?family=Neucha&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'tosti/css/bootstrap/bootstrap.css' %}"/>
     {% block styles %}{% endblock %}
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
     <script src="{% static 'tosti/fontawesome/js/all.min.js' %}" crossorigin="anonymous"></script>
     <script src="{% static 'tosti/js/base.js'  %}"></script>
     <link rel="stylesheet" href="{% static 'tosti/css/base.css' %}"/>
@@ -107,7 +108,6 @@
                 <div class="container text-center footer-copyright py-1 justify-content-center">
                     <p class="p-0 m-0">© 2020 Copyright: <a href="/">TOSTI</a></p>
                 </div>
-            </div>
         </footer>
     {% endblock %}
     <script src="{% static 'tosti/js/bootstrap/bootstrap.js' %}"></script>
