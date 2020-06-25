@@ -2,8 +2,8 @@
 
 {% if not refresh %}
     <link rel="stylesheet" href="{% static 'marietje/css/search.css' %}"/>
-    <h2>Queued songs</h2>
-    <p>Only songs queued in Marietje are displayed here.</p>
+    <h2>Requested songs</h2>
+    <p>The most recently requested songs are displayed here.</p>
     <div id="queue-container-{{ spotify.id }}">
 {% endif %}
 {% if queue %}

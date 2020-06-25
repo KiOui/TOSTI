@@ -3,20 +3,20 @@ from .models import SpotifyAccount
 
 
 class SpotifyTokenForm(forms.Form):
-    """Form for Spotify Client ID."""
+    """Admin Form for the Spotify API Client ID and Secret of a SpotifyAccount."""
 
     client_id = forms.CharField(required=True, label="Client ID")
     client_secret = forms.CharField(required=True, label="Client Secret")
 
 
 class SpotifyAccountAdminForm(forms.ModelForm):
-    """Form for the administration of Spotify Settings."""
+    """Custom admin form to manage configuration settings of a SpotifyAccount."""
 
     playback_device_id = forms.ChoiceField(required=False)
 
     def __init__(self, *args, **kwargs):
         """
-        Initialise SpotifyAccountAdminForm.
+        Initialise SpotifyAccountAdminForm (request playback devices and present a device-picker).
 
         :param args: arguments
         :param kwargs: keyword arguments

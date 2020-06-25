@@ -1,0 +1,7 @@
+{% extends 'admin/base_site.html' %}
+
+{% block content %}
+    <h1> Spotify Authorization</h1>
+    <p>Authorization finished successfully! You have now added authorization for the account <pre>{{ username }}</pre>.
+    Now make sure to complete configuration by selecting a playback device in <a href="{% url "admin:marietje_spotifyaccount_change" spotify.id %}">here</a>.</p>
+{% endblock %}
