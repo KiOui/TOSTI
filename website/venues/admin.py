@@ -7,4 +7,4 @@ from venues.models import Venue
 class VenueAdmin(admin.ModelAdmin):
     """Custom admin for venues."""
 
-    search_fields = ["name", "spotify_player"]
+    search_fields = ["name"]
