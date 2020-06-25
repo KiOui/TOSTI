@@ -25,7 +25,7 @@ register_converter(OrderConverter, "order")
 urlpatterns = [
     path("shifts", ShiftView.as_view(), name="shifts"),
     path("<shift:shift>/order-items", OrderView.as_view(), name="order"),
-    path("<venue:venue>/create", CreateShiftView.as_view(), name="shift_create"),
+    path("venue/<venue:venue>/create", CreateShiftView.as_view(), name="shift_create"),
     path("<shift:shift>/admin", ShiftAdminView.as_view(), name="shift_admin"),
     path("order/<order:order>/update", OrderUpdateView.as_view(), name="order_update"),
     path("<shift:shift>/products", ProductListView.as_view(), name="product_list"),
