@@ -25,6 +25,7 @@ class SpotifyAccountAdmin(admin.ModelAdmin):
     form = SpotifyAccountAdminForm
 
     def get_configured(self, obj):
+        """Get whether a SpotifyAccount object is configured."""
         return obj.configured
 
     get_configured.short_description = "Configured"
