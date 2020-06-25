@@ -25,17 +25,15 @@ class AccountForm(forms.Form):
 
     username = forms.CharField(
         label="Username",
-        help_text="This is your username used to log you in to this website. "
-        "Your username can not be changed.",
+        help_text="This is your username used to log you in to this website.",
         widget=forms.TextInput(attrs={"readonly": "readonly"}),
     )
     first_name = forms.CharField(
-        label="First name",
-        help_text="If you have a first name registered, it will be "
-        "displayed instead of your username.",
+        label="First name", widget=forms.TextInput(attrs={"readonly": "readonly"}),
     )
     last_name = forms.CharField(
-        label="Last name",
-        help_text="If you have a first name and last name registered, they "
-        "will both be displayed instead of your username.",
+        label="Last name", widget=forms.TextInput(attrs={"readonly": "readonly"}),
+    )
+    email = forms.CharField(
+        label="Email address", widget=forms.TextInput(attrs={"readonly": "readonly"}),
     )

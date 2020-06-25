@@ -9,14 +9,9 @@
     <div class="container-sm flex-container">
         <div class="container-centered">
             <h1>Account</h1>
-            <p>The details of your account can be changed below.</p>
-            {% if succeeded %}
-                <p class="alert alert-success">Your details were saved succesfully.</p>
-            {% endif %}
+            <p>The details of your account are displayed below</p>
             <form class="centered-form" method="POST">
-                {% csrf_token %}
                 {{ form }}
-                <input type="submit" value="Change details" class="btn btn-primary"/>
             </form>
         </div>
     </div>
