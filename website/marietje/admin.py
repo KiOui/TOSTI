@@ -23,6 +23,7 @@ class SpotifyAccountAdmin(admin.ModelAdmin):
         "get_configured",
     ]
     form = SpotifyAccountAdminForm
+    view_on_site = True
 
     def get_configured(self, obj):
         """Get whether a SpotifyAccount object is configured."""
@@ -43,10 +44,9 @@ class SpotifyAccountAdmin(admin.ModelAdmin):
         """
         return redirect("admin:authorize")
 
-    register_converter(SpotifyAccountConverter, "spotify")
-
     def get_urls(self):
         """Get admin urls."""
+        register_converter(SpotifyAccountConverter, "spotify")
         urls = super().get_urls()
         custom_urls = [
             path(

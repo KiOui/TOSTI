@@ -3,6 +3,7 @@ import os
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.conf import settings
+from django.urls import reverse
 from spotipy import SpotifyOAuth
 from spotipy.client import Spotify
 from venues.models import Venue
@@ -131,10 +132,13 @@ class SpotifyAccount(models.Model):
         :return: the display name of the user authenticated
         """
         if self.display_name is None:
-            print(self.spotify)
             self.display_name = self.spotify.me()["display_name"]
             self.save()
         return self.display_name
+
+    def get_absolute_url(self):
+        """Get the front-end url for a SpotifyAccount."""
+        return reverse("marietje:now_playing", args=[self.venue])
 
     def __str__(self):
         """
