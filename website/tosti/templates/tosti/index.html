@@ -18,24 +18,12 @@
         {%  render_start_shift_buttons  %}
     </div>
     {% endif %}
-
+    <div class="container">
     <hr>
+    </div>
+
     <div class="btn-ml btn-on" onclick="window.location.href = '{% url 'marietje:index' %}';">
         <p><i class="fab fa-spotify"></i> Go to Marietje</p>
     </div>
-
-    <div class="container mt-5 mb-5 text-center">
-
-    {% for venue in venues %}
-        {% if venue.active %}
-            <div class="card mx-auto mx-md-2 mb-3" style="max-width: 33%; min-width: 300px;">
-                <div class="card-body">
-                    <h2>{{ venue }}</h2>
-                    {%  render_venue_player venue  %}
-                    <a href="{% url 'marietje:now_playing' venue=venue %}" class="w-100 btn btn-primary">Go to {{ venue }}</a>
-                </div>
-            </div>
-        {% endif %}
-    {% endfor %}
 
 {% endblock %}
