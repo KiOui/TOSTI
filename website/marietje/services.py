@@ -1,4 +1,8 @@
-from marietje.models import SpotifyArtist, SpotifyTrack
+from datetime import timedelta
+
+from django.utils import timezone
+
+from marietje.models import SpotifyArtist, SpotifyTrack, SpotifyQueueItem
 
 
 def create_track_database_information(track_info):
@@ -53,3 +57,22 @@ def create_track_information(track_name, track_id, artist_models):
         track_model.save()
 
     return track_model
+
+
+def execute_data_minimisation(dry_run=False):
+    """
+    Remove song-request history from users that is more than 31 days old
+
+    :param dry_run: does not really remove data if True
+    :return: list of users from who data is removed
+    """
+    delete_before = timezone.now() - timedelta(days=31)
+    requests = SpotifyQueueItem.objects.filter(added__lte=delete_before)
+
+    users = []
+    for request in requests:
+        users.append(request.requested_by)
+        request.requested_by = None
+        if not dry_run:
+            request.save()
+    return users
