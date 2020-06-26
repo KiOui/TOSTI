@@ -1,7 +1,7 @@
-function update_order(data_url, checkbox, order_id, property, callback) {
+function update_order(data_url, checkbox, property, callback) {
     update_and_callback(
         data_url,
-        {'order': order_id, 'value': checkbox.classList.contains('btn-danger'), 'property': property},
+        {'value': checkbox.classList.contains('btn-danger'), 'property': property},
         callback,
         checkbox
     );
