@@ -104,9 +104,9 @@ class SpotifyAccount(models.Model):
     @property
     def auth(self):
         """
-        Get a Spotipy SpotifyOAuth object from this database object.
+        Get a spotipy SpotifyOAuth object from this database object.
 
-        :return: a Spotipy SpotifyOAuth object
+        :return: a spotipy SpotifyOAuth object
         """
         return SpotifyOAuth(
             client_id=self.client_id,
