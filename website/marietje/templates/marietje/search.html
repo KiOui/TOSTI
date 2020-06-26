@@ -26,8 +26,8 @@
     <script>
         const QUERY_FIELD = document.getElementById('search');
         const RESULT_FIELD = document.getElementById('results');
-        const SEARCH_URL = "{% url "marietje:player_search" spotify=spotify %}";
-        const ADD_URL = "{% url "marietje:player_add" spotify=spotify %}";
+        const SEARCH_URL = "{% url "marietje:player_search" player=player %}";
+        const ADD_URL = "{% url "marietje:player_add" player=player %}";
         const MESSAGE_FIELD = document.getElementById('search-message');
     </script>
     <script src="{% static 'marietje/js/asynch-search.js' %}"></script>

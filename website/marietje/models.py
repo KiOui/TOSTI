@@ -3,6 +3,7 @@ import os
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.conf import settings
+from django.urls import reverse
 from spotipy import SpotifyOAuth
 from spotipy.client import Spotify
 from venues.models import Venue
@@ -11,18 +12,34 @@ User = get_user_model()
 
 
 class SpotifyAccount(models.Model):
-    """Spotify Auth model."""
+    """
+    SpotifyAccount model for Spotify players.
+
+    Marietje can be authorized to access multiple Spotify accounts via the Spotify API.
+    The Spotify account model contains data of the authorized accounts. Each account can
+    be added to a venue to provide a music player for that venue. This expects a Spotify
+    client (playback device) is playing in that venue. Communciation happens via the
+    Spotipy library, hence authorization works via cache files. These objects are often
+    referenced to as Spotify players.
+    """
 
     SCOPE = (
         "user-read-playback-state, "
         "user-modify-playback-state, "
         "user-read-currently-playing, "
         "streaming, app-remote-control"
-    )
+    )  # The required Spotify API permissions
 
     display_name = models.CharField(max_length=256, null=True, blank=True)
     playback_device_id = models.CharField(max_length=256, null=True, blank=True)
-    playback_device_name = models.CharField(max_length=256, null=True, blank=True)
+    playback_device_name = models.CharField(
+        max_length=256,
+        null=True,
+        blank=True,
+        help_text="When configuring this Spotify account for the first time, "
+        "make sure to have the Spotify accounnt active on at least one "
+        "playback device to complete configuration.",
+    )
     client_id = models.CharField(max_length=256, null=False, blank=False, unique=True)
     client_secret = models.CharField(max_length=256, null=False, blank=False)
     redirect_uri = models.CharField(max_length=512, null=False, blank=False)
@@ -32,12 +49,7 @@ class SpotifyAccount(models.Model):
 
     @staticmethod
     def get_player(venue):
-        """
-        Get a corresponding SpotifyAccount of a venue.
-
-        :param venue: the venue to get the SpotifyAccount object for
-        :return: None if the SpotifyAccount object does not exists, The SpotifyAccount object otherwise
-        """
+        """Get a SpotifyAccount for a venue (if it exists)."""
         try:
             return SpotifyAccount.objects.get(venue=venue)
         except SpotifyAccount.DoesNotExist:
@@ -45,11 +57,7 @@ class SpotifyAccount(models.Model):
 
     @property
     def configured(self):
-        """
-        Check if this object is ready to play music.
-
-        :return: True if this object is ready for music playback, False otherwise
-        """
+        """Check if this object is ready to play music (a playback device is set)."""
         return self.playback_device_id is not None
 
     @property
@@ -66,7 +74,7 @@ class SpotifyAccount(models.Model):
         }
         """
         if not self.configured:
-            raise RuntimeError("This Spotify settings object is not configured yet.")
+            raise RuntimeError("This Spotify account is not configured yet.")
 
         currently_playing = self.spotify.currently_playing()
 
@@ -87,7 +95,7 @@ class SpotifyAccount(models.Model):
     @property
     def cache_path(self):
         """
-        Get the cache file path for this auth object.
+        Get the Spotipy cache file path for this auth object.
 
         :return: the cache file path
         """
@@ -96,9 +104,9 @@ class SpotifyAccount(models.Model):
     @property
     def auth(self):
         """
-        Get a SpotifyOAuth object from this database object.
+        Get a spotipy SpotifyOAuth object from this database object.
 
-        :return: a SpotifyOAuth object
+        :return: a spotipy SpotifyOAuth object
         """
         return SpotifyOAuth(
             client_id=self.client_id,
@@ -113,7 +121,7 @@ class SpotifyAccount(models.Model):
         """
         Get a Spotify object with a SpotifyOAuth manager as authentication backend.
 
-        :return: a Spotify object
+        :return: a Spotipy Spotify object
         """
         return Spotify(oauth_manager=self.auth)
 
@@ -125,10 +133,13 @@ class SpotifyAccount(models.Model):
         :return: the display name of the user authenticated
         """
         if self.display_name is None:
-            print(self.spotify)
             self.display_name = self.spotify.me()["display_name"]
             self.save()
         return self.display_name
+
+    def get_absolute_url(self):
+        """Get the front-end url for a SpotifyAccount."""
+        return reverse("marietje:now_playing", args=[self.venue])
 
     def __str__(self):
         """
@@ -144,8 +155,8 @@ class SpotifyAccount(models.Model):
     class Meta:
         """Meta class."""
 
-        verbose_name = "Spotify settings"
-        verbose_name_plural = "Spotify settings"
+        verbose_name = "Spotify account"
+        verbose_name_plural = "Spotify accounts"
 
 
 class SpotifyArtist(models.Model):
@@ -182,12 +193,15 @@ class SpotifyTrack(models.Model):
 
 
 class SpotifyQueueItem(models.Model):
-    """Spotify Queue Item model."""
+    """
+    Spotify Queue Item model.
+
+    SpotifyQueueItems are tracks that are added to the queue of the playback
+    device for a SpotifyAccount, requested by a certain user.
+    """
 
     track = models.ForeignKey(SpotifyTrack, on_delete=models.SET_NULL, null=True)
-    spotify_settings_object = models.ForeignKey(
-        SpotifyAccount, null=False, on_delete=models.CASCADE
-    )
+    player = models.ForeignKey(SpotifyAccount, null=False, on_delete=models.CASCADE)
     added = models.DateTimeField(auto_now_add=True)
     requested_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
