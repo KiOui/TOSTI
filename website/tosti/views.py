@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView
+
 from venues.models import Venue
 from orders.models import Shift
 
