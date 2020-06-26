@@ -25,5 +25,7 @@ def execute_data_minimisation(dry_run=False):
             if not dry_run:
                 order.save()
         else:
-            logging.warning(f"An unpaid order of {order.user.get_full_name()} has not been touched.")
+            logging.warning(
+                f"An unpaid order of {order.user.get_full_name()} has not been touched."
+            )
     return users

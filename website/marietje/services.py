@@ -64,8 +64,8 @@ def create_track_information(track_name, track_id, artist_models):
 
     return track_model
 
-  
-  def search_tracks(query, player, maximum=5):
+
+def search_tracks(query, player, maximum=5):
     """
     Search SpotifyTracks for a search query.
 
@@ -175,7 +175,8 @@ def player_previous(player):
     except SpotifyException as e:
         logging.error(e)
         raise e
- 
+
+
 def execute_data_minimisation(dry_run=False):
     """
     Remove song-request history from users that is more than 31 days old
@@ -193,5 +194,3 @@ def execute_data_minimisation(dry_run=False):
         if not dry_run:
             request.save()
     return users
-
-
