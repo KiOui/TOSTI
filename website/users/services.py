@@ -3,6 +3,8 @@ import requests
 from django.conf import settings
 import re
 
+from django.contrib.auth import get_user_model, login
+
 
 def get_openid_request_url(
     openid_server_endpoint, openid_return_url, openid_trust_root, openid_identity
@@ -136,3 +138,9 @@ def verify_request(openid_server_endpoint, full_request_path):
         return verify_signature(openid_server_endpoint, query_parameters)
     else:
         return False
+
+
+def openid_user_auth(request, username):
+    """Login a user that is verified with OpenID or create that user if it does not exist."""
+    user = get_user_model().objects.get_or_create(username=username)
+    login(request, user)

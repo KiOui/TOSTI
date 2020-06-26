@@ -1,7 +1,9 @@
-from django.contrib.auth import get_user_model, login, logout
+from django.contrib.auth import get_user_model, logout
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.generic import TemplateView
+
+from users import services
 from .forms import LoginForm
 from .services import get_openid_request_url, get_full_user_id
 from django.conf import settings
@@ -81,11 +83,7 @@ class VerifyView(TemplateView):
             settings.OPENID_SERVER_ENDPOINT, request.get_full_path()
         )
         if username:
-            try:
-                user = User.objects.get(username=username)
-            except User.DoesNotExist:
-                user = User.objects.create(username=username)
-            login(request, user)
+            services.openid_user_auth(request, username)
             return redirect("index")
 
         return render(request, self.template_name)
