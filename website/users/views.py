@@ -61,26 +61,6 @@ class VerifyView(TemplateView):
 
     template_name = "users/verify.html"
 
-    def set_user_details(self, openid_verifier, user):
-        """
-        Set the user details in the openid_verifier object to the details of the user.
-
-        :param openid_verifier: an OpenID verifier object containing the response from an OpenID server
-        :param user: a user object used for storing the user details
-        :return: None
-        """
-        full_name = openid_verifier.extract_full_name()
-        email = openid_verifier.extract_email_address()
-
-        if full_name:
-            user.first_name = full_name.split(" ", 1)[0]
-            user.last_name = full_name.split(" ", 1)[1]
-
-        if email:
-            user.email = email
-
-        user.save()
-
     def get(self, request, **kwargs):
         """
         GET request for verify view.
@@ -92,14 +72,10 @@ class VerifyView(TemplateView):
         page otherwise
         """
         openid_verifier = get_openid_verifier(request)
-        if openid_verifier.verify_request():
-            username = openid_verifier.extract_username()
-            if username:
-                user, created = User.objects.get_or_create(username=username)
-                if created:
-                    self.set_user_details(openid_verifier, user)
-                login(request, user)
-                return redirect("index")
+        user = openid_verifier.extract_user()
+        if user:
+            login(request, user)
+            return redirect("index")
 
         return render(request, self.template_name)
 

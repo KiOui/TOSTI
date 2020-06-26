@@ -21,7 +21,7 @@ class LoginForm(forms.Form):
 
 
 class AccountForm(forms.Form):
-    """Form for changing account details."""
+    """Form for showing account details."""
 
     username = forms.CharField(
         label="Username",
@@ -34,6 +34,6 @@ class AccountForm(forms.Form):
     last_name = forms.CharField(
         label="Last name", widget=forms.TextInput(attrs={"readonly": "readonly"}),
     )
-    email = forms.CharField(
+    email = forms.EmailField(
         label="Email address", widget=forms.TextInput(attrs={"readonly": "readonly"}),
     )

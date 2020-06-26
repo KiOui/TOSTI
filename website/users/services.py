@@ -3,7 +3,10 @@ import requests
 from django.conf import settings
 import re
 
+from django.contrib.auth import get_user_model
 from django.urls import reverse
+
+User = get_user_model()
 
 
 def get_openid_verifier(request):
@@ -42,6 +45,7 @@ class OpenIDVerifier:
         self.openid_return_url = request.build_absolute_uri(reverse(openid_return_url))
         self.prefix = prefix
         self.postfix = postfix
+        self.request = request
         self.query_parameters = dict(parse_qsl(urlparse(request.get_full_path()).query))
         self.signed_field_values = dict()
         if "openid.signed" in self.query_parameters.keys():
@@ -164,3 +168,37 @@ class OpenIDVerifier:
             response.status_code == 200
             and re.sub("is_valid:", "", re.sub("\n", "", response.text)) == "true"
         )
+
+    def set_user_details(self, user):
+        """
+        Set the user details in the openid_verifier object to the details of the user.
+
+        :param user: a user object used for storing the user details
+        :return: None
+        """
+        full_name = self.extract_full_name()
+        email = self.extract_email_address()
+
+        if full_name:
+            user.first_name = full_name.split(" ", 1)[0]
+            user.last_name = full_name.split(" ", 1)[1]
+
+        if email:
+            user.email = email
+
+        user.save()
+
+    def extract_user(self):
+        """
+        Extract a user object from the inputted request.
+
+        :return: A User object if a user can be authenticated with the information within this class, False otherwise
+        """
+        if self.verify_request():
+            username = self.extract_username()
+            if username:
+                user, created = User.objects.get_or_create(username=username)
+                if created:
+                    self.set_user_details(user)
+                return user
+        return False

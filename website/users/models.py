@@ -61,10 +61,8 @@ class User(AbstractUser):
 
         :return: the username of the user
         """
-        if self.first_name and self.last_name:
-            return "{} {}".format(self.first_name, self.last_name)
-        elif self.first_name:
-            return self.first_name
+        if self.first_name:
+            return self.get_full_name()
         else:
             return self.username
 
