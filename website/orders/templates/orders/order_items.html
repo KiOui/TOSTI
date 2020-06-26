@@ -18,8 +18,8 @@
                     </div>
                     <div class="button-row">
                         {% if admin %}
-                            <input type="button" class="checkbox-paid btn mr-2 {% if order.paid %}btn-success{% else %}btn-danger{% endif %}" onclick="update_order('{% url "orders:order_update" %}', this, {{ order.id }}, 'paid', update_checkbox);" value="Paid"/>
-                            <input type="button" class="checkbox-ready btn {% if order.ready %}btn-success{% else %}btn-danger{% endif %}" onclick="update_order('{% url "orders:order_update" %}', this, {{ order.id }}, 'ready', update_checkbox);" value="Ready"/>
+                            <input type="button" class="checkbox-paid btn mr-2 {% if order.paid %}btn-success{% else %}btn-danger{% endif %}" onclick="update_order('{% url "orders:order_update" order=order %}', this, {{ order.id }}, 'paid', update_checkbox);" value="Paid"/>
+                            <input type="button" class="checkbox-ready btn {% if order.ready %}btn-success{% else %}btn-danger{% endif %}" onclick="update_order('{% url "orders:order_update" order=order %}', this, {{ order.id }}, 'ready', update_checkbox);" value="Ready"/>
                         {% else %}
                             {% if order.user == user %}
                                 {% if order.ready and order.paid %}
