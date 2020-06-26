@@ -6,9 +6,9 @@
     account will enable you to control it from the web pages within this application. The steps to take to connect
     Spotify with this explanation are stated below.</p>
     <ol>
-        <li>First you need to create a Free or Paid Spotify account at <a href="https://spotify.com">the Spotify website</a>.</li>
-        <li>Next, you need to log in to the <a href="https://developer.spotify.com/dashboard">Spotify developer portal</a> and agree with the terms of service.</li>
-        <li>Now, you need to <a href="https://developer.spotify.com/documentation/general/guides/app-settings/#register-your-app">register an application</a> and add this web URL to the authorized redirect URLs of the application: <pre>{{ request.scheme }}://{{ request.get_host }}{% url "admin:add_token" %}</pre></li>
+        <li>First you need to create a Free or Paid Spotify account at <a href="https://spotify.com" target="_blank">the Spotify website</a>.</li>
+        <li>Next, you need to log in to the <a href="https://developer.spotify.com/dashboard" target="_blank">Spotify developer portal</a> and agree with the terms of service.</li>
+        <li>Now, you need to <a href="https://developer.spotify.com/documentation/general/guides/app-settings/#register-your-app" target="_blank">register an application</a> and add this web URL to the authorized redirect URLs of the application: <pre>{{ request.scheme }}://{{ request.get_host }}{% url "admin:add_token" %}</pre></li>
     </ol>
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}

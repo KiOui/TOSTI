@@ -6,22 +6,30 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('marietje', '0001_initial'),
+        ("marietje", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='spotifyaccount',
-            options={'verbose_name': 'Spotify account', 'verbose_name_plural': 'Spotify accounts'},
+            name="spotifyaccount",
+            options={
+                "verbose_name": "Spotify account",
+                "verbose_name_plural": "Spotify accounts",
+            },
         ),
         migrations.RenameField(
-            model_name='spotifyqueueitem',
-            old_name='spotify_settings_object',
-            new_name='player',
+            model_name="spotifyqueueitem",
+            old_name="spotify_settings_object",
+            new_name="player",
         ),
         migrations.AlterField(
-            model_name='spotifyaccount',
-            name='playback_device_name',
-            field=models.CharField(blank=True, help_text='When configuring this Spotify account for the first time, make sure to have the Spotify accounnt active on at least one playback device to complete configuration.', max_length=256, null=True),
+            model_name="spotifyaccount",
+            name="playback_device_name",
+            field=models.CharField(
+                blank=True,
+                help_text="When configuring this Spotify account for the first time, make sure to have the Spotify accounnt active on at least one playback device to complete configuration.",
+                max_length=256,
+                null=True,
+            ),
         ),
     ]

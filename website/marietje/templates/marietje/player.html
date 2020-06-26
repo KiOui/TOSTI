@@ -1,5 +1,5 @@
 {% load static %}
-
+{% if player and player.configured %}
 {% if not refresh %}
     <link rel="stylesheet" href="{% static 'marietje/css/player.css' %}"/>
     <div class="player" id="player-container-{{ player.id }}">
@@ -47,4 +47,5 @@
             ]
         );
     </script>
+{% endif %}
 {% endif %}
