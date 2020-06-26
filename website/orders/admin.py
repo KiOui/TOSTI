@@ -121,7 +121,7 @@ class ShiftAdminForm(forms.ModelForm):
 
 @admin.register(Shift)
 class ShiftAdmin(ImportExportModelAdmin):
-    """Custom admin for products."""
+    """Custom admin for shifts."""
 
     form = ShiftAdminForm
     date_hierarchy = "start_date"
@@ -214,7 +214,7 @@ class OrderAdminForm(forms.ModelForm):
 
 @admin.register(Order)
 class OrderAdmin(ImportExportModelAdmin):
-    """Custom admin for products."""
+    """Custom admin for orders."""
 
     form = OrderAdminForm
 
