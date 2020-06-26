@@ -334,19 +334,15 @@ class OrderUpdateView(StaffRequiredMixin, TemplateView):
             error: [error message]
         }
         """
-        order_id = request.POST.get("order", None)
         order_property = request.POST.get("property", None)
         value = request.POST.get("value", None)
 
-        if order_id is None or order_property is None or value is None:
+        if order_property is None or value is None:
             return JsonResponse({"error": "Invalid request"})
 
         value = True if value == "true" else False
 
-        try:
-            order = Order.objects.get(pk=order_id)
-        except Order.DoesNotExist:
-            return JsonResponse({"error": "That order does not exist"})
+        order = kwargs.get("order")
 
         if order_property == "ready":
             order.ready = value
