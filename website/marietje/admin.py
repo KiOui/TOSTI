@@ -14,7 +14,7 @@ from .forms import SpotifyAccountAdminForm
 
 @admin.register(SpotifyAccount)
 class SpotifyAccountAdmin(admin.ModelAdmin):
-    """Spotify account admin."""
+    """SpotifyAccount admin for Spotify Players."""
 
     list_display = [
         "display_name",
@@ -26,7 +26,7 @@ class SpotifyAccountAdmin(admin.ModelAdmin):
     view_on_site = True
 
     def get_configured(self, obj):
-        """Get whether a SpotifyAccount object is configured."""
+        """Get whether a SpotifyAccount player is configured."""
         return obj.configured
 
     get_configured.short_description = "Configured"

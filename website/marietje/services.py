@@ -64,7 +64,15 @@ def create_track_information(track_name, track_id, artist_models):
 
 
 def search_tracks(query, player, maximum=5):
-    """Search SpotifyTracks for a search query."""
+    """
+    Search SpotifyTracks for a search query.
+
+    :param query: the search query
+    :param player: the SpotifyAccount (player)
+    :param maximum: the maximum number of results to search for
+    :return: a list of tracks [{"name": the trackname, "artists": [a list of artist names],
+     "id": the Spotify track id}]
+    """
     try:
         result = player.spotify.search(query, limit=maximum, type="track")
     except SpotifyException as e:
@@ -84,7 +92,15 @@ def search_tracks(query, player, maximum=5):
 
 
 def request_song(user, player, spotify_track_id):
-    """Request a track for a player."""
+    """
+    Request a track for a player.
+
+    :param user: the user requesting the track
+    :param player: the SpotifyAccount (player)
+    :param spotify_track_id: the Spotify track id to request
+    :return: Nothing
+    :raises: SpotifyException on failure
+    """
     try:
         track_info = player.spotify.track(spotify_track_id)
         track = create_track_database_information(track_info)
@@ -100,7 +116,13 @@ def request_song(user, player, spotify_track_id):
 
 
 def player_start(player):
-    """Start playing the playback device of a SpotifyAccount."""
+    """
+    Start playing on the playback device of a SpotifyAccount.
+
+    :param player: the SpotifyAccount (player)
+    :return: Nothing
+    :raises: SpotifyException on failure
+    """
     try:
         player.spotify.start_playback(player.playback_device_id)
     except SpotifyException as e:
@@ -109,7 +131,13 @@ def player_start(player):
 
 
 def player_pause(player):
-    """Pause the playback device of a SpotifyAccount."""
+    """
+    Pause the playback device of a SpotifyAccount.
+
+    :param player: the SpotifyAccount (player)
+    :return: Nothing
+    :raises: SpotifyException on failure
+    """
     try:
         player.spotify.pause_playback(player.playback_device_id)
     except SpotifyException as e:
@@ -118,7 +146,13 @@ def player_pause(player):
 
 
 def player_next(player):
-    """Skip to the next song in the playback device queue of a SpotifyAccount."""
+    """
+    Skip to the next song in the playback device queue of a SpotifyAccount.
+
+    :param player: the SpotifyAccount (player)
+    :return: Nothing
+    :raises: SpotifyException on failure
+    """
     try:
         player.spotify.next_track()
     except SpotifyException as e:
@@ -127,7 +161,13 @@ def player_next(player):
 
 
 def player_previous(player):
-    """Go back to the previous song in the playback device queue of a SpotifyAccount."""
+    """
+    Go back to the previous song in the playback device queue of a SpotifyAccount.
+
+    :param player: the SpotifyAccount (player)
+    :return: Nothing
+    :raises: SpotifyException on failure
+    """
     try:
         player.spotify.previous_track()
     except SpotifyException as e:

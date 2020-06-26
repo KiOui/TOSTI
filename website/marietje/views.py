@@ -8,7 +8,7 @@ from django.views.generic import TemplateView
 
 from marietje import services
 from .models import SpotifyAccount
-from .templatetags.queue import render_queue_list, render_player
+from .templatetags.marietje import render_queue_list, render_player
 from django.contrib.admin.views.decorators import staff_member_required
 
 COOKIE_CLIENT_ID = "client_id"
@@ -27,7 +27,7 @@ class IndexView(TemplateView):
 
 
 class NowPlayingView(LoginRequiredMixin, TemplateView):
-    """Now playing view."""
+    """Now playing view with the player for a venue."""
 
     template_name = "marietje/now_playing.html"
 
@@ -96,7 +96,7 @@ class QueueRefreshView(LoginRequiredMixin, TemplateView):
 @login_required
 def search_view(request, **kwargs):
     """
-    Call the Spotify API to search for a track.
+    Search for a track on Spotify.
 
     :param request: the request
     :param kwargs: keyword arguments
@@ -133,7 +133,7 @@ def search_view(request, **kwargs):
 @login_required
 def add_view(request, **kwargs):
     """
-    Call the Spotify API to add a track to the queue.
+    Add a Spotify track to the queue of a player.
 
     :param request: the request
     :param kwargs: keyword arguments
@@ -162,13 +162,7 @@ def add_view(request, **kwargs):
 
 @staff_member_required
 def play_view(request, **kwargs):
-    """
-    Call the Spotify API for starting the playback.
-
-    :param request: the request
-    :param kwargs: keyword arguments
-    :return: nothing
-    """
+    """Start playing the player."""
     if request.method == "POST":
         try:
             services.player_start(kwargs.get("player"))
@@ -186,13 +180,7 @@ def play_view(request, **kwargs):
 
 @staff_member_required
 def pause_view(request, **kwargs):
-    """
-    Call the Spotify API for pausing the playback.
-
-    :param request: the request
-    :param kwargs: keyword arguments
-    :return: nothing
-    """
+    """Pause the player."""
     if request.method == "POST":
         try:
             services.player_pause(kwargs.get("player"))
@@ -210,13 +198,7 @@ def pause_view(request, **kwargs):
 
 @staff_member_required
 def next_view(request, **kwargs):
-    """
-    Call the Spotify API for the next track.
-
-    :param request: the request
-    :param kwargs: keyword arguments
-    :return: nothing
-    """
+    """Skip the player to the next track."""
     if request.method == "POST":
         try:
             services.player_next(kwargs.get("player"))
@@ -234,13 +216,7 @@ def next_view(request, **kwargs):
 
 @staff_member_required
 def previous_view(request, **kwargs):
-    """
-    Call the Spotify API for the previous track.
-
-    :param request: the request
-    :param kwargs: keyword arguments
-    :return: nothing
-    """
+    """Go back to the previous track on a player."""
     if request.method == "POST":
         try:
             services.player_previous(kwargs.get("player"))

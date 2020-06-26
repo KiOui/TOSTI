@@ -10,7 +10,7 @@ class SpotifyTokenForm(forms.Form):
 
 
 class SpotifyAccountAdminForm(forms.ModelForm):
-    """Custom admin form to manage configuration settings of a SpotifyAccount."""
+    """Custom admin form to manage configuration settings of a SpotifyAccount (player)."""
 
     playback_device_id = forms.ChoiceField(required=False)
 

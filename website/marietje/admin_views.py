@@ -9,7 +9,7 @@ from orders.permissions import StaffRequiredMixin
 
 
 class SpofityAuthorizeView(StaffRequiredMixin, TemplateView):
-    """Authorize a Spotify account by entering OAuth credentials."""
+    """Authorize a Django to access a Spotify account by entering OAuth credentials."""
 
     template_name = "marietje/admin/authorize.html"
 
@@ -89,13 +89,7 @@ class SpotifyAuthorizeSucceededView(StaffRequiredMixin, TemplateView):
     template_name = "marietje/admin/authorize_succeeded.html"
 
     def get(self, request, **kwargs):
-        """
-        GET request for Spotify Authorize Succeeded view.
-
-        :param request: the reque st
-        :param kwargs: keyword arguments
-        :return: a render of the authorize succeeded page
-        """
+        """GET the view."""
         spotify = kwargs.get("spotify")
         return render(
             request,
