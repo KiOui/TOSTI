@@ -179,7 +179,7 @@ def player_previous(player):
 
 def execute_data_minimisation(dry_run=False):
     """
-    Remove song-request history from users that is more than 31 days old
+    Remove song-request history from users that is more than 31 days old.
 
     :param dry_run: does not really remove data if True
     :return: list of users from who data is removed
