@@ -69,6 +69,10 @@ p.btn-note {
     font-size: .8rem
 }
 
+footer a {
+    color: #ffffff;
+}
+
 .tosti-title {
     letter-spacing: 20px;
 }
