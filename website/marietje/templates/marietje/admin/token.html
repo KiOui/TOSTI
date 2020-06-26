@@ -1,0 +1,7 @@
+{% extends 'admin/base_site.html' %}
+
+{% block content %}
+    <h1>Spotify Authorization</h1>
+    <p>Spotify authorization failed with the following error: <pre>{{ error }}</pre></p>
+    <p>Try again at <a href="{% url "admin:authorize" %}">the authorization page.</a></p>
+{% endblock %}

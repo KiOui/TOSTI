@@ -1,5 +1,5 @@
 {% extends 'tosti/base.html' %}
-{% load static queue %}
+{% load static marietje %}
 
 {% block page %}
     <div class="container-sm mb-5">
@@ -11,16 +11,16 @@
             <div class="row flex-row-reverse">
                 <div class="col-md-5">
                     <h2>Now playing</h2>
-                    {% render_player spotify controls=request.user.is_staff %}
+                    {% render_player player %}
                 </div>
                 <div class="col-md">
                     <div class="mb-5">
                         <h2>Add a song</h2>
                         <p>Search a track below and add it to the queue.</p>
-                        {% include 'marietje/search.html' with spotify=spotify refresh=False %}
+                        {% include 'marietje/search.html' with player=player refresh=False %}
                     </div>
                     <div class="mb-5">
-                        {% render_queue_list spotify refresh=False %}
+                        {% render_queue_list player refresh=False %}
                     </div>
                 </div>
             </div>
