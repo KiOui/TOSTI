@@ -3,13 +3,13 @@ from .models import SpotifyAccount
 
 
 class SpotifyAccountConverter(IntConverter):
-    """Converter for SpotifyAccount model."""
+    """Converter for SpotifyAccount (player) model."""
 
     def to_python(self, value):
         """
-        Cast integer to SpotifyAccount.
+        Cast integer to SpotifyAccount (player).
 
-        :param value: the public key of the SpotifyAccount
+        :param value: the primary key of the SpotifyAccount
         :return: a SpotifyAccount or ValueError
         """
         try:
@@ -19,9 +19,9 @@ class SpotifyAccountConverter(IntConverter):
 
     def to_url(self, obj):
         """
-        Cast an object of SpotifyAccount to a string.
+        Cast an object of SpotifyAccount (player) to a string.
 
         :param obj: the SpotifyAccount object
-        :return: the public key of the SpotifyAccount object in string format
+        :return: the primary key of the SpotifyAccount object in string format
         """
         return str(obj.pk)

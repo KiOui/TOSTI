@@ -1,5 +1,5 @@
 {% extends 'tosti/base.html' %}
-{% load static order_now start_shift %}
+{% load static order_now start_shift marietje %}
 
 {% block styles %}
     <link rel="stylesheet" href="{% static 'tosti/css/index.css' %}"/>
@@ -18,4 +18,12 @@
         {%  render_start_shift_buttons  %}
     </div>
     {% endif %}
+    <div class="container">
+    <hr>
+    </div>
+
+    <div class="btn-ml btn-on" onclick="window.location.href = '{% url 'marietje:index' %}';">
+        <p><i class="fab fa-spotify"></i> Go to Marietje</p>
+    </div>
+
 {% endblock %}

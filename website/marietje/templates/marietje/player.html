@@ -1,16 +1,16 @@
 {% load static %}
-
+{% if player and player.configured %}
 {% if not refresh %}
     <link rel="stylesheet" href="{% static 'marietje/css/player.css' %}"/>
-    <div class="player" id="player-container-{{ spotify.id }}">
+    <div class="player" id="player-container-{{ player.id }}">
 {% endif %}
-{% if spotify.currently_playing %}
+{% if player.currently_playing %}
     <div class="w-50 mx-auto mb-2">
-        <img class="w-100" src="{{ spotify.currently_playing.image }}"/>
+        <img class="w-100" src="{{ player.currently_playing.image }}"/>
     </div>
-    <p>{{ spotify.currently_playing.name }}</p>
+    <p>{{ player.currently_playing.name }}</p>
     <p>
-        {% for artist in spotify.currently_playing.artists %}
+        {% for artist in player.currently_playing.artists %}
             {% if forloop.last %}
                 {{ artist }}
             {% else %}
@@ -23,13 +23,13 @@
 {% endif %}
 {% if controls %}
     <div class="player-controls mb-5">
-        <i class="fas fa-backward" onclick="update_and_callback('{% url "marietje:player_previous" spotify=spotify %}', {}, update_update_list)"></i>
-        {% if spotify.currently_playing.is_playing %}
-            <i class="fas fa-pause" onclick="update_and_callback('{% url "marietje:player_pause" spotify=spotify %}', {}, update_update_list)"></i>
+        <i class="fas fa-backward" onclick="update_and_callback('{% url "marietje:player_previous" player=player %}', {}, update_update_list)"></i>
+        {% if player.currently_playing.is_playing %}
+            <i class="fas fa-pause" onclick="update_and_callback('{% url "marietje:player_pause" player=player %}', {}, update_update_list)"></i>
         {% else %}
-            <i class="fas fa-play" onclick="update_and_callback('{% url "marietje:player_play" spotify=spotify %}', {}, update_update_list)"></i>
+            <i class="fas fa-play" onclick="update_and_callback('{% url "marietje:player_play" player=player %}', {}, update_update_list)"></i>
         {% endif %}
-        <i class="fas fa-forward" onclick="update_and_callback('{% url "marietje:player_next" spotify=spotify %}', {}, update_update_list)"></i>
+        <i class="fas fa-forward" onclick="update_and_callback('{% url "marietje:player_next" player=player %}', {}, update_update_list)"></i>
     </div>
 {% endif %}
 {% if not refresh %}
@@ -41,10 +41,11 @@
         add_update_list(
             update_and_replace,
             [
-                "{% url 'marietje:player_refresh' spotify=spotify %}",
-                document.getElementById('player-container-{{ spotify.id }}'),
+                "{% url 'marietje:player_refresh' player=player %}",
+                document.getElementById('player-container-{{ player.id }}'),
                 {'controls': {% if controls %}true{% else %}false{% endif %}}
             ]
         );
     </script>
+{% endif %}
 {% endif %}
