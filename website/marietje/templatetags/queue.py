@@ -7,9 +7,9 @@ register = template.Library()
 @register.inclusion_tag("marietje/queue.html")
 def render_queue_list(player, refresh=False, max_items=10):
     """Render queue."""
-    queue = SpotifyQueueItem.objects.filter(spotify_settings_object=player).order_by(
-        "-added"
-    )[:max_items]
+    queue = SpotifyQueueItem.objects.filter(player=player).order_by("-added")[
+        :max_items
+    ]
     return {"queue": queue, "refresh": refresh, "player": player}
 
 
