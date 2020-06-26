@@ -65,14 +65,17 @@
                     {% else %}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                {{ user }}
+                                {{ user.username }}
                             </a>
                             <div class="dropdown-menu p-2" aria-labelledby="navbarDropdownMenuLink">
                                 {% if user.is_staff %}
-                                <a class="nav-link text-dark" href="{% url "admin:index" %}">
-                                    Site admin
-                                </a>
+                                    <a class="nav-link text-dark" href="{% url "admin:index" %}">
+                                        Site admin
+                                    </a>
                                 {% endif %}
+                                <a class="nav-link text-dark" href="{% url "users:account" %}">
+                                    Account
+                                </a>
                                 <a class="nav-link text-dark" href="{% url "users:logout" %}">
                                     Logout
                                 </a>
