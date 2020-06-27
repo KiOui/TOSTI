@@ -22,6 +22,6 @@ jobs:
             
             - name: "Tag and publish"
               run: |
-                  docker tag "${DOCKER_LATEST}" "${DOCKER_TAG_PRODUCTION}"
-                  docker push "${DOCKER_TAG_PRODUCTION}"
-                  docker push "${DOCKER_LATEST}"
+                  docker tag "${DOCKER_LATEST,,}" "${DOCKER_TAG_PRODUCTION,,}"
+                  docker push "${DOCKER_TAG_PRODUCTION,,}"
+                  docker push "${DOCKER_LATEST,,}"
