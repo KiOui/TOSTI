@@ -7,15 +7,17 @@ jobs:
     build-docker:
         name: "Build Production Docker Image"
         runs-on: "ubuntu-latest"
+        env:
+            GITHUB_REPOSITORY_FULL_NAME=${{ github.repository }}
         steps:
             - name: "Checkout repository"
               uses: "actions/checkout@v2"
               
             - name: "Create repository names"
               run: |
-                  github_repository_full_name=${{ github.repository }}
-                  export docker_latest=docker.pkg.github.com/${{ github.repository }}/${github_repository_full_name##*/}:latest
-                  export docker_tag_production=docker.pkg.github.com/${{ github.repository }}/${github_repository_full_name##*/}:${{ github.sha }}
+                  docker_latest=docker.pkg.github.com/${{ github.repository }}/${GITHUB_REPOSITORY_FULL_NAME##*/}:latest
+                  docker_tag_production=docker.pkg.github.com/${{ github.repository }}/${GITHUB_REPOSITORY_FULL_NAME##*/}:${{ github.sha }}
+                  echo ${docker_latest}
 
             - name: "Build Docker image"
               run: docker build --tag ${docker_latest,,} .
