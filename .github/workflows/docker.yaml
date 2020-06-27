@@ -9,11 +9,17 @@ jobs:
         runs-on: "ubuntu-latest"
         env:
             GITHUB_REPOSITORY: ${{ github.repository }}
+            DOCKER_URL: docker.pkg.github.com/${{ github.repository }}/
             DOCKER_LATEST: docker.pkg.github.com/${{ github.repository }}/${GITHUB_REPOSITORY#*/}:latest
             DOCKER_TAG_PRODUCTION: docker.pkg.github.com/${{ github.repository }}/${{ github.repository }}:${{ github.sha }}
         steps:
             - name: "Checkout repository"
               uses: "actions/checkout@v2"
+              
+            - name: "Test"
+              run: |
+                  str="iets/nogiets"
+                  echo ${str#*/}
 
             - name: "Build Docker image"
               run: docker build --tag ${DOCKER_LATEST,,} .
