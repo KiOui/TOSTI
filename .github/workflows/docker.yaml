@@ -8,7 +8,7 @@ jobs:
         name: "Build Production Docker Image"
         runs-on: "ubuntu-latest"
         env:
-            DOCKER_LATEST: docker.pkg.github.com/${{ github.repository }}/${${{ github.repository }}#*/}:latest
+            DOCKER_LATEST: docker.pkg.github.com/${{ github.repository }}/${{ github.repository }#*/}:latest
             DOCKER_TAG_PRODUCTION: docker.pkg.github.com/${{ github.repository }}/${{ github.repository }}:${{ github.sha }}
         steps:
             - name: "Checkout repository"
