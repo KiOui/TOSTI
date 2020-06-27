@@ -8,7 +8,7 @@ jobs:
         name: "Build Production Docker Image"
         runs-on: "ubuntu-latest"
         env:
-            GITHUB_REPOSITORY_FULL_NAME=${{ github.repository }}
+            GITHUB_REPOSITORY_FULL_NAME: ${{ github.repository }}
         steps:
             - name: "Checkout repository"
               uses: "actions/checkout@v2"
