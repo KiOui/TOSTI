@@ -1,7 +1,9 @@
 ---
 
 name: Build Production Docker Image
-on: "push"
+on:
+  push:
+    branches: [ master ]
 
 jobs:
     build-docker:
