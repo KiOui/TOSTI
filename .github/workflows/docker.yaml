@@ -16,10 +16,11 @@ jobs:
             - name: "Checkout repository"
               uses: "actions/checkout@v2"
               
-            - name: "Test"
+            - name: "Create repository names"
               run: |
-                  str="iets/nogiets"
-                  echo ${GITHUB_REPOSITORY_NAME}
+                  github_repository_full_name=${{ github.repository }}
+                  docker_latest=docker.pkg.github.com/${{ github.repository }}/${github_repository_full_name##*/}:latest
+                  echo ${docker_latest}
 
             - name: "Build Docker image"
               run: docker build --tag ${DOCKER_LATEST,,} .
