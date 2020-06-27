@@ -9,15 +9,15 @@ jobs:
         runs-on: "ubuntu-latest"
         env:
             GITHUB_REPOSITORY_FULL_NAME: ${{ github.repository }}
+            DOCKER_LATEST: docker.pkg.github.com/${GITHUB_REPOSITORY}/${GITHUB_REPOSITORY##*/}:latest
         steps:
             - name: "Checkout repository"
               uses: "actions/checkout@v2"
               
             - name: "Create repository names"
               run: |
-                  docker_latest=docker.pkg.github.com/${{ github.repository }}/${GITHUB_REPOSITORY_FULL_NAME##*/}:latest
                   docker_tag_production=docker.pkg.github.com/${{ github.repository }}/${GITHUB_REPOSITORY_FULL_NAME##*/}:${{ github.sha }}
-                  echo ${docker_latest}
+                  echo ${DOCKER_LATEST}
 
             - name: "Build Docker image"
               run: docker build --tag docker.pkg.github.com/${{ github.repository }}/${GITHUB_REPOSITORY_FULL_NAME##*/}:latest .
