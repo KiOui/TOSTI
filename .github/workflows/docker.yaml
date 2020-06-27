@@ -20,7 +20,7 @@ jobs:
                   echo ${docker_latest}
 
             - name: "Build Docker image"
-              run: docker build --tag ${docker_latest,,} .
+              run: docker build --tag docker.pkg.github.com/${{ github.repository }}/${GITHUB_REPOSITORY_FULL_NAME##*/}:latest .
 
             - name: "Login to GitHub"
               run: echo "${{ secrets.GH_TOKEN }}" | docker login docker.pkg.github.com -u "${{ github.repository_owner }}" --password-stdin
