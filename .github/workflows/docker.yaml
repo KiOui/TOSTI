@@ -14,8 +14,8 @@ jobs:
             - name: "Create repository names"
               run: |
                   github_repository_full_name=${{ github.repository }}
-                  docker_latest=docker.pkg.github.com/${{ github.repository }}/${github_repository_full_name##*/}:latest
-                  docker_tag_production=docker.pkg.github.com/${{ github.repository }}/${github_repository_full_name##*/}:${{ github.sha }}
+                  export docker_latest=docker.pkg.github.com/${{ github.repository }}/${github_repository_full_name##*/}:latest
+                  export docker_tag_production=docker.pkg.github.com/${{ github.repository }}/${github_repository_full_name##*/}:${{ github.sha }}
 
             - name: "Build Docker image"
               run: docker build --tag ${docker_latest,,} .
