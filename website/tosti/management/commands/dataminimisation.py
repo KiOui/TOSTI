@@ -8,7 +8,7 @@ import users.services
 
 
 class Command(BaseCommand):
-    """Data minimization command to execute data minimization according to privacy policy."""
+    """Data minimisation command to execute data minimization according to privacy policy."""
 
     def add_arguments(self, parser):
         """Arguments for the command."""
