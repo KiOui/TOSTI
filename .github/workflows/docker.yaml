@@ -9,7 +9,7 @@ jobs:
         runs-on: "ubuntu-latest"
         env:
             GITHUB_REPOSITORY: ${{ github.repository }}
-            DOCKER_LATEST: docker.pkg.github.com/${{ github.repository }}/${{ github.repository#*/ }}:latest
+            DOCKER_LATEST: docker.pkg.github.com/${{ github.repository }}/${GITHUB_REPOSITORY#*/}:latest
             DOCKER_TAG_PRODUCTION: docker.pkg.github.com/${{ github.repository }}/${{ github.repository }}:${{ github.sha }}
         steps:
             - name: "Checkout repository"
