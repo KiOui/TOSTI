@@ -11,6 +11,7 @@
 
 .centered-form label {
     margin-right: 5px;
+    margin-top: 10px;
 }
 
 .centered-form input[type=text], .centered-form input[type=submit] {
@@ -26,4 +27,13 @@
     margin: 0;
     background-color: #ff3232;
     color: white;
+}
+
+.helptext {
+    width: 100%;
+    font-size: 0.75rem;
+}
+
+.centered-form label {
+    width: 100%;
 }
