@@ -1,6 +1,8 @@
 import logging
-
+from datetime import timedelta
 from spotipy import SpotifyException
+
+from django.utils import timezone
 
 from marietje.models import (
     SpotifyArtist,
@@ -173,3 +175,22 @@ def player_previous(player):
     except SpotifyException as e:
         logging.error(e)
         raise e
+
+
+def execute_data_minimisation(dry_run=False):
+    """
+    Remove song-request history from users that is more than 31 days old.
+
+    :param dry_run: does not really remove data if True
+    :return: list of users from who data is removed
+    """
+    delete_before = timezone.now() - timedelta(days=31)
+    requests = SpotifyQueueItem.objects.filter(added__lte=delete_before)
+
+    users = []
+    for request in requests:
+        users.append(request.requested_by)
+        request.requested_by = None
+        if not dry_run:
+            request.save()
+    return users

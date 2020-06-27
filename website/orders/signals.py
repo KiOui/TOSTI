@@ -14,7 +14,10 @@ def set_order_paid_at_if_paid(sender, instance, **kwargs):
     try:
         obj = sender.objects.get(pk=instance.pk)
     except sender.DoesNotExist:
-        pass
+        if instance.paid:
+            timezone = pytz.timezone(settings.TIME_ZONE)
+            localized_now = timezone.localize(datetime.now())
+            instance.paid_at = localized_now
     else:
         if instance.paid and not obj.paid:
             timezone = pytz.timezone(settings.TIME_ZONE)
@@ -30,7 +33,10 @@ def set_order_ready_at_if_ready(sender, instance, **kwargs):
     try:
         obj = sender.objects.get(pk=instance.pk)
     except sender.DoesNotExist:
-        pass
+        if instance.ready:
+            timezone = pytz.timezone(settings.TIME_ZONE)
+            localized_now = timezone.localize(datetime.now())
+            instance.ready_at = localized_now
     else:
         if instance.ready and not obj.ready:
             timezone = pytz.timezone(settings.TIME_ZONE)

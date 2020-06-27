@@ -61,11 +61,16 @@ h6 {
 
 p {
     text-align: center;
-    font-size: 1.5rem
+    font-size: 1.5rem;
+    margin-bottom: 3rem;
 }
 
 p.btn-note {
     font-size: .8rem
+}
+
+footer a {
+    color: #ffffff;
 }
 
 .tosti-title {
@@ -86,10 +91,11 @@ p.btn-note {
 @media screen and (max-width: 767px) {
     .extra-margin-top-mobile {
         margin-top: 30px;
- }
+    }
 
-@media screen and (max-width: 500px) {
-    h1 {
-        font-size: 2.5rem;
+    @media screen and (max-width: 500px) {
+        h1 {
+            font-size: 2.5rem;
+        }
     }
 }

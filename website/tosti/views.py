@@ -29,3 +29,9 @@ class IndexView(TemplateView):
                 venue.shift = None
 
         return render(request, self.template_name, {"venues": venues})
+
+
+class PrivacyView(TemplateView):
+    """Privacy policy view."""
+
+    template_name = "tosti/privacy.html"
