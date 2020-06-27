@@ -15,7 +15,7 @@ jobs:
               uses: "actions/checkout@v2"
 
             - name: "Build Docker image"
-              run: echo ${DOCKER_LATEST,,} | docker build --tag .
+              run: docker build --tag ${DOCKER_LATEST,,} .
 
             - name: "Login to GitHub"
               run: echo "${{ secrets.GH_TOKEN }}" | docker login docker.pkg.github.com -u "${{ github.repository_owner }}" --password-stdin
