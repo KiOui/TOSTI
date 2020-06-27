@@ -1,11 +1,8 @@
 from django.contrib.auth import get_user_model, login, logout
 from django.shortcuts import render, redirect
-from django.urls import reverse
 from django.views.generic import TemplateView
-from .forms import LoginForm
-from .services import get_openid_request_url, get_full_user_id
-from django.conf import settings
-from .services import verify_request
+from .forms import LoginForm, AccountForm
+from .services import get_openid_verifier
 
 User = get_user_model()
 
@@ -45,12 +42,9 @@ class LoginView(TemplateView):
         form = LoginForm(request.POST)
 
         if form.is_valid():
-            full_username = get_full_user_id(form.cleaned_data.get("username"))
-            verify_url = get_openid_request_url(
-                settings.OPENID_SERVER_ENDPOINT,
-                request.build_absolute_uri(reverse(settings.OPENID_RETURN_URL)),
-                request.META["HTTP_HOST"],
-                full_username,
+            openid_verifier = get_openid_verifier(request)
+            verify_url = openid_verifier.get_request_url(
+                form.cleaned_data.get("username")
             )
             response = redirect(verify_url)
             if form.cleaned_data.get("remember"):
@@ -77,14 +71,9 @@ class VerifyView(TemplateView):
         :return: a redirect to the index page with the user logged in if the signature is valid, a render of an error
         page otherwise
         """
-        username = verify_request(
-            settings.OPENID_SERVER_ENDPOINT, request.get_full_path()
-        )
-        if username:
-            try:
-                user = User.objects.get(username=username)
-            except User.DoesNotExist:
-                user = User.objects.create(username=username)
+        openid_verifier = get_openid_verifier(request)
+        user = openid_verifier.extract_user()
+        if user:
             login(request, user)
             return redirect("index")
 
@@ -116,3 +105,27 @@ class LogoutView(TemplateView):
             if next_page:
                 return redirect(next_page)
             return redirect("/")
+
+
+class AccountView(TemplateView):
+    """Account view."""
+
+    template_name = "users/account.html"
+
+    def get(self, request, **kwargs):
+        """
+        GET request for the account view.
+
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: a render of the account view
+        """
+        form = AccountForm(
+            initial={
+                "first_name": request.user.first_name,
+                "last_name": request.user.last_name,
+                "username": request.user.username,
+                "email": request.user.email,
+            }
+        )
+        return render(request, self.template_name, {"form": form})

@@ -28,7 +28,7 @@ services:
           - backend-django-tosti
 
     tosti-django:
-        image: "larsvanrhijn/tosti:latest"
+        image: "docker.pkg.github.com/kioui/tosti/tosti:latest"
         restart: 'always'
         container_name: tosti_django
         depends_on:
