@@ -7,11 +7,6 @@ jobs:
     build-docker:
         name: "Build Production Docker Image"
         runs-on: "ubuntu-latest"
-        env:
-            GITHUB_REPOSITORY_NAME: ${GITHUB_REPOSITORY##*/}
-            DOCKER_URL: docker.pkg.github.com/${{ github.repository }}/
-            DOCKER_LATEST: docker.pkg.github.com/${{ github.repository }}/${{ github.repository }}:latest
-            DOCKER_TAG_PRODUCTION: docker.pkg.github.com/${{ github.repository }}/${GITHUB_REPOSITORY##*/}:${{ github.sha }}
         steps:
             - name: "Checkout repository"
               uses: "actions/checkout@v2"
@@ -20,16 +15,16 @@ jobs:
               run: |
                   github_repository_full_name=${{ github.repository }}
                   docker_latest=docker.pkg.github.com/${{ github.repository }}/${github_repository_full_name##*/}:latest
-                  echo ${docker_latest}
+                  docker_tag_production=docker.pkg.github.com/${{ github.repository }}/${github_repository_full_name##*/}:${{ github.sha }}
 
             - name: "Build Docker image"
-              run: docker build --tag ${DOCKER_LATEST,,} .
+              run: docker build --tag ${docker_latest,,} .
 
             - name: "Login to GitHub"
               run: echo "${{ secrets.GH_TOKEN }}" | docker login docker.pkg.github.com -u "${{ github.repository_owner }}" --password-stdin
             
             - name: "Tag and publish"
               run: |
-                  docker tag "${DOCKER_LATEST,,}" "${DOCKER_TAG_PRODUCTION,,}"
-                  docker push "${DOCKER_TAG_PRODUCTION,,}"
-                  docker push "${DOCKER_LATEST,,}"
+                  docker tag "${docker_latest,,}" "${docker_tag_production,,}"
+                  docker push "${docker_tag_production,,}"
+                  docker push "${docker_latest,,}"
