@@ -19,7 +19,9 @@ def render_player(context, player, refresh=False):
     return {
         "refresh": refresh,
         "player": player,
-        "controls": True if context["request"].user.is_staff else False,
+        "controls": True
+        if context["request"].user.has_perm("marietje.can_control", player)
+        else False,
     }
 
 
@@ -30,5 +32,7 @@ def render_venue_player(context, venue, refresh=False):
     return {
         "refresh": refresh,
         "player": player,
-        "controls": True if context["request"].user.is_staff else False,
+        "control": True
+        if context["request"].user.has_perm("marietje.can_control", player)
+        else False,
     }

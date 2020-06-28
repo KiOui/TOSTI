@@ -158,6 +158,11 @@ class SpotifyAccount(models.Model):
         verbose_name = "Spotify account"
         verbose_name_plural = "Spotify accounts"
 
+        permissions = [
+            ("can_control", "Can control music players"),
+            ("can_request", "Can request songs"),
+        ]
+
 
 class SpotifyArtist(models.Model):
     """Spotify Artist model."""

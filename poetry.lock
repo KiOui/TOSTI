@@ -132,6 +132,17 @@ django = ">=2.0"
 
 [[package]]
 category = "main"
+description = "Implementation of per object permissions for Django."
+name = "django-guardian"
+optional = false
+python-versions = ">=3.5"
+version = "2.3.0"
+
+[package.dependencies]
+Django = ">=2.2"
+
+[[package]]
+category = "main"
 description = "Django application and library for importing and exporting data with included admin integration."
 name = "django-import-export"
 optional = false
@@ -143,7 +154,7 @@ Django = ">=2.0"
 diff-match-patch = "*"
 
 [package.dependencies.tablib]
-extras = ["html", "xlsx", "yaml", "ods", "xls"]
+extras = ["html", "ods", "xlsx", "xls", "yaml"]
 version = ">=0.14.0"
 
 [[package]]
@@ -461,7 +472,7 @@ python-versions = "*"
 version = "1.3.0"
 
 [metadata]
-content-hash = "77b85f95f06063ebe0bd42dddd9eb80fd69f77ab0cba8278b3b0c35cde974178"
+content-hash = "7bc623c9bf80f7d8995bb2cd74facf4bd63eed315ad451a2030bfa7a85a215fe"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -540,6 +551,10 @@ django = [
 django-admin-autocomplete-filter = [
     {file = "django-admin-autocomplete-filter-0.5.tar.gz", hash = "sha256:9d95a4407c3289e823c3486ddb200124c4ec8edf11064a0b8cb998d32c39530e"},
     {file = "django_admin_autocomplete_filter-0.5-py3-none-any.whl", hash = "sha256:44556b4b4d02c09a7ccdfc43e38c1e0f032741c6d484e9a6c542d7180b029418"},
+]
+django-guardian = [
+    {file = "django-guardian-2.3.0.tar.gz", hash = "sha256:ed2de26e4defb800919c5749fb1bbe370d72829fbd72895b6cf4f7f1a7607e1b"},
+    {file = "django_guardian-2.3.0-py3-none-any.whl", hash = "sha256:0e70706c6cda88ddaf8849bddb525b8df49de05ba0798d4b3506049f0d95cbc8"},
 ]
 django-import-export = [
     {file = "django-import-export-2.0.2.tar.gz", hash = "sha256:399cd1fb76b9cca89de67d5ab8e9257380f0f9a8bf61f1fab9d62b5230fb4587"},

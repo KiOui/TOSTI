@@ -1,5 +1,5 @@
 from django.contrib.auth.base_user import BaseUserManager
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, Group
 from django.db import models
 
 
@@ -17,6 +17,11 @@ class UserManager(BaseUserManager):
         user = self.model(username=username, **kwargs)
         user.set_unusable_password()
         user.save(using=self._db)
+
+        auto_join_groups = UserGroup.objects.filter(auto_join_new_users=True)
+        for group in auto_join_groups:
+            user.groups.add(group)
+
         return user
 
     def create_user(self, username, **kwargs):
@@ -77,3 +82,18 @@ class User(AbstractUser):
             if self.first_name != "" and self.first_name is not None
             else self.username
         )
+
+
+class UserGroup(Group):
+    """Our own custom group"""
+
+    auto_join_new_users = models.BooleanField(
+        help_text="If selected, new users will automatically join this group."
+    )
+
+    class Meta:
+        """Meta class for groups"""
+
+        verbose_name = "Group"
+        verbose_name_plural = "Groups"
+        ordering = ["name"]

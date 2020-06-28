@@ -1,5 +1,6 @@
 import logging
 from datetime import timedelta
+
 from spotipy import SpotifyException
 
 from django.utils import timezone

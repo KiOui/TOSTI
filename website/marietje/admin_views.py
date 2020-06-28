@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.generic import TemplateView
@@ -5,12 +6,12 @@ from django.views.generic import TemplateView
 from marietje.forms import SpotifyTokenForm
 from marietje.models import SpotifyAccount
 from marietje.views import COOKIE_CLIENT_ID
-from orders.permissions import StaffRequiredMixin
 
 
-class SpofityAuthorizeView(StaffRequiredMixin, TemplateView):
+class SpofityAuthorizeView(PermissionRequiredMixin, TemplateView):
     """Authorize a Django to access a Spotify account by entering OAuth credentials."""
 
+    permission_required = "marietje.add_spotifyaccount"
     template_name = "marietje/admin/authorize.html"
 
     def get(self, request, **kwargs):
@@ -42,9 +43,10 @@ class SpofityAuthorizeView(StaffRequiredMixin, TemplateView):
         return render(request, self.template_name, {"form": form})
 
 
-class SpotifyTokenView(StaffRequiredMixin, TemplateView):
+class SpotifyTokenView(PermissionRequiredMixin, TemplateView):
     """Get a Spotify account token."""
 
+    permission_required = "marietje.add_spotifyaccount"
     template_name = "marietje/admin/token.html"
 
     def get(self, request, **kwargs):
@@ -83,9 +85,10 @@ class SpotifyTokenView(StaffRequiredMixin, TemplateView):
             )
 
 
-class SpotifyAuthorizeSucceededView(StaffRequiredMixin, TemplateView):
+class SpotifyAuthorizeSucceededView(PermissionRequiredMixin, TemplateView):
     """Authorization succeeded view."""
 
+    permission_required = "marietje.add_spotifyaccount"
     template_name = "marietje/admin/authorize_succeeded.html"
 
     def get(self, request, **kwargs):

@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "admin_auto_filters",
     "import_export",
+    "guardian",
     "marietje",
     "users",
     "tosti",
@@ -36,6 +37,13 @@ INSTALLED_APPS = [
 ]
 
 AUTH_USER_MODEL = "users.User"
+
+ANONYMOUS_USER_NAME = None
+
+AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",  # default
+    "guardian.backends.ObjectPermissionBackend",
+)
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
