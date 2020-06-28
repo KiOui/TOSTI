@@ -87,7 +87,7 @@ class Migration(migrations.Migration):
                 ),
                 ("track_id", models.CharField(max_length=256, unique=True)),
                 ("track_name", models.CharField(max_length=1024)),
-                ("track_artists", models.ManyToManyField(to="marietje.SpotifyArtist")),
+                ("track_artists", models.ManyToManyField(to="thaliedje.SpotifyArtist")),
             ],
         ),
         migrations.CreateModel(
@@ -115,7 +115,7 @@ class Migration(migrations.Migration):
                     "spotify_settings_object",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="marietje.SpotifyAccount",
+                        to="thaliedje.SpotifyAccount",
                     ),
                 ),
                 (
@@ -123,7 +123,7 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         null=True,
                         on_delete=django.db.models.deletion.SET_NULL,
-                        to="marietje.SpotifyTrack",
+                        to="thaliedje.SpotifyTrack",
                     ),
                 ),
             ],

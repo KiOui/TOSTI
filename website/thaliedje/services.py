@@ -2,7 +2,7 @@ import logging
 
 from spotipy import SpotifyException
 
-from marietje.models import (
+from thaliedje.models import (
     SpotifyArtist,
     SpotifyTrack,
     SpotifyQueueItem,

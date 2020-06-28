@@ -1,10 +1,10 @@
 {% extends 'tosti/base.html' %}
-{% load static marietje %}
+{% load static thaliedje %}
 
 {% block page %}
     <div class="container-sm">
-        <h1 class="mb-3"><i class="fab fa-spotify"></i> Marietje</h1>
-        <p>Marietje is the music control system for the student canteens in the Huygens building.</p>
+        <h1 class="mb-3"><i class="fab fa-spotify"></i> Thaliedje</h1>
+        <p>Thaliedje is the music control system for the student canteens in the Huygens building.</p>
         <p>You can add songs to the queue of the canteens by selecting a canteen below and adding your song.</p>
         <div class="card-deck justify-content-center">
             {% for player in players %}
@@ -13,7 +13,7 @@
                         <div class="card-body">
                             <h2>{{ player.venue }}</h2>
                             {% render_player player %}
-                            <a href="{% url 'marietje:now_playing' venue=player.venue %}" class="w-100 btn btn-primary">Go to {{ player.venue }}</a>
+                            <a href="{% url 'thaliedje:now_playing' venue=player.venue %}" class="w-100 btn btn-primary">Go to {{ player.venue }}</a>
                         </div>
                     </div>
                 {% endif %}

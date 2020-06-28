@@ -15,7 +15,7 @@ class SpotifyAccount(models.Model):
     """
     SpotifyAccount model for Spotify players.
 
-    Marietje can be authorized to access multiple Spotify accounts via the Spotify API.
+    Thaliedje can be authorized to access multiple Spotify accounts via the Spotify API.
     The Spotify account model contains data of the authorized accounts. Each account can
     be added to a venue to provide a music player for that venue. This expects a Spotify
     client (playback device) is playing in that venue. Communciation happens via the
@@ -139,7 +139,7 @@ class SpotifyAccount(models.Model):
 
     def get_absolute_url(self):
         """Get the front-end url for a SpotifyAccount."""
-        return reverse("marietje:now_playing", args=[self.venue])
+        return reverse("thaliedje:now_playing", args=[self.venue])
 
     def __str__(self):
         """

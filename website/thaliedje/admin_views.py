@@ -2,16 +2,16 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.generic import TemplateView
 
-from marietje.forms import SpotifyTokenForm
-from marietje.models import SpotifyAccount
-from marietje.views import COOKIE_CLIENT_ID
+from thaliedje.forms import SpotifyTokenForm
+from thaliedje.models import SpotifyAccount
+from thaliedje.views import COOKIE_CLIENT_ID
 from orders.permissions import StaffRequiredMixin
 
 
 class SpofityAuthorizeView(StaffRequiredMixin, TemplateView):
     """Authorize a Django to access a Spotify account by entering OAuth credentials."""
 
-    template_name = "marietje/admin/authorize.html"
+    template_name = "thaliedje/admin/authorize.html"
 
     def get(self, request, **kwargs):
         """Get the form to add a new authorized Spotify Account."""
@@ -45,7 +45,7 @@ class SpofityAuthorizeView(StaffRequiredMixin, TemplateView):
 class SpotifyTokenView(StaffRequiredMixin, TemplateView):
     """Get a Spotify account token."""
 
-    template_name = "marietje/admin/token.html"
+    template_name = "thaliedje/admin/token.html"
 
     def get(self, request, **kwargs):
         """Get a Spotify account token from the Spotify OAuth credentials."""
@@ -86,7 +86,7 @@ class SpotifyTokenView(StaffRequiredMixin, TemplateView):
 class SpotifyAuthorizeSucceededView(StaffRequiredMixin, TemplateView):
     """Authorization succeeded view."""
 
-    template_name = "marietje/admin/authorize_succeeded.html"
+    template_name = "thaliedje/admin/authorize_succeeded.html"
 
     def get(self, request, **kwargs):
         """GET the view."""

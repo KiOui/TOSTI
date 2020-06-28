@@ -1,6 +1,6 @@
 from django.urls import path, register_converter
 
-from marietje import views
+from thaliedje import views
 from .converters import SpotifyAccountConverter
 from venues.converters import VenueConverter
 

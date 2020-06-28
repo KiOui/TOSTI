@@ -6,18 +6,18 @@ from django.shortcuts import render
 from django.template.loader import get_template, render_to_string
 from django.views.generic import TemplateView
 
-from marietje import services
+from thaliedje import services
 from .models import SpotifyAccount
-from .templatetags.marietje import render_queue_list, render_player
+from .templatetags.thaliedje import render_queue_list, render_player
 from django.contrib.admin.views.decorators import staff_member_required
 
 COOKIE_CLIENT_ID = "client_id"
 
 
 class IndexView(TemplateView):
-    """Index view for marietje."""
+    """Index view for thaliedje."""
 
-    template_name = "marietje/index.html"
+    template_name = "thaliedje/index.html"
 
     def get(self, request, **kwargs):
         """GET an overview of all players."""
@@ -29,7 +29,7 @@ class IndexView(TemplateView):
 class NowPlayingView(LoginRequiredMixin, TemplateView):
     """Now playing view with the player for a venue."""
 
-    template_name = "marietje/now_playing.html"
+    template_name = "thaliedje/now_playing.html"
 
     def get(self, request, **kwargs):
         """GET the player for a venue."""
@@ -53,7 +53,7 @@ class PlayerRefreshView(LoginRequiredMixin, TemplateView):
     @staticmethod
     def render_template(player, request):
         """Render the player template."""
-        return get_template("marietje/player.html").render(
+        return get_template("thaliedje/player.html").render(
             render_player({"request": request}, player, refresh=True)
         )
 
@@ -87,7 +87,7 @@ class QueueRefreshView(LoginRequiredMixin, TemplateView):
         }
         """
         player = kwargs.get("player")
-        queue = get_template("marietje/queue.html").render(
+        queue = get_template("thaliedje/queue.html").render(
             render_queue_list(player, refresh=True)
         )
         return JsonResponse({"data": queue})
@@ -119,7 +119,7 @@ def search_view(request, **kwargs):
             player = kwargs.get("player")
             results = services.search_tracks(query, player, maximum)
             rendered_results = render_to_string(
-                "marietje/search.html", {"refresh": True, "tracks": results}
+                "thaliedje/search.html", {"refresh": True, "tracks": results}
             )
             return JsonResponse(
                 {"query": query, "id": request_id, "result": rendered_results}

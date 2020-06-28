@@ -1,10 +1,10 @@
 from django import template
-from marietje.models import SpotifyQueueItem, SpotifyAccount
+from thaliedje.models import SpotifyQueueItem, SpotifyAccount
 
 register = template.Library()
 
 
-@register.inclusion_tag("marietje/queue.html")
+@register.inclusion_tag("thaliedje/queue.html")
 def render_queue_list(player, refresh=False, max_items=10):
     """Render queue."""
     queue = SpotifyQueueItem.objects.filter(player=player).order_by("-added")[
@@ -13,7 +13,7 @@ def render_queue_list(player, refresh=False, max_items=10):
     return {"queue": queue, "refresh": refresh, "player": player}
 
 
-@register.inclusion_tag("marietje/player.html", takes_context=True)
+@register.inclusion_tag("thaliedje/player.html", takes_context=True)
 def render_player(context, player, refresh=False):
     """Render queue."""
     return {
@@ -23,7 +23,7 @@ def render_player(context, player, refresh=False):
     }
 
 
-@register.inclusion_tag("marietje/player.html", takes_context=True)
+@register.inclusion_tag("thaliedje/player.html", takes_context=True)
 def render_venue_player(context, venue, refresh=False):
     """Render queue."""
     player = SpotifyAccount.get_player(venue)

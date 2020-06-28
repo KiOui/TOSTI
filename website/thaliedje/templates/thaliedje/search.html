@@ -1,7 +1,7 @@
 {% load static %}
 
 {% if not refresh %}
-    <link rel="stylesheet" href="{% static 'marietje/css/search.css' %}"/>
+    <link rel="stylesheet" href="{% static 'thaliedje/css/search.css' %}"/>
     <div id="search-message" class="alert"></div>
     <input id="search" type="text" maxlength="100" placeholder="Search a track" class="container-fluid"/>
     <div id="results" style="display: none">
@@ -26,9 +26,9 @@
     <script>
         const QUERY_FIELD = document.getElementById('search');
         const RESULT_FIELD = document.getElementById('results');
-        const SEARCH_URL = "{% url "marietje:player_search" player=player %}";
-        const ADD_URL = "{% url "marietje:player_add" player=player %}";
+        const SEARCH_URL = "{% url "thaliedje:player_search" player=player %}";
+        const ADD_URL = "{% url "thaliedje:player_add" player=player %}";
         const MESSAGE_FIELD = document.getElementById('search-message');
     </script>
-    <script src="{% static 'marietje/js/asynch-search.js' %}"></script>
+    <script src="{% static 'thaliedje/js/asynch-search.js' %}"></script>
 {% endif %}

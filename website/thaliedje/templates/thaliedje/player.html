@@ -1,7 +1,7 @@
 {% load static %}
 {% if player and player.configured %}
 {% if not refresh %}
-    <link rel="stylesheet" href="{% static 'marietje/css/player.css' %}"/>
+    <link rel="stylesheet" href="{% static 'thaliedje/css/player.css' %}"/>
     <div class="player" id="player-container-{{ player.id }}">
 {% endif %}
 {% if player.currently_playing %}
@@ -23,13 +23,13 @@
 {% endif %}
 {% if controls %}
     <div class="player-controls mb-5">
-        <i class="fas fa-backward" onclick="update_and_callback('{% url "marietje:player_previous" player=player %}', {}, update_update_list)"></i>
+        <i class="fas fa-backward" onclick="update_and_callback('{% url "thaliedje:player_previous" player=player %}', {}, update_update_list)"></i>
         {% if player.currently_playing.is_playing %}
-            <i class="fas fa-pause" onclick="update_and_callback('{% url "marietje:player_pause" player=player %}', {}, update_update_list)"></i>
+            <i class="fas fa-pause" onclick="update_and_callback('{% url "thaliedje:player_pause" player=player %}', {}, update_update_list)"></i>
         {% else %}
-            <i class="fas fa-play" onclick="update_and_callback('{% url "marietje:player_play" player=player %}', {}, update_update_list)"></i>
+            <i class="fas fa-play" onclick="update_and_callback('{% url "thaliedje:player_play" player=player %}', {}, update_update_list)"></i>
         {% endif %}
-        <i class="fas fa-forward" onclick="update_and_callback('{% url "marietje:player_next" player=player %}', {}, update_update_list)"></i>
+        <i class="fas fa-forward" onclick="update_and_callback('{% url "thaliedje:player_next" player=player %}', {}, update_update_list)"></i>
     </div>
 {% endif %}
 {% if not refresh %}
@@ -41,7 +41,7 @@
         add_update_list(
             update_and_replace,
             [
-                "{% url 'marietje:player_refresh' player=player %}",
+                "{% url 'thaliedje:player_refresh' player=player %}",
                 document.getElementById('player-container-{{ player.id }}'),
                 {'controls': {% if controls %}true{% else %}false{% endif %}}
             ]

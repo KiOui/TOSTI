@@ -2,8 +2,8 @@ from django.contrib import admin
 from django.shortcuts import redirect
 from django.urls import path, register_converter
 
-from marietje.converters import SpotifyAccountConverter
-from marietje.admin_views import (
+from thaliedje.converters import SpotifyAccountConverter
+from thaliedje.admin_views import (
     SpofityAuthorizeView,
     SpotifyTokenView,
     SpotifyAuthorizeSucceededView,

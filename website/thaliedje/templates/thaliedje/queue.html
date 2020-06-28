@@ -1,7 +1,7 @@
 {% load static %}
 
 {% if not refresh %}
-    <link rel="stylesheet" href="{% static 'marietje/css/search.css' %}"/>
+    <link rel="stylesheet" href="{% static 'thaliedje/css/search.css' %}"/>
     <h2>Requested songs</h2>
     <p>The most recently requested songs are displayed here.</p>
     <div id="queue-container-{{ player.id }}">
@@ -32,6 +32,6 @@
 
 {% if not refresh %}
     <script>
-        add_update_list(update_and_replace, ["{% url 'marietje:queue_refresh' player=player %}", document.getElementById('queue-container-{{ player.id }}'), {}]);
+        add_update_list(update_and_replace, ["{% url 'thaliedje:queue_refresh' player=player %}", document.getElementById('queue-container-{{ player.id }}'), {}]);
     </script>
 {% endif %}

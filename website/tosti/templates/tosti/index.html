@@ -1,5 +1,5 @@
 {% extends 'tosti/base.html' %}
-{% load static order_now start_shift marietje %}
+{% load static order_now start_shift thaliedje %}
 
 {% block styles %}
     <link rel="stylesheet" href="{% static 'tosti/css/index.css' %}"/>
@@ -22,8 +22,8 @@
     <hr>
     </div>
 
-    <div class="btn-ml btn-on" onclick="window.location.href = '{% url 'marietje:index' %}';">
-        <p><i class="fab fa-spotify"></i> Go to Marietje</p>
+    <div class="btn-ml btn-on" onclick="window.location.href = '{% url 'thaliedje:index' %}';">
+        <p><i class="fab fa-spotify"></i> Go to Thaliedje</p>
     </div>
 
 {% endblock %}
