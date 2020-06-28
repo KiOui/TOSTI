@@ -74,7 +74,7 @@ class VerifyView(TemplateView):
         openid_verifier = get_openid_verifier(request)
         user = openid_verifier.extract_user()
         if user:
-            login(request, user)
+            login(request, user, backend="django.contrib.auth.backends.ModelBackend")
             return redirect("index")
 
         return render(request, self.template_name)
