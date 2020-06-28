@@ -23,5 +23,7 @@ urlpatterns = [
     path("", IndexView.as_view(), name="index"),
     path("users/", include(("users.urls", "users"), namespace="users"),),
     path("shifts/", include(("orders.urls", "orders"), namespace="orders"),),
-    path("thaliedje/", include(("thaliedje.urls", "thaliedje"), namespace="thaliedje"), ),
+    path(
+        "thaliedje/", include(("thaliedje.urls", "thaliedje"), namespace="thaliedje"),
+    ),
 ]
