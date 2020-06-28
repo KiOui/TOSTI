@@ -1,10 +1,13 @@
 from urllib.parse import urlencode, urlparse, parse_qsl
 import requests
-from django.conf import settings
 import re
+from datetime import timedelta
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.urls import reverse
+from django.utils import timezone
+
 
 User = get_user_model()
 
@@ -202,3 +205,23 @@ class OpenIDVerifier:
                     self.set_user_details(user)
                 return user
         return False
+
+
+def execute_data_minimisation(dry_run=False):
+    """
+    Remove accounts for users that have not been used for longer than 365 days.
+
+    :param dry_run: does not really remove data if True
+    :return: list of users from who data is removed
+    """
+    delete_before = timezone.now() - timedelta(days=365)
+    users = User.objects.filter(last_login__lte=delete_before)
+
+    processed = []
+    for user in users:
+        if not user.is_superuser:
+            processed.append(user)
+            if not dry_run:
+                user.delete()
+
+    return processed

@@ -1,0 +1,71 @@
+{% extends 'tosti/base.html' %}
+
+{% block page %}
+    <div class="container mt-5 mb-5 text-center">
+        <h1>Privacy</h1>
+        <h6>About the data we collect</h6>
+    </div>
+    <div class="container">
+        <h3>Who are we</h3>
+        <p>
+            This website is being maintained by <a href="https://tartarus.science.ru.nl" target="_blank">Tartarus</a>,
+            the foundation managing the student canteens of the <a href="https://science.ru.nl" target="_blank">Faculty of Science</a>
+            of the <a href="https://ru.nl" target="_blank">Radboud University Nijmegen</a>.
+            We can be reached via <a href="mailto:tartarus@science.ru.nl">tartarus@science.ru.nl</a>, or for technical matters,
+            via <a href="mailto:www-tartarus@science.ru.nl">www-tartarus@science.ru.nl</a>
+        </p>
+    </div>
+    <div class="container">
+        <h3>Your account</h3>
+        <p>
+            To use most features of this site, you need a user account. The accounts are provided via the
+            <a href="https://openid.science.ru.nl" target="_blank">Faculty of Science's OpenID service</a>.
+            When you log in for the first time, your username, full name and email address are requested via this OpenID
+            server and stored.
+        </p>
+        <p>
+            When you use your account for services, such as ordering products or requesting songs, we naturally store
+            this data too.
+        </p>
+        <p>
+            The data is stored on the grounds of legitimate interest (when you use the music-control feature) and
+            contractual necessity (for ordering products). Your name will be visible to other users when you order a product
+            or when you request a song. Your email address will never be shown to other users.
+        </p>
+    </div>
+    <div class="container">
+        <h3>How long we keep your data</h3>
+        <p>
+            Your account will be kept for a period of a year after your last login and will, without notification, be removed
+            after you haven't used it for more than a year. However, whenever your credentials for the Faculty of Science OpenID
+            service expire, you won't be able to access your account anymore either.
+        </p>
+        <p>
+            Your song requests and orders will be stored for a year and will be anonymized afterwards.
+        </p>
+    </div>
+    <div class="container">
+        <h3>If you want to access your data</h3>
+        <p>
+            If you want to access your the data we have of you, you can contact us via email and we will provide you with
+            the records we keep. This holds as well for if you want your data to be deleted or rectified.
+        </p>
+    </div>
+    <div class="container">
+        <h3>Google Analytics</h3>
+        <p>
+            In addition to the data above, this website also uses <a href="https://analytics.google.com/" target="_blank">Google Analytics</a>
+            for generating visitor statistics. However, this data is collected anonymously and will also not be linked to the account of
+            logged in users.
+        </p>
+    </div>
+    <div class="container">
+        <h3>Data Protection Authority</h3>
+        <p>
+            In case you think we have processed your data unlawfully and wish to file a complaint, you always have the right to do so at
+            the Dutch Data Protection Authority, the <a href="https://autoriteitpersoonsgegevens.nl" target="_blank">Autoriteit Persoonsgegevens</a>.
+            But of course, we would prefer it if you would first just notify us about the issue, so we can solve it together 😅.
+        </p>
+    </div>
+    <br>
+{% endblock %}

@@ -15,6 +15,7 @@ class UserAdmin(admin.ModelAdmin):
             {
                 "fields": (
                     "date_joined",
+                    "last_login",
                     "is_staff",
                     "is_active",
                     "is_superuser",
@@ -26,6 +27,7 @@ class UserAdmin(admin.ModelAdmin):
     list_display = [
         "username",
         "date_joined",
+        "last_login",
         "is_active",
         "is_staff",
         "is_superuser",
