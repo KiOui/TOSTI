@@ -8,25 +8,38 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('auth', '0011_update_proxy_permissions'),
-        ('users', '0001_initial'),
+        ("auth", "0011_update_proxy_permissions"),
+        ("users", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='UserGroup',
+            name="UserGroup",
             fields=[
-                ('group_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='auth.Group')),
-                ('auto_join_new_users', models.BooleanField(help_text='If selected, new users will automatically join this group.')),
+                (
+                    "group_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="auth.Group",
+                    ),
+                ),
+                (
+                    "auto_join_new_users",
+                    models.BooleanField(
+                        help_text="If selected, new users will automatically join this group."
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Group',
-                'verbose_name_plural': 'Groups',
-                'ordering': ['name'],
+                "verbose_name": "Group",
+                "verbose_name_plural": "Groups",
+                "ordering": ["name"],
             },
-            bases=('auth.group',),
-            managers=[
-                ('objects', django.contrib.auth.models.GroupManager()),
-            ],
+            bases=("auth.group",),
+            managers=[("objects", django.contrib.auth.models.GroupManager()),],
         ),
     ]

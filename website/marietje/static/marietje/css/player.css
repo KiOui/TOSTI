@@ -5,17 +5,6 @@
     font-size: 16pt;
 }
 
-.player-controls i {
-    flex-basis: 0;
-    flex-grow: 1;
-    align-items: center;
-    text-align: center;
-}
-
-.player-controls i:hover {
-    cursor: pointer;
-}
-
 .player-controls svg {
     flex-basis: 0;
     flex-grow: 1;

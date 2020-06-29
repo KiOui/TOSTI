@@ -6,6 +6,7 @@ from django.contrib.admin import widgets
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.urls import reverse
+from guardian.admin import GuardedModelAdmin
 from import_export.admin import ImportExportModelAdmin
 
 from orders.models import Product, Order, Shift
@@ -120,7 +121,7 @@ class ShiftAdminForm(forms.ModelForm):
 
 
 @admin.register(Shift)
-class ShiftAdmin(ImportExportModelAdmin):
+class ShiftAdmin(GuardedModelAdmin, ImportExportModelAdmin):
     """Custom admin for shifts."""
 
     form = ShiftAdminForm

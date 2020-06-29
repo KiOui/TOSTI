@@ -6,12 +6,19 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('marietje', '0002_auto_20200626_0038'),
+        ("marietje", "0002_auto_20200626_0038"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='spotifyaccount',
-            options={'permissions': [('can_control', 'Can control music players'), ('can_request', 'Can request songs')], 'verbose_name': 'Spotify account', 'verbose_name_plural': 'Spotify accounts'},
+            name="spotifyaccount",
+            options={
+                "permissions": [
+                    ("can_control", "Can control music players"),
+                    ("can_request", "Can request songs"),
+                ],
+                "verbose_name": "Spotify account",
+                "verbose_name_plural": "Spotify accounts",
+            },
         ),
     ]

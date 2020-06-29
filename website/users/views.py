@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model, login, logout
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
 from .forms import LoginForm, AccountForm
@@ -107,7 +108,7 @@ class LogoutView(TemplateView):
             return redirect("/")
 
 
-class AccountView(TemplateView):
+class AccountView(LoginRequiredMixin, TemplateView):
     """Account view."""
 
     template_name = "users/account.html"

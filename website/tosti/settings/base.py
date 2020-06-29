@@ -36,8 +36,6 @@ INSTALLED_APPS = [
     "orders",
 ]
 
-AUTH_USER_MODEL = "users.User"
-
 ANONYMOUS_USER_NAME = None
 
 AUTHENTICATION_BACKENDS = (

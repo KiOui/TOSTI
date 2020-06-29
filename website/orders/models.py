@@ -412,6 +412,11 @@ class Shift(models.Model):
         """Meta class."""
 
         ordering = ["start_date", "end_date"]
+        permissions = [
+            ("can_order_during_shift", "Can order products during this shift"),
+            ("can_process_during_shift", "Can process orders during this shift"),
+            ("can_process_after_shift", "Can process orders after shift has ended")
+        ]
 
 
 def available_product_filter(value):

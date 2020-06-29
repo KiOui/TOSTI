@@ -1,5 +1,6 @@
 from django.contrib.auth.base_user import BaseUserManager
-from django.contrib.auth.models import AbstractUser, Group
+from django.contrib.auth.models import User as BaseUser, Group as BaseGroup
+
 from django.db import models
 
 
@@ -17,11 +18,6 @@ class UserManager(BaseUserManager):
         user = self.model(username=username, **kwargs)
         user.set_unusable_password()
         user.save(using=self._db)
-
-        auto_join_groups = UserGroup.objects.filter(auto_join_new_users=True)
-        for group in auto_join_groups:
-            user.groups.add(group)
-
         return user
 
     def create_user(self, username, **kwargs):
@@ -49,10 +45,8 @@ class UserManager(BaseUserManager):
         return self._create_user(username, **kwargs)
 
 
-class User(AbstractUser):
+class User(BaseUser):
     """User object."""
-
-    username = models.CharField(max_length=256, unique=True)
 
     objects = UserManager()
 
@@ -83,17 +77,25 @@ class User(AbstractUser):
             else self.username
         )
 
+    class Meta:
+        """Meta class for Users."""
 
-class UserGroup(Group):
+        proxy = True
+
+
+BaseGroup.add_to_class(
+    "auto_join_new_users",
+    models.BooleanField(
+        default=True,
+        help_text="If selected, new users will automatically be added to this group.",
+    ),
+)
+
+
+class Group(BaseGroup):
     """Our own custom group"""
-
-    auto_join_new_users = models.BooleanField(
-        help_text="If selected, new users will automatically join this group."
-    )
 
     class Meta:
         """Meta class for groups"""
 
-        verbose_name = "Group"
-        verbose_name_plural = "Groups"
-        ordering = ["name"]
+        proxy = True

@@ -5,6 +5,7 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.urls import reverse
 from django.utils import timezone
 
@@ -191,6 +192,13 @@ class OpenIDVerifier:
 
         user.save()
 
+    @staticmethod
+    def join_auto_join_groups(user):
+        """Let user join all groups that are set for auto_join_new_users."""
+        auto_join_groups = Group.objects.filter(auto_join_new_users=True)
+        for group in auto_join_groups:
+            user.groups.add(group)
+
     def extract_user(self):
         """
         Extract a user object from the inputted request.
@@ -203,6 +211,7 @@ class OpenIDVerifier:
                 user, created = User.objects.get_or_create(username=username)
                 if created:
                     self.set_user_details(user)
+                    self.join_auto_join_groups(user)
                 return user
         return False
 
