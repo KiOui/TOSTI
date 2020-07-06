@@ -1,8 +1,6 @@
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import User as BaseUser, Group as BaseGroup
 
-from django.db import models
-
 
 class UserManager(BaseUserManager):
     """User manager object."""
@@ -84,9 +82,9 @@ class User(BaseUser):
 
 
 class Group(BaseGroup):
-    """Our own custom group"""
+    """Proxy model of Django's built-in auth.Group."""
 
     class Meta:
-        """Meta class for groups"""
+        """Meta class for groups."""
 
         proxy = True

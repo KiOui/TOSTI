@@ -134,4 +134,4 @@ OPENID_USERNAME_PREFIX = "http://openid.science.ru.nl/"
 OPENID_USERNAME_POSTFIX = "/"
 
 # New users will automatically join auth groups with the following id's
-AUTO_JOIN_GROUP_IDS = []
+AUTO_JOIN_GROUP_IDS = [1]

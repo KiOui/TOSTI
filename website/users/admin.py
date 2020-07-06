@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth.admin import (
     UserAdmin as BaseUserAdmin,
@@ -90,18 +91,28 @@ class GroupAdminForm(forms.ModelForm):
         widget=FilteredSelectMultiple("users", False),
     )
 
+    is_auto_join_group = forms.NullBooleanField(
+        required=False,
+        disabled=True,
+        help_text="If 'Yes', new users will automatically join this group. This can only be enabled by adding the "
+        "group id in the settings file, currently.",
+    )
+
     def __init__(self, *args, **kwargs):
         """Correctly initialize the form, because users is not a field of Groups, but the other way around."""
         super(GroupAdminForm, self).__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields["users"].initial = self.instance.user_set.all()
+            self.fields["is_auto_join_group"].initial = (
+                self.instance.pk in settings.AUTO_JOIN_GROUP_IDS
+            )
 
     def save_m2m(self):
         """On save, add selected users to the group."""
         self.instance.user_set.set(self.cleaned_data["users"])
 
     def save(self, *args, **kwargs):
-        """Default save."""
+        """Save form."""
         instance = super(GroupAdminForm, self).save()
         self.save_m2m()
         return instance
