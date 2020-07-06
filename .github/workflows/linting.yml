@@ -41,7 +41,7 @@ jobs:
       run: >-
         poetry run
         flake8
-        --exclude="migrations,website/tosti/settings.py"
+        --exclude="migrations,website/tosti/settings/*.py"
         --max-line-length=119
         website
 

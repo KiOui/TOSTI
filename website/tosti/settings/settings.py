@@ -10,7 +10,15 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
-import os  # noqa
+import os
+
+
+SECRET_KEY = "7c^z*je^r!@aw!0*vuc1t4cp1rfi+4+xu@x5pva@xc@rf%3#lt"
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
+
+ALLOWED_HOSTS = []
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.abspath(
@@ -126,3 +134,5 @@ OPENID_RETURN_URL = "users:verify"
 OPENID_SERVER_ENDPOINT = "https://openid.science.ru.nl/openid-server"
 OPENID_USERNAME_PREFIX = "http://openid.science.ru.nl/"
 OPENID_USERNAME_POSTFIX = "/"
+
+SPOTIFY_CACHE_PATH = os.path.join(BASE_DIR, "cache")  # noqa
