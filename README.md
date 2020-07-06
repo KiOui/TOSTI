@@ -74,17 +74,29 @@ Additionally, the following variables can be set in settings to change the behav
 
 ### Marietje
 
-The `marietje` module is an implementation of the [spotipy](https://spotipy.readthedocs.io) package to create a music control system for venues. A [Spotify](https://spotify.com) account can be linked to a `Venue` to enable a Spotify player to be controlled via a webpage within the `marietje` module. 
+This module is used to connect a Spotify player to venues. A SpotifyAccount object can be configured and connected to a venue. This enables users of TOSTI to control and listen to music from Spotify. The main features of the Marietje module are:
 
-Note that the `spotipy` package uses caching for storing Spotify's OAuth2 credentials. This means that a caching folder should be specified in the Django settings file.
+- Connecting a Spotify account to TOSTI
+- Showing the currently playing song
+- Controlling the queue and controls for play/pausing the song and skipping/reverting a track
 
-#### Setting up a Spotify account
+The Marietje module makes use of the [Spotify API](https://developer.spotify.com) via the [spotipy library](https://spotipy.readthedocs.io/en/2.12.0/). There are three stages in configuring Marietje for playback controls:
 
-To set up a Spotify account, move to the administration view and add a `SpotifyAccount` object. Then follow these steps:
+1. Adding a Spotify account to TOSTI
 
-1. Follow the steps on the page and enter a Client ID and Client Secret. Then press `Authorize` to start the authorization process.
-2. Follow the steps on the Spotify website.
-3. On the authorization completed view, click on the link to go to the just created `SpotifyAccount` object.
-4. There are two last things we need to do, we need to set the playback device id and the `Venue` in which the Spotify account should be displayed. First select a `Venue` from the dropdown list and hit `Save`.
-5. Now, start up a Spotify client on some other PC/Smartphone/Tablet, this Spotify client should remain on as it will be the one that is controlled by the `marietje` module. When your Spotify client is not in the list, try refreshing the page. If your client is in the list, select it and hit `Save`.
-6. Spotify is now configured and can be controlled via the `marietje` module.
+In order to add a Spotify account to TOSTI, head over to the administrator view and add a `Spotify Settings` object to the database. You will be automatically redirected to a page where you need to enter a public and private Spotify API key which can be created on the [Spotify API dashboard](https://developer.spotify.com/dashboard/applications). Follow the instructions on the page and continue to the next step if everything succeeded.
+
+Note that the spotipy library makes use of its own caching system to cache the Spotify OAUTH2 tokens. The directory where these cache files are stored can be configured by setting the `SPOTIFY_CACHE_PATH` in the Django settings file. Only the Spotify API client id and client secret are stored in the Django database, the other identifiers and keys used in the OAUTH2 protocol are handled by spotipy and are thus stored in the spotipy cache files.
+
+2. Configuring a Spotify account
+
+A Spotify account can be configured after setting it up. Two things need to be changed before a venue is shown with a music player on the Marietje overview page:
+
+- Set a venue
+- Set a playback device
+
+Setting a venue is easy, just select the venue from the dropdown list and it will be connected to the Spotify account you are configuring. Setting a playback device is a little more difficult as now is the time where you need to start up a Spotify client on a computer system connected to the internet. Note that after setting a playback device, the device must stay on and the Spotify client must remain open, otherwise the pages corresponding to the Spotify account will throw a server error (500) as the playback device can not be found. If the playback device is not displayed within the list, refresh the configuration page and try again. After setting a playback device and venue, a spotify player is shown at `/Marietje/index`.
+
+3. Using the playback functions
+
+If everything went well, a Spotify player is displayed on the `/Marietje/index` page. Administrators are able to play/pause and skip or revert songs, normal users are not. If you open the Spotify player, a search view is displayed and the recent items added to the queue. The search view can be used to search tracks on Spotify. The queue displays only tracks added via Marietje, as there is currently no way to request the queue from a Spotify playback device.
