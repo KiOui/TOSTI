@@ -21,9 +21,7 @@ class IndexView(TemplateView):
 
     def get(self, request, **kwargs):
         """GET an overview of all players."""
-        return render(
-            request, self.template_name, {"players": SpotifyAccount.objects.all()}
-        )
+        return render(request, self.template_name, {"players": SpotifyAccount.objects.all()})
 
 
 class NowPlayingView(LoginRequiredMixin, TemplateView):
@@ -36,15 +34,9 @@ class NowPlayingView(LoginRequiredMixin, TemplateView):
         venue = kwargs.get("venue")
         player = SpotifyAccount.get_player(venue)
         if player is None or not player.configured:
-            return render(
-                request, self.template_name, {"disabled": True, "venue": venue}
-            )
+            return render(request, self.template_name, {"disabled": True, "venue": venue})
 
-        return render(
-            request,
-            self.template_name,
-            {"disabled": False, "venue": venue, "player": player},
-        )
+        return render(request, self.template_name, {"disabled": False, "venue": venue, "player": player},)
 
 
 class PlayerRefreshView(LoginRequiredMixin, TemplateView):
@@ -53,9 +45,7 @@ class PlayerRefreshView(LoginRequiredMixin, TemplateView):
     @staticmethod
     def render_template(player, request):
         """Render the player template."""
-        return get_template("marietje/player.html").render(
-            render_player({"request": request}, player, refresh=True)
-        )
+        return get_template("marietje/player.html").render(render_player({"request": request}, player, refresh=True))
 
     def post(self, request, **kwargs):
         """
@@ -87,9 +77,7 @@ class QueueRefreshView(LoginRequiredMixin, TemplateView):
         }
         """
         player = kwargs.get("player")
-        queue = get_template("marietje/queue.html").render(
-            render_queue_list(player, refresh=True)
-        )
+        queue = get_template("marietje/queue.html").render(render_queue_list(player, refresh=True))
         return JsonResponse({"data": queue})
 
 
@@ -118,12 +106,8 @@ def search_view(request, **kwargs):
         if query is not None:
             player = kwargs.get("player")
             results = services.search_tracks(query, player, maximum)
-            rendered_results = render_to_string(
-                "marietje/search.html", {"refresh": True, "tracks": results}
-            )
-            return JsonResponse(
-                {"query": query, "id": request_id, "result": rendered_results}
-            )
+            rendered_results = render_to_string("marietje/search.html", {"refresh": True, "tracks": results})
+            return JsonResponse({"query": query, "id": request_id, "result": rendered_results})
         else:
             return JsonResponse({"query": "", "id": request_id, "result": ""})
     else:
@@ -150,9 +134,7 @@ def add_view(request, **kwargs):
             try:
                 services.request_song(request.user, player, track_id)
             except spotipy.SpotifyException:
-                return JsonResponse(
-                    {"error": True, "msg": "The track could not be added to the queue"}
-                )
+                return JsonResponse({"error": True, "msg": "The track could not be added to the queue"})
             return JsonResponse({"error": False, "msg": "Track added to queue"})
         else:
             return JsonResponse({"error": True, "msg": "No track ID specified"})
@@ -168,10 +150,7 @@ def play_view(request, **kwargs):
             services.player_start(kwargs.get("player"))
         except spotipy.SpotifyException:
             return JsonResponse(
-                {
-                    "error": True,
-                    "msg": "Failed to start playback, is the registered Spotify device online?",
-                }
+                {"error": True, "msg": "Failed to start playback, is the registered Spotify device online?"}
             )
         return JsonResponse({"error": False})
     else:
@@ -186,10 +165,7 @@ def pause_view(request, **kwargs):
             services.player_pause(kwargs.get("player"))
         except spotipy.SpotifyException:
             return JsonResponse(
-                {
-                    "error": True,
-                    "msg": "Failed to pause playback, is the registered Spotify device online?",
-                }
+                {"error": True, "msg": "Failed to pause playback, is the registered Spotify device online?"}
             )
         return JsonResponse({"error": False})
     else:
@@ -204,10 +180,7 @@ def next_view(request, **kwargs):
             services.player_next(kwargs.get("player"))
         except spotipy.SpotifyException:
             return JsonResponse(
-                {
-                    "error": True,
-                    "msg": "Failed to skip track, is the registered Spotify device online?",
-                }
+                {"error": True, "msg": "Failed to skip track, is the registered Spotify device online?"}
             )
         return JsonResponse({"error": False})
     else:
@@ -222,10 +195,7 @@ def previous_view(request, **kwargs):
             services.player_previous(kwargs.get("player"))
         except spotipy.SpotifyException:
             return JsonResponse(
-                {
-                    "error": True,
-                    "msg": "Failed to rewind track, is the registered Spotify device online?",
-                }
+                {"error": True, "msg": "Failed to rewind track, is the registered Spotify device online?"}
             )
         return JsonResponse({"error": False})
     else:

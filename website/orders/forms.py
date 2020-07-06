@@ -27,9 +27,7 @@ class ShiftForm(forms.ModelForm):
         now = timezone.localize(datetime.now())
         start_time = now - timedelta(seconds=now.second, microseconds=now.microsecond)
         self.fields["start_date"].initial = start_time
-        if now >= get_default_end_time_shift() or now <= get_default_start_time_shift() - timedelta(
-            minutes=30
-        ):
+        if now >= get_default_end_time_shift() or now <= get_default_start_time_shift() - timedelta(minutes=30):
             self.fields["end_date"].initial = start_time + timedelta(hours=1)
 
     def set_initial_users(self, users):
@@ -55,13 +53,9 @@ class ShiftForm(forms.ModelForm):
         overlapping_start = Shift.objects.filter(
             start_date__gte=start_date, start_date__lte=end_date, venue=venue,
         ).count()
-        overlapping_end = Shift.objects.filter(
-            end_date__gte=start_date, end_date__lte=end_date, venue=venue,
-        ).count()
+        overlapping_end = Shift.objects.filter(end_date__gte=start_date, end_date__lte=end_date, venue=venue,).count()
         if overlapping_start > 0 or overlapping_end > 0:
-            raise forms.ValidationError(
-                "Overlapping shifts for the same venue are not allowed."
-            )
+            raise forms.ValidationError("Overlapping shifts for the same venue are not allowed.")
 
         return cleaned_data
 

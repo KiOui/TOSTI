@@ -13,11 +13,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         """Arguments for the command."""
         parser.add_argument(
-            "--dry-run",
-            action="store_true",
-            dest="dry-run",
-            default=False,
-            help="Dry run instead of saving data",
+            "--dry-run", action="store_true", dest="dry-run", default=False, help="Dry run instead of saving data",
         )
 
     def handle(self, *args, **options):
@@ -25,9 +21,7 @@ class Command(BaseCommand):
         processed_orders = orders.services.execute_data_minimisation(options["dry-run"])
         for p in processed_orders:
             logging.info("Removed order data for {}".format(p))
-        processed_marietje = marietje.services.execute_data_minimisation(
-            options["dry-run"]
-        )
+        processed_marietje = marietje.services.execute_data_minimisation(options["dry-run"])
         for p in processed_marietje:
             logging.info("Removed marietje data for {}".format(p))
         processed_users = users.services.execute_data_minimisation(options["dry-run"])
