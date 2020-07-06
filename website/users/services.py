@@ -194,8 +194,8 @@ class OpenIDVerifier:
 
     @staticmethod
     def join_auto_join_groups(user):
-        """Let user join all groups that are set for auto_join_new_users."""
-        auto_join_groups = Group.objects.filter(auto_join_new_users=True)
+        """Let new users join groups that are set for auto-joining."""
+        auto_join_groups = Group.objects.filter(id__in=settings.AUTO_JOIN_GROUP_IDS)
         for group in auto_join_groups:
             user.groups.add(group)
 

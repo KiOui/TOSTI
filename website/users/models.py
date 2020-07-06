@@ -83,15 +83,6 @@ class User(BaseUser):
         proxy = True
 
 
-BaseGroup.add_to_class(
-    "auto_join_new_users",
-    models.BooleanField(
-        default=True,
-        help_text="If selected, new users will automatically be added to this group.",
-    ),
-)
-
-
 class Group(BaseGroup):
     """Our own custom group"""
 
