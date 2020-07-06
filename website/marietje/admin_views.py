@@ -29,13 +29,9 @@ class SpofityAuthorizeView(PermissionRequiredMixin, TemplateView):
         """
         form = SpotifyTokenForm(request.POST)
         if form.is_valid():
-            spotify_auth_code, _ = SpotifyAccount.objects.get_or_create(
-                client_id=form.cleaned_data.get("client_id")
-            )
+            spotify_auth_code, _ = SpotifyAccount.objects.get_or_create(client_id=form.cleaned_data.get("client_id"))
             spotify_auth_code.client_secret = form.cleaned_data.get("client_secret")
-            spotify_auth_code.redirect_uri = request.build_absolute_uri(
-                reverse("admin:add_token")
-            )
+            spotify_auth_code.redirect_uri = request.build_absolute_uri(reverse("admin:add_token"))
             spotify_auth_code.save()
             spotify_oauth = redirect(spotify_auth_code.auth.get_authorize_url())
             spotify_oauth.set_cookie(COOKIE_CLIENT_ID, spotify_auth_code.client_id)
@@ -57,20 +53,14 @@ class SpotifyTokenView(PermissionRequiredMixin, TemplateView):
             try:
                 spotify_auth_code = SpotifyAccount.objects.get(client_id=client_id)
             except SpotifyAccount.DoesNotExist:
-                return render(
-                    request, self.template_name, {"error": "Client ID was not found."}
-                )
+                return render(request, self.template_name, {"error": "Client ID was not found."})
             # Generate the first access token and store in cache
             access_token = spotify_auth_code.auth.get_access_token(code=code)
             if access_token is not None:
-                response = redirect(
-                    "admin:authorization_succeeded", spotify=spotify_auth_code
-                )
+                response = redirect("admin:authorization_succeeded", spotify=spotify_auth_code)
             else:
                 response = render(
-                    request,
-                    self.template_name,
-                    {"error": "Access token retrieval failed, please try again."},
+                    request, self.template_name, {"error": "Access token retrieval failed, please try again."},
                 )
             response.delete_cookie(COOKIE_CLIENT_ID)
             return response
@@ -78,10 +68,7 @@ class SpotifyTokenView(PermissionRequiredMixin, TemplateView):
             return render(
                 request,
                 self.template_name,
-                {
-                    "error": "No Spotify code found, make sure you are reaching this"
-                    "page via a Spotify redirect."
-                },
+                {"error": "No Spotify code found, make sure you are reaching this" "page via a Spotify redirect."},
             )
 
 
@@ -94,8 +81,4 @@ class SpotifyAuthorizeSucceededView(PermissionRequiredMixin, TemplateView):
     def get(self, request, **kwargs):
         """GET the view."""
         spotify = kwargs.get("spotify")
-        return render(
-            request,
-            self.template_name,
-            {"username": spotify.get_display_name, "spotify": spotify},
-        )
+        return render(request, self.template_name, {"username": spotify.get_display_name, "spotify": spotify},)

@@ -44,14 +44,10 @@ class LoginView(TemplateView):
 
         if form.is_valid():
             openid_verifier = get_openid_verifier(request)
-            verify_url = openid_verifier.get_request_url(
-                form.cleaned_data.get("username")
-            )
+            verify_url = openid_verifier.get_request_url(form.cleaned_data.get("username"))
             response = redirect(verify_url)
             if form.cleaned_data.get("remember"):
-                response.set_cookie(
-                    self.remember_cookie, form.cleaned_data.get("username")
-                )
+                response.set_cookie(self.remember_cookie, form.cleaned_data.get("username"))
             return response
 
         return render(request, self.template_name, {"form": form})

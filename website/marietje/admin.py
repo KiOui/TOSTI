@@ -50,11 +50,7 @@ class SpotifyAccountAdmin(GuardedModelAdmin):
         register_converter(SpotifyAccountConverter, "spotify")
         urls = super().get_urls()
         custom_urls = [
-            path(
-                "authorize/",
-                self.admin_site.admin_view(SpofityAuthorizeView.as_view()),
-                name="authorize",
-            ),
+            path("authorize/", self.admin_site.admin_view(SpofityAuthorizeView.as_view()), name="authorize",),
             path("token/", SpotifyTokenView.as_view(), name="add_token"),
             path(
                 "auth-succeeded/<spotify:spotify>",

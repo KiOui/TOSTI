@@ -27,9 +27,7 @@ def currently_active_shift_for_venue(venue):
     start = timezone.localize(datetime(today.year, today.month, today.day))
 
     if venue.shift_set.filter(start_date__lte=today, end_date__gte=today).exists():
-        return venue.shift_set.filter(
-            start_date__lte=today, end_date__gte=today
-        ).first()
+        return venue.shift_set.filter(start_date__lte=today, end_date__gte=today).first()
     elif venue.shift_set.filter(start_date__gte=start).exists():
         return venue.shift_set.filter(start_date__gte=start).first()
     else:

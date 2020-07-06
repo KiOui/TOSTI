@@ -43,9 +43,7 @@ class SpotifyAccount(models.Model):
     client_id = models.CharField(max_length=256, null=False, blank=False, unique=True)
     client_secret = models.CharField(max_length=256, null=False, blank=False)
     redirect_uri = models.CharField(max_length=512, null=False, blank=False)
-    venue = models.OneToOneField(
-        Venue, on_delete=models.SET_NULL, null=True, blank=True
-    )
+    venue = models.OneToOneField(Venue, on_delete=models.SET_NULL, null=True, blank=True)
 
     @staticmethod
     def get_player(venue):
@@ -167,9 +165,7 @@ class SpotifyAccount(models.Model):
 class SpotifyArtist(models.Model):
     """Spotify Artist model."""
 
-    artist_name = models.CharField(
-        max_length=2048, blank=False, null=False, unique=True
-    )
+    artist_name = models.CharField(max_length=2048, blank=False, null=False, unique=True)
     artist_id = models.CharField(max_length=2048, blank=False, null=False)
 
     def __str__(self):
