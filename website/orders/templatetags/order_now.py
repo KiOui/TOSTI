@@ -41,9 +41,9 @@ def render_order_now_button(shift):
 def render_order_now_buttons_active_shifts(shifts=None):
     """Render order now buttons for all active shifts."""
     if shifts is None:
-        shifts = Shift.objects.filter(
-            start_date__lte=timezone.now(), end_date__gte=timezone.now(),
-        ).order_by("start_date", "venue__name")
+        shifts = Shift.objects.filter(start_date__lte=timezone.now(), end_date__gte=timezone.now(),).order_by(
+            "start_date", "venue__name"
+        )
 
     buttons = [{"shift": x} for x in shifts]
 
@@ -75,6 +75,4 @@ def render_order_now_buttons_venues():
 @register.filter
 def currently_active_shift_for_venue(venue):
     """Get the currently active shift for a venue (if it exists)."""
-    return venue.shift_set.filter(
-        start_date__lte=timezone.now(), end_date__gte=timezone.now()
-    ).first()
+    return venue.shift_set.filter(start_date__lte=timezone.now(), end_date__gte=timezone.now()).first()

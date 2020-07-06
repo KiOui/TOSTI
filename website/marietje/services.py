@@ -82,14 +82,7 @@ def search_tracks(query, player, maximum=5):
         raise e
 
     result = sorted(result["tracks"]["items"], key=lambda x: -x["popularity"])
-    trimmed_result = [
-        {
-            "name": x["name"],
-            "artists": [y["name"] for y in x["artists"]],
-            "id": x["id"],
-        }
-        for x in result
-    ]
+    trimmed_result = [{"name": x["name"], "artists": [y["name"] for y in x["artists"]], "id": x["id"]} for x in result]
     return trimmed_result
 
 
@@ -109,9 +102,7 @@ def request_song(user, player, spotify_track_id):
         SpotifyQueueItem.objects.create(
             track=track, player=player, requested_by=user,
         )
-        player.spotify.add_to_queue(
-            spotify_track_id, device_id=player.playback_device_id
-        )
+        player.spotify.add_to_queue(spotify_track_id, device_id=player.playback_device_id)
     except SpotifyException as e:
         logging.error(e)
         raise e
