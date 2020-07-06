@@ -28,17 +28,11 @@ class SpotifyAccountAdminForm(forms.ModelForm):
             try:
                 devices = instance.spotify.devices()
                 choices = [(x["id"], x["name"]) for x in devices["devices"]]
-                if (
-                    instance.playback_device_id is not None
-                    and instance.playback_device_id not in [x for (x, _) in choices]
-                ):
+                if instance.playback_device_id is not None and instance.playback_device_id not in [
+                    x for (x, _) in choices
+                ]:
                     choices.append(
-                        (
-                            instance.playback_device_id,
-                            "{} (currently offline)".format(
-                                instance.playback_device_name
-                            ),
-                        )
+                        (instance.playback_device_id, "{} (currently offline)".format(instance.playback_device_name),)
                     )
                     self.fields[
                         "playback_device_id"
@@ -78,16 +72,11 @@ class SpotifyAccountAdminForm(forms.ModelForm):
         :return: an object of type SpotifyAccount
         """
         obj = super(SpotifyAccountAdminForm, self).save(commit=False)
-        if (
-            obj.playback_device_id is not None
-            and self.__original_playback_device_id != obj.playback_device_id
-        ):
+        if obj.playback_device_id is not None and self.__original_playback_device_id != obj.playback_device_id:
             devices = {x["id"]: x["name"] for x in obj.spotify.devices()["devices"]}
             if obj.playback_device_id not in devices.keys():
                 raise forms.ValidationError(
-                    "{} is not a valid device (it might have gone offline).".format(
-                        obj.playback_device_id
-                    )
+                    "{} is not a valid device (it might have gone offline).".format(obj.playback_device_id)
                 )
             else:
                 obj.playback_device_name = devices[obj.playback_device_id]

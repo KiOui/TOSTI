@@ -88,9 +88,7 @@ class OrderView(LoginRequiredMixin, TemplateView):
                 return error_msg
 
         for order in order_list:
-            Order.objects.create(
-                user=user, shift=shift, product=Product.objects.get(pk=order)
-            )
+            Order.objects.create(user=user, shift=shift, product=Product.objects.get(pk=order))
 
         return True
 
@@ -108,13 +106,7 @@ class OrderView(LoginRequiredMixin, TemplateView):
         return render(
             request,
             self.template_name,
-            {
-                "shift": shift,
-                "already_ordered": Order.objects.filter(
-                    user=request.user, shift=shift
-                ).count()
-                > 0,
-            },
+            {"shift": shift, "already_ordered": Order.objects.filter(user=request.user, shift=shift).count() > 0},
         )
 
     def post(self, request, **kwargs):
@@ -128,28 +120,18 @@ class OrderView(LoginRequiredMixin, TemplateView):
         shift = kwargs.get("shift")
         cookie = request.COOKIES.get("cart_{}".format(shift.pk), None)
         if cookie is None:
-            return render(
-                request,
-                self.template_name,
-                {"shift": shift, "error": "No orders submitted"},
-            )
+            return render(request, self.template_name, {"shift": shift, "error": "No orders submitted"},)
         cookie = urllib.parse.unquote(cookie)
         try:
             cookie = json.loads(cookie)
         except json.JSONDecodeError:
-            page = render(
-                request,
-                self.template_name,
-                {"shift": shift, "error": "Error decoding cookie"},
-            )
+            page = render(request, self.template_name, {"shift": shift, "error": "Error decoding cookie"},)
             page.delete_cookie("cart_{}".format(shift.pk))
             return page
 
         error_msg = self.add_orders(cookie, shift, request.user)
         if isinstance(error_msg, str):
-            return render(
-                request, self.template_name, {"shift": shift, "error": error_msg}
-            )
+            return render(request, self.template_name, {"shift": shift, "error": error_msg})
         else:
             response = redirect("orders:shift_overview", shift=shift)
             response.delete_cookie("cart_{}".format(shift.pk))
@@ -244,12 +226,7 @@ class ProductListView(LoginRequiredMixin, TemplateView):
             return JsonResponse({"error": "Operation unknown"})
 
         products = self.get_available_products(shift, request.user)
-        return JsonResponse(
-            {
-                "products": products,
-                "shift_max": shift.user_max_order_amount(request.user),
-            }
-        )
+        return JsonResponse({"products": products, "shift_max": shift.user_max_order_amount(request.user)})
 
 
 class CreateShiftView(StaffRequiredMixin, TemplateView):
@@ -460,9 +437,7 @@ class RefreshHeaderView(TemplateView):
         }
         """
         shift = kwargs.get("shift")
-        header = get_template("orders/order_header.html").render(
-            render_order_header(shift, refresh=True)
-        )
+        header = get_template("orders/order_header.html").render(render_order_header(shift, refresh=True))
         return JsonResponse({"data": header})
 
 
@@ -481,9 +456,7 @@ class RefreshProductOverviewView(TemplateView):
         }
         """
         shift = kwargs.get("shift")
-        overview = get_template("orders/item_overview.html").render(
-            render_order_header(shift, refresh=True)
-        )
+        overview = get_template("orders/item_overview.html").render(render_order_header(shift, refresh=True))
         return JsonResponse({"data": overview})
 
 
