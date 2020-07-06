@@ -4,6 +4,7 @@
 {% block styles %}
     <link rel="stylesheet" href="{% static 'tosti/css/index.css' %}"/>
     <link rel="stylesheet" href="{% static 'orders/css/forms.css' %}"/>
+    <link rel="stylesheet" href="{% static 'orders/css/admin-footer.css' %}"/>
 {% endblock %}
 
 {% block page %}
@@ -18,7 +19,7 @@
                 <div class="row flex-grow-1">
                     <div class="col">
                         <div class="btn-ml m-auto cursor-pointer btn-on" onclick="window.location.href = '{% url 'orders:shift_join' shift=shift %}';">
-                            <i class="fas fa-sign-in-alt"></i>
+                            <p class="font-footer"><i class="fas fa-sign-in-alt"></i> Join shift</p>
                         </div>
                     </div>
                 </div>
@@ -29,8 +30,8 @@
             <div class="container text-center">
                 <div class="row flex-grow-1">
                     <div class="col">
-                        <div class="btn-ml m-auto cursor-pointer btn-on" onclick="window.location.href = '{% url "orders:shift_admin" shift=shift %}';">
-                            <i class="fas fa-tools"></i>
+                        <div class="btn-ml m-auto cursor-pointer btn-on" style="flex-grow: 0;" onclick="window.location.href = '{% url "orders:shift_admin" shift=shift %}';">
+                            <p class="font-footer"><i class="fas fa-sign-in-alt"></i> Shift admin</p>
                         </div>
                     </div>
                 </div>
