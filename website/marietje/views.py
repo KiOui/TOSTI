@@ -20,9 +20,7 @@ class IndexView(TemplateView):
 
     def get(self, request, **kwargs):
         """GET an overview of all players."""
-        return render(
-            request, self.template_name, {"players": SpotifyAccount.objects.all()}
-        )
+        return render(request, self.template_name, {"players": SpotifyAccount.objects.all()})
 
 
 class NowPlayingView(TemplateView):
@@ -30,13 +28,12 @@ class NowPlayingView(TemplateView):
 
     template_name = "marietje/now_playing.html"
 
-    def get(self, request, venue):
+    def get(self, request, *args, **kwargs):
         """GET the player for a venue."""
+        venue = kwargs.get("venue")
         player = SpotifyAccount.get_player(venue)
         if player is None or not player.configured:
-            return render(
-                request, self.template_name, {"disabled": True, "venue": venue}
-            )
+            return render(request, self.template_name, {"disabled": True, "venue": venue})
 
         return render(
             request,
@@ -56,9 +53,7 @@ class PlayerRefreshView(TemplateView):
     @staticmethod
     def render_template(player, request):
         """Render the player template."""
-        return get_template("marietje/player.html").render(
-            render_player({"request": request}, player, refresh=True)
-        )
+        return get_template("marietje/player.html").render(render_player({"request": request}, player, refresh=True))
 
     def post(self, request, player):
         """POST request for refreshing the player."""
@@ -70,16 +65,12 @@ class QueueRefreshView(LoginRequiredMixin, TemplateView):
 
     def post(self, request, player):
         """POST request for refreshing the queue."""
-        queue = get_template("marietje/queue.html").render(
-            render_queue_list(player, refresh=True)
-        )
+        queue = get_template("marietje/queue.html").render(render_queue_list(player, refresh=True))
         return JsonResponse({"data": queue})
 
 
-@permission_required_or_403(
-    "marietje.can_request", (SpotifyAccount, "display_name", "player")
-)
-def search_view(request, player):
+@permission_required_or_403("marietje.can_request", (SpotifyAccount, "pk", "player_id"), accept_global_perms=True)
+def _search_view(request, player, *args, **kwargs):
     """
     Search for a track on Spotify.
 
@@ -102,22 +93,22 @@ def search_view(request, player):
 
         if query is not None:
             results = services.search_tracks(query, player, maximum)
-            rendered_results = render_to_string(
-                "marietje/search.html", {"refresh": True, "tracks": results}
-            )
-            return JsonResponse(
-                {"query": query, "id": request_id, "result": rendered_results}
-            )
+            rendered_results = render_to_string("marietje/search.html", {"refresh": True, "tracks": results})
+            return JsonResponse({"query": query, "id": request_id, "result": rendered_results})
         else:
             return JsonResponse({"query": "", "id": request_id, "result": ""})
     else:
         return Http404("This view can only be called with a POST request.")
 
 
-@permission_required_or_403(
-    "marietje.can_request", (SpotifyAccount, "display_name", "player")
-)
-def add_view(request, player):
+def search_view(request, player, *args, **kwargs):
+    """Search for a track on Spotify."""
+    kwargs["player_id"] = player.pk
+    return _search_view(request, player, *args, **kwargs)
+
+
+@permission_required_or_403("marietje.can_request", (SpotifyAccount, "pk", "player_id"), accept_global_perms=True)
+def _add_view(request, player, *args, **kwargs):
     """
     Add a Spotify track to the queue of a player.
 
@@ -135,9 +126,7 @@ def add_view(request, player):
             try:
                 services.request_song(request.user, player, track_id)
             except spotipy.SpotifyException:
-                return JsonResponse(
-                    {"error": True, "msg": "The track could not be added to the queue"}
-                )
+                return JsonResponse({"error": True, "msg": "The track could not be added to the queue"})
             return JsonResponse({"error": False, "msg": "Track added to queue"})
         else:
             return JsonResponse({"error": True, "msg": "No track ID specified"})
@@ -145,81 +134,91 @@ def add_view(request, player):
         return Http404("This view can only be called with a POST request.")
 
 
-@permission_required_or_403(
-    "marietje.can_control", (SpotifyAccount, "display_name", "player")
-)
-def play_view(request, player):
+def add_view(request, player, *args, **kwargs):
+    """Add a Spotify track to the queue of a player."""
+    kwargs["player_id"] = player.pk
+    return _add_view(request, player, *args, **kwargs)
+
+
+@permission_required_or_403("marietje.can_control", (SpotifyAccount, "pk", "player_id"), accept_global_perms=True)
+def _play_view(request, player, *args, **kwargs):
     """Start playing the player."""
     if request.method == "POST":
         try:
             services.player_start(player)
         except spotipy.SpotifyException:
             return JsonResponse(
-                {
-                    "error": True,
-                    "msg": "Failed to start playback, is the registered Spotify device online?",
-                }
+                {"error": True, "msg": "Failed to start playback, is the registered Spotify device online?"}
             )
         return JsonResponse({"error": False})
     else:
         return Http404("This view can only be called with a POST request.")
 
 
-@permission_required_or_403(
-    "marietje.can_control", (SpotifyAccount, "display_name", "player")
-)
-def pause_view(request, player):
+def play_view(request, player, *args, **kwargs):
+    """Start playing the player."""
+    kwargs["player_id"] = player.pk
+    return _play_view(request, player, *args, **kwargs)
+
+
+@permission_required_or_403("marietje.can_control", (SpotifyAccount, "pk", "player_id"), accept_global_perms=True)
+def _pause_view(request, player, *args, **kwargs):
     """Pause the player."""
     if request.method == "POST":
         try:
             services.player_pause(player)
         except spotipy.SpotifyException:
             return JsonResponse(
-                {
-                    "error": True,
-                    "msg": "Failed to pause playback, is the registered Spotify device online?",
-                }
+                {"error": True, "msg": "Failed to pause playback, is the registered Spotify device online?"}
             )
         return JsonResponse({"error": False})
     else:
         return Http404("This view can only be called with a POST request.")
 
 
-@permission_required_or_403(
-    "marietje.can_control", (SpotifyAccount, "display_name", "player")
-)
-def next_view(request, player):
+def pause_view(request, player, *args, **kwargs):
+    """Pause the player."""
+    kwargs["player_id"] = player.pk
+    return _pause_view(request, player, *args, **kwargs)
+
+
+@permission_required_or_403("marietje.can_control", (SpotifyAccount, "pk", "player_id"), accept_global_perms=True)
+def _next_view(request, player, *args, **kwargs):
     """Skip the player to the next track."""
     if request.method == "POST":
         try:
             services.player_next(player)
         except spotipy.SpotifyException:
             return JsonResponse(
-                {
-                    "error": True,
-                    "msg": "Failed to skip track, is the registered Spotify device online?",
-                }
+                {"error": True, "msg": "Failed to skip track, is the registered Spotify device online?"}
             )
         return JsonResponse({"error": False})
     else:
         return Http404("This view can only be called with a POST request.")
 
 
-@permission_required_or_403(
-    "marietje.can_control", (SpotifyAccount, "display_name", "player")
-)
-def previous_view(request, player):
+def next_view(request, player, *args, **kwargs):
+    """Skip the player to the next track."""
+    kwargs["player_id"] = player.pk
+    return _next_view(request, player, *args, **kwargs)
+
+
+@permission_required_or_403("marietje.can_control", (SpotifyAccount, "pk", "player_id"), accept_global_perms=True)
+def _previous_view(request, player, *args, **kwargs):
     """Go back to the previous track on a player."""
     if request.method == "POST":
         try:
             services.player_previous(player)
         except spotipy.SpotifyException:
             return JsonResponse(
-                {
-                    "error": True,
-                    "msg": "Failed to rewind track, is the registered Spotify device online?",
-                }
+                {"error": True, "msg": "Failed to rewind track, is the registered Spotify device online?"}
             )
         return JsonResponse({"error": False})
     else:
         return Http404("This view can only be called with a POST request.")
+
+
+def previous_view(request, player, *args, **kwargs):
+    """Go back to the previous track on a player."""
+    kwargs["player_id"] = player.pk
+    return _previous_view(request, player, *args, **kwargs)

@@ -8,13 +8,13 @@ from orders.models import OrderVenue
 register = template.Library()
 
 
-@register.inclusion_tag("orders/start_shift.html")
-def render_start_shift_buttons(venues=None):
+@register.inclusion_tag("orders/start_shift.html", takes_context=True)
+def render_start_shift_buttons(context, venues=None):
     """Render start shift buttons."""
     if venues is None:
         venues = OrderVenue.objects.filter(venue__active=True).order_by("venue__name")
 
-    buttons = [{"venue": x} for x in venues]
+    buttons = [{"venue": x} for x in venues if context["request"].user.has_perm("orders.can_manage_shift_in_venue", x)]
 
     return {"venues": buttons}
 

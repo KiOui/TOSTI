@@ -15,8 +15,11 @@ User = get_user_model()
 
 
 @admin.register(OrderVenue)
-class OrderVenueAdmin(admin.ModelAdmin):
+class OrderVenueAdmin(GuardedModelAdmin):
+    """Simple admin for OrderVenues."""
+
     pass
+
 
 class ProductAdminVenueFilter(AutocompleteFilter):
     """Filter class to filter product objects available at a certain venue."""
@@ -44,8 +47,7 @@ class ProductAdmin(admin.ModelAdmin):
         :return: the request
         """
         messages.success(
-            request,
-            f"{queryset.filter(available=False).update(available=True)} products were marked as available",
+            request, f"{queryset.filter(available=False).update(available=True)} products were marked as available",
         )
         return request
 
@@ -60,8 +62,7 @@ class ProductAdmin(admin.ModelAdmin):
         :return: the request
         """
         messages.success(
-            request,
-            f"{queryset.filter(available=True).update(available=False)} products were marked as unavailable",
+            request, f"{queryset.filter(available=True).update(available=False)} products were marked as unavailable",
         )
         return request
 
@@ -117,9 +118,7 @@ class ShiftAdminForm(forms.ModelForm):
             self.fields["assignees"].initial = User.objects.filter(shift=self.instance)
 
     assignees = forms.ModelMultipleChoiceField(
-        queryset=None,
-        required=False,
-        widget=widgets.FilteredSelectMultiple("Assignees", False),
+        queryset=None, required=False, widget=widgets.FilteredSelectMultiple("Assignees", False),
     )
 
 
@@ -164,8 +163,7 @@ class ShiftAdmin(GuardedModelAdmin, ImportExportModelAdmin):
         :return: the request
         """
         messages.success(
-            request,
-            f"{queryset.filter(can_order=True).update(can_order=False)} shifts were closed",
+            request, f"{queryset.filter(can_order=True).update(can_order=False)} shifts were closed",
         )
         return request
 
@@ -210,9 +208,7 @@ class OrderAdminForm(forms.ModelForm):
                 Q(available=True) | Q(order=self.instance)
             ).distinct()
             self.fields["product"].initial = Product.objects.filter(order=self.instance)
-            self.fields["shift"].queryset = Shift.objects.filter(
-                Q(can_order=True) | Q(order=self.instance)
-            ).distinct()
+            self.fields["shift"].queryset = Shift.objects.filter(Q(can_order=True) | Q(order=self.instance)).distinct()
             self.fields["shift"].initial = Shift.objects.filter(order=self.instance)
 
 
@@ -254,8 +250,7 @@ class OrderAdmin(ImportExportModelAdmin):
         :return: the request
         """
         messages.success(
-            request,
-            f"{queryset.filter(ready=False).update(ready=True)} orders were marked as ready",
+            request, f"{queryset.filter(ready=False).update(ready=True)} orders were marked as ready",
         )
         return request
 
@@ -270,8 +265,7 @@ class OrderAdmin(ImportExportModelAdmin):
         :return: the request
         """
         messages.success(
-            request,
-            f"{queryset.filter(paid=False).update(paid=True)} orders were marked as paid",
+            request, f"{queryset.filter(paid=False).update(paid=True)} orders were marked as paid",
         )
         return request
 

@@ -1,61 +1,66 @@
-{% load static %}
+{% load static order_now %}
 
 {% if not refresh %}
     <div class="container-sm" id="order-container-{{ shift.id }}">
 {% endif %}
-    <h1>Orders</h1>
+
+    <div class="container">
+    <hr>
+    </div>
+
     <div id="item-orders">
-        <ul class="item-orders">
-            {% for order in shift.orders %}
-                <li class="pt-2 pb-2 item-list">
-                    <div class="information-row">
-                        <p class="item-counter">{{ forloop.counter }}.</p>
-                        <i class="fas fa-{{ order.product.icon }} item-icon"></i>
-                        <p class="item-username">{{ order.user }}</p>
-                        {% if user == order.user %}
-                            <i class="fas fa-user user-icon"></i>
-                        {% endif %}
-                    </div>
-                    <div class="button-row">
-                        {% if admin %}
-                            <input type="button" class="checkbox-paid btn mr-2 {% if order.paid %}btn-success{% else %}btn-danger{% endif %}" onclick="update_order('{% url "orders:order_update" order=order %}', this, 'paid', update_checkbox);" value="Paid"/>
-                            <input type="button" class="checkbox-ready btn {% if order.ready %}btn-success{% else %}btn-danger{% endif %}" onclick="update_order('{% url "orders:order_update" order=order %}', this, 'ready', update_checkbox);" value="Ready"/>
-                        {% else %}
-                            {% if order.user == user %}
-                                {% if order.ready and order.paid %}
-                                    <div class="status-button mr-2 bg-success text-white">Done</div>
-                                {% elif order.ready and not order.paid %}
-                                    <div class="status-button mr-2 bg-warning">Done</div>
-                                {% elif not order.ready and order.paid %}
-                                    <div class="status-button mr-2 bg-warning">Processing</div>
-                                {% else %}
-                                    <div class="status-button mr-2 bg-danger text-white">Not payed</div>
-                                {% endif %}
+        {% if shift.orders|length == 0 %}
+            <ul class="item-orders">
+                {% for order in shift.orders %}
+                    <li class="pt-2 pb-2 item-list">
+                        <div class="information-row">
+                            <p class="item-counter">{{ forloop.counter }}.</p>
+                            <i class="fas fa-{{ order.product.icon }} item-icon"></i>
+                            <p class="item-username">{{ order.user }}</p>
+                            {% if user == order.user %}
+                                <i class="fas fa-user user-icon"></i>
+                            {% endif %}
+                        </div>
+                        <div class="button-row">
+                            {% if admin %}
+                                <input type="button" class="checkbox-paid btn mr-2 {% if order.paid %}btn-success{% else %}btn-danger{% endif %}" onclick="update_order('{% url "orders:order_update" order=order %}', this, 'paid', update_checkbox);" value="Paid"/>
+                                <input type="button" class="checkbox-ready btn {% if order.ready %}btn-success{% else %}btn-danger{% endif %}" onclick="update_order('{% url "orders:order_update" order=order %}', this, 'ready', update_checkbox);" value="Ready"/>
                             {% else %}
-                                {% if order.ready %}
-                                    <div class="status-button mr-2 bg-success text-white">Done</div>
+                                {% if order.user == user %}
+                                    {% if order.ready and order.paid %}
+                                        <div class="status-button mr-2 bg-success text-white">Done</div>
+                                    {% elif order.ready and not order.paid %}
+                                        <div class="status-button mr-2 bg-warning">Done</div>
+                                    {% elif not order.ready and order.paid %}
+                                        <div class="status-button mr-2 bg-warning">Processing</div>
+                                    {% else %}
+                                        <div class="status-button mr-2 bg-danger text-white">Not payed</div>
+                                    {% endif %}
                                 {% else %}
-                                    <div class="status-button mr-2 bg-warning">Processing</div>
+                                    {% if order.ready %}
+                                        <div class="status-button mr-2 bg-success text-white">Done</div>
+                                    {% else %}
+                                        <div class="status-button mr-2 bg-warning">Processing</div>
+                                    {% endif %}
                                 {% endif %}
                             {% endif %}
-                        {% endif %}
-                    </div>
-                </li>
-            {% endfor %}
-        </ul>
-    </div>
-    {% if not admin %}
-        {% if shift.is_active and shift.can_order %}
-            <div class="btn-ml btn-on" onclick="window.location.href = '{% url "orders:order" shift=shift %}';">
-                <h2>Order items</h2>
-                <p>Click to order items</p>
-            </div>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
         {% else %}
-            <div class="btn-ml btn-off">
-                <h2>Order items</h2>
-                <p>This shift is closed</p>
+            <div id="outer" class="container d-flex align-items-center justify-content-center text-center" style="height:200px;">
+                <div id="inner">
+                    Be the first to place an order...
+                </div>
             </div>
         {% endif %}
+    </div>
+    {% if not admin %}
+        <div class="container">
+        <hr>
+        </div>
+        {% render_place_order_button shift %}
     {% endif %}
 {% if not refresh %}
     </div>

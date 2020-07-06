@@ -13,11 +13,16 @@
     <div class="container">
         {%  render_order_now_buttons_venues  %}
     </div>
+
     {% if user.is_authenticated and user.is_staff %}
-    <div class="container">
-        {%  render_start_shift_buttons  %}
-    </div>
+        <div class="container">
+        <hr>
+        </div>
+        <div class="container">
+            {%  render_start_shift_buttons %}
+        </div>
     {% endif %}
+
     <div class="container">
     <hr>
     </div>

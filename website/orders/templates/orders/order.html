@@ -24,21 +24,20 @@
 
 {% block sidebar %}
     <div class="container-sm text-center pb-5">
-        <h1>Items in cart</h1>
+        <h2>Items in cart</h2>
         <p>Manage the items in your cart below</p>
         <div id="order-list">
         </div>
         <form method="POST">
             {% csrf_token %}
-            <input type="submit" value="Order items" class="btn-on btn-ml" id="order-button" style="display: none"/>
+            <input type="submit" value="Place order" class="btn-on btn-ml" id="order-button" style="display: none"/>
         </form>
     </div>
 {% endblock %}
 
 {% block page-footer %}
     <div class="btn-ml btn-on" onclick="window.location.href = '{% url "orders:shift_overview" shift=shift %}';">
-        <h4>Back to shift overview</h4>
-        <i class="fas fa-arrow-left"></i>
+        <h5><i class="fas fa-arrow-left"></i> Back to overview</h5>
     </div>
 {% endblock %}
 

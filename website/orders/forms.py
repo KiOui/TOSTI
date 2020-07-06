@@ -2,6 +2,8 @@ import pytz
 from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from guardian.shortcuts import get_objects_for_user
+
 from .models import Shift, get_default_end_time_shift, get_default_start_time_shift
 from datetime import datetime, timedelta
 
@@ -12,7 +14,7 @@ User = get_user_model()
 class ShiftForm(forms.ModelForm):
     """Shift creation form."""
 
-    def __init__(self, *args, venue=None, **kwargs):
+    def __init__(self, *args, user, venue=None, **kwargs):
         """
         Initialise the ProductForm.
 
@@ -21,7 +23,9 @@ class ShiftForm(forms.ModelForm):
         :param kwargs: keyword arguments
         """
         super(ShiftForm, self).__init__(*args, **kwargs)
+        self.user = user
         self.fields["venue"].initial = venue
+        self.fields["venue"].queryset = get_objects_for_user(self.user, "orders.can_manage_shift_in_venue")
         self.fields["assignees"].queryset = User.objects.filter(is_staff=True)
         timezone = pytz.timezone(settings.TIME_ZONE)
         now = timezone.localize(datetime.now())
@@ -58,6 +62,13 @@ class ShiftForm(forms.ModelForm):
             raise forms.ValidationError("Overlapping shifts for the same venue are not allowed.")
 
         return cleaned_data
+
+    def clean_venue(self):
+        """Check whether venue is has an accepted value."""
+        data = self.cleaned_data["venue"]
+        if not self.user.has_perm("can_manage_shift_in_venue", data):
+            raise forms.ValidationError("You don't have permissions to start a shift in this venue!")
+        return data
 
     class Meta:
         """Meta class."""

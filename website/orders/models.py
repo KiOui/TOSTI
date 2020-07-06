@@ -21,9 +21,7 @@ def get_default_start_time_shift():
     :return: the default start time of a shift
     """
     timezone = pytz.timezone(settings.TIME_ZONE)
-    return timezone.localize(datetime.now()).replace(
-        hour=12, minute=15, second=0, microsecond=0
-    )
+    return timezone.localize(datetime.now()).replace(hour=12, minute=15, second=0, microsecond=0)
 
 
 def get_default_end_time_shift():
@@ -33,26 +31,27 @@ def get_default_end_time_shift():
     :return: the default end time of a shift
     """
     timezone = pytz.timezone(settings.TIME_ZONE)
-    return timezone.localize(datetime.now()).replace(
-        hour=13, minute=15, second=0, microsecond=0
-    )
+    return timezone.localize(datetime.now()).replace(hour=13, minute=15, second=0, microsecond=0)
 
 
 class OrderVenue(models.Model):
     """Venues where Shifts can be created."""
 
-    venue = models.OneToOneField(
-        Venue,
-        on_delete=models.CASCADE,
-        primary_key=True,
-    )
+    venue = models.OneToOneField(Venue, on_delete=models.CASCADE, primary_key=True,)
 
     def __str__(self):
+        """Representation by venue."""
         return str(self.venue)
 
     class Meta:
-        """Meta class for OrderVenues."""
+        """Meta class for OrderVenue."""
+
         ordering = ["venue__name"]
+
+        permissions = [
+            ("can_order_in_venue", "Can order products during shifts in this venue"),
+            ("can_manage_shift_in_venue", "Can manage shifts in this venue"),
+        ]
 
 
 class Product(models.Model):
@@ -113,13 +112,8 @@ class Product(models.Model):
         :return: True if the already ordered amount of this Product plus the amount specified in the amount parameter
         is lower than the max_allowed_per_shift variable, False otherwise
         """
-        user_order_amount_product = Order.objects.filter(
-            user=user, shift=shift, product=self
-        ).count()
-        if (
-            self.max_allowed_per_shift is not None
-            and user_order_amount_product + amount > self.max_allowed_per_shift
-        ):
+        user_order_amount_product = Order.objects.filter(user=user, shift=shift, product=self).count()
+        if self.max_allowed_per_shift is not None and user_order_amount_product + amount > self.max_allowed_per_shift:
             return False
         return True
 
@@ -132,9 +126,7 @@ class Product(models.Model):
         :return: None if the user can order unlimited of the product, the maximum allowed to still order otherwise
         """
         if self.max_allowed_per_shift is not None:
-            user_order_amount_product = Order.objects.filter(
-                user=user, shift=shift, product=self
-            ).count()
+            user_order_amount_product = Order.objects.filter(user=user, shift=shift, product=self).count()
             return max(0, self.max_allowed_per_shift - user_order_amount_product)
         else:
             return None
@@ -160,19 +152,11 @@ class Shift(models.Model):
     TIME_FORMAT = "%H:%M"
 
     venue = models.ForeignKey(
-        OrderVenue,
-        blank=False,
-        null=False,
-        on_delete=models.PROTECT,
-        validators=[active_venue_validator],
+        OrderVenue, blank=False, null=False, on_delete=models.PROTECT, validators=[active_venue_validator],
     )
 
-    start_date = models.DateTimeField(
-        blank=False, null=False, default=get_default_start_time_shift,
-    )
-    end_date = models.DateTimeField(
-        blank=False, null=False, default=get_default_end_time_shift,
-    )
+    start_date = models.DateTimeField(blank=False, null=False, default=get_default_start_time_shift,)
+    end_date = models.DateTimeField(blank=False, null=False, default=get_default_end_time_shift,)
 
     can_order = models.BooleanField(
         verbose_name="Orders allowed",
@@ -211,12 +195,8 @@ class Shift(models.Model):
         """
         staff_users = User.objects.filter(is_staff=True)
         normal_users = User.objects.filter(is_staff=False)
-        ordered_staff_orders = Order.objects.filter(
-            shift=self, user__in=staff_users
-        ).order_by("created")
-        ordered_normal_orders = Order.objects.filter(
-            shift=self, user__in=normal_users
-        ).order_by("created")
+        ordered_staff_orders = Order.objects.filter(shift=self, user__in=staff_users).order_by("created")
+        ordered_normal_orders = Order.objects.filter(shift=self, user__in=normal_users).order_by("created")
         ordered_orders = chain(ordered_staff_orders, ordered_normal_orders)
         return ordered_orders
 
@@ -228,13 +208,9 @@ class Shift(models.Model):
         :return: a list of products with a amount object variable indicating the products and amounts that are not
         ready for this shift
         """
-        distinct_ordered_items = Product.objects.filter(
-            order__shift_id=self, order__ready=False
-        ).distinct()
+        distinct_ordered_items = Product.objects.filter(order__shift_id=self, order__ready=False).distinct()
         for item in distinct_ordered_items:
-            item.amount = Order.objects.filter(
-                product=item, ready=False, shift=self
-            ).count()
+            item.amount = Order.objects.filter(product=item, ready=False, shift=self).count()
         return distinct_ordered_items
 
     @property
@@ -245,13 +221,9 @@ class Shift(models.Model):
         :return: a list of products with a amount object variable indicating the products and amounts that are ready
         for this shift
         """
-        distinct_ordered_items = Product.objects.filter(
-            order__shift_id=self, order__ready=True
-        ).distinct()
+        distinct_ordered_items = Product.objects.filter(order__shift_id=self, order__ready=True).distinct()
         for item in distinct_ordered_items:
-            item.amount = Order.objects.filter(
-                product=item, ready=True, shift=self
-            ).count()
+            item.amount = Order.objects.filter(product=item, ready=True, shift=self).count()
         return distinct_ordered_items
 
     @property
@@ -367,20 +339,12 @@ class Shift(models.Model):
             raise ValueError(f"End date cannot be before start date.")
 
         overlapping_start = (
-            Shift.objects.filter(
-                start_date__gte=self.start_date,
-                start_date__lte=self.end_date,
-                venue=self.venue,
-            )
+            Shift.objects.filter(start_date__gte=self.start_date, start_date__lte=self.end_date, venue=self.venue,)
             .exclude(pk=self.pk)
             .count()
         )
         overlapping_end = (
-            Shift.objects.filter(
-                end_date__gte=self.start_date,
-                end_date__lte=self.end_date,
-                venue=self.venue,
-            )
+            Shift.objects.filter(end_date__gte=self.start_date, end_date__lte=self.end_date, venue=self.venue,)
             .exclude(pk=self.pk)
             .count()
         )
@@ -397,10 +361,7 @@ class Shift(models.Model):
         :return: True if the user is allowed to order amount of products, False otherwise
         """
         user_order_amount = Order.objects.filter(user=user, shift=self).count()
-        if (
-            self.max_orders_per_user is not None
-            and user_order_amount + amount > self.max_orders_per_user
-        ):
+        if self.max_orders_per_user is not None and user_order_amount + amount > self.max_orders_per_user:
             return False
 
         return True
@@ -428,11 +389,6 @@ class Shift(models.Model):
         """Meta class."""
 
         ordering = ["start_date", "end_date"]
-        permissions = [
-            ("can_order_during_shift", "Can order products during this shift"),
-            ("can_process_during_shift", "Can process orders during this shift"),
-            ("can_process_after_shift", "Can process orders after shift has ended"),
-        ]
 
 
 def available_product_filter(value):
@@ -457,11 +413,7 @@ class Order(models.Model):
     user = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT)
     shift = models.ForeignKey(Shift, blank=False, null=False, on_delete=models.PROTECT,)
     product = models.ForeignKey(
-        Product,
-        blank=False,
-        null=False,
-        on_delete=models.PROTECT,
-        validators=[available_product_filter],
+        Product, blank=False, null=False, on_delete=models.PROTECT, validators=[available_product_filter],
     )
 
     order_price = models.DecimalField(max_digits=6, decimal_places=2)
@@ -504,18 +456,12 @@ class Order(models.Model):
         if not self.created and not self.shift.can_order:
             errors.update({"shift": "You can't order for this shift"})
 
-        if not self.created and not (
-            self.shift.start_date < localized_time < self.shift.end_date
-        ):
-            errors.update(
-                {"shift": "You can't order for this shift because of time restrictions"}
-            )
+        if not self.created and not (self.shift.start_date < localized_time < self.shift.end_date):
+            errors.update({"shift": "You can't order for this shift because of time restrictions"})
 
         if (
             self.shift.max_orders_per_user is not None
-            and Order.objects.filter(shift=self.shift, user=self.pk)
-            .exclude(pk=self.pk)
-            .count()
+            and Order.objects.filter(shift=self.shift, user=self.pk).exclude(pk=self.pk).count()
             >= self.shift.max_orders_per_user
         ):
             errors.update(
@@ -526,9 +472,7 @@ class Order(models.Model):
             )
         if (
             self.product.max_allowed_per_shift is not None
-            and Order.objects.filter(product=self.product, user=self.pk)
-            .exclude(pk=self.pk)
-            .count()
+            and Order.objects.filter(product=self.product, user=self.pk).exclude(pk=self.pk).count()
             >= self.product.max_allowed_per_shift
         ):
             errors.update(

@@ -69,11 +69,7 @@ class User(BaseUser):
 
         :return: first name if it exists, otherwise username
         """
-        return (
-            self.first_name
-            if self.first_name != "" and self.first_name is not None
-            else self.username
-        )
+        return self.first_name if self.first_name != "" and self.first_name is not None else self.username
 
     class Meta:
         """Meta class for Users."""

@@ -8,28 +8,38 @@ import orders.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('venues', '0002_remove_venue_image'),
-        ('orders', '0004_auto_20200629_1708'),
+        ("venues", "0002_remove_venue_image"),
+        ("orders", "0004_auto_20200629_1708"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='OrderVenue',
+            name="OrderVenue",
             fields=[
-                ('venue', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to='venues.Venue')),
+                (
+                    "venue",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        primary_key=True,
+                        serialize=False,
+                        to="venues.Venue",
+                    ),
+                ),
             ],
-            options={
-                'ordering': ['venue__name'],
-            },
+            options={"ordering": ["venue__name"],},
         ),
         migrations.AlterField(
-            model_name='product',
-            name='available_at',
-            field=models.ManyToManyField(to='orders.OrderVenue'),
+            model_name="product",
+            name="available_at",
+            field=models.ManyToManyField(to="orders.OrderVenue"),
         ),
         migrations.AlterField(
-            model_name='shift',
-            name='venue',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='orders.OrderVenue', validators=[orders.models.active_venue_validator]),
+            model_name="shift",
+            name="venue",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.PROTECT,
+                to="orders.OrderVenue",
+                validators=[orders.models.active_venue_validator],
+            ),
         ),
     ]

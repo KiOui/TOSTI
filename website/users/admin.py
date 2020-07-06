@@ -16,14 +16,10 @@ class UserAdminForm(forms.ModelForm):
     """Custom AdminForm for Users."""
 
     user_permissions = forms.ModelMultipleChoiceField(
-        Permission.objects.all(),
-        required=False,
-        widget=FilteredSelectMultiple("permissions", False),
+        Permission.objects.all(), required=False, widget=FilteredSelectMultiple("permissions", False),
     )
     groups = forms.ModelMultipleChoiceField(
-        Group.objects.all(),
-        required=False,
-        widget=FilteredSelectMultiple("groups", False),
+        Group.objects.all(), required=False, widget=FilteredSelectMultiple("groups", False),
     )
 
     class Meta:
@@ -81,14 +77,10 @@ class GroupAdminForm(forms.ModelForm):
     """Custom AdminForm for Groups."""
 
     permissions = forms.ModelMultipleChoiceField(
-        Permission.objects.all(),
-        required=False,
-        widget=FilteredSelectMultiple("permissions", False),
+        Permission.objects.all(), required=False, widget=FilteredSelectMultiple("permissions", False),
     )
     users = forms.ModelMultipleChoiceField(
-        queryset=User.objects.all(),
-        required=False,
-        widget=FilteredSelectMultiple("users", False),
+        queryset=User.objects.all(), required=False, widget=FilteredSelectMultiple("users", False),
     )
 
     is_auto_join_group = forms.NullBooleanField(
@@ -103,9 +95,7 @@ class GroupAdminForm(forms.ModelForm):
         super(GroupAdminForm, self).__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields["users"].initial = self.instance.user_set.all()
-            self.fields["is_auto_join_group"].initial = (
-                self.instance.pk in settings.AUTO_JOIN_GROUP_IDS
-            )
+            self.fields["is_auto_join_group"].initial = self.instance.pk in settings.AUTO_JOIN_GROUP_IDS
 
     def save_m2m(self):
         """On save, add selected users to the group."""
