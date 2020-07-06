@@ -21,7 +21,7 @@ class IndexView(TemplateView):
         venues = Venue.objects.filter(active=True)
 
         for venue in venues:
-            shifts = [x for x in Shift.objects.filter(venue=venue) if x.can_order]
+            shifts = [x for x in Shift.objects.filter(venue__venue=venue) if x.can_order]
 
             if len(shifts) == 1:
                 venue.shift = shifts[0]

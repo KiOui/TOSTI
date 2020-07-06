@@ -3,7 +3,7 @@
 {% if not refresh %}
     <div class="container-sm mb-2 text-center" id="header-container-{{ shift.id }}">
 {% endif %}
-<h1>{{ shift.venue.name }}</h1>
+<h1>{{ shift.venue.venue.name }}</h1>
 <p class="my-4 mx-auto" style="font-size: 1rem; max-width: 400px;">
     shift #{{ shift.pk }}
     {% if shift.get_assignees %}

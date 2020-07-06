@@ -9,11 +9,14 @@ from django.urls import reverse
 from guardian.admin import GuardedModelAdmin
 from import_export.admin import ImportExportModelAdmin
 
-from orders.models import Product, Order, Shift
-from venues.models import Venue
+from orders.models import Product, Order, Shift, OrderVenue
 
 User = get_user_model()
 
+
+@admin.register(OrderVenue)
+class OrderVenueAdmin(admin.ModelAdmin):
+    pass
 
 class ProductAdminVenueFilter(AutocompleteFilter):
     """Filter class to filter product objects available at a certain venue."""
@@ -103,14 +106,14 @@ class ShiftAdminForm(forms.ModelForm):
         """Initialize the form."""
         super().__init__(*args, **kwargs)
 
-        self.fields["venue"].queryset = Venue.objects.filter(active=True)
+        self.fields["venue"].queryset = OrderVenue.objects.filter(venue__active=True)
         self.fields["assignees"].queryset = User.objects.all()
 
         if self.instance.pk:
-            self.fields["venue"].queryset = Venue.objects.filter(
-                Q(active=True) | Q(shift=self.instance)
+            self.fields["venue"].queryset = OrderVenue.objects.filter(
+                Q(venue__active=True) | Q(shift=self.instance)
             ).distinct()
-            self.fields["venue"].initial = Venue.objects.filter(shift=self.instance)
+            self.fields["venue"].initial = OrderVenue.objects.filter(shift=self.instance)
             self.fields["assignees"].initial = User.objects.filter(shift=self.instance)
 
     assignees = forms.ModelMultipleChoiceField(
@@ -136,10 +139,10 @@ class ShiftAdmin(GuardedModelAdmin, ImportExportModelAdmin):
         "is_active",
         "can_order",
     ]
-    list_filter = [ShiftAdminAssigneeFilter, "venue", "can_order"]
+    list_filter = ["venue", ShiftAdminAssigneeFilter, "can_order"]
     inlines = [OrderInline]
 
-    search_fields = ["start_date", "venue"]
+    search_fields = ["start_date", "venue__venue__name"]
 
     actions = ["close_shift"]
 

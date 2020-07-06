@@ -3,7 +3,7 @@ from django import template
 from django.conf import settings
 from django.utils.datetime_safe import datetime
 
-from venues.models import Venue
+from orders.models import OrderVenue
 
 register = template.Library()
 
@@ -12,7 +12,7 @@ register = template.Library()
 def render_start_shift_buttons(venues=None):
     """Render start shift buttons."""
     if venues is None:
-        venues = Venue.objects.filter(active=True).order_by("name")
+        venues = OrderVenue.objects.filter(venue__active=True).order_by("venue__name")
 
     buttons = [{"venue": x} for x in venues]
 

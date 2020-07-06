@@ -1,14 +1,16 @@
 import json
-import datetime
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
+
+from orders import services
+from orders.exceptions import OrderException
 from .permissions import StaffRequiredMixin
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.template.loader import get_template
 from django.views.generic import TemplateView
-from .models import Shift, Product, Order
+from .models import Shift, Product
 from .forms import ShiftForm
 import urllib.parse
 
@@ -44,29 +46,6 @@ class OrderView(LoginRequiredMixin, TemplateView):
     template_name = "orders/order.html"
 
     @staticmethod
-    def can_order(shift, product_id, user):
-        """
-        Add an order for a specific product id, shift and user.
-
-        :param shift: the shift to add the order to
-        :param product_id: the product id of the product that the order must have
-        :param user: the user that ordered the product
-        :return: a string with an error message if the order could not be placed, True otherwise
-        """
-        try:
-            product = Product.objects.get(pk=product_id)
-        except (Product.DoesNotExist, ValueError):
-            return "That product does not exist"
-
-        if not shift.user_can_order_amount(user):
-            return "You can not order more products"
-        if not product.user_can_order_amount(user, shift):
-            return "You can not order more {}".format(product.name)
-        if not product.available:
-            return "Product {} is not available".format(product.name)
-        return True
-
-    @staticmethod
     def add_orders(order_list, shift, user):
         """
         Add all orders in a list.
@@ -76,21 +55,16 @@ class OrderView(LoginRequiredMixin, TemplateView):
         :param user: the user for which the orders are
         :return: True if the addition succeeded, a string with an error message otherwise
         """
-        if not shift.user_can_order_amount(user, amount=len(order_list)):
-            return "You can't order that much products in this shift"
-        if not shift.can_order:
-            return "You can not order products for this shift"
-        if not shift.is_active:
-            return "This shift is not active"
-        for order in order_list:
-            error_msg = OrderView.can_order(shift, order, user)
-            if isinstance(error_msg, str):
-                return error_msg
-
-        for order in order_list:
-            Order.objects.create(
-                user=user, shift=shift, product=Product.objects.get(pk=order)
-            )
+        product_list = []
+        for product_id in order_list:
+            try:
+                product_list.append(Product.objects.get(pk=product_id))
+            except (Product.DoesNotExist, ValueError):
+                return "That product does not exist"
+        try:
+            services.place_orders(product_list, user, shift)
+        except OrderException as err:
+            return str(err)
 
         return True
 
@@ -110,10 +84,7 @@ class OrderView(LoginRequiredMixin, TemplateView):
             self.template_name,
             {
                 "shift": shift,
-                "already_ordered": Order.objects.filter(
-                    user=request.user, shift=shift
-                ).count()
-                > 0,
+                "already_ordered": services.has_already_ordered_in_shift(request.user, shift)
             },
         )
 
@@ -191,10 +162,7 @@ class JoinShiftView(StaffRequiredMixin, TemplateView):
 
         confirm = request.POST.get("confirm", None)
         if confirm == "Yes":
-            assignees = shift.assignees.all()
-            if request.user not in assignees:
-                shift.assignees.add(request.user)
-                shift.save()
+            services.add_user_to_assignees_of_shift(request.user, shift)
             return redirect("orders:shift_admin", shift=shift)
         elif confirm == "No":
             return redirect("index")
@@ -345,13 +313,17 @@ class OrderUpdateView(StaffRequiredMixin, TemplateView):
         order = kwargs.get("order")
 
         if order_property == "ready":
-            order.ready = value
-            order.save()
-            return JsonResponse({"value": order.ready})
+            try:
+                order = services.set_order_ready(order, value)
+                return JsonResponse({"value": order.ready})
+            except Exception as e:
+                return JsonResponse({"error": str(e), "value": order.ready})
         elif order_property == "paid":
-            order.paid = value
-            order.save()
-            return JsonResponse({"value": order.paid})
+            try:
+                order = services.set_order_paid(order, value)
+                return JsonResponse({"value": order.paid})
+            except Exception as e:
+                return JsonResponse({"error": str(e), "value": order.paid})
         else:
             return JsonResponse({"error": "Property unknown"})
 
@@ -392,9 +364,11 @@ class ToggleShiftActivationView(StaffRequiredMixin, TemplateView):
         shift = kwargs.get("shift")
         active = request.POST.get("active", "false")
 
-        shift.can_order = active == "true"
-        shift.save()
-        return JsonResponse({"active": shift.can_order})
+        try:
+            shift = services.set_shift_active(shift, active == "true")
+            return JsonResponse({"active": shift.can_order})
+        except Exception as e:
+            return JsonResponse({"error": str(e), "active": shift.can_order})
 
 
 class AddShiftCapacityView(StaffRequiredMixin, TemplateView):
@@ -415,16 +389,17 @@ class AddShiftCapacityView(StaffRequiredMixin, TemplateView):
         }
         """
         shift = kwargs.get("shift")
-
-        shift.max_orders_total = shift.max_orders_total + self.add_amount
-        shift.save()
-        return JsonResponse({"error": False})
+        try:
+            services.increase_shift_capacity(shift, self.add_amount)
+            return JsonResponse({"error": False})
+        except Exception as e:
+            return JsonResponse({"error": str(e)})
 
 
 class AddShiftTimeView(StaffRequiredMixin, TemplateView):
     """Add shift time view."""
 
-    add_amount = datetime.timedelta(minutes=5)
+    add_amount_minutes = 5
 
     def post(self, request, **kwargs):
         """
@@ -440,9 +415,11 @@ class AddShiftTimeView(StaffRequiredMixin, TemplateView):
         """
         shift = kwargs.get("shift")
 
-        shift.end_date = shift.end_date + self.add_amount
-        shift.save()
-        return JsonResponse({"error": False})
+        try:
+            services.increase_shift_time(shift, self.add_amount_minutes)
+            return JsonResponse({"error": False})
+        except Exception as e:
+            return JsonResponse({"error": str(e)})
 
 
 class RefreshHeaderView(TemplateView):

@@ -1,8 +1,7 @@
 from django import template
 from django.utils import timezone
 
-from orders.models import Shift
-from venues.models import Venue
+from orders.models import Shift, OrderVenue
 
 register = template.Library()
 
@@ -43,7 +42,7 @@ def render_order_now_buttons_active_shifts(shifts=None):
     if shifts is None:
         shifts = Shift.objects.filter(
             start_date__lte=timezone.now(), end_date__gte=timezone.now(),
-        ).order_by("start_date", "venue__name")
+        ).order_by("start_date", "venue__venue__name")
 
     buttons = [{"shift": x} for x in shifts]
 
@@ -55,7 +54,7 @@ def render_order_now_buttons_can_order():
     """Render order now buttons for all shifts accepting orders."""
     shifts = Shift.objects.filter(
         start_date__lte=timezone.now(), end_date__gte=timezone.now(), can_order=True
-    ).order_by("start_date", "venue__name")
+    ).order_by("start_date", "venue__venue__name")
 
     buttons = [{"shift": x} for x in shifts]
 
@@ -65,7 +64,7 @@ def render_order_now_buttons_can_order():
 @register.inclusion_tag("orders/order_now_at.html")
 def render_order_now_buttons_venues():
     """Render order now buttons for all active shifts."""
-    venues = Venue.objects.filter(active=True).order_by("name")
+    venues = OrderVenue.objects.filter(venue__active=True).order_by("venue__name")
 
     buttons = [{"venue": x} for x in venues]
 

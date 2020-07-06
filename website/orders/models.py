@@ -38,6 +38,23 @@ def get_default_end_time_shift():
     )
 
 
+class OrderVenue(models.Model):
+    """Venues where Shifts can be created."""
+
+    venue = models.OneToOneField(
+        Venue,
+        on_delete=models.CASCADE,
+        primary_key=True,
+    )
+
+    def __str__(self):
+        return str(self.venue)
+
+    class Meta:
+        """Meta class for OrderVenues."""
+        ordering = ["venue__name"]
+
+
 class Product(models.Model):
     """Products that can be ordered."""
 
@@ -48,7 +65,7 @@ class Product(models.Model):
         help_text="Font-awesome icon name that is used for quick display of the product type.",
     )
     available = models.BooleanField(default=True, null=False)
-    available_at = models.ManyToManyField(Venue)
+    available_at = models.ManyToManyField(OrderVenue)
 
     current_price = models.DecimalField(
         max_digits=6, decimal_places=2, validators=[MinValueValidator(Decimal("0.00"))]
@@ -130,7 +147,7 @@ class Product(models.Model):
 
 def active_venue_validator(value):
     """Filter to only allow shifts for active venues."""
-    if Venue.objects.get(pk=value).active:
+    if OrderVenue.objects.get(pk=value).venue.active:
         return True
     else:
         raise ValidationError("This venue is not active.")
@@ -143,7 +160,7 @@ class Shift(models.Model):
     TIME_FORMAT = "%H:%M"
 
     venue = models.ForeignKey(
-        Venue,
+        OrderVenue,
         blank=False,
         null=False,
         on_delete=models.PROTECT,
@@ -322,7 +339,6 @@ class Shift(models.Model):
         localized = datetime.fromtimestamp(self.end_date.timestamp(), tz=timezone)
         return f"{localized.strftime(self.TIME_FORMAT)}"
 
-    @property
     def get_assignees(self):
         """
         Get assignees of this shift.
