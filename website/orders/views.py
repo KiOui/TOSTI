@@ -500,3 +500,15 @@ class RefreshShiftOrderView(TemplateView):
             render_order_items(shift, refresh=True, admin=admin, user=request.user)
         )
         return JsonResponse({"data": footer})
+
+
+class ExplainerView(TemplateView):
+    """Explainer view."""
+
+    template_name = "orders/explainer.html"
+
+
+class AdminExplainerView(TemplateView):
+    """Admin Explainer view."""
+
+    template_name = "orders/explainer_admin.html"

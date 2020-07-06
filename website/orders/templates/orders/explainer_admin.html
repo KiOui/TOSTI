@@ -1,0 +1,49 @@
+{% extends "tosti/base.html" %}
+{% load static %}
+
+{% block title %}
+    TOSTI: How to manage shifts
+{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'orders/css/item-list.css' %}"/>
+    <link rel="stylesheet" href="{% static 'orders/css/explainer.css' %}"/>
+{% endblock %}
+
+{% block page %}
+    <div class="container">
+        <h1>How to manage and create shifts?</h1>
+        <p>
+            Before you can start managing shifts on TOSTI, first login using your Science account via the
+            <a href="{% url "users:login" %}">login page</a>. Then, go to
+            <a href="{% url "index" %}">the home page</a> to see if there is an active shift available which you can
+            join. The buttons on the home page can state two things.
+        </p>
+        <ul class="margin-list">
+            <li>
+                Join shift at ...: There is already an active shift created at the venue, you can choose to join this
+                shift as a shift administrator.
+            </li>
+            <li>
+                Start shift at ...: There is no active shift for the venue at this moment, you can choose to create
+                a shift.
+            </li>
+        </ul>
+        <h2>Joining a shift</h2>
+        <p>
+            Joining a shift is easy, just press the button and confirm you want to join the shift.
+        </p>
+        <h2>Starting a shift</h2>
+        <p>
+            In order to start a new shift, press the button on the home page to start a shift for a specific venue. A
+            form will pop up requiring you to enter some details regarding the shift you are about to start. Most
+            values are already filled in. You might want to change the assignees of the shift to the people that need
+            to have administrator rights for the shift.
+        </p>
+        <h2>Managing a shift</h2>
+        <p>
+            After starting or joining a shift, you will land on the administrator shift overview page. This page might
+            look overwhelming but we will explain every button on this page in detail. We will first go over the
+        </p>
+    </div>
+{% endblock %}

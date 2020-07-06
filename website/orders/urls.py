@@ -15,6 +15,8 @@ from .views import (
     RefreshAdminFooterView,
     RefreshShiftOrderView,
     RefreshProductOverviewView,
+    ExplainerView,
+    AdminExplainerView,
 )
 from .converters import ShiftConverter, VenueConverter, OrderConverter
 
@@ -23,6 +25,8 @@ register_converter(VenueConverter, "venue")
 register_converter(OrderConverter, "order")
 
 urlpatterns = [
+    path("explainer", ExplainerView.as_view(), name="explainer"),
+    path("explainer-admin", AdminExplainerView.as_view(), name="explainer_admin"),
     path("shifts", ShiftView.as_view(), name="shifts"),
     path("<shift:shift>/order-items", OrderView.as_view(), name="order"),
     path("venue/<venue:venue>/create", CreateShiftView.as_view(), name="shift_create"),

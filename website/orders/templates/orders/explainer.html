@@ -1,0 +1,79 @@
+{% extends "tosti/base.html" %}
+{% load static %}
+
+{% block title %}
+    TOSTI: How to order
+{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'orders/css/item-list.css' %}"/>
+    <link rel="stylesheet" href="{% static 'orders/css/explainer.css' %}"/>
+{% endblock %}
+
+{% block page %}
+    <div class="container">
+        <h1>How to order products?</h1>
+        <p>
+            Before you can start ordering products on TOSTI, first login using your Science account via the
+            <a href="{% url "users:login" %}">login page</a>. Then, go to
+            <a href="{% url "orders:shifts" %}">this page</a> to see if there is an active shift available where you can
+            order. If an active shift is available, the page will look like the following.
+        </p>
+        <img src="#"/>
+        <p>
+            Click on a venue you want to order at. You will see the following screen.
+        </p>
+        <img src="#"/>
+        <p>
+            Click on "Order items", the button will take you to the order page where you can select products. Note that
+            you can not order unlimited products, there are restrictions on your maximum order and on the amount of
+            orders per item. The page will display when you have ordered the maximum amount in total and the maximum
+            amount of an item. When you have added enough items to your cart, click on the "Order items" button to order
+            the items. You can always order more items if you are not at your maximum yet.
+        </p>
+        <p>
+            After ordering items, your order page will look like this, displaying your orders (and other orders if more
+            people placed orders) with the status of your order. Orders with a <i class="fas fa-user"></i> icon are your
+            orders, orders without a <i class="fas fa-user"></i> icon are orders from other users.
+        </p>
+        <p>
+            You may have noticed that your orders are displaying a
+            <i class="status-button bg-danger text-white" style="font-style: normal; font-size: 1rem;">Not paid</i>
+            button. This button can have four separate values:
+        </p>
+        <ul class="margin-list">
+            <li>
+                <i class="status-button bg-danger text-white" style="font-style: normal; font-size: 1rem;">Not paid</i>
+                : You did not pay your order yet and your order is not finished.
+            </li>
+            <li>
+                <i class="status-button bg-warning text-white" style="font-style: normal; font-size: 1rem;">Processing</i>
+                : You have paid your order and it is still processing.
+            </li>
+            <li>
+                <i class="status-button bg-warning text-white" style="font-style: normal; font-size: 1rem;">Done</i>
+                : You have <strong>not</strong> paid your order and it is finished.
+            </li>
+            <li>
+                <i class="status-button bg-success text-white" style="font-style: normal; font-size: 1rem;">Done</i>
+                : You have paid your order and it is finished.
+            </li>
+        </ul>
+        <p>
+            Orders from other people can have two states.
+        </p>
+        <ul class="margin-list">
+            <li>
+                <i class="status-button bg-warning text-white" style="font-style: normal; font-size: 1rem;">Processing</i>
+                : The order is still being made.
+            </li>
+            <li>
+                <i class="status-button bg-success text-white" style="font-style: normal; font-size: 1rem;">Done</i>
+                : The order is ready.
+            </li>
+        </ul>
+        <p>
+            When your order is ready, you can pick it up at the venue you ordered. Have fun ordering!
+        </p>
+    </div>
+{% endblock %}
