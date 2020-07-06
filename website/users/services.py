@@ -31,9 +31,7 @@ def get_openid_verifier(request):
 class OpenIDVerifier:
     """Object used for OpenID verification."""
 
-    def __init__(
-        self, openid_server_endpoint, request, openid_return_url, prefix, postfix
-    ):
+    def __init__(self, openid_server_endpoint, request, openid_return_url, prefix, postfix):
         """
         Initialise an OpenIDVerifier object.
 
@@ -54,9 +52,9 @@ class OpenIDVerifier:
         if "openid.signed" in self.query_parameters.keys():
             for field in self.query_parameters["openid.signed"].split(","):
                 if field != "mode":
-                    self.signed_field_values[
+                    self.signed_field_values["openid.{}".format(field)] = self.query_parameters[
                         "openid.{}".format(field)
-                    ] = self.query_parameters["openid.{}".format(field)]
+                    ]
 
     def get_request_url(self, username):
         """
@@ -94,11 +92,7 @@ class OpenIDVerifier:
         """
         if "openid.identity" in self.query_parameters.keys():
             openid_identity = self.query_parameters["openid.identity"]
-            return re.sub(
-                "{}$".format(self.postfix),
-                "",
-                re.sub("^{}".format(self.prefix), "", openid_identity),
-            )
+            return re.sub("{}$".format(self.postfix), "", re.sub("^{}".format(self.prefix), "", openid_identity),)
         return False
 
     def extract_full_name(self):
@@ -167,10 +161,7 @@ class OpenIDVerifier:
         """
         verification_url = self.get_verification_url()
         response = requests.get(verification_url)
-        return (
-            response.status_code == 200
-            and re.sub("is_valid:", "", re.sub("\n", "", response.text)) == "true"
-        )
+        return response.status_code == 200 and re.sub("is_valid:", "", re.sub("\n", "", response.text)) == "true"
 
     def set_user_details(self, user):
         """
