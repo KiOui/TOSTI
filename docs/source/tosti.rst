@@ -1,4 +1,4 @@
-tosti package
+Tosti package
 =================
 
 .. automodule:: tosti

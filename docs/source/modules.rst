@@ -1,4 +1,4 @@
-website
+Website modules
 =======
 
 .. toctree::

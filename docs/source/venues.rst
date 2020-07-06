@@ -1,4 +1,4 @@
-venues package
+Venues package
 =================
 
 .. automodule:: venues

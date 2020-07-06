@@ -10,7 +10,8 @@ Welcome to TOSTI's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   readme
+   overview
+   installation
    modules
 
 Indices and tables

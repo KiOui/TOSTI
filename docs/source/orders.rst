@@ -1,4 +1,4 @@
-orders package
+Orders package
 =================
 
 .. automodule:: orders

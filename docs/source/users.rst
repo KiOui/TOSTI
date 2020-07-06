@@ -1,10 +1,15 @@
-users package
+Users package
 =================
 
 .. automodule:: users
    :members:
    :undoc-members:
    :show-inheritance:
+
+OpenID implementation
+---------------------
+The custom user model of TOSTI uses the `Science OpenID server`_ for authentication. The `Science OpenID server`_ uses
+`OpenID version 1.1`_. The ``OpenIDVerifier`` object in ``users/services`` handles all OpenID verification.
 
 Submodules
 ----------
@@ -57,3 +62,5 @@ users.views module
    :undoc-members:
    :show-inheritance:
 
+.. _science openid server: https://openid.science.ru.nl
+.. _openid version 1.1: https://openid.net/specs/openid-authentication-1_1.html#mode_associate

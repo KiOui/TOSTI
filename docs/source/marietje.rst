@@ -1,10 +1,17 @@
-marietje package
+Marietje package
 =================
 
 .. automodule:: marietje
    :members:
    :undoc-members:
    :show-inheritance:
+
+Spotipy
+-------
+
+The Marietje package uses spotipy_ for the connection to Spotify_. Note that the spotipy package uses caching files for
+caching the Spotify OAuth2 tokens. When using the default settings, a ``cache`` folder will be created in the
+``website`` folder storing these caching files.
 
 Submodules
 ----------
@@ -57,3 +64,5 @@ marietje.views module
    :undoc-members:
    :show-inheritance:
 
+.. _spotipy: https://spotipy.readthedocs.io
+.. _spotify: https://spotify.com
