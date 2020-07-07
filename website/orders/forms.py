@@ -3,6 +3,7 @@ from django import forms
 from django.conf import settings
 from guardian.shortcuts import get_objects_for_user
 
+from users.models import User
 from .models import Shift, get_default_end_time_shift, get_default_start_time_shift
 from datetime import datetime, timedelta
 
@@ -23,12 +24,11 @@ class ShiftForm(forms.ModelForm):
         self.fields["venue"].initial = venue
         self.fields["venue"].queryset = get_objects_for_user(self.user, "orders.can_manage_shift_in_venue")
 
-        all_assignees = None
+        all_assignees = set()
         for v in self.fields["venue"].queryset:
-            if all_assignees:
-                all_assignees = v.get_users_with_shift_admin_perms_queryset().union(all_assignees)
-            else:
-                all_assignees = v.get_users_with_shift_admin_perms_queryset()
+            all_assignees.update([x.pk for x in v.get_users_with_shift_admin_perms()])
+
+        all_assignees = User.objects.filter(pk__in=all_assignees)
 
         self.fields["assignees"].queryset = all_assignees.order_by("first_name", "last_name")
 
@@ -70,7 +70,6 @@ class ShiftForm(forms.ModelForm):
         for assignee in assignees:
             if assignee not in venue.get_users_with_shift_admin_perms():
                 raise forms.ValidationError("This user is not allowed to manage this shift.")
-
         return cleaned_data
 
     def clean_venue(self):
