@@ -1,15 +1,13 @@
 from django.conf import settings
 from django.contrib import admin
+from django.contrib.auth.models import User
 from django.contrib.auth.admin import (
     UserAdmin as BaseUserAdmin,
     GroupAdmin as BaseGroupAdmin,
 )
 from django.contrib.admin.widgets import FilteredSelectMultiple
-from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
 from django import forms
-
-User = get_user_model()
 
 
 class UserAdminForm(forms.ModelForm):
@@ -54,6 +52,7 @@ class UserAdmin(BaseUserAdmin):
     )
     list_display = [
         "username",
+        "get_full_name",
         "date_joined",
         "last_login",
         "is_active",
@@ -125,5 +124,6 @@ class GroupAdmin(BaseGroupAdmin):
 
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
+
 admin.site.unregister(Group)
 admin.site.register(Group, GroupAdmin)

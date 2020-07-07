@@ -4,13 +4,12 @@ import re
 from datetime import timedelta
 
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.urls import reverse
 from django.utils import timezone
 
 
-User = get_user_model()
+from users.models import User
 
 
 def get_openid_verifier(request):

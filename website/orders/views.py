@@ -1,6 +1,5 @@
 import json
 
-from django.contrib.auth import get_user_model
 from guardian.decorators import permission_required_or_403, permission_required
 
 from orders import services
@@ -17,7 +16,7 @@ from .templatetags.order_now import (
     render_order_items,
 )
 
-User = get_user_model()
+from users.models import User
 
 
 def shift_view(request, *args, **kwargs):

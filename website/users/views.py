@@ -1,11 +1,9 @@
-from django.contrib.auth import get_user_model, login, logout
+from django.contrib.auth import login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
 from .forms import LoginForm, AccountForm
 from .services import get_openid_verifier
-
-User = get_user_model()
 
 
 class LoginView(TemplateView):

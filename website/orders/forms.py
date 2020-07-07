@@ -1,14 +1,13 @@
 import pytz
 from django import forms
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from guardian.shortcuts import get_objects_for_user
 
 from .models import Shift, get_default_end_time_shift, get_default_start_time_shift
 from datetime import datetime, timedelta
 
 
-User = get_user_model()
+from users.models import User
 
 
 class ShiftForm(forms.ModelForm):

@@ -11,7 +11,7 @@
         <h6>Tartarus Order System for Take-away Items</h6>
     </div>
     <div class="container">
-        {%  render_order_now_buttons_venues  %}
+        {% render_order_now_buttons_venues %}
     </div>
 
     {% if user.is_authenticated and user.is_staff %}
@@ -19,7 +19,7 @@
         <hr>
         </div>
         <div class="container">
-            {%  render_start_shift_buttons %}
+            {% render_start_shift_buttons %}
         </div>
     {% endif %}
 

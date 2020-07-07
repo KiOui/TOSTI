@@ -3,7 +3,6 @@ from django import forms
 
 from django.contrib import admin, messages
 from django.contrib.admin import widgets
-from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.urls import reverse
 from guardian.admin import GuardedModelAdmin
@@ -11,7 +10,7 @@ from import_export.admin import ImportExportModelAdmin
 
 from orders.models import Product, Order, Shift, OrderVenue
 
-User = get_user_model()
+from users.models import User
 
 
 @admin.register(OrderVenue)

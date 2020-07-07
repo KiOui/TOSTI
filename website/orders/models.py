@@ -3,7 +3,6 @@ from decimal import Decimal
 
 from django.conf import settings
 import pytz
-from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
@@ -11,7 +10,7 @@ from django.db import models
 from venues.models import Venue
 from itertools import chain
 
-User = get_user_model()
+from users.models import User
 
 
 def get_default_start_time_shift():

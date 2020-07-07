@@ -1,14 +1,12 @@
 import os
 
-from django.contrib.auth import get_user_model
 from django.db import models
 from django.conf import settings
 from django.urls import reverse
 from spotipy import SpotifyOAuth
 from spotipy.client import Spotify
+from users.models import User
 from venues.models import Venue
-
-User = get_user_model()
 
 
 class SpotifyAccount(models.Model):

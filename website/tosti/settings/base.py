@@ -38,6 +38,8 @@ INSTALLED_APPS = [
 
 ANONYMOUS_USER_NAME = None
 
+GUARDIAN_RAISE_403 = True
+
 AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",  # default
     "guardian.backends.ObjectPermissionBackend",
