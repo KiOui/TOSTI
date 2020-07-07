@@ -401,12 +401,11 @@ class Shift(models.Model):
             raise ValueError("Overlapping shifts for the same venue are not allowed.")
         super(Shift, self).save(*args, **kwargs)
 
-    def clean(self):
-        """Clean a shift object."""
-        for assignee in self.get_assignees():
+    def save_m2m(self):
+        """Save assignees m2m."""
+        for assignee in self.assignees.all():
             if assignee not in self.venue.get_users_with_shift_admin_perms():
-                raise ValidationError("This user is not allowed to manage this shift.")
-
+                raise ValueError(f"{assignee} is not allowed to manage this shift.")
 
     def user_can_order_amount(self, user, amount=1):
         """
