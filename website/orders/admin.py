@@ -3,15 +3,21 @@ from django import forms
 
 from django.contrib import admin, messages
 from django.contrib.admin import widgets
-from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.urls import reverse
+from guardian.admin import GuardedModelAdmin
 from import_export.admin import ImportExportModelAdmin
 
-from orders.models import Product, Order, Shift
-from venues.models import Venue
+from orders.models import Product, Order, Shift, OrderVenue
 
-User = get_user_model()
+from users.models import User
+
+
+@admin.register(OrderVenue)
+class OrderVenueAdmin(GuardedModelAdmin):
+    """Simple admin for OrderVenues."""
+
+    pass
 
 
 class ProductAdminVenueFilter(AutocompleteFilter):
@@ -65,13 +71,6 @@ class ProductAdmin(admin.ModelAdmin):
         """Necessary to use AutocompleteFilter."""
 
 
-class ShiftAdminAssigneeFilter(AutocompleteFilter):
-    """Filter class to filter shifts objects with certain assigned users."""
-
-    title = "Assignee"
-    field_name = "assignees"
-
-
 class OrderInline(admin.TabularInline):
     """Inline form for Registration."""
 
@@ -100,12 +99,14 @@ class ShiftAdminForm(forms.ModelForm):
         """Initialize the form."""
         super().__init__(*args, **kwargs)
 
-        self.fields["venue"].queryset = Venue.objects.filter(active=True)
+        self.fields["venue"].queryset = OrderVenue.objects.filter(venue__active=True)
         self.fields["assignees"].queryset = User.objects.all()
 
         if self.instance.pk:
-            self.fields["venue"].queryset = Venue.objects.filter(Q(active=True) | Q(shift=self.instance)).distinct()
-            self.fields["venue"].initial = Venue.objects.filter(shift=self.instance)
+            self.fields["venue"].queryset = OrderVenue.objects.filter(
+                Q(venue__active=True) | Q(shift=self.instance)
+            ).distinct()
+            self.fields["venue"].initial = OrderVenue.objects.filter(shift=self.instance)
             self.fields["assignees"].initial = User.objects.filter(shift=self.instance)
 
     assignees = forms.ModelMultipleChoiceField(
@@ -114,7 +115,7 @@ class ShiftAdminForm(forms.ModelForm):
 
 
 @admin.register(Shift)
-class ShiftAdmin(ImportExportModelAdmin):
+class ShiftAdmin(GuardedModelAdmin, ImportExportModelAdmin):
     """Custom admin for shifts."""
 
     form = ShiftAdminForm
@@ -126,13 +127,14 @@ class ShiftAdmin(ImportExportModelAdmin):
         "end_time",
         "venue",
         "capacity",
-        "is_active",
+        "get_is_active",
         "can_order",
     ]
-    list_filter = [ShiftAdminAssigneeFilter, "venue", "can_order"]
+
+    list_filter = ["venue", "can_order"]
     inlines = [OrderInline]
 
-    search_fields = ["start_date", "venue"]
+    search_fields = ["start_date", "venue__venue__name"]
 
     actions = ["close_shift"]
 
@@ -159,6 +161,12 @@ class ShiftAdmin(ImportExportModelAdmin):
         return request
 
     close_shift.short_description = "Close orders for shift"
+
+    def get_is_active(self, obj):
+        """Property for whether a shift is currently active."""
+        return obj.is_active
+
+    get_is_active.boolean = True
 
     class Media:
         """Necessary to use AutocompleteFilter."""

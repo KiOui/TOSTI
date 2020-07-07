@@ -14,11 +14,13 @@
                     {% render_player player %}
                 </div>
                 <div class="col-md">
+                    {% if can_request %}
                     <div class="mb-5">
                         <h2>Add a song</h2>
                         <p>Search a track below and add it to the queue.</p>
                         {% include 'marietje/search.html' with player=player refresh=False %}
                     </div>
+                    {% endif %}
                     <div class="mb-5">
                         {% render_queue_list player refresh=False %}
                     </div>

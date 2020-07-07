@@ -29,6 +29,7 @@
                 <p class="font-footer">Order page</p>
             </div>
         </div>
+        {% if request.user.is_staff and has_change_order_permissions %}
         <div class="col expand-mobile">
             <div class="h-100 btn-ml btn-on m-auto w-100" onclick="window.location.href = '{% url "admin:orders_shift_change" shift.id %}';">
                 <p class="font-footer flex-fixed"><i class="fas fa-cog"></i></p>
@@ -41,6 +42,7 @@
                 <p class="font-footer">Shift overview</p>
             </div>
         </div>
+        {% endif %}
     </div>
     <button class="navbar-toggler m-auto" style="border: 0" type="button" data-toggle="collapse" data-target="#footer-menu">
         <i class="fas fa-caret-up text-white"></i>

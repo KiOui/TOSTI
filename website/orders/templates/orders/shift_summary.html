@@ -1,11 +1,16 @@
 {% load static %}
 
 {% if not refresh %}
+    <div class="container">
+        <button type="button" class="btn-ml btn-on mb-5" data-toggle="modal" data-target="#order-overview-popup">
+            Summary
+        </button>
+    </div>
     <div class="modal" id="order-overview-popup">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h2 class="modal-title">Shift overview</h2>
+                    <h2 class="modal-title">Shift summary</h2>
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
                 <div class="modal-body" id="order-overview-popup-list-{{ shift.id }}">

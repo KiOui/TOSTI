@@ -4,12 +4,12 @@ import re
 from datetime import timedelta
 
 from django.conf import settings
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.urls import reverse
 from django.utils import timezone
 
 
-User = get_user_model()
+from users.models import User
 
 
 def get_openid_verifier(request):
@@ -194,8 +194,23 @@ class OpenIDVerifier:
                 user, created = User.objects.get_or_create(username=username)
                 if created:
                     self.set_user_details(user)
+                    join_auto_join_groups(user)
                 return user
         return False
+
+
+def join_auto_join_groups(user):
+    """Let new users join groups that are set for auto-joining."""
+    auto_join_groups = Group.objects.filter(groupsettings__is_auto_join_group=True)
+    for group in auto_join_groups:
+        user.groups.add(group)
+
+
+def update_staff_status(user):
+    """Update the is_staff value of a user."""
+    if len(user.groups.all().filter(groupsettings__gets_staff_permissions=True)) > 0:
+        user.is_staff = True
+        user.save()
 
 
 def execute_data_minimisation(dry_run=False):
