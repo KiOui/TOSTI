@@ -122,7 +122,33 @@ class GroupAdmin(BaseGroupAdmin):
 
     form = GroupAdminForm
 
+    list_display = [
+        "name",
+        "get_count_members",
+        "get_members",
+        "get_autojoin",
+    ]
+
     inlines = [GroupSettingsInline]
+
+    def get_count_members(self, obj):
+        """Get number of members in a group."""
+        return obj.user_set.count()
+
+    get_count_members.short_description = "Number of users"
+
+    def get_autojoin(self, obj):
+        """Get whether group is an auto_join group."""
+        return True if obj.groupsettings.is_auto_join_group else False
+
+    get_autojoin.short_description = "Auto join new members"
+    get_autojoin.boolean = True
+
+    def get_members(self, obj):
+        """Get the members of a group."""
+        return list(obj.user_set.all())
+
+    get_members.short_description = "Members"
 
     class Meta:
         """Meta class for the GroupAdmin."""
