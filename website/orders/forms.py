@@ -7,9 +7,6 @@ from .models import Shift, get_default_end_time_shift, get_default_start_time_sh
 from datetime import datetime, timedelta
 
 
-from users.models import User
-
-
 class ShiftForm(forms.ModelForm):
     """Shift creation form."""
 
@@ -25,7 +22,16 @@ class ShiftForm(forms.ModelForm):
         self.user = user
         self.fields["venue"].initial = venue
         self.fields["venue"].queryset = get_objects_for_user(self.user, "orders.can_manage_shift_in_venue")
-        self.fields["assignees"].queryset = User.objects.filter(is_staff=True)
+
+        all_assignees = None
+        for v in self.fields["venue"].queryset:
+            if all_assignees:
+                all_assignees = v.get_users_with_shift_admin_perms_queryset().union(all_assignees)
+            else:
+                all_assignees = v.get_users_with_shift_admin_perms_queryset()
+
+        self.fields["assignees"].queryset = all_assignees.order_by("first_name", "last_name")
+
         timezone = pytz.timezone(settings.TIME_ZONE)
         now = timezone.localize(datetime.now())
         start_time = now - timedelta(seconds=now.second, microseconds=now.microsecond)
@@ -60,14 +66,19 @@ class ShiftForm(forms.ModelForm):
         if overlapping_start > 0 or overlapping_end > 0:
             raise forms.ValidationError("Overlapping shifts for the same venue are not allowed.")
 
+        assignees = self.cleaned_data.get("assignees")
+        for assignee in assignees:
+            if assignee not in venue.get_users_with_shift_admin_perms():
+                raise forms.ValidationError("This user is not allowed to manage this shift.")
+
         return cleaned_data
 
     def clean_venue(self):
         """Check whether venue is has an accepted value."""
-        data = self.cleaned_data["venue"]
-        if not self.user.has_perm("can_manage_shift_in_venue", data):
+        venue = self.cleaned_data["venue"]
+        if self.user not in venue.get_users_with_shift_admin_perms():
             raise forms.ValidationError("You don't have permissions to start a shift in this venue!")
-        return data
+        return venue
 
     class Meta:
         """Meta class."""

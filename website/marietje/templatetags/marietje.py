@@ -1,4 +1,5 @@
 from django import template
+
 from marietje.models import SpotifyQueueItem, SpotifyAccount
 
 register = template.Library()
@@ -17,7 +18,7 @@ def render_player(context, player, refresh=False):
     return {
         "refresh": refresh,
         "player": player,
-        "controls": True if context["request"].user.has_perm("marietje.can_control", player) else False,
+        "controls": context["request"].user in player.get_users_with_control_permissions(),
     }
 
 
@@ -28,5 +29,5 @@ def render_venue_player(context, venue, refresh=False):
     return {
         "refresh": refresh,
         "player": player,
-        "control": True if context["request"].user.has_perm("marietje.can_control", player) else False,
+        "controls": context["request"].user in player.get_users_with_control_perms(),
     }

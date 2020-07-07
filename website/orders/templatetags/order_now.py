@@ -15,8 +15,13 @@ def render_order_header(context, shift, refresh=False):
 @register.inclusion_tag("orders/admin_footer.html", takes_context=True)
 def render_admin_footer(context, shift, refresh=False):
     """Render order footer."""
-    has_change_order_permissions = context["request"].user.has_perm("orders.change_shift")
-    return {"shift": shift, "refresh": refresh, "request": context.get("request"), "has_change_order_permissions": has_change_order_permissions}
+    has_change_order_permissions = context["request"].user in shift.get_users_with_change_perms()
+    return {
+        "shift": shift,
+        "refresh": refresh,
+        "request": context.get("request"),
+        "has_change_order_permissions": has_change_order_permissions,
+    }
 
 
 @register.inclusion_tag("orders/order_items.html", takes_context=True)
@@ -43,7 +48,7 @@ def render_order_now_button(context, shift=None, venue=None):
 @register.inclusion_tag("orders/place_order_button.html", takes_context=True)
 def render_place_order_button(context, shift):
     """Render order now button."""
-    has_order_perm = context["request"].user.has_perm("orders.can_order_in_venue", shift.venue)
+    has_order_perm = context["request"].user in shift.venue.get_users_with_order_perms()
     return {"shift": shift, "has_order_perm": has_order_perm}
 
 

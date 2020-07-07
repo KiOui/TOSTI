@@ -3,6 +3,7 @@ import os
 from django.db import models
 from django.conf import settings
 from django.urls import reverse
+from guardian.shortcuts import get_objects_for_user
 from spotipy import SpotifyOAuth
 from spotipy.client import Spotify
 from users.models import User
@@ -136,6 +137,26 @@ class SpotifyAccount(models.Model):
     def get_absolute_url(self):
         """Get the front-end url for a SpotifyAccount."""
         return reverse("marietje:now_playing", args=[self.venue])
+
+    def get_users_with_request_permissions(self):
+        """Get users that have the permission to request songs for this player."""
+        users = []
+        for user in User.objects.all():
+            if self in get_objects_for_user(
+                user, "marietje.can_request", accept_global_perms=True, with_superuser=True
+            ):
+                users.append(user)
+        return users
+
+    def get_users_with_control_permissions(self):
+        """Get users that have the permission to control this player."""
+        users = []
+        for user in User.objects.all():
+            if self in get_objects_for_user(
+                user, "marietje.can_request", accept_global_perms=True, with_superuser=True
+            ):
+                users.append(user)
+        return users
 
     def __str__(self):
         """

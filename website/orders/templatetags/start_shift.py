@@ -14,7 +14,7 @@ def render_start_shift_buttons(context, venues=None):
     if venues is None:
         venues = OrderVenue.objects.filter(venue__active=True).order_by("venue__name")
 
-    buttons = [{"venue": x} for x in venues if context["request"].user.has_perm("orders.can_manage_shift_in_venue", x)]
+    buttons = [{"venue": x} for x in venues if context["request"].user in x.get_users_with_shift_admin_perms()]
 
     return {"venues": buttons}
 

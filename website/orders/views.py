@@ -57,7 +57,11 @@ class ShiftOverviewView(PermissionRequiredMixin, TemplateView):
         """
         shift = kwargs.get("shift")
 
-        return render(request, self.template_name, {"shift": shift, "can_manage_shift": request.user.has_perm("orders.can_manage_shift_in_venue", shift.venue)})
+        return render(
+            request,
+            self.template_name,
+            {"shift": shift, "can_manage_shift": request.user in shift.venue.get_users_with_shift_admin_perms()},
+        )
 
     def get_permission_object(self):
         """Get the object to check permissions for."""
@@ -181,12 +185,12 @@ class OrderView(PermissionRequiredMixin, TemplateView):
         shift = kwargs.get("shift")
         cookie = request.COOKIES.get("cart_{}".format(shift.pk), None)
         if cookie is None:
-            return render(request, self.template_name, {"shift": shift, "error": "No orders submitted"}, )
+            return render(request, self.template_name, {"shift": shift, "error": "No orders submitted"},)
         cookie = urllib.parse.unquote(cookie)
         try:
             cookie = json.loads(cookie)
         except json.JSONDecodeError:
-            page = render(request, self.template_name, {"shift": shift, "error": "Error decoding cookie"}, )
+            page = render(request, self.template_name, {"shift": shift, "error": "Error decoding cookie"},)
             page.delete_cookie("cart_{}".format(shift.pk))
             return page
 
@@ -524,7 +528,9 @@ class RefreshHeaderView(TemplateView):
         }
         """
         shift = kwargs.get("shift")
-        header = get_template("orders/order_header.html").render(render_order_header({"request": request}, shift, refresh=True))
+        header = get_template("orders/order_header.html").render(
+            render_order_header({"request": request}, shift, refresh=True)
+        )
         return JsonResponse({"data": header})
 
 
@@ -543,7 +549,9 @@ class RefreshProductOverviewView(TemplateView):
         }
         """
         shift = kwargs.get("shift")
-        overview = get_template("orders/item_overview.html").render(render_order_header({"request": request}, shift, refresh=True))
+        overview = get_template("orders/item_overview.html").render(
+            render_order_header({"request": request}, shift, refresh=True)
+        )
         return JsonResponse({"data": overview})
 
 

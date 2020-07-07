@@ -21,6 +21,10 @@ urlpatterns = [
     path("<shift:shift>/join", views.JoinShiftView.as_view(), name="shift_join"),
     path("<shift:shift>/refresh/header", views.RefreshHeaderView.as_view(), name="shift_refresh_header"),
     path("<shift:shift>/refresh/footer", views.RefreshAdminFooterView.as_view(), name="shift_refresh_admin_footer"),
-    path("<shift:shift>/refresh/overview", views.RefreshProductOverviewView.as_view(), name="shift_refresh_product_overview"),
+    path(
+        "<shift:shift>/refresh/overview",
+        views.RefreshProductOverviewView.as_view(),
+        name="shift_refresh_product_overview",
+    ),
     path("<shift:shift>/refresh/orders", views.RefreshShiftOrderView.as_view(), name="shift_refresh_orders"),
 ]

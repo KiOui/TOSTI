@@ -127,7 +127,7 @@ class ShiftAdmin(GuardedModelAdmin, ImportExportModelAdmin):
         "end_time",
         "venue",
         "capacity",
-        "is_active",
+        "get_is_active",
         "can_order",
     ]
 
@@ -161,6 +161,12 @@ class ShiftAdmin(GuardedModelAdmin, ImportExportModelAdmin):
         return request
 
     close_shift.short_description = "Close orders for shift"
+
+    def get_is_active(self, obj):
+        """Property for whether a shift is currently active."""
+        return obj.is_active
+
+    get_is_active.boolean = True
 
     class Media:
         """Necessary to use AutocompleteFilter."""

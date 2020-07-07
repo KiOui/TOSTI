@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import (
@@ -108,6 +107,8 @@ class GroupAdminForm(forms.ModelForm):
 
 
 class GroupSettingsInline(admin.StackedInline):
+    """Inline for GroupSettings."""
+
     model = GroupSettings
     fields = [
         "is_auto_join_group",

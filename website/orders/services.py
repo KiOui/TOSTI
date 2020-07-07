@@ -45,7 +45,7 @@ def user_can_order_product(user: User, product: Product, shift: Shift):
 
 def place_orders(products: List[Product], user: User, shift: Shift):
     """Place orders for a user in a certain shift."""
-    if not user.has_perm("orders.can_order_in_venue", shift.venue):
+    if user not in shift.venue.get_users_with_order_perms():
         raise OrderException("User does not have permissions to order during this shift.")
 
     if not shift.user_can_order_amount(user, amount=len(products)):
@@ -75,7 +75,7 @@ def add_user_to_assignees_of_shift(user: User, shift: Shift):
     """Add a user to the list of assignees for the shift."""
     assignees = shift.assignees.all()
     if user not in assignees:
-        if not user.has_perm("can_manage_shift_in_venue", shift.venue):
+        if user not in shift.venue.get_users_with_shift_admin_perms():
             raise OrderException("User does not have permissions to manage shifts in this venue.")
 
         shift.assignees.add(user)

@@ -6,6 +6,7 @@ import pytz
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
+from guardian.shortcuts import get_objects_for_user
 
 from venues.models import Venue
 from itertools import chain
@@ -41,6 +42,46 @@ class OrderVenue(models.Model):
     def __str__(self):
         """Representation by venue."""
         return str(self.venue)
+
+    def get_users_with_shift_admin_perms(self):
+        """Get users with permissions to manage shifts in this venue."""
+        users = []
+        for user in User.objects.all():
+            if self in get_objects_for_user(
+                user, "orders.can_manage_shift_in_venue", accept_global_perms=True, with_superuser=True
+            ):
+                users.append(user)
+        return users
+
+    def get_users_with_shift_admin_perms_queryset(self):
+        """Get users with permissions to manage shifts in this venue as queryset."""
+        users_ids = []
+        for user in User.objects.all():
+            if self in get_objects_for_user(
+                user, "orders.can_manage_shift_in_venue", accept_global_perms=True, with_superuser=True
+            ):
+                users_ids.append(user.pk)
+        return User.objects.filter(pk__in=users_ids)
+
+    def get_users_with_order_perms(self):
+        """Get users with permissions to manage shifts in this venue."""
+        users = []
+        for user in User.objects.all():
+            if self in get_objects_for_user(
+                user, "orders.can_order_in_venue", accept_global_perms=True, with_superuser=True
+            ):
+                users.append(user)
+        return users
+
+    def get_users_with_order_perms_queryset(self):
+        """Get users with permissions to manage shifts in this venue as queryset."""
+        users_ids = []
+        for user in User.objects.all():
+            if self in get_objects_for_user(
+                user, "orders.can_order_in_venue", accept_global_perms=True, with_superuser=True
+            ):
+                users_ids.append(user.pk)
+        return User.objects.filter(pk__in=users_ids)
 
     class Meta:
         """Meta class for OrderVenue."""
@@ -192,10 +233,9 @@ class Shift(models.Model):
 
         :return: a chain object with the ordered orders of this shift.
         """
-        staff_users = User.objects.filter(is_staff=True)
-        normal_users = User.objects.filter(is_staff=False)
+        staff_users = self.venue.get_users_with_shift_admin_perms()
         ordered_staff_orders = Order.objects.filter(shift=self, user__in=staff_users).order_by("created")
-        ordered_normal_orders = Order.objects.filter(shift=self, user__in=normal_users).order_by("created")
+        ordered_normal_orders = Order.objects.filter(shift=self).exclude(user__in=staff_users).order_by("created")
         ordered_orders = chain(ordered_staff_orders, ordered_normal_orders)
         return ordered_orders
 
@@ -317,6 +357,16 @@ class Shift(models.Model):
         :return: a QuerySet with User objects of assignees of this shift
         """
         return self.assignees.all()
+
+    def get_users_with_change_perms(self):
+        """Get users that my change this shift."""
+        users = []
+        for user in User.objects.all():
+            if self in get_objects_for_user(
+                user, "orders.change_shift", accept_global_perms=True, with_superuser=True
+            ):
+                users.append(user)
+        return users
 
     def __str__(self):
         """

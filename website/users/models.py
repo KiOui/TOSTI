@@ -90,7 +90,8 @@ class GroupSettings(models.Model):
         null=False,
         blank=False,
         default=False,
-        help_text="If enabled, all members added to this group will get staff status after their next login. Staff status will not be revoked, even though permissions are.",
+        help_text="If enabled, all members added to this group will automatically get staff status after their next "
+        "login. This staff status will not be automatically revoked, though, if the user leaves the group.",
     )
 
     def __str__(self):

@@ -42,7 +42,7 @@ class NowPlayingView(TemplateView):
                 "disabled": False,
                 "venue": venue,
                 "player": player,
-                "can_request": request.user.has_perm("marietje.can_request", player),
+                "can_request": request.user in player.get_users_with_request_permissions(),
             },
         )
 
