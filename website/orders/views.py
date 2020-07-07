@@ -589,7 +589,7 @@ class RefreshAdminFooterView(PermissionRequiredMixin, TemplateView):
 class RefreshShiftOrderView(PermissionRequiredMixin, TemplateView):
     """Refresh the orders view."""
 
-    permission_required = "orders.can_manage_shift_in_venue"
+    permission_required = "orders.can_order_in_venue"
     return_403 = True
     accept_global_perms = True
 
