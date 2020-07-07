@@ -1,14 +1,13 @@
 import os
 
-from django.contrib.auth import get_user_model
 from django.db import models
 from django.conf import settings
 from django.urls import reverse
+from guardian.shortcuts import get_objects_for_user
 from spotipy import SpotifyOAuth
 from spotipy.client import Spotify
+from users.models import User
 from venues.models import Venue
-
-User = get_user_model()
 
 
 class SpotifyAccount(models.Model):
@@ -139,6 +138,26 @@ class SpotifyAccount(models.Model):
         """Get the front-end url for a SpotifyAccount."""
         return reverse("marietje:now_playing", args=[self.venue])
 
+    def get_users_with_request_permissions(self):
+        """Get users that have the permission to request songs for this player."""
+        users = []
+        for user in User.objects.all():
+            if self in get_objects_for_user(
+                user, "marietje.can_request", accept_global_perms=True, with_superuser=True
+            ):
+                users.append(user)
+        return users
+
+    def get_users_with_control_permissions(self):
+        """Get users that have the permission to control this player."""
+        users = []
+        for user in User.objects.all():
+            if self in get_objects_for_user(
+                user, "marietje.can_control", accept_global_perms=True, with_superuser=True
+            ):
+                users.append(user)
+        return users
+
     def __str__(self):
         """
         Convert this object to string.
@@ -155,6 +174,11 @@ class SpotifyAccount(models.Model):
 
         verbose_name = "Spotify account"
         verbose_name_plural = "Spotify accounts"
+
+        permissions = [
+            ("can_control", "Can control music players"),
+            ("can_request", "Can request songs"),
+        ]
 
 
 class SpotifyArtist(models.Model):

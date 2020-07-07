@@ -3,15 +3,15 @@ from decimal import Decimal
 
 from django.conf import settings
 import pytz
-from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
+from guardian.shortcuts import get_objects_for_user
 
 from venues.models import Venue
 from itertools import chain
 
-User = get_user_model()
+from users.models import User
 
 
 def get_default_start_time_shift():
@@ -34,6 +34,66 @@ def get_default_end_time_shift():
     return timezone.localize(datetime.now()).replace(hour=13, minute=15, second=0, microsecond=0)
 
 
+class OrderVenue(models.Model):
+    """Venues where Shifts can be created."""
+
+    venue = models.OneToOneField(Venue, on_delete=models.CASCADE, primary_key=True,)
+
+    def __str__(self):
+        """Representation by venue."""
+        return str(self.venue)
+
+    def get_users_with_shift_admin_perms(self):
+        """Get users with permissions to manage shifts in this venue."""
+        users = []
+        for user in User.objects.all():
+            if self in get_objects_for_user(
+                user, "orders.can_manage_shift_in_venue", accept_global_perms=True, with_superuser=True
+            ):
+                users.append(user)
+        return users
+
+    def get_users_with_shift_admin_perms_queryset(self):
+        """Get users with permissions to manage shifts in this venue as queryset."""
+        users_ids = []
+        for user in User.objects.all():
+            if self in get_objects_for_user(
+                user, "orders.can_manage_shift_in_venue", accept_global_perms=True, with_superuser=True
+            ):
+                users_ids.append(user.pk)
+        return User.objects.filter(pk__in=users_ids)
+
+    def get_users_with_order_perms(self):
+        """Get users with permissions to manage shifts in this venue."""
+        users = []
+        for user in User.objects.all():
+            if self in get_objects_for_user(
+                user, "orders.can_order_in_venue", accept_global_perms=True, with_superuser=True
+            ):
+                users.append(user)
+        return users
+
+    def get_users_with_order_perms_queryset(self):
+        """Get users with permissions to manage shifts in this venue as queryset."""
+        users_ids = []
+        for user in User.objects.all():
+            if self in get_objects_for_user(
+                user, "orders.can_order_in_venue", accept_global_perms=True, with_superuser=True
+            ):
+                users_ids.append(user.pk)
+        return User.objects.filter(pk__in=users_ids)
+
+    class Meta:
+        """Meta class for OrderVenue."""
+
+        ordering = ["venue__name"]
+
+        permissions = [
+            ("can_order_in_venue", "Can order products during shifts in this venue"),
+            ("can_manage_shift_in_venue", "Can manage shifts in this venue"),
+        ]
+
+
 class Product(models.Model):
     """Products that can be ordered."""
 
@@ -44,7 +104,7 @@ class Product(models.Model):
         help_text="Font-awesome icon name that is used for quick display of the product type.",
     )
     available = models.BooleanField(default=True, null=False)
-    available_at = models.ManyToManyField(Venue)
+    available_at = models.ManyToManyField(OrderVenue)
 
     current_price = models.DecimalField(
         max_digits=6, decimal_places=2, validators=[MinValueValidator(Decimal("0.00"))]
@@ -119,7 +179,7 @@ class Product(models.Model):
 
 def active_venue_validator(value):
     """Filter to only allow shifts for active venues."""
-    if Venue.objects.get(pk=value).active:
+    if OrderVenue.objects.get(pk=value).venue.active:
         return True
     else:
         raise ValidationError("This venue is not active.")
@@ -132,7 +192,7 @@ class Shift(models.Model):
     TIME_FORMAT = "%H:%M"
 
     venue = models.ForeignKey(
-        Venue, blank=False, null=False, on_delete=models.PROTECT, validators=[active_venue_validator],
+        OrderVenue, blank=False, null=False, on_delete=models.PROTECT, validators=[active_venue_validator],
     )
 
     start_date = models.DateTimeField(blank=False, null=False, default=get_default_start_time_shift,)
@@ -173,12 +233,11 @@ class Shift(models.Model):
 
         :return: a chain object with the ordered orders of this shift.
         """
-        staff_users = User.objects.filter(is_staff=True)
-        normal_users = User.objects.filter(is_staff=False)
+        staff_users = self.venue.get_users_with_shift_admin_perms()
         ordered_staff_orders = Order.objects.filter(shift=self, user__in=staff_users).order_by("created")
-        ordered_normal_orders = Order.objects.filter(shift=self, user__in=normal_users).order_by("created")
+        ordered_normal_orders = Order.objects.filter(shift=self).exclude(user__in=staff_users).order_by("created")
         ordered_orders = chain(ordered_staff_orders, ordered_normal_orders)
-        return ordered_orders
+        return list(ordered_orders)
 
     @property
     def products_open(self):
@@ -291,7 +350,6 @@ class Shift(models.Model):
         localized = datetime.fromtimestamp(self.end_date.timestamp(), tz=timezone)
         return f"{localized.strftime(self.TIME_FORMAT)}"
 
-    @property
     def get_assignees(self):
         """
         Get assignees of this shift.
@@ -299,6 +357,16 @@ class Shift(models.Model):
         :return: a QuerySet with User objects of assignees of this shift
         """
         return self.assignees.all()
+
+    def get_users_with_change_perms(self):
+        """Get users that my change this shift."""
+        users = []
+        for user in User.objects.all():
+            if self in get_objects_for_user(
+                user, "orders.change_shift", accept_global_perms=True, with_superuser=True
+            ):
+                users.append(user)
+        return users
 
     def __str__(self):
         """
@@ -332,6 +400,12 @@ class Shift(models.Model):
         if overlapping_start > 0 or overlapping_end > 0:
             raise ValueError("Overlapping shifts for the same venue are not allowed.")
         super(Shift, self).save(*args, **kwargs)
+
+    def save_m2m(self):
+        """Save assignees m2m."""
+        for assignee in self.assignees.all():
+            if assignee not in self.venue.get_users_with_shift_admin_perms():
+                raise ValueError(f"{assignee} is not allowed to manage this shift.")
 
     def user_can_order_amount(self, user, amount=1):
         """

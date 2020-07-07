@@ -3,18 +3,18 @@ from django import template
 from django.conf import settings
 from django.utils.datetime_safe import datetime
 
-from venues.models import Venue
+from orders.models import OrderVenue
 
 register = template.Library()
 
 
-@register.inclusion_tag("orders/start_shift.html")
-def render_start_shift_buttons(venues=None):
+@register.inclusion_tag("orders/start_shift_buttons.html", takes_context=True)
+def render_start_shift_buttons(context, venues=None):
     """Render start shift buttons."""
     if venues is None:
-        venues = Venue.objects.filter(active=True).order_by("name")
+        venues = OrderVenue.objects.filter(venue__active=True).order_by("venue__name")
 
-    buttons = [{"venue": x} for x in venues]
+    buttons = [{"venue": x} for x in venues if context["request"].user in x.get_users_with_shift_admin_perms()]
 
     return {"venues": buttons}
 
@@ -28,7 +28,7 @@ def currently_active_shift_for_venue(venue):
 
     if venue.shift_set.filter(start_date__lte=today, end_date__gte=today).exists():
         return venue.shift_set.filter(start_date__lte=today, end_date__gte=today).first()
-    elif venue.shift_set.filter(start_date__gte=start).exists():
-        return venue.shift_set.filter(start_date__gte=start).first()
+    elif venue.shift_set.filter(end_date__gte=start).exists():
+        return venue.shift_set.filter(end_date__gte=start).order_by("-end_date").first()
     else:
         return None

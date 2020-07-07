@@ -1,0 +1,19 @@
+{% if has_order_perm and shift.is_active and shift.can_order %}
+    <div class="btn-ml btn-on" onclick="window.location.href = '{% url "orders:order" shift=shift %}';">
+        <h4>Place your order</h4>
+        <p class="btn-note">Click to order items</p>
+    </div>
+{% else %}
+    <div class="btn-ml btn-off">
+        <h4>Place your order</h4>
+        <p class="btn-note">
+            {% if not has_order_perm %}
+                You can't place orders
+            {% elif not shift.is_active %}
+                This shift is closed
+            {% else %}
+                This shift does not accept orders currently
+            {% endif %}
+        </p>
+    </div>
+{% endif %}

@@ -1,0 +1,9 @@
+{% load order_now %}
+
+{% if shifts %}
+    {% for next_shift in shifts %}
+        {% render_order_now_button shift=next_shift.shift %}
+    {% endfor %}
+{% else %}
+    <p>You sadly cannot order right now. Maybe check again later...</p>
+{% endif %}

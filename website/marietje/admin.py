@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.shortcuts import redirect
 from django.urls import path, register_converter
+from guardian.admin import GuardedModelAdmin
 
 from marietje.converters import SpotifyAccountConverter
 from marietje.admin_views import (
@@ -13,7 +14,7 @@ from .forms import SpotifyAccountAdminForm
 
 
 @admin.register(SpotifyAccount)
-class SpotifyAccountAdmin(admin.ModelAdmin):
+class SpotifyAccountAdmin(GuardedModelAdmin):
     """SpotifyAccount admin for Spotify Players."""
 
     list_display = [

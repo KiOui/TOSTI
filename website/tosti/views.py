@@ -1,8 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView
 
-from venues.models import Venue
-from orders.models import Shift
+from orders.models import Shift, OrderVenue
 
 
 class IndexView(TemplateView):
@@ -18,7 +17,7 @@ class IndexView(TemplateView):
         :param kwargs: keyword arguments
         :return: a render of the index page
         """
-        venues = Venue.objects.filter(active=True)
+        venues = OrderVenue.objects.filter(venue__active=True)
 
         for venue in venues:
             shifts = [x for x in Shift.objects.filter(venue=venue) if x.can_order]
@@ -28,7 +27,14 @@ class IndexView(TemplateView):
             else:
                 venue.shift = None
 
-        return render(request, self.template_name, {"venues": venues})
+        show_start_shift_buttons = False
+        for venue in venues:
+            if request.user in venue.get_users_with_shift_admin_perms():
+                show_start_shift_buttons = True
+
+        return render(
+            request, self.template_name, {"venues": venues, "show_start_shift_buttons": show_start_shift_buttons}
+        )
 
 
 class PrivacyView(TemplateView):
