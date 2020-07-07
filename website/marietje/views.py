@@ -1,10 +1,9 @@
 import spotipy
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import JsonResponse, Http404
+from django.http import JsonResponse
 from django.shortcuts import render
 from django.template.loader import get_template, render_to_string
 from django.views.generic import TemplateView
-from guardian.decorators import permission_required_or_403
 from guardian.mixins import PermissionRequiredMixin
 
 from marietje import services
@@ -71,12 +70,21 @@ class QueueRefreshView(LoginRequiredMixin, TemplateView):
 
 
 class SearchView(PermissionRequiredMixin, TemplateView):
+    """Search track view."""
 
     permission_required = "marietje.can_request"
     return_403 = True
     accept_global_perms = True
 
     def post(self, request, **kwargs):
+        """
+        POST request for SearchView.
+
+        Search a Spotify track.
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: a render of the search page with the response to the search query
+        """
         player = kwargs.get("player")
         query = request.POST.get("query", None)
         request_id = request.POST.get("id", "")
@@ -93,16 +101,26 @@ class SearchView(PermissionRequiredMixin, TemplateView):
             return JsonResponse({"query": "", "id": request_id, "result": ""})
 
     def get_object(self):
+        """Get the object for this view."""
         return self.kwargs.get("player")
 
 
 class AddView(PermissionRequiredMixin, TemplateView):
+    """Add a track to the queue view."""
 
     permission_required = "marietje.can_request"
     return_403 = True
     accept_global_perms = True
 
     def post(self, request, **kwargs):
+        """
+        POST request for AddView.
+
+        Add a track to the Spotify queue
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: a json response indicating the track has been added to the queue or an error
+        """
         player = kwargs.get("player")
         track_id = request.POST.get("id", None)
         if track_id is not None:
@@ -115,16 +133,26 @@ class AddView(PermissionRequiredMixin, TemplateView):
             return JsonResponse({"error": True, "msg": "No track ID specified"})
 
     def get_object(self):
+        """Get the object for this view."""
         return self.kwargs.get("player")
 
 
 class PlayView(PermissionRequiredMixin, TemplateView):
+    """Start playback view."""
 
     permission_required = "marietje.can_control"
     return_403 = True
     accept_global_perms = True
 
     def post(self, request, **kwargs):
+        """
+        POST request for PlayView.
+
+        Start playback on a Spotify queue
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: a json response indicating playback has started or an error
+        """
         player = kwargs.get("player")
         try:
             services.player_start(player)
@@ -135,16 +163,26 @@ class PlayView(PermissionRequiredMixin, TemplateView):
         return JsonResponse({"error": False})
 
     def get_object(self):
+        """Get the object for this view."""
         return self.kwargs.get("player")
 
 
 class PauseView(PermissionRequiredMixin, TemplateView):
+    """Pause playback view."""
 
     permission_required = "marietje.can_control"
     return_403 = True
     accept_global_perms = True
 
     def post(self, request, **kwargs):
+        """
+        POST request for PauseView.
+
+        Pause playback on a Spotify queue
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: a json response indicating playback has paused or an error
+        """
         player = kwargs.get("player")
         try:
             services.player_pause(player)
@@ -155,16 +193,26 @@ class PauseView(PermissionRequiredMixin, TemplateView):
         return JsonResponse({"error": False})
 
     def get_object(self):
+        """Get the object for this view."""
         return self.kwargs.get("player")
 
 
 class NextView(PermissionRequiredMixin, TemplateView):
+    """Next track view."""
 
     permission_required = "marietje.can_control"
     return_403 = True
     accept_global_perms = True
 
     def post(self, request, **kwargs):
+        """
+        POST request for NextView.
+
+        Go to the next track in a Spotify queue
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: a json response indicating the track has been skipped or an error
+        """
         player = kwargs.get("player")
         try:
             services.player_next(player)
@@ -175,16 +223,26 @@ class NextView(PermissionRequiredMixin, TemplateView):
         return JsonResponse({"error": False})
 
     def get_object(self):
+        """Get the object for this view."""
         return self.kwargs.get("player")
 
 
 class PreviousView(PermissionRequiredMixin, TemplateView):
+    """Previous track view."""
 
     permission_required = "marietje.can_control"
     return_403 = True
     accept_global_perms = True
 
     def post(self, request, **kwargs):
+        """
+        POST request for NextView.
+
+        Go to the previous track in a Spotify queue
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: a json response indicating the track has been reverted or an error
+        """
         player = kwargs.get("player")
         try:
             services.player_previous(player)
@@ -195,4 +253,5 @@ class PreviousView(PermissionRequiredMixin, TemplateView):
         return JsonResponse({"error": False})
 
     def get_object(self):
+        """Get the object for this view."""
         return self.kwargs.get("player")

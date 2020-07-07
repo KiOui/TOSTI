@@ -28,6 +28,7 @@ class ShiftView(TemplateView):
     def get(self, request, **kwargs):
         """
         GET request for Shift view.
+
         :param request: the request
         :param kwargs: keyword arguments
         :return: the shift view with all active shifts
@@ -49,6 +50,7 @@ class ShiftOverviewView(PermissionRequiredMixin, TemplateView):
     def get(self, request, **kwargs):
         """
         GET request of shift overview page.
+
         :param request: the request
         :param kwargs: keyword arguments
         :return: a render of the shift overview page
@@ -58,14 +60,17 @@ class ShiftOverviewView(PermissionRequiredMixin, TemplateView):
         return render(request, self.template_name, {"shift": shift})
 
     def get_permission_object(self):
+        """Get the object to check permissions for."""
         obj = self.get_object()
         return obj.venue
 
     def get_object(self):
+        """Get the object for this view."""
         return self.kwargs.get("shift")
 
 
 class ProductListView(PermissionRequiredMixin, TemplateView):
+    """Product list view."""
 
     permission_required = "orders.can_order_in_venue"
     return_403 = True
@@ -75,6 +80,7 @@ class ProductListView(PermissionRequiredMixin, TemplateView):
     def get_available_products(shift, user):
         """
         Get available products for a shift and a user in json format.
+
         :param shift: the shift
         :param user: the user
         :return: a json list of the products converted to json and an extra dictionary key (max_allowed) indicating
@@ -89,7 +95,13 @@ class ProductListView(PermissionRequiredMixin, TemplateView):
         return json_list
 
     def post(self, request, **kwargs):
+        """
+        POST request for ProductListView.
 
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: a json response with the products a user can order and the shift maximum
+        """
         shift = kwargs.get("shift")
         option = request.POST.get("option", None)
         if option == "list":
@@ -101,14 +113,17 @@ class ProductListView(PermissionRequiredMixin, TemplateView):
         return JsonResponse({"products": products, "shift_max": shift.user_max_order_amount(request.user)})
 
     def get_permission_object(self):
+        """Get the object to check permissions for."""
         obj = self.get_object()
         return obj.venue
 
     def get_object(self):
+        """Get the object for this view."""
         return self.kwargs.get("shift")
 
 
 class OrderView(PermissionRequiredMixin, TemplateView):
+    """Order view."""
 
     template_name = "orders/order.html"
 
@@ -184,14 +199,17 @@ class OrderView(PermissionRequiredMixin, TemplateView):
             return response
 
     def get_permission_object(self):
+        """Get the object to check permissions for."""
         obj = self.get_object()
         return obj.venue
 
     def get_object(self):
+        """Get the object for this view."""
         return self.kwargs.get("shift")
 
 
 class CreateShiftView(PermissionRequiredMixin, TemplateView):
+    """Create shift view."""
 
     template_name = "orders/create_shift.html"
 
@@ -234,10 +252,12 @@ class CreateShiftView(PermissionRequiredMixin, TemplateView):
         return render(request, self.template_name, {"venue": venue, "form": form})
 
     def get_object(self):
+        """Get the object for this view."""
         return self.kwargs.get("venue")
 
 
 class JoinShiftView(PermissionRequiredMixin, TemplateView):
+    """Join shift view."""
 
     template_name = "orders/join_shift.html"
 
@@ -283,10 +303,12 @@ class JoinShiftView(PermissionRequiredMixin, TemplateView):
             return render(request, self.template_name, {"shift": shift})
 
     def get_permission_object(self):
+        """Get the object to check permissions for."""
         obj = self.get_object()
         return obj.venue
 
     def get_object(self):
+        """Get the object for this view."""
         return self.kwargs.get("shift")
 
 
@@ -302,6 +324,7 @@ class ShiftAdminView(PermissionRequiredMixin, TemplateView):
     def get(self, request, **kwargs):
         """
         GET request for ShiftAdminView.
+
         :param request: the request
         :param kwargs: keyword arguments
         :return: the Shift admin view page for seeing the current orders of a shift and modifying it
@@ -311,20 +334,31 @@ class ShiftAdminView(PermissionRequiredMixin, TemplateView):
         return render(request, self.template_name, {"shift": shift})
 
     def get_permission_object(self):
+        """Get the object to check permissions for."""
         obj = self.get_object()
         return obj.venue
 
     def get_object(self):
+        """Get the object for this view."""
         return self.kwargs.get("shift")
 
 
 class OrderUpdateView(PermissionRequiredMixin, TemplateView):
+    """Order update view."""
 
     permission_required = "orders.can_manage_shift_in_venue"
     return_403 = True
     accept_global_perms = True
 
     def post(self, request, **kwargs):
+        """
+        POST request for OrderUpdateView.
+
+        Updates the status of an order
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: a json response with an error or the value of the updated status
+        """
         order_property = request.POST.get("property", None)
         value = request.POST.get("value", None)
 
@@ -351,10 +385,12 @@ class OrderUpdateView(PermissionRequiredMixin, TemplateView):
             return JsonResponse({"error": "Property unknown"})
 
     def get_permission_object(self):
+        """Get the object to check permissions for."""
         obj = self.get_object()
         return obj.shift.venue
 
     def get_object(self):
+        """Get the object for this view."""
         return self.kwargs.get("order")
 
 
@@ -368,6 +404,7 @@ class ToggleShiftActivationView(PermissionRequiredMixin, TemplateView):
     def post(self, request, **kwargs):
         """
         POST request for ToggleShiftActivationView.
+
         Toggle the can_order variable of a shift to the value of the "active" parameter in the POST data
         :param request: the request
         :param kwargs: keyword arguments
@@ -386,10 +423,12 @@ class ToggleShiftActivationView(PermissionRequiredMixin, TemplateView):
             return JsonResponse({"error": str(e), "active": shift.can_order})
 
     def get_permission_object(self):
+        """Get the object to check permissions for."""
         obj = self.get_object()
         return obj.venue
 
     def get_object(self):
+        """Get the object for this view."""
         return self.kwargs.get("shift")
 
 
@@ -405,6 +444,7 @@ class AddShiftCapacityView(PermissionRequiredMixin, TemplateView):
     def post(self, request, **kwargs):
         """
         POST request for AddShiftCapacityView.
+
         Add to the capacity of a shift via a POST request
         :param request: the request
         :param kwargs: keyword arguments
@@ -422,10 +462,12 @@ class AddShiftCapacityView(PermissionRequiredMixin, TemplateView):
             return JsonResponse({"error": str(e)})
 
     def get_permission_object(self):
+        """Get the object to check permissions for."""
         obj = self.get_object()
         return obj.venue
 
     def get_object(self):
+        """Get the object for this view."""
         return self.kwargs.get("shift")
 
 
@@ -441,6 +483,7 @@ class AddShiftTimeView(PermissionRequiredMixin, TemplateView):
     def post(self, request, **kwargs):
         """
         POST request for AddShiftTimeView.
+
         Add to the time of a shift via a POST request
         :param request: the request
         :param kwargs: keyword arguments
@@ -457,10 +500,12 @@ class AddShiftTimeView(PermissionRequiredMixin, TemplateView):
             return JsonResponse({"error": str(e)})
 
     def get_permission_object(self):
+        """Get the object to check permissions for."""
         obj = self.get_object()
         return obj.venue
 
     def get_object(self):
+        """Get the object for this view."""
         return self.kwargs.get("shift")
 
 
@@ -470,6 +515,7 @@ class RefreshHeaderView(TemplateView):
     def post(self, request, **kwargs):
         """
         POST request for refreshing the order header.
+
         :param request: the request
         :param kwargs: keyword arguments
         :return: The header in the following JSON format:
@@ -488,6 +534,7 @@ class RefreshProductOverviewView(TemplateView):
     def post(self, request, **kwargs):
         """
         POST request for refreshing the product overview on the admin page.
+
         :param request: the request
         :param kwargs: keyword arguments
         :return: The product overview in the following JSON format:
@@ -510,6 +557,7 @@ class RefreshAdminFooterView(PermissionRequiredMixin, TemplateView):
     def post(self, request, **kwargs):
         """
         POST request for refreshing the admin footer.
+
         :param request: the request
         :param kwargs: keyword arguments
         :return: The footer in the following JSON format:
@@ -521,10 +569,12 @@ class RefreshAdminFooterView(PermissionRequiredMixin, TemplateView):
         return JsonResponse({"status": shift.can_order})
 
     def get_permission_object(self):
+        """Get the object to check permissions for."""
         obj = self.get_object()
         return obj.venue
 
     def get_object(self):
+        """Get the object for this view."""
         return self.kwargs.get("shift")
 
 
@@ -538,6 +588,7 @@ class RefreshShiftOrderView(PermissionRequiredMixin, TemplateView):
     def post(self, request, **kwargs):
         """
         POST request for refreshing the orders.
+
         :param request: the request
         :param kwargs: keyword arguments
         :return: The orders in the following JSON format:
@@ -553,8 +604,10 @@ class RefreshShiftOrderView(PermissionRequiredMixin, TemplateView):
         return JsonResponse({"data": footer})
 
     def get_permission_object(self):
+        """Get the object to check permissions for."""
         obj = self.get_object()
         return obj.venue
 
     def get_object(self):
+        """Get the object for this view."""
         return self.kwargs.get("shift")
