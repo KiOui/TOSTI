@@ -29,11 +29,11 @@ INSTALLED_APPS = [
     "admin_auto_filters",
     "import_export",
     "guardian",
-    "marietje",
     "users",
-    "tosti",
     "venues",
+    "marietje",
     "orders",
+    "tosti",
 ]
 
 ANONYMOUS_USER_NAME = None
@@ -134,6 +134,3 @@ OPENID_RETURN_URL = "users:verify"
 OPENID_SERVER_ENDPOINT = "https://openid.science.ru.nl/openid-server"
 OPENID_USERNAME_PREFIX = "http://openid.science.ru.nl/"
 OPENID_USERNAME_POSTFIX = "/"
-
-# New users will automatically join auth groups with the following id's
-AUTO_JOIN_GROUP_IDS = [1]

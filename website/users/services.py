@@ -182,13 +182,6 @@ class OpenIDVerifier:
 
         user.save()
 
-    @staticmethod
-    def join_auto_join_groups(user):
-        """Let new users join groups that are set for auto-joining."""
-        auto_join_groups = Group.objects.filter(id__in=settings.AUTO_JOIN_GROUP_IDS)
-        for group in auto_join_groups:
-            user.groups.add(group)
-
     def extract_user(self):
         """
         Extract a user object from the inputted request.
@@ -201,9 +194,23 @@ class OpenIDVerifier:
                 user, created = User.objects.get_or_create(username=username)
                 if created:
                     self.set_user_details(user)
-                    self.join_auto_join_groups(user)
+                    join_auto_join_groups(user)
                 return user
         return False
+
+
+def join_auto_join_groups(user):
+    """Let new users join groups that are set for auto-joining."""
+    auto_join_groups = Group.objects.filter(groupsettings__is_auto_join_group=True)
+    for group in auto_join_groups:
+        user.groups.add(group)
+
+
+def update_staff_status(user):
+    """Update the is_staff value of a user."""
+    if len(user.groups.all().filter(groupsettings__gets_staff_permissions=True)) > 0:
+        user.is_staff = True
+        user.save()
 
 
 def execute_data_minimisation(dry_run=False):

@@ -71,13 +71,6 @@ class ProductAdmin(admin.ModelAdmin):
         """Necessary to use AutocompleteFilter."""
 
 
-class ShiftAdminAssigneeFilter(AutocompleteFilter):
-    """Filter class to filter shifts objects with certain assigned users."""
-
-    title = "Assignee"
-    field_name = "assignees"
-
-
 class OrderInline(admin.TabularInline):
     """Inline form for Registration."""
 
@@ -137,7 +130,8 @@ class ShiftAdmin(GuardedModelAdmin, ImportExportModelAdmin):
         "is_active",
         "can_order",
     ]
-    list_filter = ["venue", ShiftAdminAssigneeFilter, "can_order"]
+
+    list_filter = ["venue", "can_order"]
     inlines = [OrderInline]
 
     search_fields = ["start_date", "venue__venue__name"]

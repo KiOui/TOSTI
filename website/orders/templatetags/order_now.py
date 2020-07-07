@@ -15,7 +15,8 @@ def render_order_header(context, shift, refresh=False):
 @register.inclusion_tag("orders/admin_footer.html", takes_context=True)
 def render_admin_footer(context, shift, refresh=False):
     """Render order footer."""
-    return {"shift": shift, "refresh": refresh, "request": context.get("request")}
+    has_change_order_permissions = context["request"].user.has_perm("orders.change_shift")
+    return {"shift": shift, "refresh": refresh, "request": context.get("request"), "has_change_order_permissions": has_change_order_permissions}
 
 
 @register.inclusion_tag("orders/order_items.html", takes_context=True)

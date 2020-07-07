@@ -1,5 +1,7 @@
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import User as BaseUser, Group as BaseGroup
+from django.db import models
+from django.db.models import CASCADE
 
 
 class UserManager(BaseUserManager):
@@ -77,10 +79,25 @@ class User(BaseUser):
         proxy = True
 
 
-class Group(BaseGroup):
-    """Proxy model of Django's built-in auth.Group."""
+class GroupSettings(models.Model):
+    """Extra settings for a Django Group."""
+
+    group = models.OneToOneField(BaseGroup, on_delete=CASCADE, primary_key=True)
+    is_auto_join_group = models.BooleanField(
+        null=False, blank=False, default=False, help_text="If enabled, new users will automatically join this group."
+    )
+    gets_staff_permissions = models.BooleanField(
+        null=False,
+        blank=False,
+        default=False,
+        help_text="If enabled, all members added to this group will get staff status after their next login. Staff status will not be revoked, even though permissions are.",
+    )
+
+    def __str__(self):
+        """Representation by group."""
+        return str(self.group)
 
     class Meta:
-        """Meta class for groups."""
+        """Meta class for GroupSettings."""
 
-        proxy = True
+        ordering = ["group__name"]

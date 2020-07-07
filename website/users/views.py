@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
 from .forms import LoginForm, AccountForm
-from .services import get_openid_verifier
+from .services import get_openid_verifier, update_staff_status
 
 
 class LoginView(TemplateView):
@@ -69,6 +69,7 @@ class VerifyView(TemplateView):
         openid_verifier = get_openid_verifier(request)
         user = openid_verifier.extract_user()
         if user:
+            update_staff_status(user)
             login(request, user, backend="django.contrib.auth.backends.ModelBackend")
             return redirect("index")
 

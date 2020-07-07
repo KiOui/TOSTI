@@ -9,6 +9,8 @@ from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.auth.models import Group, Permission
 from django import forms
 
+from .models import GroupSettings
+
 
 class UserAdminForm(forms.ModelForm):
     """Custom AdminForm for Users."""
@@ -82,19 +84,11 @@ class GroupAdminForm(forms.ModelForm):
         queryset=User.objects.all(), required=False, widget=FilteredSelectMultiple("users", False),
     )
 
-    is_auto_join_group = forms.NullBooleanField(
-        required=False,
-        disabled=True,
-        help_text="If 'Yes', new users will automatically join this group. This can only be enabled by adding the "
-        "group id in the settings file, currently.",
-    )
-
     def __init__(self, *args, **kwargs):
         """Correctly initialize the form, because users is not a field of Groups, but the other way around."""
         super(GroupAdminForm, self).__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields["users"].initial = self.instance.user_set.all()
-            self.fields["is_auto_join_group"].initial = self.instance.pk in settings.AUTO_JOIN_GROUP_IDS
 
     def save_m2m(self):
         """On save, add selected users to the group."""
@@ -113,10 +107,21 @@ class GroupAdminForm(forms.ModelForm):
         exclude = []
 
 
+class GroupSettingsInline(admin.StackedInline):
+    model = GroupSettings
+    fields = [
+        "is_auto_join_group",
+        "gets_staff_permissions",
+    ]
+    extra = 1
+
+
 class GroupAdmin(BaseGroupAdmin):
     """Custom admin for Groups."""
 
     form = GroupAdminForm
+
+    inlines = [GroupSettingsInline]
 
     class Meta:
         """Meta class for the GroupAdmin."""
