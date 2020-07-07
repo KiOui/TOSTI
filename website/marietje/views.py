@@ -1,10 +1,10 @@
 import spotipy
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import JsonResponse, Http404
+from django.http import JsonResponse
 from django.shortcuts import render
 from django.template.loader import get_template, render_to_string
 from django.views.generic import TemplateView
-from guardian.decorators import permission_required_or_403
+from guardian.mixins import PermissionRequiredMixin
 
 from marietje import services
 from .models import SpotifyAccount
@@ -69,21 +69,23 @@ class QueueRefreshView(LoginRequiredMixin, TemplateView):
         return JsonResponse({"data": queue})
 
 
-@permission_required_or_403("marietje.can_request", (SpotifyAccount, "pk", "player_id"), accept_global_perms=True)
-def _search_view(request, player, *args, **kwargs):
-    """
-    Search for a track on Spotify.
+class SearchView(PermissionRequiredMixin, TemplateView):
+    """Search track view."""
 
-    :param request: the request
-    :param player: the SpotiftAccount player
-    :return: a JsonResponse object of the following form:
-    {
-        query: [queried string],
-        id: [request id],
-        result: [rendered result HTML element]
-    }
-    """
-    if request.method == "POST":
+    permission_required = "marietje.can_request"
+    return_403 = True
+    accept_global_perms = True
+
+    def post(self, request, **kwargs):
+        """
+        POST request for SearchView.
+
+        Search a Spotify track.
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: a render of the search page with the response to the search query
+        """
+        player = kwargs.get("player")
         query = request.POST.get("query", None)
         request_id = request.POST.get("id", "")
         try:
@@ -97,30 +99,29 @@ def _search_view(request, player, *args, **kwargs):
             return JsonResponse({"query": query, "id": request_id, "result": rendered_results})
         else:
             return JsonResponse({"query": "", "id": request_id, "result": ""})
-    else:
-        return Http404("This view can only be called with a POST request.")
+
+    def get_object(self):
+        """Get the object for this view."""
+        return self.kwargs.get("player")
 
 
-def search_view(request, player, *args, **kwargs):
-    """Search for a track on Spotify."""
-    kwargs["player_id"] = player.pk
-    return _search_view(request, player, *args, **kwargs)
+class AddView(PermissionRequiredMixin, TemplateView):
+    """Add a track to the queue view."""
 
+    permission_required = "marietje.can_request"
+    return_403 = True
+    accept_global_perms = True
 
-@permission_required_or_403("marietje.can_request", (SpotifyAccount, "pk", "player_id"), accept_global_perms=True)
-def _add_view(request, player, *args, **kwargs):
-    """
-    Add a Spotify track to the queue of a player.
+    def post(self, request, **kwargs):
+        """
+        POST request for AddView.
 
-    :param request: the request
-    :param player: the SpotiftAccount player
-    :return: a JsonResponse object of the following form
-    {
-        error: [True|False],
-        msg: [Message]
-    }
-    """
-    if request.method == "POST":
+        Add a track to the Spotify queue
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: a json response indicating the track has been added to the queue or an error
+        """
+        player = kwargs.get("player")
         track_id = request.POST.get("id", None)
         if track_id is not None:
             try:
@@ -130,20 +131,29 @@ def _add_view(request, player, *args, **kwargs):
             return JsonResponse({"error": False, "msg": "Track added to queue"})
         else:
             return JsonResponse({"error": True, "msg": "No track ID specified"})
-    else:
-        return Http404("This view can only be called with a POST request.")
+
+    def get_object(self):
+        """Get the object for this view."""
+        return self.kwargs.get("player")
 
 
-def add_view(request, player, *args, **kwargs):
-    """Add a Spotify track to the queue of a player."""
-    kwargs["player_id"] = player.pk
-    return _add_view(request, player, *args, **kwargs)
+class PlayView(PermissionRequiredMixin, TemplateView):
+    """Start playback view."""
 
+    permission_required = "marietje.can_control"
+    return_403 = True
+    accept_global_perms = True
 
-@permission_required_or_403("marietje.can_control", (SpotifyAccount, "pk", "player_id"), accept_global_perms=True)
-def _play_view(request, player, *args, **kwargs):
-    """Start playing the player."""
-    if request.method == "POST":
+    def post(self, request, **kwargs):
+        """
+        POST request for PlayView.
+
+        Start playback on a Spotify queue
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: a json response indicating playback has started or an error
+        """
+        player = kwargs.get("player")
         try:
             services.player_start(player)
         except spotipy.SpotifyException:
@@ -151,20 +161,29 @@ def _play_view(request, player, *args, **kwargs):
                 {"error": True, "msg": "Failed to start playback, is the registered Spotify device online?"}
             )
         return JsonResponse({"error": False})
-    else:
-        return Http404("This view can only be called with a POST request.")
+
+    def get_object(self):
+        """Get the object for this view."""
+        return self.kwargs.get("player")
 
 
-def play_view(request, player, *args, **kwargs):
-    """Start playing the player."""
-    kwargs["player_id"] = player.pk
-    return _play_view(request, player, *args, **kwargs)
+class PauseView(PermissionRequiredMixin, TemplateView):
+    """Pause playback view."""
 
+    permission_required = "marietje.can_control"
+    return_403 = True
+    accept_global_perms = True
 
-@permission_required_or_403("marietje.can_control", (SpotifyAccount, "pk", "player_id"), accept_global_perms=True)
-def _pause_view(request, player, *args, **kwargs):
-    """Pause the player."""
-    if request.method == "POST":
+    def post(self, request, **kwargs):
+        """
+        POST request for PauseView.
+
+        Pause playback on a Spotify queue
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: a json response indicating playback has paused or an error
+        """
+        player = kwargs.get("player")
         try:
             services.player_pause(player)
         except spotipy.SpotifyException:
@@ -172,20 +191,29 @@ def _pause_view(request, player, *args, **kwargs):
                 {"error": True, "msg": "Failed to pause playback, is the registered Spotify device online?"}
             )
         return JsonResponse({"error": False})
-    else:
-        return Http404("This view can only be called with a POST request.")
+
+    def get_object(self):
+        """Get the object for this view."""
+        return self.kwargs.get("player")
 
 
-def pause_view(request, player, *args, **kwargs):
-    """Pause the player."""
-    kwargs["player_id"] = player.pk
-    return _pause_view(request, player, *args, **kwargs)
+class NextView(PermissionRequiredMixin, TemplateView):
+    """Next track view."""
 
+    permission_required = "marietje.can_control"
+    return_403 = True
+    accept_global_perms = True
 
-@permission_required_or_403("marietje.can_control", (SpotifyAccount, "pk", "player_id"), accept_global_perms=True)
-def _next_view(request, player, *args, **kwargs):
-    """Skip the player to the next track."""
-    if request.method == "POST":
+    def post(self, request, **kwargs):
+        """
+        POST request for NextView.
+
+        Go to the next track in a Spotify queue
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: a json response indicating the track has been skipped or an error
+        """
+        player = kwargs.get("player")
         try:
             services.player_next(player)
         except spotipy.SpotifyException:
@@ -193,20 +221,29 @@ def _next_view(request, player, *args, **kwargs):
                 {"error": True, "msg": "Failed to skip track, is the registered Spotify device online?"}
             )
         return JsonResponse({"error": False})
-    else:
-        return Http404("This view can only be called with a POST request.")
+
+    def get_object(self):
+        """Get the object for this view."""
+        return self.kwargs.get("player")
 
 
-def next_view(request, player, *args, **kwargs):
-    """Skip the player to the next track."""
-    kwargs["player_id"] = player.pk
-    return _next_view(request, player, *args, **kwargs)
+class PreviousView(PermissionRequiredMixin, TemplateView):
+    """Previous track view."""
 
+    permission_required = "marietje.can_control"
+    return_403 = True
+    accept_global_perms = True
 
-@permission_required_or_403("marietje.can_control", (SpotifyAccount, "pk", "player_id"), accept_global_perms=True)
-def _previous_view(request, player, *args, **kwargs):
-    """Go back to the previous track on a player."""
-    if request.method == "POST":
+    def post(self, request, **kwargs):
+        """
+        POST request for NextView.
+
+        Go to the previous track in a Spotify queue
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: a json response indicating the track has been reverted or an error
+        """
+        player = kwargs.get("player")
         try:
             services.player_previous(player)
         except spotipy.SpotifyException:
@@ -214,11 +251,7 @@ def _previous_view(request, player, *args, **kwargs):
                 {"error": True, "msg": "Failed to rewind track, is the registered Spotify device online?"}
             )
         return JsonResponse({"error": False})
-    else:
-        return Http404("This view can only be called with a POST request.")
 
-
-def previous_view(request, player, *args, **kwargs):
-    """Go back to the previous track on a player."""
-    kwargs["player_id"] = player.pk
-    return _previous_view(request, player, *args, **kwargs)
+    def get_object(self):
+        """Get the object for this view."""
+        return self.kwargs.get("player")
