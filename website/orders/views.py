@@ -57,7 +57,7 @@ class ShiftOverviewView(PermissionRequiredMixin, TemplateView):
         """
         shift = kwargs.get("shift")
 
-        return render(request, self.template_name, {"shift": shift})
+        return render(request, self.template_name, {"shift": shift, "can_manage_shift": request.user.has_perm("orders.can_manage_shift_in_venue", shift.venue)})
 
     def get_permission_object(self):
         """Get the object to check permissions for."""
