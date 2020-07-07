@@ -7,18 +7,18 @@ from .models import Shift, get_default_end_time_shift, get_default_start_time_sh
 from datetime import datetime, timedelta
 
 
-class ShiftForm(forms.ModelForm):
+class CreateShiftForm(forms.ModelForm):
     """Shift creation form."""
 
     def __init__(self, *args, user, venue=None, **kwargs):
         """
-        Initialise the ProductForm.
+        Initialise the CreateShiftForm.
 
         :param product: the product to order in this form
         :param args: arguments
         :param kwargs: keyword arguments
         """
-        super(ShiftForm, self).__init__(*args, **kwargs)
+        super(CreateShiftForm, self).__init__(*args, **kwargs)
         self.user = user
         self.fields["venue"].initial = venue
         self.fields["venue"].queryset = get_objects_for_user(self.user, "orders.can_manage_shift_in_venue")
@@ -50,12 +50,12 @@ class ShiftForm(forms.ModelForm):
 
     def clean(self):
         """
-        Clean the ShiftForm.
+        Clean the CreateShiftForm.
 
         Makes sure that the dates in the form are not overlapping with other shifts.
         :return: cleaned data
         """
-        cleaned_data = super(ShiftForm, self).clean()
+        cleaned_data = super(CreateShiftForm, self).clean()
         start_date = cleaned_data.get("start_date")
         end_date = cleaned_data.get("end_date")
         venue = cleaned_data.get("venue")
@@ -65,12 +65,6 @@ class ShiftForm(forms.ModelForm):
         overlapping_end = Shift.objects.filter(end_date__gte=start_date, end_date__lte=end_date, venue=venue,).count()
         if overlapping_start > 0 or overlapping_end > 0:
             raise forms.ValidationError("Overlapping shifts for the same venue are not allowed.")
-
-        assignees = self.cleaned_data.get("assignees")
-        for assignee in assignees:
-            if assignee not in venue.get_users_with_shift_admin_perms():
-                raise forms.ValidationError("This user is not allowed to manage this shift.")
-
         return cleaned_data
 
     def clean_venue(self):

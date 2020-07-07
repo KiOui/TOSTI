@@ -9,7 +9,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.template.loader import get_template
 from .models import Shift, Product
-from .forms import ShiftForm
+from .forms import CreateShiftForm
 import urllib.parse
 
 from .templatetags.order_now import (
@@ -231,7 +231,7 @@ class CreateShiftView(PermissionRequiredMixin, TemplateView):
         """
         venue = kwargs.get("venue")
 
-        form = ShiftForm(venue=venue, user=request.user)
+        form = CreateShiftForm(venue=venue, user=request.user)
         form.set_initial_users(User.objects.filter(pk=request.user.pk))
 
         return render(request, self.template_name, {"venue": venue, "form": form})
@@ -247,7 +247,7 @@ class CreateShiftView(PermissionRequiredMixin, TemplateView):
         """
         venue = kwargs.get("venue")
 
-        form = ShiftForm(request.POST, user=request.user)
+        form = CreateShiftForm(request.POST, user=request.user)
 
         if form.is_valid():
             shift = form.save()
