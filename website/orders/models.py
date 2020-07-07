@@ -237,7 +237,7 @@ class Shift(models.Model):
         ordered_staff_orders = Order.objects.filter(shift=self, user__in=staff_users).order_by("created")
         ordered_normal_orders = Order.objects.filter(shift=self).exclude(user__in=staff_users).order_by("created")
         ordered_orders = chain(ordered_staff_orders, ordered_normal_orders)
-        return ordered_orders
+        return list(ordered_orders)
 
     @property
     def products_open(self):

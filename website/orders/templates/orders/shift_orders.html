@@ -4,12 +4,15 @@
     <div class="container-sm" id="order-container-{{ shift.id }}">
 {% endif %}
 
+    {% if not admin %}
+        {% render_place_order_button shift %}
+    {% endif %}
     <div class="container">
     <hr>
     </div>
 
     <div id="item-orders">
-        {% if shift.orders|length == 0 %}
+        {% if shift.orders|length != 0 or admin %}
             <ul class="item-orders">
                 {% for order in shift.orders %}
                     <li class="pt-2 pb-2 item-list">
@@ -60,7 +63,6 @@
         <div class="container">
         <hr>
         </div>
-        {% render_place_order_button shift %}
     {% endif %}
 {% if not refresh %}
     </div>
