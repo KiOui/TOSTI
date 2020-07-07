@@ -23,7 +23,7 @@ from users.models import User
 class ShiftView(TemplateView):
     """View for displaying all active shifts."""
 
-    template_name = "orders/shifts.html"
+    template_name = "orders/order_now_active_shifts.html"
 
     def get(self, request, **kwargs):
         """
@@ -129,7 +129,7 @@ class ProductListView(PermissionRequiredMixin, TemplateView):
 class OrderView(PermissionRequiredMixin, TemplateView):
     """Order view."""
 
-    template_name = "orders/order.html"
+    template_name = "orders/place_order.html"
 
     permission_required = "orders.can_order_in_venue"
     return_403 = True
@@ -528,7 +528,7 @@ class RefreshHeaderView(TemplateView):
         }
         """
         shift = kwargs.get("shift")
-        header = get_template("orders/order_header.html").render(
+        header = get_template("orders/shift_header.html").render(
             render_order_header({"request": request}, shift, refresh=True)
         )
         return JsonResponse({"data": header})
@@ -549,7 +549,7 @@ class RefreshProductOverviewView(TemplateView):
         }
         """
         shift = kwargs.get("shift")
-        overview = get_template("orders/item_overview.html").render(
+        overview = get_template("orders/shift_summary.html").render(
             render_order_header({"request": request}, shift, refresh=True)
         )
         return JsonResponse({"data": overview})
@@ -606,7 +606,7 @@ class RefreshShiftOrderView(PermissionRequiredMixin, TemplateView):
         """
         shift = kwargs.get("shift")
         admin = request.POST.get("admin", "false") == "true"
-        footer = get_template("orders/order_items.html").render(
+        footer = get_template("orders/shift_orders.html").render(
             render_order_items({"request": request}, shift, refresh=True, admin=admin, user=request.user)
         )
         return JsonResponse({"data": footer})

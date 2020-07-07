@@ -8,7 +8,7 @@ from orders.models import OrderVenue
 register = template.Library()
 
 
-@register.inclusion_tag("orders/start_shift.html", takes_context=True)
+@register.inclusion_tag("orders/start_shift_buttons.html", takes_context=True)
 def render_start_shift_buttons(context, venues=None):
     """Render start shift buttons."""
     if venues is None:
@@ -28,7 +28,7 @@ def currently_active_shift_for_venue(venue):
 
     if venue.shift_set.filter(start_date__lte=today, end_date__gte=today).exists():
         return venue.shift_set.filter(start_date__lte=today, end_date__gte=today).first()
-    elif venue.shift_set.filter(start_date__gte=start).exists():
-        return venue.shift_set.filter(start_date__gte=start).first()
+    elif venue.shift_set.filter(end_date__gte=start).exists():
+        return venue.shift_set.filter(end_date__gte=start).order_by("-end_date").first()
     else:
         return None
