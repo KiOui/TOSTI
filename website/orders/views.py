@@ -20,7 +20,7 @@ from .templatetags.order_now import (
 from users.models import User
 
 
-class ShiftView(TemplateView):
+class ActiveShiftsView(TemplateView):
     """View for displaying all active shifts."""
 
     template_name = "orders/order_now_active_shifts.html"
@@ -126,7 +126,7 @@ class ProductListView(PermissionRequiredMixin, TemplateView):
         return self.kwargs.get("shift")
 
 
-class OrderView(PermissionRequiredMixin, TemplateView):
+class PlaceOrderView(PermissionRequiredMixin, TemplateView):
     """Order view."""
 
     template_name = "orders/place_order.html"
@@ -159,7 +159,7 @@ class OrderView(PermissionRequiredMixin, TemplateView):
 
     def get(self, request, **kwargs):
         """
-        GET request for OrderView.
+        GET request for PlaceOrderView.
 
         :param request: the request
         :param kwargs: keyword arguments
@@ -176,7 +176,7 @@ class OrderView(PermissionRequiredMixin, TemplateView):
 
     def post(self, request, **kwargs):
         """
-        POST request for OrderView.
+        POST request for PlaceOrderView.
 
         :param request: the request
         :param kwargs: keyword arguments
@@ -513,8 +513,10 @@ class AddShiftTimeView(PermissionRequiredMixin, TemplateView):
         return self.kwargs.get("shift")
 
 
-class RefreshHeaderView(TemplateView):
+class RefreshShiftHeaderView(TemplateView):
     """Refresh for the order header."""
+
+    template_name = "orders/shift_header.html"
 
     def post(self, request, **kwargs):
         """
@@ -528,18 +530,20 @@ class RefreshHeaderView(TemplateView):
         }
         """
         shift = kwargs.get("shift")
-        header = get_template("orders/shift_header.html").render(
+        header = get_template(self.template_name).render(
             render_order_header({"request": request}, shift, refresh=True)
         )
         return JsonResponse({"data": header})
 
 
-class RefreshProductOverviewView(TemplateView):
-    """Refresh for the order header."""
+class RefreshShiftSummaryView(TemplateView):
+    """Refresh for the shift summary."""
+
+    template_name = "orders/shift_summary.html"
 
     def post(self, request, **kwargs):
         """
-        POST request for refreshing the product overview on the admin page.
+        POST request for refreshing the product summary on the shift admin page.
 
         :param request: the request
         :param kwargs: keyword arguments
@@ -549,7 +553,7 @@ class RefreshProductOverviewView(TemplateView):
         }
         """
         shift = kwargs.get("shift")
-        overview = get_template("orders/shift_summary.html").render(
+        overview = get_template(self.template_name).render(
             render_order_header({"request": request}, shift, refresh=True)
         )
         return JsonResponse({"data": overview})
@@ -593,6 +597,8 @@ class RefreshShiftOrderView(PermissionRequiredMixin, TemplateView):
     return_403 = True
     accept_global_perms = True
 
+    template_name = "orders/shift_orders.html"
+
     def post(self, request, **kwargs):
         """
         POST request for refreshing the orders.
@@ -606,7 +612,7 @@ class RefreshShiftOrderView(PermissionRequiredMixin, TemplateView):
         """
         shift = kwargs.get("shift")
         admin = request.POST.get("admin", "false") == "true"
-        footer = get_template("orders/shift_orders.html").render(
+        footer = get_template(self.template_name).render(
             render_order_items({"request": request}, shift, refresh=True, admin=admin, user=request.user)
         )
         return JsonResponse({"data": footer})
