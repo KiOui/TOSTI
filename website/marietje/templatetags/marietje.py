@@ -29,5 +29,5 @@ def render_venue_player(context, venue, refresh=False):
     return {
         "refresh": refresh,
         "player": player,
-        "controls": context["request"].user in player.get_users_with_control_perms(),
+        "controls": context["request"].user in player.get_users_with_control_permissions(),
     }

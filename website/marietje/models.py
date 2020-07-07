@@ -153,7 +153,7 @@ class SpotifyAccount(models.Model):
         users = []
         for user in User.objects.all():
             if self in get_objects_for_user(
-                user, "marietje.can_request", accept_global_perms=True, with_superuser=True
+                user, "marietje.can_control", accept_global_perms=True, with_superuser=True
             ):
                 users.append(user)
         return users

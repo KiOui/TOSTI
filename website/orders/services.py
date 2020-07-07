@@ -71,14 +71,12 @@ def has_already_ordered_in_shift(user: User, shift: Shift):
     return Order.objects.filter(user=user, shift=shift).count() > 0
 
 
-def add_user_to_assignees_of_shift(user: User, shift: Shift):
+def add_user_to_assignees_of_shift(user, shift: Shift):
     """Add a user to the list of assignees for the shift."""
-    assignees = shift.assignees.all()
-    if user not in assignees:
+    if user not in shift.assignees.all():
         if user not in shift.venue.get_users_with_shift_admin_perms():
             raise OrderException("User does not have permissions to manage shifts in this venue.")
-
-        shift.assignees.add(user)
+        shift.assignees.add(User.objects.get(pk=user.pk))
         shift.save()
 
 
