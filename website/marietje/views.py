@@ -20,7 +20,7 @@ class IndexView(TemplateView):
 
     def get(self, request, **kwargs):
         """GET an overview of all players."""
-        return render(request, self.template_name, {"players": SpotifyAccount.objects.all()})
+        return render(request, self.template_name)
 
 
 class NowPlayingView(TemplateView):

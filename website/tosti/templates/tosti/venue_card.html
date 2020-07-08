@@ -1,0 +1,42 @@
+{% load start_shift marietje order_now %}
+<div class="card mx-auto mx-md-2 mb-3" style="max-width: 500px;">
+    <div class="card-header">
+        <h2>{{ venue }}</h2>
+    </div>
+    {% with venue|currently_active_shift_for_venue as venue_shift %}
+        <div class="card-body">
+            {% if venue_shift and venue_shift.is_active %}
+                <div class="mx-auto text-center mb-3">order until {{ venue_shift.end_date|date:"g:iA" }} or capacity reached
+                    ({{ venue_shift.number_of_orders }}/{{ venue_shift.max_orders_total }})</div>
+            {% elif venue_shift %}
+                <div class="mx-auto text-center mb-3">shift ended at {{ venue_shift.end_date|date:"g:iA" }}</div>
+            {% else %}
+                <div class="mx-auto text-center mb-3">not available to order</div>
+            {% endif %}
+            {% if show_player %}
+                {% render_venue_player venue.venue %}
+            {% endif %}
+        </div>
+        <div class="card-footer">
+            {% render_order_now_button venue=venue shift=venue_shift %}
+            {% if admin %}
+                {% if venue_shift and venue_shift.is_active %}
+                    <a href="{% url 'orders:shift_join' shift=venue_shift %}">
+                        <input class="btn-ml btn-on my-2" type="button" value="Join shift at {{ venue }}" />
+                    </a>
+                {% elif venue_shift %}
+                    <a href="{% url 'orders:shift_create' venue=venue %}">
+                        <input class="btn-ml btn-on my-2" type="button" value="Start shift" />
+                    </a>
+                    <a href="{% url 'orders:shift_join' shift=venue_shift %}">
+                        <input class="btn-ml btn-on my-2" type="button" value="Show last shift" />
+                    </a>
+                {% else %}
+                    <a href="{% url 'orders:shift_create' venue=venue %}">
+                        <input class="btn-ml btn-on my-2" type="button" value="Start shift" />
+                    </a>
+                {% endif %}
+            {% endif %}
+        </div>
+    {% endwith %}
+</div>

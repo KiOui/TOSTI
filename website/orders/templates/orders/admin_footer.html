@@ -24,17 +24,21 @@
             </div>
         </div>
         <div class="col expand-mobile">
-            <div class="h-100 btn-ml btn-on m-auto w-100" onclick="window.location.href = '{% url "orders:shift_overview" shift=shift %}';">
-                <p class="font-footer flex-fixed"><i class="fas fa-users"></i></p>
-                <p class="font-footer">Order page</p>
-            </div>
+            <a href="{% url "orders:shift_overview" shift=shift %}">
+                <div class="h-100 btn-ml btn-on m-auto w-100">
+                    <p class="font-footer flex-fixed"><i class="fas fa-users"></i></p>
+                    <p class="font-footer">Order page</p>
+                </div>
+            </a>
         </div>
         {% if request.user.is_staff and has_change_order_permissions %}
         <div class="col expand-mobile">
-            <div class="h-100 btn-ml btn-on m-auto w-100" onclick="window.location.href = '{% url "admin:orders_shift_change" shift.id %}';">
-                <p class="font-footer flex-fixed"><i class="fas fa-cog"></i></p>
-                <p class="font-footer">Settings</p>
-            </div>
+            <a href="{% url "admin:orders_shift_change" shift.id %}">
+                <div class="h-100 btn-ml btn-on m-auto w-100">
+                    <p class="font-footer flex-fixed"><i class="fas fa-cog"></i></p>
+                    <p class="font-footer">Settings</p>
+                </div>
+            </a>
         </div>
         <div class="col expand-mobile">
             <div class="h-100 btn-ml btn-on m-auto w-100" data-toggle="modal" data-target="#order-overview-popup">

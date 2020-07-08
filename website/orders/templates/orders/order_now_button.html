@@ -1,18 +1,20 @@
 {% if shift %}
     {% if shift.can_order %}
-        <div class="btn-ml btn-on" onclick="window.location.href = '{% url 'orders:shift_overview' shift=shift %}';">
-            <h4>Order at {{ shift.venue }}</h4>
-            <p class="btn-note">order until {{ shift.end_date|date:"g:iA" }} or capacity reached
-            ({{ shift.number_of_orders }}/{{ shift.max_orders_total }})</p>
-        </div>
+        <a href="{% url 'orders:shift_overview' shift=shift %}">
+            <div class="btn-ml btn-on my-2">
+                <h4>Order at {{ shift.venue }}</h4>
+                <p class="btn-note">order until {{ shift.end_date|date:"g:iA" }} or capacity reached
+                ({{ shift.number_of_orders }}/{{ shift.max_orders_total }})</p>
+            </div>
+        </a>
     {% else %}
-        <div class="btn-ml btn-off">
+        <div class="btn-ml btn-off my-2">
             <h4>Order at {{ shift.venue }}</h4>
             <p class="btn-note">not available to order</p>
         </div>
     {% endif %}
 {% elif venue %}
-    <div class="btn-ml btn-off">
+    <div class="btn-ml btn-off my-2">
         <h4>Order at {{ venue }}</h4>
         <p class="btn-note">not available to order</p>
     </div>

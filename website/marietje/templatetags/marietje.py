@@ -31,3 +31,20 @@ def render_venue_player(context, venue, refresh=False):
         "player": player,
         "controls": context["request"].user in player.get_users_with_control_permissions(),
     }
+
+
+@register.inclusion_tag("marietje/render_players.html", takes_context=True)
+def render_players(context):
+    """
+    Render all players in card format.
+
+    :param context: needed because the render_player must know the request
+    :return: a dictionary
+    """
+    return {"players": SpotifyAccount.objects.all(), "request": context["request"]}
+
+
+@register.inclusion_tag("marietje/render_player_card.html", takes_context=True)
+def render_player_card(context, player):
+    """Render a player in card format."""
+    return {"player": player, "request": context["request"]}

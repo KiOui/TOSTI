@@ -87,13 +87,3 @@ def render_order_now_buttons_venues(context):
     buttons = [{"venue": x} for x in venues]
 
     return {"venues": buttons, "request": context.get("request")}
-
-
-@register.filter
-def currently_active_shift_for_venue(venue):
-    """Get the currently active shift for a venue (if it exists)."""
-    return (
-        venue.shift_set.filter(start_date__lte=timezone.now(), end_date__gte=timezone.now())
-        .order_by("end_date")
-        .first()
-    )

@@ -1,0 +1,16 @@
+{% load marietje static %}
+
+<link rel="stylesheet" href="{% static 'tosti/css/index.css' %}"/>
+<div class="card mx-auto mx-md-2 mb-3" style="max-width: 500px">
+    <div class="card-header">
+        <h2>{{ player.venue }}</h2>
+    </div>
+    <div class="card-body">
+        {% render_player player %}
+    </div>
+    <div class="card-footer">
+        <a href="{% url 'marietje:now_playing' venue=player.venue %}">
+            <input class="btn-ml btn-on my-2" type="button" value="Go to {{ player.venue }}" />
+        </a>
+    </div>
+</div>
