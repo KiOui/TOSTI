@@ -1,8 +1,6 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView
 
-from orders.models import Shift, OrderVenue
-
 
 class IndexView(TemplateView):
     """Index view."""
