@@ -12,7 +12,12 @@ def render_venue_card(context, shift=None, venue=None, show_player=True):
     if shift and venue is None:
         venue = shift.venue
 
-    return {"venue": venue, "request": context.get("request"), "admin": context["request"].user in venue.get_users_with_shift_admin_perms(), "show_player": show_player and SpotifyAccount.get_player(venue.venue) is not None}
+    return {
+        "venue": venue,
+        "request": context.get("request"),
+        "admin": context["request"].user in venue.get_users_with_shift_admin_perms(),
+        "show_player": show_player and SpotifyAccount.get_player(venue.venue) is not None,
+    }
 
 
 @register.inclusion_tag("tosti/venue_cards_for_venues.html", takes_context=True)

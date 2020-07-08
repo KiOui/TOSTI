@@ -17,10 +17,7 @@ class IndexView(TemplateView):
         :param kwargs: keyword arguments
         :return: a render of the index page
         """
-
-        return render(
-            request, self.template_name
-        )
+        return render(request, self.template_name)
 
 
 class PrivacyView(TemplateView):
