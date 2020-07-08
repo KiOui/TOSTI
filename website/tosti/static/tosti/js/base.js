@@ -49,7 +49,7 @@ function set_list_cookie(name, list, days) {
 }
 
 function update_and_replace(data_url, container, data) {
-    let csrf_token = get_cookie('csrftoken');
+    let csrf_token = get_csrf_token();
     jQuery(function($) {
         data.csrfmiddlewaretoken = csrf_token;
         $.ajax({type: 'POST', url: data_url, data, dataType:'json', asynch: true, success:
@@ -64,7 +64,7 @@ function update_and_replace(data_url, container, data) {
 
 function update_and_callback(data_url, data, callback/*, args */) {
     let args = Array.prototype.slice.call(arguments, 3);
-    let csrf_token = get_cookie('csrftoken');
+    let csrf_token = get_csrf_token();
     jQuery(function($) {
         data.csrfmiddlewaretoken = csrf_token;
         $.ajax({type: 'POST', url: data_url, data, dataType:'json', asynch: true, success:
@@ -92,6 +92,21 @@ function update_update_list() {
         update_list[i].func.apply(this, update_list[i].args);
     }
     update_timer = setTimeout(update_update_list, 5000);
+}
+
+function get_csrf_token() {
+    let cookie_csrf = get_cookie("csrf_token");
+    if (cookie_csrf === null) {
+        if (typeof CSRF_TOKEN !== 'undefined') {
+            return CSRF_TOKEN;
+        }
+        else {
+            throw "Unable to retrieve CSRF token";
+        }
+    }
+    else {
+        return cookie_csrf;
+    }
 }
 
 $(document).ready(function() {

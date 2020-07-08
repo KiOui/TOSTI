@@ -1,5 +1,4 @@
 import spotipy
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.template.loader import get_template, render_to_string
@@ -20,7 +19,7 @@ class IndexView(TemplateView):
 
     def get(self, request, **kwargs):
         """GET an overview of all players."""
-        return render(request, self.template_name, {"players": SpotifyAccount.objects.all()})
+        return render(request, self.template_name)
 
 
 class NowPlayingView(TemplateView):
@@ -60,7 +59,7 @@ class PlayerRefreshView(TemplateView):
         return JsonResponse({"data": self.render_template(player, request)})
 
 
-class QueueRefreshView(LoginRequiredMixin, TemplateView):
+class QueueRefreshView(TemplateView):
     """Refresh the queue."""
 
     def post(self, request, player):

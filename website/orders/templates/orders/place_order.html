@@ -36,9 +36,11 @@
 {% endblock %}
 
 {% block page-footer %}
-    <div class="btn-ml btn-on" onclick="window.location.href = '{% url "orders:shift_overview" shift=shift %}';">
-        <h5><i class="fas fa-arrow-left"></i> Back to overview</h5>
-    </div>
+    <a href="{% url "orders:shift_overview" shift=shift %}">
+        <div class="btn-ml btn-on">
+            <h5><i class="fas fa-arrow-left"></i> Back to overview</h5>
+        </div>
+    </a>
 {% endblock %}
 
 {% block js %}

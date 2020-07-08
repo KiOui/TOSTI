@@ -1,0 +1,9 @@
+{% load venue_cards order_now start_shift %}
+
+{% if venues %}
+    {% for next_venue in venues %}
+        {% with next_venue.venue|currently_active_shift_for_venue as venue_shift %}
+            {% render_venue_card shift=venue_shift venue=next_venue.venue %}
+        {% endwith %}
+    {% endfor %}
+{% endif %}

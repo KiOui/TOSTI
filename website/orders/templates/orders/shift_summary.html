@@ -1,11 +1,6 @@
 {% load static %}
 
 {% if not refresh %}
-    <div class="container">
-        <button type="button" class="btn-ml btn-on mb-5" data-toggle="modal" data-target="#order-overview-popup">
-            Summary
-        </button>
-    </div>
     <div class="modal" id="order-overview-popup">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -21,7 +16,7 @@
             <p class="mb-2" style="font-size: 1em;">{{ item.name }} <i class="fas fa-{{ item.icon }}"></i> x {{ item.amount }}</p>
         {% endfor %}
     {% else %}
-        <p style="font-size: 1em;">No open products.</p>
+        <p class="mb-2" style="font-size: 1em;">No open products.</p>
     {% endif %}
     <div class="dropdown-divider"></div>
     <h3 class="mt-3">Orders made</h3>
@@ -30,7 +25,7 @@
             <p class="mb-2" style="font-size: 1em;">{{ item.name }} <i class="fas fa-{{ item.icon }}"></i> x {{ item.amount }}</p>
         {% endfor %}
     {% else %}
-        <p style="font-size: 1em;">No ready products.</p>
+        <p class="mb-2" style="font-size: 1em;">No ready products.</p>
     {% endif %}
     <div class="dropdown-divider"></div>
     <h3 class="mt-3">Orders total</h3>
@@ -39,7 +34,7 @@
             <p class="mb-2" style="font-size: 1em;">{{ item.name }} <i class="fas fa-{{ item.icon }}"></i> x {{ item.amount }}</p>
         {% endfor %}
     {% else %}
-        <p style="font-size: 1em;">No products.</p>
+        <p class="mb-2" style="font-size: 1em;">No products.</p>
     {% endif %}
 {% if not refresh %}
                 </div>
