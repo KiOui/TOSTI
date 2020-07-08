@@ -3,7 +3,7 @@
 
 {% block page %}
     <div class="container-sm">
-        <h1 class="mb-5"><i class="fab fa-spotify"></i> Marietje - {{ venue.name }}</h1>
+        <h1 class="mb-5"><i class="fab fa-spotify"></i> {{ player }}</h1>
         {% if disabled %}
             <p class="alert alert-warning">There is no player specified for {{ venue.name }}. Contact an administrator
             to specify one for this venue.</p>
@@ -12,14 +12,16 @@
                 <div class="col-md-5">
                     <h2>Now playing</h2>
                     {% render_player player %}
+                    <hr class="my-5 d-md-none"/>
                 </div>
                 <div class="col-md">
                     {% if can_request %}
                     <div class="mb-5">
                         <h2>Add a song</h2>
-                        <p>Search a track below and add it to the queue.</p>
+                        <p class="my-0" style="font-size: 1rem;">Search a track below and add it to the queue.</p>
                         {% include 'marietje/search.html' with player=player refresh=False %}
                     </div>
+                    <hr class="my-5"/>
                     {% endif %}
                     <div class="mb-5">
                         {% render_queue_list player refresh=False %}
