@@ -99,6 +99,9 @@
     {% block footer %}
     {% endblock %}
     <script src="{% static 'tosti/js/bootstrap/bootstrap.js' %}"></script>
-    {% block js %}{%  endblock %}
+    <script>
+        CSRF_TOKEN = "{{ csrf_token }}";
+    </script>
+    {% block js %}{% endblock %}
 </body>
 </html>

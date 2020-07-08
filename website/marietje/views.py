@@ -60,7 +60,7 @@ class PlayerRefreshView(TemplateView):
         return JsonResponse({"data": self.render_template(player, request)})
 
 
-class QueueRefreshView(LoginRequiredMixin, TemplateView):
+class QueueRefreshView(TemplateView):
     """Refresh the queue."""
 
     def post(self, request, player):
