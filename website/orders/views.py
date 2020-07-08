@@ -44,7 +44,6 @@ class ShiftOverviewView(PermissionRequiredMixin, TemplateView):
     template_name = "orders/shift_overview.html"
 
     permission_required = "orders.can_order_in_venue"
-    return_403 = True
     accept_global_perms = True
 
     def get(self, request, **kwargs):
@@ -132,7 +131,6 @@ class PlaceOrderView(PermissionRequiredMixin, TemplateView):
     template_name = "orders/place_order.html"
 
     permission_required = "orders.can_order_in_venue"
-    return_403 = True
     accept_global_perms = True
 
     @staticmethod
