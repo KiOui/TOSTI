@@ -1,5 +1,5 @@
 {% if shift %}
-    {% if shift.can_order %}
+    {% if shift.is_active %}
         <a href="{% url 'orders:shift_overview' shift=shift %}">
             <div class="btn-ml btn-on my-2">
                 <h4>Order at {{ shift.venue }}</h4>

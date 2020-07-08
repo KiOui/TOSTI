@@ -1,5 +1,4 @@
 import spotipy
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.template.loader import get_template, render_to_string

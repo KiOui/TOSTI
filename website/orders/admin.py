@@ -172,7 +172,6 @@ class ShiftAdmin(GuardedModelAdmin, ImportExportModelAdmin):
         """Necessary to use AutocompleteFilter."""
 
 
-
 class OrderAdminShiftFilter(AutocompleteFilter):
     """Filter class to filter Order objects on a certain shift."""
 
