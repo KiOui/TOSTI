@@ -172,12 +172,6 @@ class ShiftAdmin(GuardedModelAdmin, ImportExportModelAdmin):
         """Necessary to use AutocompleteFilter."""
 
 
-class OrderAdminUserFilter(AutocompleteFilter):
-    """Filter class to filter Order objects on a certain user."""
-
-    title = "User"
-    field_name = "user"
-
 
 class OrderAdminShiftFilter(AutocompleteFilter):
     """Filter class to filter Order objects on a certain shift."""
@@ -229,7 +223,6 @@ class OrderAdmin(ImportExportModelAdmin):
         "paid",
     ]
     list_filter = [
-        OrderAdminUserFilter,
         OrderAdminShiftFilter,
         "product",
         "ready",
