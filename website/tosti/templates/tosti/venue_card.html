@@ -5,16 +5,11 @@
     </div>
     {% with venue|currently_active_shift_for_venue as venue_shift %}
         <div class="card-body">
-            {% if venue_shift and venue_shift.is_active %}
-                <div class="mx-auto text-center mb-3">order until {{ venue_shift.end_date|date:"g:iA" }} or capacity reached
-                    ({{ venue_shift.number_of_orders }}/{{ venue_shift.max_orders_total }})</div>
-            {% elif venue_shift %}
-                <div class="mx-auto text-center mb-3">shift ended at {{ venue_shift.end_date|date:"g:iA" }}</div>
-            {% else %}
-                <div class="mx-auto text-center mb-3">not available to order</div>
-            {% endif %}
             {% if show_player %}
+                <h5>Currently playing:</h5>
                 {% render_venue_player venue.venue %}
+            {% else %}
+                <h5>No music player</h5>
             {% endif %}
         </div>
         <div class="card-footer">
