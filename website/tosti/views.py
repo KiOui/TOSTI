@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
 
 
@@ -32,7 +32,10 @@ def handler403(request, exception):
     :param exception: the exception
     :return: a render of the 403 page
     """
-    return render(request, "tosti/403.html", status=403)
+    if request.user.is_authenticated:
+        return render(request, "tosti/403.html", status=403)
+    else:
+        return redirect("users:login")
 
 
 def handler404(request, exception):
