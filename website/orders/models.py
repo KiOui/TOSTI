@@ -385,7 +385,7 @@ class Shift(models.Model):
         :return: an instance of the Shift object if the saving succeeded, raises a ValueError on error
         """
         if self.end_date <= self.start_date:
-            raise ValueError(f"End date cannot be before start date.")
+            raise ValueError("End date cannot be before start date.")
 
         overlapping_start = (
             Shift.objects.filter(start_date__gte=self.start_date, start_date__lte=self.end_date, venue=self.venue,)
