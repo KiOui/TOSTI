@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='SpotifyAccount',
+            name='Player',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('display_name', models.CharField(blank=True, max_length=256, null=True)),
@@ -54,7 +54,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('added', models.DateTimeField(auto_now_add=True)),
-                ('player', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='marietje.SpotifyAccount')),
+                ('player', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='marietje.Player')),
                 ('requested_by', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='users.User')),
                 ('track', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='marietje.SpotifyTrack')),
             ],
