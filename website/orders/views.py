@@ -17,8 +17,6 @@ from .templatetags.order_now import (
     render_order_items,
 )
 
-from users.models import User
-
 
 class ActiveShiftsView(TemplateView):
     """View for displaying all active shifts."""
