@@ -1,31 +1,33 @@
 ---
 
-name: Build Production Docker Image
+name: "Build Production Docker Image"
 on:
   push:
-    branches: [ master ]
+    branches:
+      - master
 
 jobs:
-    build-docker:
-        name: "Build Production Docker Image"
-        runs-on: "ubuntu-latest"
-        steps:
-            - name: "Checkout repository"
-              uses: "actions/checkout@v2"
-              
-            - name: "Create environment for repository names"
-              run: |
-                  echo "::set-env name=DOCKER_LATEST::docker.pkg.github.com/${GITHUB_REPOSITORY}/${GITHUB_REPOSITORY##*/}:latest"
-                  echo "::set-env name=DOCKER_TAG_PRODUCTION::docker.pkg.github.com/${GITHUB_REPOSITORY}/${GITHUB_REPOSITORY##*/}:${GITHUB_SHA}"
+  build-docker:
+    name: "Build Production Docker Image"
+    runs-on: ubuntu-latest
+    steps:
 
-            - name: "Build Docker image"
-              run: docker build --tag ${DOCKER_LATEST,,} .
+      - name: "Checkout repository"
+        uses: actions/checkout@v2
 
-            - name: "Login to GitHub"
-              run: echo "${{ secrets.GH_TOKEN }}" | docker login docker.pkg.github.com -u "${{ github.repository_owner }}" --password-stdin
-            
-            - name: "Tag and publish"
-              run: |
-                  docker tag "${DOCKER_LATEST,,}" "${DOCKER_TAG_PRODUCTION,,}"
-                  docker push "${DOCKER_TAG_PRODUCTION,,}"
-                  docker push "${DOCKER_LATEST,,}"
+      - name: "Create environment for repository names"
+        run: |
+            echo "::set-env name=DOCKER_LATEST::docker.pkg.github.com/${GITHUB_REPOSITORY}/${GITHUB_REPOSITORY##*/}:latest"
+            echo "::set-env name=DOCKER_TAG_PRODUCTION::docker.pkg.github.com/${GITHUB_REPOSITORY}/${GITHUB_REPOSITORY##*/}:${GITHUB_SHA}"
+
+      - name: "Build Docker image"
+        run: docker build --tag ${DOCKER_LATEST,,} .
+
+      - name: "Login to GitHub"
+        run: echo "${{ secrets.GH_TOKEN }}" | docker login docker.pkg.github.com -u "${{ github.repository_owner }}" --password-stdin
+
+      - name: "Tag and publish"
+        run: |
+            docker tag "${DOCKER_LATEST,,}" "${DOCKER_TAG_PRODUCTION,,}"
+            docker push "${DOCKER_TAG_PRODUCTION,,}"
+            docker push "${DOCKER_LATEST,,}"

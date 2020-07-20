@@ -2,7 +2,9 @@
 
 name: "Update documentation on GitHub Pages"
 on:
-  - push
+  push:
+    branches:
+      - master
 
 jobs:
   docs:
