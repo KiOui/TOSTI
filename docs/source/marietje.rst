@@ -48,6 +48,14 @@ marietje.models module
    :undoc-members:
    :show-inheritance:
 
+marietje.templatetags module
+----------------------------
+
+.. automodule:: marietje.templatetags.marietje
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 marietje.urls module
 ---------------------
 

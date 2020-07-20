@@ -41,6 +41,19 @@ orders.models module
    :undoc-members:
    :show-inheritance:
 
+orders.templatetags module
+---------------------------
+
+.. automodule:: orders.templatetags.order_now
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: orders.templatetags.start_shift
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 orders.urls module
 ---------------------
 

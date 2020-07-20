@@ -17,6 +17,14 @@ tosti.admin module
    :undoc-members:
    :show-inheritance:
 
+tosti.templatetags module
+-------------------------
+
+.. automodule:: tosti.templatetags.venue_cards
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 tosti.urls module
 ---------------------
 
