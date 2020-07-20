@@ -71,7 +71,7 @@ def search_tracks(query, player, maximum=5):
     Search SpotifyTracks for a search query.
 
     :param query: the search query
-    :param player: the SpotifyAccount (player)
+    :param player: the player
     :param maximum: the maximum number of results to search for
     :return: a list of tracks [{"name": the trackname, "artists": [a list of artist names],
      "id": the Spotify track id}]
@@ -92,7 +92,7 @@ def request_song(user, player, spotify_track_id):
     Request a track for a player.
 
     :param user: the user requesting the track
-    :param player: the SpotifyAccount (player)
+    :param player: the player
     :param spotify_track_id: the Spotify track id to request
     :return: Nothing
     :raises: SpotifyException on failure
@@ -111,9 +111,9 @@ def request_song(user, player, spotify_track_id):
 
 def player_start(player):
     """
-    Start playing on the playback device of a SpotifyAccount.
+    Start playing on the playback device of a Player.
 
-    :param player: the SpotifyAccount (player)
+    :param player: the player
     :return: Nothing
     :raises: SpotifyException on failure
     """
@@ -126,9 +126,9 @@ def player_start(player):
 
 def player_pause(player):
     """
-    Pause the playback device of a SpotifyAccount.
+    Pause the playback device of a Player.
 
-    :param player: the SpotifyAccount (player)
+    :param player: the player
     :return: Nothing
     :raises: SpotifyException on failure
     """
@@ -141,9 +141,9 @@ def player_pause(player):
 
 def player_next(player):
     """
-    Skip to the next song in the playback device queue of a SpotifyAccount.
+    Skip to the next song in the playback device queue of a Player.
 
-    :param player: the SpotifyAccount (player)
+    :param player: the player
     :return: Nothing
     :raises: SpotifyException on failure
     """
@@ -156,9 +156,9 @@ def player_next(player):
 
 def player_previous(player):
     """
-    Go back to the previous song in the playback device queue of a SpotifyAccount.
+    Go back to the previous song in the playback device queue of a Player.
 
-    :param player: the SpotifyAccount (player)
+    :param player: the player
     :return: Nothing
     :raises: SpotifyException on failure
     """

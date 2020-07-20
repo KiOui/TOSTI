@@ -3,19 +3,19 @@ from django.shortcuts import redirect
 from django.urls import path, register_converter
 from guardian.admin import GuardedModelAdmin
 
-from marietje.converters import SpotifyAccountConverter
+from marietje.converters import PlayerConverter
 from marietje.admin_views import (
     SpofityAuthorizeView,
     SpotifyTokenView,
     SpotifyAuthorizeSucceededView,
 )
-from .models import SpotifyAccount
-from .forms import SpotifyAccountAdminForm
+from .models import Player
+from .forms import PlayerAdminForm
 
 
-@admin.register(SpotifyAccount)
-class SpotifyAccountAdmin(GuardedModelAdmin):
-    """SpotifyAccount admin for Spotify Players."""
+@admin.register(Player)
+class PlayerAdmin(GuardedModelAdmin):
+    """Player admin for Players."""
 
     list_display = [
         "display_name",
@@ -23,11 +23,11 @@ class SpotifyAccountAdmin(GuardedModelAdmin):
         "client_id",
         "get_configured",
     ]
-    form = SpotifyAccountAdminForm
+    form = PlayerAdminForm
     view_on_site = True
 
     def get_configured(self, obj):
-        """Get whether a SpotifyAccount player is configured."""
+        """Get whether a Player player is configured."""
         return obj.configured
 
     get_configured.short_description = "Configured"
@@ -47,7 +47,7 @@ class SpotifyAccountAdmin(GuardedModelAdmin):
 
     def get_urls(self):
         """Get admin urls."""
-        register_converter(SpotifyAccountConverter, "spotify")
+        register_converter(PlayerConverter, "spotify")
         urls = super().get_urls()
         custom_urls = [
             path("authorize/", self.admin_site.admin_view(SpofityAuthorizeView.as_view()), name="authorize",),

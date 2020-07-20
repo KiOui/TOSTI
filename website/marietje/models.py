@@ -10,9 +10,9 @@ from users.models import User
 from venues.models import Venue
 
 
-class SpotifyAccount(models.Model):
+class Player(models.Model):
     """
-    SpotifyAccount model for Spotify players.
+    Player model for Spotify players.
 
     Marietje can be authorized to access multiple Spotify accounts via the Spotify API.
     The Spotify account model contains data of the authorized accounts. Each account can
@@ -46,10 +46,10 @@ class SpotifyAccount(models.Model):
 
     @staticmethod
     def get_player(venue):
-        """Get a SpotifyAccount for a venue (if it exists)."""
+        """Get a Player for a venue (if it exists)."""
         try:
-            return SpotifyAccount.objects.get(venue=venue)
-        except SpotifyAccount.DoesNotExist:
+            return Player.objects.get(venue=venue)
+        except Player.DoesNotExist:
             return None
 
     @property
@@ -135,7 +135,7 @@ class SpotifyAccount(models.Model):
         return self.display_name
 
     def get_absolute_url(self):
-        """Get the front-end url for a SpotifyAccount."""
+        """Get the front-end url for a Player."""
         return reverse("marietje:now_playing", args=[self.venue])
 
     def get_users_with_request_permissions(self):
@@ -172,8 +172,8 @@ class SpotifyAccount(models.Model):
     class Meta:
         """Meta class."""
 
-        verbose_name = "Spotify account"
-        verbose_name_plural = "Spotify accounts"
+        verbose_name = "Player"
+        verbose_name_plural = "Players"
 
         permissions = [
             ("can_control", "Can control music players"),
@@ -217,11 +217,11 @@ class SpotifyQueueItem(models.Model):
     Spotify Queue Item model.
 
     SpotifyQueueItems are tracks that are added to the queue of the playback
-    device for a SpotifyAccount, requested by a certain user.
+    device for a Player, requested by a certain user.
     """
 
     track = models.ForeignKey(SpotifyTrack, on_delete=models.SET_NULL, null=True)
-    player = models.ForeignKey(SpotifyAccount, null=False, on_delete=models.CASCADE)
+    player = models.ForeignKey(Player, null=False, on_delete=models.CASCADE)
     added = models.DateTimeField(auto_now_add=True)
     requested_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
