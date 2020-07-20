@@ -1,12 +1,12 @@
 from django.urls import path, register_converter
 
 from marietje import views
-from .converters import SpotifyAccountConverter
+from .converters import PlayerConverter
 from venues.converters import VenueConverter
 
 
 register_converter(VenueConverter, "venue")
-register_converter(SpotifyAccountConverter, "player")
+register_converter(PlayerConverter, "player")
 
 urlpatterns = [
     path("", views.IndexView.as_view(), name="index"),

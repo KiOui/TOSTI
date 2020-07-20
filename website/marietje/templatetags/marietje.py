@@ -1,6 +1,6 @@
 from django import template
 
-from marietje.models import SpotifyQueueItem, SpotifyAccount
+from marietje.models import SpotifyQueueItem, Player
 
 register = template.Library()
 
@@ -26,7 +26,7 @@ def render_player(context, player, refresh=False):
 @register.inclusion_tag("marietje/player.html", takes_context=True)
 def render_venue_player(context, venue, refresh=False):
     """Render queue."""
-    player = SpotifyAccount.get_player(venue)
+    player = Player.get_player(venue)
     return {
         "refresh": refresh,
         "player": player,
@@ -42,7 +42,7 @@ def render_players(context):
     :param context: needed because the render_player must know the request
     :return: a dictionary
     """
-    return {"players": SpotifyAccount.objects.all(), "request": context["request"]}
+    return {"players": Player.objects.all(), "request": context["request"]}
 
 
 @register.inclusion_tag("marietje/render_player_card.html", takes_context=True)

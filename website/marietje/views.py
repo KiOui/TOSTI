@@ -6,7 +6,7 @@ from django.views.generic import TemplateView
 from guardian.mixins import PermissionRequiredMixin
 
 from marietje import services
-from .models import SpotifyAccount
+from .models import Player
 from .templatetags.marietje import render_queue_list, render_player
 
 COOKIE_CLIENT_ID = "client_id"
@@ -30,7 +30,7 @@ class NowPlayingView(TemplateView):
     def get(self, request, *args, **kwargs):
         """GET the player for a venue."""
         venue = kwargs.get("venue")
-        player = SpotifyAccount.get_player(venue)
+        player = Player.get_player(venue)
         if player is None or not player.configured:
             return render(request, self.template_name, {"disabled": True, "venue": venue})
 

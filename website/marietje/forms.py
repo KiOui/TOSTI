@@ -1,27 +1,27 @@
 from django import forms
-from .models import SpotifyAccount
+from .models import Player
 
 
 class SpotifyTokenForm(forms.Form):
-    """Admin Form for the Spotify API Client ID and Secret of a SpotifyAccount."""
+    """Admin Form for the Spotify API Client ID and Secret of a Player."""
 
     client_id = forms.CharField(required=True, label="Client ID")
     client_secret = forms.CharField(required=True, label="Client Secret")
 
 
-class SpotifyAccountAdminForm(forms.ModelForm):
-    """Custom admin form to manage configuration settings of a SpotifyAccount (player)."""
+class PlayerAdminForm(forms.ModelForm):
+    """Custom admin form to manage configuration settings of a Player."""
 
     playback_device_id = forms.ChoiceField(required=False)
 
     def __init__(self, *args, **kwargs):
         """
-        Initialise SpotifyAccountAdminForm (request playback devices and present a device-picker).
+        Initialise PlayerAdminForm (request playback devices and present a device-picker).
 
         :param args: arguments
         :param kwargs: keyword arguments
         """
-        super(SpotifyAccountAdminForm, self).__init__(*args, **kwargs)
+        super(PlayerAdminForm, self).__init__(*args, **kwargs)
         instance = kwargs.get("instance", None)
         if instance is not None:
             self.__original_playback_device_id = instance.playback_device_id
@@ -69,9 +69,9 @@ class SpotifyAccountAdminForm(forms.ModelForm):
         Save this form.
 
         :param commit: whether or not to call the save method
-        :return: an object of type SpotifyAccount
+        :return: an object of type Player
         """
-        obj = super(SpotifyAccountAdminForm, self).save(commit=False)
+        obj = super(PlayerAdminForm, self).save(commit=False)
         if obj.playback_device_id is not None and self.__original_playback_device_id != obj.playback_device_id:
             devices = {x["id"]: x["name"] for x in obj.spotify.devices()["devices"]}
             if obj.playback_device_id not in devices.keys():
@@ -89,5 +89,5 @@ class SpotifyAccountAdminForm(forms.ModelForm):
     class Meta:
         """Meta class."""
 
-        model = SpotifyAccount
+        model = Player
         exclude = ["playback_device_name"]
