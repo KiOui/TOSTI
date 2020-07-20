@@ -1116,6 +1116,11 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt id="orders.models.Shift.HUMAN_DATE_FORMAT">
+<code class="sig-name descname">HUMAN_DATE_FORMAT</code><em class="property"> = '%a. %-d %b. %Y'</em><a class="headerlink" href="#orders.models.Shift.HUMAN_DATE_FORMAT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py exception">
 <dt id="orders.models.Shift.MultipleObjectsReturned">
 <em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#orders.models.Shift.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
@@ -1225,6 +1230,12 @@ object the first time, the query is executed.</p>
 <dt id="orders.models.Shift.get_users_with_change_perms">
 <code class="sig-name descname">get_users_with_change_perms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Shift.get_users_with_change_perms" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get users that my change this shift.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="orders.models.Shift.human_readable_start_end_time">
+<em class="property">property </em><code class="sig-name descname">human_readable_start_end_time</code><a class="headerlink" href="#orders.models.Shift.human_readable_start_end_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the start and and time in a human readable format.</p>
 </dd></dl>
 
 <dl class="py attribute">
