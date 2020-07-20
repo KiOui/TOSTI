@@ -3,7 +3,6 @@ from django import forms
 from django.conf import settings
 from guardian.shortcuts import get_objects_for_user
 
-from users.models import User
 from .models import Shift, get_default_end_time_shift, get_default_start_time_shift
 from datetime import datetime, timedelta
 
@@ -24,29 +23,12 @@ class CreateShiftForm(forms.ModelForm):
         self.fields["venue"].initial = venue
         self.fields["venue"].queryset = get_objects_for_user(self.user, "orders.can_manage_shift_in_venue")
 
-        all_assignees = set()
-        for v in self.fields["venue"].queryset:
-            all_assignees.update([x.pk for x in v.get_users_with_shift_admin_perms()])
-
-        all_assignees = User.objects.filter(pk__in=all_assignees)
-
-        self.fields["assignees"].queryset = all_assignees.order_by("first_name", "last_name")
-
         timezone = pytz.timezone(settings.TIME_ZONE)
         now = timezone.localize(datetime.now())
         start_time = now - timedelta(seconds=now.second, microseconds=now.microsecond)
         self.fields["start_date"].initial = start_time
         if now >= get_default_end_time_shift() or now <= get_default_start_time_shift() - timedelta(minutes=30):
             self.fields["end_date"].initial = start_time + timedelta(hours=1)
-
-    def set_initial_users(self, users):
-        """
-        Set the assignees initial field.
-
-        :param users: the initial users to select
-        :return: None
-        """
-        self.fields["assignees"].initial = users
 
     def clean(self):
         """
@@ -82,5 +64,4 @@ class CreateShiftForm(forms.ModelForm):
             "venue",
             "start_date",
             "end_date",
-            "assignees",
         ]

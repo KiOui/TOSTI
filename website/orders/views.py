@@ -232,7 +232,6 @@ class CreateShiftView(PermissionRequiredMixin, TemplateView):
         venue = kwargs.get("venue")
 
         form = CreateShiftForm(venue=venue, user=request.user)
-        form.set_initial_users(User.objects.filter(pk=request.user.pk))
 
         return render(request, self.template_name, {"venue": venue, "form": form})
 
@@ -251,6 +250,8 @@ class CreateShiftView(PermissionRequiredMixin, TemplateView):
 
         if form.is_valid():
             shift = form.save()
+            shift.assignees.add(request.user.id)
+            shift.save()
             return redirect("orders:shift_admin", shift=shift)
 
         return render(request, self.template_name, {"venue": venue, "form": form})
