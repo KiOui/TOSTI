@@ -28,6 +28,7 @@ BASE_DIR = os.path.abspath(
 # Application definition
 
 INSTALLED_APPS = [
+    "tosti",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -41,7 +42,6 @@ INSTALLED_APPS = [
     "venues",
     "marietje",
     "orders",
-    "tosti",
 ]
 
 ANONYMOUS_USER_NAME = None
