@@ -63,12 +63,10 @@ class SpotifyAccount(models.Model):
         Get currently playing music information.
 
         :return: a dictionary with the following content:
-        {
             image: [link to image of track],
             name: [name of currently playing track],
             artists: [list of artist names],
             is_playing: [True|False]
-        }
         """
         if not self.configured:
             raise RuntimeError("This Spotify account is not configured yet.")

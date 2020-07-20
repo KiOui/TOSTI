@@ -413,9 +413,7 @@ class ToggleShiftActivationView(PermissionRequiredMixin, TemplateView):
         :param request: the request
         :param kwargs: keyword arguments
         :return: a JsonResponse of the following format:
-        {
             active: [shift.can_order]
-        }
         """
         shift = kwargs.get("shift")
         active = request.POST.get("active", "false")
@@ -453,9 +451,7 @@ class AddShiftCapacityView(PermissionRequiredMixin, TemplateView):
         :param request: the request
         :param kwargs: keyword arguments
         :return: a JsonResponse of the following format:
-        {
             error: False
-        }
         """
         shift = kwargs.get("shift")
 
@@ -492,9 +488,7 @@ class AddShiftTimeView(PermissionRequiredMixin, TemplateView):
         :param request: the request
         :param kwargs: keyword arguments
         :return: a JsonResponse of the following format:
-        {
             error: False
-        }
         """
         shift = kwargs.get("shift")
         try:
@@ -525,9 +519,7 @@ class RefreshShiftHeaderView(TemplateView):
         :param request: the request
         :param kwargs: keyword arguments
         :return: The header in the following JSON format:
-        {
             data: [header]
-        }
         """
         shift = kwargs.get("shift")
         header = get_template(self.template_name).render(
@@ -548,9 +540,7 @@ class RefreshShiftSummaryView(TemplateView):
         :param request: the request
         :param kwargs: keyword arguments
         :return: The product overview in the following JSON format:
-        {
             data: [header]
-        }
         """
         shift = kwargs.get("shift")
         overview = get_template(self.template_name).render(
@@ -573,9 +563,7 @@ class RefreshAdminFooterView(PermissionRequiredMixin, TemplateView):
         :param request: the request
         :param kwargs: keyword arguments
         :return: The footer in the following JSON format:
-        {
             status: [shift.can_order]
-        }
         """
         shift = kwargs.get("shift")
         return JsonResponse({"status": shift.can_order})
@@ -606,9 +594,7 @@ class RefreshShiftOrderView(PermissionRequiredMixin, TemplateView):
         :param request: the request
         :param kwargs: keyword arguments
         :return: The orders in the following JSON format:
-        {
             data: [orders]
-        }
         """
         shift = kwargs.get("shift")
         admin = request.POST.get("admin", "false") == "true"
