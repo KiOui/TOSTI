@@ -71,6 +71,11 @@ class VerifyView(TemplateView):
         if user:
             update_staff_status(user)
             login(request, user, backend="django.contrib.auth.backends.ModelBackend")
+
+            next_page = request.GET.get("next")
+            if next_page:
+                return redirect(next_page)
+
             return redirect("index")
 
         return render(request, self.template_name)

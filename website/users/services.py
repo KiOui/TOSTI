@@ -19,10 +19,17 @@ def get_openid_verifier(request):
     :param request: the request
     :return: an OpenID verifier object
     """
+    return_url = request.build_absolute_uri(reverse(settings.OPENID_RETURN_URL))
+
+    next_page = request.GET.get("next")
+    if next_page:
+        params = urlencode({"next": next_page})
+        return_url += "?" + params
+
     return OpenIDVerifier(
         settings.OPENID_SERVER_ENDPOINT,
         request,
-        settings.OPENID_RETURN_URL,
+        return_url,
         settings.OPENID_USERNAME_PREFIX,
         settings.OPENID_USERNAME_POSTFIX,
     )
@@ -43,7 +50,7 @@ class OpenIDVerifier:
         """
         self.openid_server_endpoint = openid_server_endpoint
         self.openid_trust_root = request.META["HTTP_HOST"]
-        self.openid_return_url = request.build_absolute_uri(reverse(openid_return_url))
+        self.openid_return_url = openid_return_url
         self.prefix = prefix
         self.postfix = postfix
         self.request = request

@@ -17,6 +17,7 @@
             <form class="centered-form" method="POST">
                 {% csrf_token %}
                 {{ form }}
+                <input type="hidden" name="next" value="{{ request.GET.next }}"/>
                 <input type="submit" value="Log in" class="btn btn-primary"/>
             </form>
         </div>
