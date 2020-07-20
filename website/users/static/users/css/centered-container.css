@@ -5,6 +5,10 @@
     max-width: 400px;
 }
 
+label[for=id_remember] {
+    width: auto !important;
+}
+
 .container-centered {
     width: 100%;
 }

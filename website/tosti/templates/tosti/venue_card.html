@@ -1,0 +1,37 @@
+{% load start_shift marietje order_now %}
+<div class="card mx-auto mx-sm-2 mb-3" style="max-width: 500px;">
+    <div class="card-header">
+        <h2>{{ venue }}</h2>
+    </div>
+    {% with venue|currently_active_shift_for_venue as venue_shift %}
+        <div class="card-body">
+            {% if show_player %}
+                <h5>Currently playing:</h5>
+                {% render_venue_player venue.venue %}
+            {% else %}
+                <h5>No music player</h5>
+            {% endif %}
+        </div>
+        <div class="card-footer">
+            {% render_order_now_button venue=venue shift=venue_shift %}
+            {% if admin %}
+                {% if venue_shift and venue_shift.is_active %}
+                    <a href="{% url 'orders:shift_join' shift=venue_shift %}">
+                        <input class="btn-ml btn-on my-2" type="button" value="Join shift at {{ venue }}" />
+                    </a>
+                {% elif venue_shift %}
+                    <a href="{% url 'orders:shift_create' venue=venue %}">
+                        <input class="btn-ml btn-on my-2" type="button" value="Start shift" />
+                    </a>
+                    <a href="{% url 'orders:shift_join' shift=venue_shift %}">
+                        <input class="btn-ml btn-on my-2" type="button" value="Show last shift" />
+                    </a>
+                {% else %}
+                    <a href="{% url 'orders:shift_create' venue=venue %}">
+                        <input class="btn-ml btn-on my-2" type="button" value="Start shift" />
+                    </a>
+                {% endif %}
+            {% endif %}
+        </div>
+    {% endwith %}
+</div>

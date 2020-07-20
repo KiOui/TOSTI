@@ -73,6 +73,9 @@
                                             Site admin
                                         </a>
                                     {% endif %}
+                                    <a class="nav-link text-dark" href="{% url "privacy" %}">
+                                        Privacy
+                                    </a>
                                     <a class="nav-link text-dark" href="{% url "users:account" %}">
                                         Account
                                     </a>
@@ -94,17 +97,11 @@
         {% block page %}{% endblock %}
     </div>
     {% block footer %}
-        <footer class="page-footer navbar navbar-expand-md fixed-bottom">
-                <div class="container text-left footer-copyright py-1 justify-content-center">
-                    <p class="p-0 m-0">© 2020 Copyright: <a href="/">TOSTI</a></p>
-                </div>
-                <div class="container text-right footer-copyright py-1 justify-content-center">
-                    <p class="p-0 m-0"><a href="{% url "privacy" %}">Privacy</a></p>
-                </div>
-
-        </footer>
     {% endblock %}
     <script src="{% static 'tosti/js/bootstrap/bootstrap.js' %}"></script>
-    {% block js %}{%  endblock %}
+    <script>
+        CSRF_TOKEN = "{{ csrf_token }}";
+    </script>
+    {% block js %}{% endblock %}
 </body>
 </html>

@@ -1,5 +1,5 @@
 {% extends 'tosti/base.html' %}
-{% load static order_now start_shift marietje %}
+{% load static venue_cards %}
 
 {% block styles %}
     <link rel="stylesheet" href="{% static 'tosti/css/index.css' %}"/>
@@ -11,19 +11,8 @@
         <h6>Tartarus Order System for Take-away Items</h6>
     </div>
     <div class="container">
-        {%  render_order_now_buttons_venues  %}
+        <div class="card-deck justify-content-center">
+            {% render_venue_cards_venues %}
+        </div>
     </div>
-    {% if user.is_authenticated and user.is_staff %}
-    <div class="container">
-        {%  render_start_shift_buttons  %}
-    </div>
-    {% endif %}
-    <div class="container">
-    <hr>
-    </div>
-
-    <div class="btn-ml btn-on" onclick="window.location.href = '{% url 'marietje:index' %}';">
-        <p><i class="fab fa-spotify"></i> Go to Marietje</p>
-    </div>
-
 {% endblock %}

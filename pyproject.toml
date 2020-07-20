@@ -19,6 +19,7 @@ coverage = "^5.1"
 sphinx = "^3.1.2"
 recommonmark = "^0.6.0"
 sphinx_rtd_theme = "^0.5.0"
+django-guardian = "^2.3.0"
 
 [tool.poetry.dev-dependencies]
 pydocstyle = "^5.0.2"

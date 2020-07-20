@@ -1,15 +1,15 @@
 import json
-import datetime
 
-from django.contrib.auth import get_user_model
-from django.contrib.auth.mixins import LoginRequiredMixin
-from .permissions import StaffRequiredMixin
+from django.views.generic import TemplateView
+from guardian.mixins import PermissionRequiredMixin
+
+from orders import services
+from orders.exceptions import OrderException
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.template.loader import get_template
-from django.views.generic import TemplateView
-from .models import Shift, Product, Order
-from .forms import ShiftForm
+from .models import Shift, Product
+from .forms import CreateShiftForm
 import urllib.parse
 
 from .templatetags.order_now import (
@@ -17,13 +17,13 @@ from .templatetags.order_now import (
     render_order_items,
 )
 
-User = get_user_model()
+from users.models import User
 
 
-class ShiftView(LoginRequiredMixin, TemplateView):
+class ActiveShiftsView(TemplateView):
     """View for displaying all active shifts."""
 
-    template_name = "orders/shifts.html"
+    template_name = "orders/order_now_active_shifts.html"
 
     def get(self, request, **kwargs):
         """
@@ -38,33 +38,102 @@ class ShiftView(LoginRequiredMixin, TemplateView):
         return render(request, self.template_name, {"shifts": active_shifts})
 
 
-class OrderView(LoginRequiredMixin, TemplateView):
-    """View for displaying items that can be ordered and already ordered items."""
+class ShiftOverviewView(PermissionRequiredMixin, TemplateView):
+    """Shift overview page."""
 
-    template_name = "orders/order.html"
+    template_name = "orders/shift_overview.html"
+
+    permission_required = "orders.can_order_in_venue"
+    return_403 = True
+    accept_global_perms = True
+
+    def get(self, request, **kwargs):
+        """
+        GET request of shift overview page.
+
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: a render of the shift overview page
+        """
+        shift = kwargs.get("shift")
+
+        return render(
+            request,
+            self.template_name,
+            {"shift": shift, "can_manage_shift": request.user in shift.venue.get_users_with_shift_admin_perms()},
+        )
+
+    def get_permission_object(self):
+        """Get the object to check permissions for."""
+        obj = self.get_object()
+        return obj.venue
+
+    def get_object(self):
+        """Get the object for this view."""
+        return self.kwargs.get("shift")
+
+
+class ProductListView(PermissionRequiredMixin, TemplateView):
+    """Product list view."""
+
+    permission_required = "orders.can_order_in_venue"
+    return_403 = True
+    accept_global_perms = True
 
     @staticmethod
-    def can_order(shift, product_id, user):
+    def get_available_products(shift, user):
         """
-        Add an order for a specific product id, shift and user.
+        Get available products for a shift and a user in json format.
 
-        :param shift: the shift to add the order to
-        :param product_id: the product id of the product that the order must have
-        :param user: the user that ordered the product
-        :return: a string with an error message if the order could not be placed, True otherwise
+        :param shift: the shift
+        :param user: the user
+        :return: a json list of the products converted to json and an extra dictionary key (max_allowed) indicating
+        how many more of the item a user can still order
         """
-        try:
-            product = Product.objects.get(pk=product_id)
-        except (Product.DoesNotExist, ValueError):
-            return "That product does not exist"
+        items = Product.objects.filter(available=True, available_at=shift.venue)
+        json_list = list()
+        for item in items:
+            json_obj = item.to_json()
+            json_obj["max_allowed"] = item.user_max_order_amount(user, shift)
+            json_list.append(json_obj)
+        return json_list
 
-        if not shift.user_can_order_amount(user):
-            return "You can not order more products"
-        if not product.user_can_order_amount(user, shift):
-            return "You can not order more {}".format(product.name)
-        if not product.available:
-            return "Product {} is not available".format(product.name)
-        return True
+    def post(self, request, **kwargs):
+        """
+        POST request for ProductListView.
+
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: a json response with the products a user can order and the shift maximum
+        """
+        shift = kwargs.get("shift")
+        option = request.POST.get("option", None)
+        if option == "list":
+            pass
+        else:
+            return JsonResponse({"error": "Operation unknown"})
+
+        products = self.get_available_products(shift, request.user)
+        return JsonResponse({"products": products, "shift_max": shift.user_max_order_amount(request.user)})
+
+    def get_permission_object(self):
+        """Get the object to check permissions for."""
+        obj = self.get_object()
+        return obj.venue
+
+    def get_object(self):
+        """Get the object for this view."""
+        return self.kwargs.get("shift")
+
+
+class PlaceOrderView(PermissionRequiredMixin, TemplateView):
+    """Order view."""
+
+    template_name = "orders/place_order.html"
+
+    permission_required = "orders.can_order_in_venue"
+    return_403 = True
+    accept_global_perms = True
 
     @staticmethod
     def add_orders(order_list, shift, user):
@@ -76,25 +145,21 @@ class OrderView(LoginRequiredMixin, TemplateView):
         :param user: the user for which the orders are
         :return: True if the addition succeeded, a string with an error message otherwise
         """
-        if not shift.user_can_order_amount(user, amount=len(order_list)):
-            return "You can't order that much products in this shift"
-        if not shift.can_order:
-            return "You can not order products for this shift"
-        if not shift.is_active:
-            return "This shift is not active"
-        for order in order_list:
-            error_msg = OrderView.can_order(shift, order, user)
-            if isinstance(error_msg, str):
-                return error_msg
-
-        for order in order_list:
-            Order.objects.create(user=user, shift=shift, product=Product.objects.get(pk=order))
-
+        product_list = []
+        for product_id in order_list:
+            try:
+                product_list.append(Product.objects.get(pk=product_id))
+            except (Product.DoesNotExist, ValueError):
+                return "That product does not exist"
+        try:
+            services.place_orders(product_list, user, shift)
+        except OrderException as err:
+            return str(err)
         return True
 
     def get(self, request, **kwargs):
         """
-        GET request for OrderView.
+        GET request for PlaceOrderView.
 
         :param request: the request
         :param kwargs: keyword arguments
@@ -106,12 +171,12 @@ class OrderView(LoginRequiredMixin, TemplateView):
         return render(
             request,
             self.template_name,
-            {"shift": shift, "already_ordered": Order.objects.filter(user=request.user, shift=shift).count() > 0},
+            {"shift": shift, "already_ordered": services.has_already_ordered_in_shift(request.user, shift)},
         )
 
     def post(self, request, **kwargs):
         """
-        POST request for OrderView.
+        POST request for PlaceOrderView.
 
         :param request: the request
         :param kwargs: keyword arguments
@@ -137,11 +202,72 @@ class OrderView(LoginRequiredMixin, TemplateView):
             response.delete_cookie("cart_{}".format(shift.pk))
             return response
 
+    def get_permission_object(self):
+        """Get the object to check permissions for."""
+        obj = self.get_object()
+        return obj.venue
 
-class JoinShiftView(StaffRequiredMixin, TemplateView):
-    """Admin view for joining shifts."""
+    def get_object(self):
+        """Get the object for this view."""
+        return self.kwargs.get("shift")
+
+
+class CreateShiftView(PermissionRequiredMixin, TemplateView):
+    """Create shift view."""
+
+    template_name = "orders/create_shift.html"
+
+    permission_required = "orders.can_manage_shift_in_venue"
+    return_403 = True
+    accept_global_perms = True
+
+    def get(self, request, **kwargs):
+        """
+        GET request for CreateShiftView.
+
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: a page with all current shifts and a form for starting a new shift
+        """
+        venue = kwargs.get("venue")
+
+        form = CreateShiftForm(venue=venue, user=request.user)
+        form.set_initial_users(User.objects.filter(pk=request.user.pk))
+
+        return render(request, self.template_name, {"venue": venue, "form": form})
+
+    def post(self, request, **kwargs):
+        """
+        POST request for CreateShiftView.
+
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: a page with all current shifts and a form for starting a new shift, if the form was filled in
+        correctly a new shift is started.
+        """
+        venue = kwargs.get("venue")
+
+        form = CreateShiftForm(request.POST, user=request.user)
+
+        if form.is_valid():
+            shift = form.save()
+            return redirect("orders:shift_admin", shift=shift)
+
+        return render(request, self.template_name, {"venue": venue, "form": form})
+
+    def get_object(self):
+        """Get the object for this view."""
+        return self.kwargs.get("venue")
+
+
+class JoinShiftView(PermissionRequiredMixin, TemplateView):
+    """Join shift view."""
 
     template_name = "orders/join_shift.html"
+
+    permission_required = "orders.can_manage_shift_in_venue"
+    return_403 = True
+    accept_global_perms = True
 
     def get(self, request, **kwargs):
         """
@@ -173,106 +299,31 @@ class JoinShiftView(StaffRequiredMixin, TemplateView):
 
         confirm = request.POST.get("confirm", None)
         if confirm == "Yes":
-            assignees = shift.assignees.all()
-            if request.user not in assignees:
-                shift.assignees.add(request.user)
-                shift.save()
+            services.add_user_to_assignees_of_shift(request.user, shift)
             return redirect("orders:shift_admin", shift=shift)
         elif confirm == "No":
             return redirect("index")
         else:
             return render(request, self.template_name, {"shift": shift})
 
+    def get_permission_object(self):
+        """Get the object to check permissions for."""
+        obj = self.get_object()
+        return obj.venue
 
-class ProductListView(LoginRequiredMixin, TemplateView):
-    """Product list view for getting all available products per shift."""
-
-    @staticmethod
-    def get_available_products(shift, user):
-        """
-        Get available products for a shift and a user in json format.
-
-        :param shift: the shift
-        :param user: the user
-        :return: a json list of the products converted to json and an extra dictionary key (max_allowed) indicating
-        how many more of the item a user can still order
-        """
-        items = Product.objects.filter(available=True, available_at=shift.venue)
-        json_list = list()
-        for item in items:
-            json_obj = item.to_json()
-            json_obj["max_allowed"] = item.user_max_order_amount(user, shift)
-            json_list.append(json_obj)
-        return json_list
-
-    def post(self, request, **kwargs):
-        """
-        POST request for ProductListView.
-
-        :param request: the request
-        :param kwargs: keyword arguments
-        :return: a JSON response including the following:
-        {
-            products: [list of products],
-            shift_max: [maximum items for this shift]
-        }
-        """
-        shift = kwargs.get("shift")
-        option = request.POST.get("option", None)
-
-        if option == "list":
-            pass
-        else:
-            return JsonResponse({"error": "Operation unknown"})
-
-        products = self.get_available_products(shift, request.user)
-        return JsonResponse({"products": products, "shift_max": shift.user_max_order_amount(request.user)})
+    def get_object(self):
+        """Get the object for this view."""
+        return self.kwargs.get("shift")
 
 
-class CreateShiftView(StaffRequiredMixin, TemplateView):
-    """Page for starting a shift."""
-
-    template_name = "orders/create_shift.html"
-
-    def get(self, request, **kwargs):
-        """
-        GET request for ShiftStartView.
-
-        :param request: the request
-        :param kwargs: keyword arguments
-        :return: a page with all current shifts and a form for starting a new shift
-        """
-        venue = kwargs.get("venue")
-
-        form = ShiftForm(venue=venue)
-        form.set_initial_users(User.objects.filter(pk=request.user.pk))
-
-        return render(request, self.template_name, {"venue": venue, "form": form})
-
-    def post(self, request, **kwargs):
-        """
-        POST request for ShiftStartView.
-
-        :param request: the request
-        :param kwargs: keyword arguments
-        :return: a page with all current shifts and a form for starting a new shift, if the form was filled in
-        correctly a new shift is started.
-        """
-        venue = kwargs.get("venue")
-
-        form = ShiftForm(request.POST)
-
-        if form.is_valid():
-            shift = form.save()
-            return redirect("orders:shift_admin", shift=shift)
-
-        return render(request, self.template_name, {"venue": venue, "form": form})
-
-
-class ShiftAdminView(StaffRequiredMixin, TemplateView):
+class ShiftAdminView(PermissionRequiredMixin, TemplateView):
     """Admin view for starting shifts."""
 
     template_name = "orders/shift_admin.html"
+
+    permission_required = "orders.can_manage_shift_in_venue"
+    return_403 = True
+    accept_global_perms = True
 
     def get(self, request, **kwargs):
         """
@@ -286,30 +337,31 @@ class ShiftAdminView(StaffRequiredMixin, TemplateView):
 
         return render(request, self.template_name, {"shift": shift})
 
+    def get_permission_object(self):
+        """Get the object to check permissions for."""
+        obj = self.get_object()
+        return obj.venue
 
-class OrderUpdateView(StaffRequiredMixin, TemplateView):
-    """View for updating orders via asynchronous POST requests."""
+    def get_object(self):
+        """Get the object for this view."""
+        return self.kwargs.get("shift")
+
+
+class OrderUpdateView(PermissionRequiredMixin, TemplateView):
+    """Order update view."""
+
+    permission_required = "orders.can_manage_shift_in_venue"
+    return_403 = True
+    accept_global_perms = True
 
     def post(self, request, **kwargs):
         """
-        POST method for OrderUpdateView.
+        POST request for OrderUpdateView.
 
-        This view expects JSON of the following type:
-        {
-            order: [order_id],
-            property: [ready | paid],
-            value: [true | false]
-        }
+        Updates the status of an order
         :param request: the request
-        :param kwargs: the keyword arguments
-        :return: A response of the following format on success:
-        {
-            value: [true | false]
-        }
-        A response of the following format on failure:
-        {
-            error: [error message]
-        }
+        :param kwargs: keyword arguments
+        :return: a json response with an error or the value of the updated status
         """
         order_property = request.POST.get("property", None)
         value = request.POST.get("value", None)
@@ -322,37 +374,36 @@ class OrderUpdateView(StaffRequiredMixin, TemplateView):
         order = kwargs.get("order")
 
         if order_property == "ready":
-            order.ready = value
-            order.save()
-            return JsonResponse({"value": order.ready})
+            try:
+                order = services.set_order_ready(order, value)
+                return JsonResponse({"value": order.ready})
+            except Exception as e:
+                return JsonResponse({"error": str(e), "value": order.ready})
         elif order_property == "paid":
-            order.paid = value
-            order.save()
-            return JsonResponse({"value": order.paid})
+            try:
+                order = services.set_order_paid(order, value)
+                return JsonResponse({"value": order.paid})
+            except Exception as e:
+                return JsonResponse({"error": str(e), "value": order.paid})
         else:
             return JsonResponse({"error": "Property unknown"})
 
+    def get_permission_object(self):
+        """Get the object to check permissions for."""
+        obj = self.get_object()
+        return obj.shift.venue
 
-class ShiftOverview(TemplateView, LoginRequiredMixin):
-    """Shift overview page."""
-
-    template_name = "orders/shift_overview.html"
-
-    def get(self, request, **kwargs):
-        """
-        GET request of shift overview page.
-
-        :param request: the request
-        :param kwargs: keyword arguments
-        :return: a render of the shift overview page
-        """
-        shift = kwargs.get("shift")
-
-        return render(request, self.template_name, {"shift": shift})
+    def get_object(self):
+        """Get the object for this view."""
+        return self.kwargs.get("order")
 
 
-class ToggleShiftActivationView(StaffRequiredMixin, TemplateView):
+class ToggleShiftActivationView(PermissionRequiredMixin, TemplateView):
     """Toggle the shift activation via a POST request."""
+
+    permission_required = "orders.can_manage_shift_in_venue"
+    return_403 = True
+    accept_global_perms = True
 
     def post(self, request, **kwargs):
         """
@@ -369,15 +420,30 @@ class ToggleShiftActivationView(StaffRequiredMixin, TemplateView):
         shift = kwargs.get("shift")
         active = request.POST.get("active", "false")
 
-        shift.can_order = active == "true"
-        shift.save()
-        return JsonResponse({"active": shift.can_order})
+        try:
+            shift = services.set_shift_active(shift, active == "true")
+            return JsonResponse({"active": shift.can_order})
+        except Exception as e:
+            return JsonResponse({"error": str(e), "active": shift.can_order})
+
+    def get_permission_object(self):
+        """Get the object to check permissions for."""
+        obj = self.get_object()
+        return obj.venue
+
+    def get_object(self):
+        """Get the object for this view."""
+        return self.kwargs.get("shift")
 
 
-class AddShiftCapacityView(StaffRequiredMixin, TemplateView):
+class AddShiftCapacityView(PermissionRequiredMixin, TemplateView):
     """Add shift capacity view."""
 
     add_amount = 5
+
+    permission_required = "orders.can_manage_shift_in_venue"
+    return_403 = True
+    accept_global_perms = True
 
     def post(self, request, **kwargs):
         """
@@ -393,15 +459,30 @@ class AddShiftCapacityView(StaffRequiredMixin, TemplateView):
         """
         shift = kwargs.get("shift")
 
-        shift.max_orders_total = shift.max_orders_total + self.add_amount
-        shift.save()
-        return JsonResponse({"error": False})
+        try:
+            services.increase_shift_capacity(shift, self.add_amount)
+            return JsonResponse({"error": False})
+        except Exception as e:
+            return JsonResponse({"error": str(e)})
+
+    def get_permission_object(self):
+        """Get the object to check permissions for."""
+        obj = self.get_object()
+        return obj.venue
+
+    def get_object(self):
+        """Get the object for this view."""
+        return self.kwargs.get("shift")
 
 
-class AddShiftTimeView(StaffRequiredMixin, TemplateView):
+class AddShiftTimeView(PermissionRequiredMixin, TemplateView):
     """Add shift time view."""
 
-    add_amount = datetime.timedelta(minutes=5)
+    add_amount_minutes = 5
+
+    permission_required = "orders.can_manage_shift_in_venue"
+    return_403 = True
+    accept_global_perms = True
 
     def post(self, request, **kwargs):
         """
@@ -416,14 +497,26 @@ class AddShiftTimeView(StaffRequiredMixin, TemplateView):
         }
         """
         shift = kwargs.get("shift")
+        try:
+            services.increase_shift_time(shift, self.add_amount_minutes)
+            return JsonResponse({"error": False})
+        except Exception as e:
+            return JsonResponse({"error": str(e)})
 
-        shift.end_date = shift.end_date + self.add_amount
-        shift.save()
-        return JsonResponse({"error": False})
+    def get_permission_object(self):
+        """Get the object to check permissions for."""
+        obj = self.get_object()
+        return obj.venue
+
+    def get_object(self):
+        """Get the object for this view."""
+        return self.kwargs.get("shift")
 
 
-class RefreshHeaderView(TemplateView):
+class RefreshShiftHeaderView(TemplateView):
     """Refresh for the order header."""
+
+    template_name = "orders/shift_header.html"
 
     def post(self, request, **kwargs):
         """
@@ -437,16 +530,20 @@ class RefreshHeaderView(TemplateView):
         }
         """
         shift = kwargs.get("shift")
-        header = get_template("orders/order_header.html").render(render_order_header(shift, refresh=True))
+        header = get_template(self.template_name).render(
+            render_order_header({"request": request}, shift, refresh=True)
+        )
         return JsonResponse({"data": header})
 
 
-class RefreshProductOverviewView(TemplateView):
-    """Refresh for the order header."""
+class RefreshShiftSummaryView(TemplateView):
+    """Refresh for the shift summary."""
+
+    template_name = "orders/shift_summary.html"
 
     def post(self, request, **kwargs):
         """
-        POST request for refreshing the product overview on the admin page.
+        POST request for refreshing the product summary on the shift admin page.
 
         :param request: the request
         :param kwargs: keyword arguments
@@ -456,12 +553,18 @@ class RefreshProductOverviewView(TemplateView):
         }
         """
         shift = kwargs.get("shift")
-        overview = get_template("orders/item_overview.html").render(render_order_header(shift, refresh=True))
+        overview = get_template(self.template_name).render(
+            render_order_header({"request": request}, shift, refresh=True)
+        )
         return JsonResponse({"data": overview})
 
 
-class RefreshAdminFooterView(StaffRequiredMixin, TemplateView):
+class RefreshAdminFooterView(PermissionRequiredMixin, TemplateView):
     """Refresh the administrator footer."""
+
+    permission_required = "orders.can_manage_shift_in_venue"
+    return_403 = True
+    accept_global_perms = True
 
     def post(self, request, **kwargs):
         """
@@ -477,11 +580,24 @@ class RefreshAdminFooterView(StaffRequiredMixin, TemplateView):
         shift = kwargs.get("shift")
         return JsonResponse({"status": shift.can_order})
 
+    def get_permission_object(self):
+        """Get the object to check permissions for."""
+        obj = self.get_object()
+        return obj.venue
 
-class RefreshShiftOrderView(TemplateView):
+    def get_object(self):
+        """Get the object for this view."""
+        return self.kwargs.get("shift")
+
+
+class RefreshShiftOrderView(PermissionRequiredMixin, TemplateView):
     """Refresh the orders view."""
 
-    permission_required = "is_staff"
+    permission_required = "orders.can_order_in_venue"
+    return_403 = True
+    accept_global_perms = True
+
+    template_name = "orders/shift_orders.html"
 
     def post(self, request, **kwargs):
         """
@@ -496,7 +612,16 @@ class RefreshShiftOrderView(TemplateView):
         """
         shift = kwargs.get("shift")
         admin = request.POST.get("admin", "false") == "true"
-        footer = get_template("orders/order_items.html").render(
-            render_order_items(shift, refresh=True, admin=admin, user=request.user)
+        footer = get_template(self.template_name).render(
+            render_order_items({"request": request}, shift, refresh=True, admin=admin, user=request.user)
         )
         return JsonResponse({"data": footer})
+
+    def get_permission_object(self):
+        """Get the object to check permissions for."""
+        obj = self.get_object()
+        return obj.venue
+
+    def get_object(self):
+        """Get the object for this view."""
+        return self.kwargs.get("shift")

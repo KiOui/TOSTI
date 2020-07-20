@@ -1,8 +1,5 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
-
-from venues.models import Venue
-from orders.models import Shift
 
 
 class IndexView(TemplateView):
@@ -18,17 +15,7 @@ class IndexView(TemplateView):
         :param kwargs: keyword arguments
         :return: a render of the index page
         """
-        venues = Venue.objects.filter(active=True)
-
-        for venue in venues:
-            shifts = [x for x in Shift.objects.filter(venue=venue) if x.can_order]
-
-            if len(shifts) == 1:
-                venue.shift = shifts[0]
-            else:
-                venue.shift = None
-
-        return render(request, self.template_name, {"venues": venues})
+        return render(request, self.template_name)
 
 
 class PrivacyView(TemplateView):
@@ -45,7 +32,10 @@ def handler403(request, exception):
     :param exception: the exception
     :return: a render of the 403 page
     """
-    return render(request, "tosti/403.html", status=403)
+    if request.user.is_authenticated:
+        return render(request, "tosti/403.html", status=403)
+    else:
+        return redirect("users:login")
 
 
 def handler404(request, exception):
