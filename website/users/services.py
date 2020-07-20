@@ -23,8 +23,8 @@ def get_openid_verifier(request):
 
     next_page = request.GET.get("next")
     if next_page:
-        params = urlencode({'next': next_page})
-        return_url += '?' + params
+        params = urlencode({"next": next_page})
+        return_url += "?" + params
 
     return OpenIDVerifier(
         settings.OPENID_SERVER_ENDPOINT,
