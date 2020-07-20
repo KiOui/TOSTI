@@ -1,0 +1,101 @@
+{% extends "tosti/base.html" %}
+{% load static %}
+
+{% block title %}
+    TOSTI: How to manage shifts
+{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'orders/css/item-list.css' %}"/>
+    <link rel="stylesheet" href="{% static 'orders/css/explainer.css' %}"/>
+{% endblock %}
+
+{% block page %}
+    <div class="container">
+        <div class="container mt-5 mb-5 text-center">
+            <h1>How to manage and create shifts?</h1>
+            <h6>Everything you need to know as a baker.</h6>
+        </div>
+        <hr>
+        <h3><i class="fas fa-sign-in-alt"></i></br>1. Log in</h3>
+        <p>
+            Before you can start managing shifts, first <a href="{% url "users:login" %}?next={{request.path}}">login using your
+            Science account</a>.
+        </p>
+        <hr>
+        <h3><i class="fas fa-plus-square"></i></br>2. Start or join a shift</h3>
+        <p>
+            After you are logged in, you can either start a new shift or join a shift in a venue you are authorized for,
+            via the buttons on the <a href="{% url "index" %}">the home page</a>.
+        </p>
+        <p>
+            When starting a new shift, you can set the begin and end time of the shift. After creating the shift,
+            it will appear on the site. Note that there cannot be 2 shifts for the same venue at the same time.
+        </p>
+        <p>
+            If you want to join an already existing shift, you can simply click 'join shift'.
+        </p>
+        <p>
+            When you have joined a shift as a shift admin, you will see the shift admin page. This is where all orders
+            will come in and where you can register which orders are paid or ready. Via the footer menu, you have access
+            to some quick actions, like increasing the number of orders you accept.
+        </p>
+        <hr>
+        <h3><i class="far fa-hand-paper"></i></br>3. Allow orders</h3>
+        <p>
+            A new shift won't directly accept new orders. You need to allow (or disallow) orders via the
+            <i class="far fa-hand-paper"></i>-button in the footer menu. Only when orders are allowed, people can place
+            orders. Otherwise, a message will be shown that ordering products is currently not possible for this shift.
+        </p>
+        <p>
+            Note that even when orders are allowed, the maximum order-capacity for the shift or the end-time constraints
+            are in place.
+        </p>
+        <hr>
+        <h3><i class="far fa-clock"></i></br>4. Wait...</h3>
+        <p>
+            Wait for orders to come in. New orders will automatically appear in the queue.
+        </p>
+        <p>Of course, you can place
+            orders yourself as well. Those will automatically move to the top of the queue. Via the
+            <i class="fas fa-users" aria-hidden="true"></i>-button in the footer menu, you can easily go to the order
+            page to place an order yourself.
+        </p>
+        <hr>
+        <h3><i class="fas fa-cogs"></i></br>5. Process orders</h3>
+        <p>
+            When orders start coming in, you can start preparing them.
+        </p>
+        <p>
+            If an order is paid, you can hit the
+            <i class="status-button bg-danger text-white" style="font-style: normal; font-size: 1rem;">Paid</i>
+            button to turn it into <i class="status-button bg-success text-white" style="font-style: normal; font-size: 1rem;">Paid</i>.
+        </p>
+        <p>
+            When an order is ready, hit the
+            <i class="status-button bg-danger text-white" style="font-style: normal; font-size: 1rem;">Ready</i>
+            button to mark it as <i class="status-button bg-success text-white" style="font-style: normal; font-size: 1rem;">Ready</i>. You can now call
+            out the person's name who placed the order to pick it up.
+        </p>
+        <p>
+            Via the <i class="fas fa-binoculars" aria-hidden="true"></i>-button in the footer menu, you can get an
+            overview of all products you still have to make.
+        </p>
+        <hr>
+        <h3><i class="fas fa-cogs"></i></br>6. End of your shift</h3>
+        <p>
+            When the end-time of your shift has passed, orders will automatically stop coming in. Also, when the
+            maximum capacity is reached, orders will stop coming in. If you want to increase the maximum capacity or
+            postpone the end-time, you can do so via the <i class="fas fa-list" aria-hidden="true"></i> + 5 or
+            <i class="far fa-clock" aria-hidden="true"></i> + 5 buttons.
+        </p>
+        <p>
+            If you want to change more advanced details, use the <i class="fas fa-cog" aria-hidden="true"></i>-button
+            to go to the detailed admin view. This button is only visible if you are authorized for this.
+        </p>
+        <p>
+            Have fun baking!
+        </p>
+
+    </div>
+{% endblock %}

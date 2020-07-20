@@ -8,7 +8,7 @@ from orders.exceptions import OrderException
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.template.loader import get_template
-from .models import Shift, Product
+from .models import Product
 from .forms import CreateShiftForm
 import urllib.parse
 
@@ -16,24 +16,6 @@ from .templatetags.order_now import (
     render_order_header,
     render_order_items,
 )
-
-
-class ActiveShiftsView(TemplateView):
-    """View for displaying all active shifts."""
-
-    template_name = "orders/order_now_active_shifts.html"
-
-    def get(self, request, **kwargs):
-        """
-        GET request for Shift view.
-
-        :param request: the request
-        :param kwargs: keyword arguments
-        :return: the shift view with all active shifts
-        """
-        active_shifts = [x for x in Shift.objects.all() if x.is_active]
-
-        return render(request, self.template_name, {"shifts": active_shifts})
 
 
 class ShiftOverviewView(PermissionRequiredMixin, TemplateView):
@@ -624,3 +606,15 @@ class RefreshShiftOrderView(PermissionRequiredMixin, TemplateView):
     def get_object(self):
         """Get the object for this view."""
         return self.kwargs.get("shift")
+
+
+class ExplainerView(TemplateView):
+    """Explainer view."""
+
+    template_name = "orders/explainer.html"
+
+
+class AdminExplainerView(TemplateView):
+    """Admin Explainer view."""
+
+    template_name = "orders/explainer_admin.html"
