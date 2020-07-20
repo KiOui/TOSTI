@@ -8,8 +8,14 @@ Users package
 
 OpenID implementation
 ---------------------
-The custom user model of TOSTI uses the `Science OpenID server`_ for authentication. The `Science OpenID server`_ uses
+The user module lets Django use the `Science OpenID server`_ for authentication. The `Science OpenID server`_ uses
 `OpenID version 1.1`_. The ``OpenIDVerifier`` object in ``users/services`` handles all OpenID verification.
+
+User models
+-----------
+This module does not create a custom Django user model but rather uses the common `auth.User` model. In addition,
+the module contains a `GroupSettings` model, related to the `auth.Group` model, to define special properties for
+certain `auth.Group`'s.
 
 Submodules
 ----------

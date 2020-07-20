@@ -6,9 +6,9 @@ Welcome to the repository of Tartarus Order System for Take-away Items, TOSTI fo
 Current features
 ----------------
 
+- An implementation of OpenID_ that enables users to login via the `Science OpenID server`_.
 - An easy-to-use order system that makes it possible for authenticated users to order and control shifts in venues.
 - An implementation of the Spotify_ API to control music in venues.
-- An implementation of OpenID_ that enables users to login via the `Science OpenID server`_.
 
 Source and issue tracker
 ------------------------
