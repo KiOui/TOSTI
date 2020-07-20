@@ -190,6 +190,7 @@ class Shift(models.Model):
 
     DATE_FORMAT = "%Y-%m-%d"
     TIME_FORMAT = "%H:%M"
+    HUMAN_DATE_FORMAT = "%a. %-d %b. %Y"
 
     venue = models.ForeignKey(
         OrderVenue, blank=False, null=False, on_delete=models.PROTECT, validators=[active_venue_validator],
@@ -349,6 +350,24 @@ class Shift(models.Model):
         timezone = pytz.timezone(settings.TIME_ZONE)
         localized = datetime.fromtimestamp(self.end_date.timestamp(), tz=timezone)
         return f"{localized.strftime(self.TIME_FORMAT)}"
+
+    @property
+    def human_readable_start_end_time(self):
+        """Get the start and and time in a human readable format."""
+        timezone = pytz.timezone(settings.TIME_ZONE)
+        start_time = datetime.fromtimestamp(self.start_date.timestamp(), tz=timezone)
+        end_date = datetime.fromtimestamp(self.end_date.timestamp(), tz=timezone)
+
+        if start_time.date() == end_date.date():
+            if start_time.date() == datetime.today().date():
+                return f"{self.start_time} until {self.end_time}"
+            return f"{self.start_date.strftime(self.HUMAN_DATE_FORMAT)}, {self.start_time} until {self.end_time}"
+        if start_time.date() == datetime.today().date():
+            return f"{self.start_time} until {self.end_date.strftime(self.HUMAN_DATE_FORMAT)}, {self.end_time}"
+        return (
+            f"{self.start_date.strftime(self.HUMAN_DATE_FORMAT)}, {self.start_time} until "
+            f"{self.end_date.strftime(self.HUMAN_DATE_FORMAT)}, {self.end_time}"
+        )
 
     def get_assignees(self):
         """
