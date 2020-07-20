@@ -17,13 +17,13 @@
             <h6>Everything you need to know as a baker.</h6>
         </div>
         <hr>
-        <h3><i class="fas fa-sign-in-alt"></i></br>1. Log in</h3>
+        <h3><i class="fas fa-sign-in-alt"></i><br>1. Log in</h3>
         <p>
             Before you can start managing shifts, first <a href="{% url "users:login" %}?next={{request.path}}">login using your
             Science account</a>.
         </p>
         <hr>
-        <h3><i class="fas fa-plus-square"></i></br>2. Start or join a shift</h3>
+        <h3><i class="fas fa-plus-square"></i><br>2. Start or join a shift</h3>
         <p>
             After you are logged in, you can either start a new shift or join a shift in a venue you are authorized for,
             via the buttons on the <a href="{% url "index" %}">the home page</a>.
@@ -41,7 +41,7 @@
             to some quick actions, like increasing the number of orders you accept.
         </p>
         <hr>
-        <h3><i class="far fa-hand-paper"></i></br>3. Allow orders</h3>
+        <h3><i class="far fa-hand-paper"></i><br>3. Allow orders</h3>
         <p>
             A new shift won't directly accept new orders. You need to allow (or disallow) orders via the
             <i class="far fa-hand-paper"></i>-button in the footer menu. Only when orders are allowed, people can place
@@ -52,7 +52,7 @@
             are in place.
         </p>
         <hr>
-        <h3><i class="far fa-clock"></i></br>4. Wait...</h3>
+        <h3><i class="far fa-clock"></i><br>4. Wait...</h3>
         <p>
             Wait for orders to come in. New orders will automatically appear in the queue.
         </p>
@@ -62,7 +62,7 @@
             page to place an order yourself.
         </p>
         <hr>
-        <h3><i class="fas fa-cogs"></i></br>5. Process orders</h3>
+        <h3><i class="fas fa-cogs"></i><br>5. Process orders</h3>
         <p>
             When orders start coming in, you can start preparing them.
         </p>
@@ -82,7 +82,7 @@
             overview of all products you still have to make.
         </p>
         <hr>
-        <h3><i class="fas fa-cogs"></i></br>6. End of your shift</h3>
+        <h3><i class="fas fa-sign-out-alt"></i><br>6. End of your shift</h3>
         <p>
             When the end-time of your shift has passed, orders will automatically stop coming in. Also, when the
             maximum capacity is reached, orders will stop coming in. If you want to increase the maximum capacity or
@@ -96,6 +96,5 @@
         <p>
             Have fun baking!
         </p>
-
     </div>
 {% endblock %}

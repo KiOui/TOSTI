@@ -1,14 +1,41 @@
 ---
 
-name: "Test documentation"
+name: "Documentation"
 on:
-- pull_request
+  - push
 
 jobs:
   docs:
+    name: "Check Sphinx documentation"
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - uses: ammaraskar/sphinx-action@master
-      with:
-        docs-folder: "docs/"
+
+      - name: "Checkout the repository"
+        uses: actions/checkout@v2
+
+      - name: "Setup Python"
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.7'
+
+      - name: "Install Poetry"
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install poetry
+
+      - name: "Restore any cached Poetry dependencies"
+        uses: actions/cache@v1
+        with:
+          path: ~/.cache/pypoetry/virtualenvs
+          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-poetry-
+
+      - name: "Install any new dependencies"
+        run: poetry install
+        if: steps.cache.outputs.cache-hit != 'true'
+
+      - name: "Build documentation"
+        run: |
+          cd docs/
+          make html
