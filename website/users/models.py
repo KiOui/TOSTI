@@ -1,6 +1,7 @@
 from django.contrib.auth.base_user import BaseUserManager
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import User as BaseUser, Group as BaseGroup
 from django.db import models
+from django.db.models import CASCADE
 
 
 class UserManager(BaseUserManager):
@@ -44,10 +45,8 @@ class UserManager(BaseUserManager):
         return self._create_user(username, **kwargs)
 
 
-class User(AbstractUser):
+class User(BaseUser):
     """User object."""
-
-    username = models.CharField(max_length=256, unique=True)
 
     objects = UserManager()
 
@@ -73,3 +72,33 @@ class User(AbstractUser):
         :return: first name if it exists, otherwise username
         """
         return self.first_name if self.first_name != "" and self.first_name is not None else self.username
+
+    class Meta:
+        """Meta class for Users."""
+
+        proxy = True
+
+
+class GroupSettings(models.Model):
+    """Extra settings for a Django Group."""
+
+    group = models.OneToOneField(BaseGroup, on_delete=CASCADE, primary_key=True)
+    is_auto_join_group = models.BooleanField(
+        null=False, blank=False, default=False, help_text="If enabled, new users will automatically join this group."
+    )
+    gets_staff_permissions = models.BooleanField(
+        null=False,
+        blank=False,
+        default=False,
+        help_text="If enabled, all members added to this group will automatically get staff status after their next "
+        "login. This staff status will not be automatically revoked, though, if the user leaves the group.",
+    )
+
+    def __str__(self):
+        """Representation by group."""
+        return str(self.group)
+
+    class Meta:
+        """Meta class for GroupSettings."""
+
+        ordering = ["group__name"]

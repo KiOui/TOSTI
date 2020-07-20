@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="{% static 'marietje/css/search.css' %}"/>
     <div id="search-message" class="alert"></div>
     <input id="search" type="text" maxlength="100" placeholder="Search a track" class="container-fluid"/>
-    <div id="results" style="display: none">
+    <div id="results" style="display: none;" class="px-3 bg-light">
 {% endif %}
 <div class="d-flex flex-column">
     {% if tracks %}
@@ -14,7 +14,9 @@
                 <div class="flex-equal-width">{{ track.artists|join:", " }}</div>
                 <input type="button" value="Add" class="btn btn-primary" style="height: 40px" onclick="add_to_queue('{{ track.id }}', display_message);"/>
             </div>
-            <div class="border"></div>
+            {% if not forloop.last %}
+                <div class="border"></div>
+            {% endif %}
         {% endfor %}
     {% endif %}
 </div>

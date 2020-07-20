@@ -12,68 +12,58 @@
 
 {% block page %}
     <div class="container">
-        <h1>How to order products?</h1>
+        <div class="container mt-5 mb-5 text-center">
+            <h1>How to order via T.O.S.T.I.?</h1>
+            <h6>Enjoy your meal in 5 simple steps</h6>
+        </div>
+        <hr>
+        <h3><i class="fas fa-sign-in-alt"></i></br>1. Log in</h3>
         <p>
-            Before you can start ordering products on TOSTI, first login using your Science account via the
-            <a href="{% url "users:login" %}">login page</a>. Then, go to
-            <a href="{% url "orders:shifts" %}">this page</a> to see if there is an active shift available where you can
-            order. If an active shift is available, the page will look like the following.
+            Before you can start ordering, first <a href="{% url "users:login" %}?next={{request.path}}">login using your
+            Science account</a>.
         </p>
-        <img src="#"/>
+        <hr>
+        <h3><i class="fas fa-map-marker-alt"></i></br>2. Choose your venue</h3>
         <p>
-            Click on a venue you want to order at. You will see the following screen.
+            On the <a href="{% url "index" %}">home page</a>, there is an overview of all venues where you can place
+            orders. Is your favourite venue not available to order? Too bad, you can only wait...
         </p>
-        <img src="#"/>
+        <hr>
+        <h3><i class="fas fa-cart-plus"></i></br>3. Place your order</h3>
         <p>
-            Click on "Order items", the button will take you to the order page where you can select products. Note that
-            you can not order unlimited products, there are restrictions on your maximum order and on the amount of
-            orders per item. The page will display when you have ordered the maximum amount in total and the maximum
-            amount of an item. When you have added enough items to your cart, click on the "Order items" button to order
-            the items. You can always order more items if you are not at your maximum yet.
-        </p>
-        <p>
-            After ordering items, your order page will look like this, displaying your orders (and other orders if more
-            people placed orders) with the status of your order. Orders with a <i class="fas fa-user"></i> icon are your
-            orders, orders without a <i class="fas fa-user"></i> icon are orders from other users.
+            Check out the queue of orders and decide whether you want to place an order. Hit the 'place your order'
+            button and pick the products you want to order. After placing your order, you will be added to the queue
+            and your orders will be prepared with love.
         </p>
         <p>
-            You may have noticed that your orders are displaying a
+            Note that you can not order products unlimited, there are restrictions on how many items you can order in
+            total and of a specific kind of product.
+        </p>
+        <hr>
+        <h3><i class="far fa-clock"></i></br>4. Wait...</h3>
+        <p>
+            After placing your order, all you can do is wait. In the queue of the venue, you can see how things are
+            going. Orders with a <i class="fas fa-user"></i>-icon are your own orders.
+        </p>
+        <p>You may notice that your orders are displaying a
             <i class="status-button bg-danger text-white" style="font-style: normal; font-size: 1rem;">Not paid</i>
-            button. This button can have four separate values:
+            label. If you already paid for your order, but it is not ready yet, this label will become
+            <i class="status-button bg-warning text-white" style="font-style: normal; font-size: 1rem;">Processing</i>.
+            It is not required to pay upfront, you can also pay when your order is ready.
         </p>
-        <ul class="margin-list">
-            <li>
-                <i class="status-button bg-danger text-white" style="font-style: normal; font-size: 1rem;">Not paid</i>
-                : You did not pay your order yet and your order is not finished.
-            </li>
-            <li>
-                <i class="status-button bg-warning text-white" style="font-style: normal; font-size: 1rem;">Processing</i>
-                : You have paid your order and it is still processing.
-            </li>
-            <li>
-                <i class="status-button bg-warning text-white" style="font-style: normal; font-size: 1rem;">Done</i>
-                : You have <strong>not</strong> paid your order and it is finished.
-            </li>
-            <li>
-                <i class="status-button bg-success text-white" style="font-style: normal; font-size: 1rem;">Done</i>
-                : You have paid your order and it is finished.
-            </li>
-        </ul>
+        <hr>
+        <h3><i class="fas fa-check-circle"></i></br>5. Ready!</h3>
         <p>
-            Orders from other people can have two states.
+            When your order is finally ready, the label will turn into
+            <i class="status-button bg-warning text-white" style="font-style: normal; font-size: 1rem;">Done</i> (if you still need to pay) or
+            <i class="status-button bg-success text-white" style="font-style: normal; font-size: 1rem;">Done</i>.
+            Make sure to be present in the venue, because this is the time your name will be called and you can pick up
+            your order!
         </p>
-        <ul class="margin-list">
-            <li>
-                <i class="status-button bg-warning text-white" style="font-style: normal; font-size: 1rem;">Processing</i>
-                : The order is still being made.
-            </li>
-            <li>
-                <i class="status-button bg-success text-white" style="font-style: normal; font-size: 1rem;">Done</i>
-                : The order is ready.
-            </li>
-        </ul>
         <p>
-            When your order is ready, you can pick it up at the venue you ordered. Have fun ordering!
+            Bon appetit!
         </p>
+        <hr>
+        <p>Are you a baker and want to know how things work for you? Check out <a href="{% url "orders:explainer_admin" %}">this explainer</a>.</p>
     </div>
 {% endblock %}

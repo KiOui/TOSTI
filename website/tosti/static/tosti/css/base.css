@@ -2,10 +2,6 @@ body {
     font-family: 'Neucha', cursive;
 }
 
-.page {
-    min-height: 90vh;
-}
-
 .site-header, .page-footer {
     background-color: rgba(232, 179, 101, 1);
     color: white;

@@ -1,10 +1,9 @@
-from django.contrib.auth import get_user_model, login, logout
+from django.contrib.auth import login, logout
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
 from .forms import LoginForm, AccountForm
-from .services import get_openid_verifier
-
-User = get_user_model()
+from .services import get_openid_verifier, update_staff_status
 
 
 class LoginView(TemplateView):
@@ -70,7 +69,13 @@ class VerifyView(TemplateView):
         openid_verifier = get_openid_verifier(request)
         user = openid_verifier.extract_user()
         if user:
-            login(request, user)
+            update_staff_status(user)
+            login(request, user, backend="django.contrib.auth.backends.ModelBackend")
+
+            next_page = request.GET.get("next")
+            if next_page:
+                return redirect(next_page)
+
             return redirect("index")
 
         return render(request, self.template_name)
@@ -103,7 +108,7 @@ class LogoutView(TemplateView):
             return redirect("/")
 
 
-class AccountView(TemplateView):
+class AccountView(LoginRequiredMixin, TemplateView):
     """Account view."""
 
     template_name = "users/account.html"

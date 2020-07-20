@@ -1,0 +1,33 @@
+{% extends 'tosti/base.html' %}
+{% load static %}
+
+{% block title %}
+    Page not found (404)
+{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'tosti/css/viewheight.css' %}"/>
+{% endblock %}
+
+{% block header %}
+
+{% endblock %}
+
+{% block page %}
+    <div class="container-fluid min-vh-100" style="background-color: rgba(232, 179, 101, 1);">
+        <div class="flex-container min-vh-100 container-fluid">
+            <div class="container-centered bg-white p-5">
+                <div class="flex-container mb-2">
+                    <img class="container-centered" style="height: 150px; width: auto;" src="{% static 'tosti/svg/TOSTI-logo.svg' %}">
+                </div>
+                <h1 style="font-size: 2rem">Page not found</h1>
+                <p style="font-size: 1rem">The page you were trying to reach was not found or removed.</p>
+                <a href="{% url "index" %}"> ← Back to TOSTI</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block footer %}
+
+{% endblock %}

@@ -1,7 +1,6 @@
 from django.urls.converters import IntConverter
 
-from venues.models import Venue
-from .models import Shift, Order
+from .models import Shift, Order, OrderVenue
 
 
 class ShiftConverter(IntConverter):
@@ -15,7 +14,7 @@ class ShiftConverter(IntConverter):
         :return: a Project or ValueError
         """
         try:
-            return Shift.objects.get(id=int(value))
+            return Shift.objects.get(pk=int(value))
         except Shift.DoesNotExist:
             raise ValueError
 
@@ -40,8 +39,8 @@ class VenueConverter(IntConverter):
         :return: a Venue or ValueError
         """
         try:
-            return Venue.objects.get(id=int(value))
-        except Venue.DoesNotExist:
+            return OrderVenue.objects.get(pk=int(value))
+        except OrderVenue.DoesNotExist:
             raise ValueError
 
     def to_url(self, obj):
@@ -65,7 +64,7 @@ class OrderConverter(IntConverter):
         :return: a Order or ValueError
         """
         try:
-            return Order.objects.get(id=int(value))
+            return Order.objects.get(pk=int(value))
         except Order.DoesNotExist:
             raise ValueError
 

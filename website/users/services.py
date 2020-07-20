@@ -4,12 +4,12 @@ import re
 from datetime import timedelta
 
 from django.conf import settings
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.urls import reverse
 from django.utils import timezone
 
 
-User = get_user_model()
+from users.models import User
 
 
 def get_openid_verifier(request):
@@ -19,10 +19,17 @@ def get_openid_verifier(request):
     :param request: the request
     :return: an OpenID verifier object
     """
+    return_url = request.build_absolute_uri(reverse(settings.OPENID_RETURN_URL))
+
+    next_page = request.GET.get("next")
+    if next_page:
+        params = urlencode({'next': next_page})
+        return_url += '?' + params
+
     return OpenIDVerifier(
         settings.OPENID_SERVER_ENDPOINT,
         request,
-        settings.OPENID_RETURN_URL,
+        return_url,
         settings.OPENID_USERNAME_PREFIX,
         settings.OPENID_USERNAME_POSTFIX,
     )
@@ -43,7 +50,7 @@ class OpenIDVerifier:
         """
         self.openid_server_endpoint = openid_server_endpoint
         self.openid_trust_root = request.META["HTTP_HOST"]
-        self.openid_return_url = request.build_absolute_uri(reverse(openid_return_url))
+        self.openid_return_url = openid_return_url
         self.prefix = prefix
         self.postfix = postfix
         self.request = request
@@ -194,8 +201,23 @@ class OpenIDVerifier:
                 user, created = User.objects.get_or_create(username=username)
                 if created:
                     self.set_user_details(user)
+                    join_auto_join_groups(user)
                 return user
         return False
+
+
+def join_auto_join_groups(user):
+    """Let new users join groups that are set for auto-joining."""
+    auto_join_groups = Group.objects.filter(groupsettings__is_auto_join_group=True)
+    for group in auto_join_groups:
+        user.groups.add(group)
+
+
+def update_staff_status(user):
+    """Update the is_staff value of a user."""
+    if len(user.groups.all().filter(groupsettings__gets_staff_permissions=True)) > 0:
+        user.is_staff = True
+        user.save()
 
 
 def execute_data_minimisation(dry_run=False):

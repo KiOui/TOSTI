@@ -4,6 +4,7 @@
 {% block styles %}
     <link rel="stylesheet" href="{% static 'tosti/css/index.css' %}"/>
     <link rel="stylesheet" href="{% static 'orders/css/forms.css' %}"/>
+    <link rel="stylesheet" href="{% static 'orders/css/admin-footer.css' %}"/>
 {% endblock %}
 
 {% block page %}
@@ -12,26 +13,30 @@
 {% endblock %}
 
 {% block footer %}
-    {% if user.is_staff and user not in shift.get_assignees %}
+    {% if can_manage_shift and user not in shift.get_assignees %}
         <footer class="page-footer navbar navbar-expand-md fixed-bottom">
             <div class="container text-center">
                 <div class="row flex-grow-1">
                     <div class="col">
-                        <div class="btn-ml m-auto cursor-pointer btn-on" onclick="window.location.href = '{% url 'orders:shift_join' shift=shift %}';">
-                            <i class="fas fa-sign-in-alt"></i>
-                        </div>
+                        <a href="{% url 'orders:shift_join' shift=shift %}">
+                            <div class="btn-ml m-auto cursor-pointer btn-on">
+                                <p class="font-footer"><i class="fas fa-sign-in-alt"></i> Join shift</p>
+                            </div>
+                        </a>
                     </div>
                 </div>
             </div>
         </footer>
-    {% elif user.is_staff and user in shift.get_assignees %}
+    {% elif can_manage_shift and user in shift.get_assignees %}
         <footer class="page-footer navbar navbar-expand-md fixed-bottom">
             <div class="container text-center">
                 <div class="row flex-grow-1">
                     <div class="col">
-                        <div class="btn-ml m-auto cursor-pointer btn-on" onclick="window.location.href = '{% url "orders:shift_admin" shift=shift %}';">
-                            <i class="fas fa-tools"></i>
-                        </div>
+                        <a href="{% url "orders:shift_admin" shift=shift %}">
+                            <div class="btn-ml m-auto cursor-pointer btn-on" style="flex-grow: 0;">
+                                <p class="font-footer"><i class="fas fa-sign-in-alt"></i> Shift admin</p>
+                            </div>
+                        </a>
                     </div>
                 </div>
             </div>

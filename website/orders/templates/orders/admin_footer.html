@@ -6,35 +6,47 @@
 <div class="container text-center">
     <div class="row flex-grow-1 navbar-collapse collapse" id="footer-menu">
         <div class="col expand-mobile">
-            <div id="shift-status-{{ shift.id }}" class="btn-ml m-auto cursor-pointer {% if shift.can_order %}bg-success{% else %}bg-danger{% endif %}" onclick="toggle_shift_activation(this);">
-                <i class="far fa-hand-paper"></i>
-                <p class="font-footer">Allow/disallow orders</p>
+            <div id="shift-status-{{ shift.id }}" class="h-100 btn-ml m-auto cursor-pointer {% if shift.can_order %}bg-success{% else %}bg-danger{% endif %}" onclick="toggle_shift_activation(this);">
+                <p class="font-footer flex-fixed"><i class="far fa-hand-paper"></i></p>
+                <p class="font-footer">Allow/disallow</p>
             </div>
         </div>
         <div class="col expand-mobile">
-            <div class="btn-ml btn-on m-auto" onclick="add_time();">
-                <i class="far fa-clock"></i> + 5
-                <p class="font-footer">Postpone end time</p>
+            <div class="h-100 btn-ml btn-on m-auto" onclick="add_time();">
+                <p class="font-footer flex-fixed"><i class="far fa-clock"></i> + 5</p>
+                <p class="font-footer">Extend time</p>
             </div>
         </div>
         <div class="col expand-mobile">
-            <div class="btn-ml btn-on m-auto" onclick="add_capacity();">
-                <i class="fas fa-list"></i> + 5
-                <p class="font-footer">Allow more orders</p>
+            <div class="h-100 btn-ml btn-on m-auto" onclick="add_capacity();">
+                <p class="font-footer flex-fixed"><i class="fas fa-list"></i> + 5</p>
+                <p class="font-footer">Add orders</p>
             </div>
         </div>
         <div class="col expand-mobile">
-            <div class="btn-ml btn-on m-auto w-100" onclick="window.location.href = '{% url "orders:shift_overview" shift=shift %}';">
-                <i class="fas fa-users"></i>
-                <p class="font-footer">Go to order page</p>
-            </div>
+            <a href="{% url "orders:shift_overview" shift=shift %}">
+                <div class="h-100 btn-ml btn-on m-auto w-100">
+                    <p class="font-footer flex-fixed"><i class="fas fa-users"></i></p>
+                    <p class="font-footer">Order page</p>
+                </div>
+            </a>
+        </div>
+        {% if request.user.is_staff and has_change_order_permissions %}
+        <div class="col expand-mobile">
+            <a href="{% url "admin:orders_shift_change" shift.id %}">
+                <div class="h-100 btn-ml btn-on m-auto w-100">
+                    <p class="font-footer flex-fixed"><i class="fas fa-cog"></i></p>
+                    <p class="font-footer">Settings</p>
+                </div>
+            </a>
         </div>
         <div class="col expand-mobile">
-            <div class="btn-ml btn-on m-auto w-100" onclick="window.location.href = '{% url "admin:orders_shift_change" shift.id %}';">
-                <i class="fas fa-cog"></i>
-                <p class="font-footer">Go to detailed settings</p>
+            <div class="h-100 btn-ml btn-on m-auto w-100" data-toggle="modal" data-target="#order-overview-popup">
+                <p class="font-footer flex-fixed"><i class="fas fa-binoculars"></i></p>
+                <p class="font-footer">Summary</p>
             </div>
         </div>
+        {% endif %}
     </div>
     <button class="navbar-toggler m-auto" style="border: 0" type="button" data-toggle="collapse" data-target="#footer-menu">
         <i class="fas fa-caret-up text-white"></i>

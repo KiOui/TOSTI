@@ -6,10 +6,12 @@
 {% endif %}
 {% if player.currently_playing %}
     <div class="w-50 mx-auto mb-2">
-        <img class="w-100" src="{{ player.currently_playing.image }}"/>
+        <a href="{% url "marietje:now_playing" venue=player.venue %}">
+            <img class="w-100" src="{{ player.currently_playing.image }}"/>
+        </a>
     </div>
-    <p>{{ player.currently_playing.name }}</p>
-    <p>
+    <div class="text-center m-auto">{{ player.currently_playing.name }}</div>
+    <div class="text-center w-100">
         {% for artist in player.currently_playing.artists %}
             {% if forloop.last %}
                 {{ artist }}
@@ -17,12 +19,12 @@
                 {{ artist }} -
             {% endif %}
         {% endfor %}
-    </p>
+    </div>
 {% else %}
-    <p>No currently playing track</p>
+    <div class="text-center m-auto">No currently playing track</div>
 {% endif %}
 {% if controls %}
-    <div class="player-controls mb-5">
+    <div class="player-controls mt-3 mb-3">
         <i class="fas fa-backward" onclick="update_and_callback('{% url "marietje:player_previous" player=player %}', {}, update_update_list)"></i>
         {% if player.currently_playing.is_playing %}
             <i class="fas fa-pause" onclick="update_and_callback('{% url "marietje:player_pause" player=player %}', {}, update_update_list)"></i>
