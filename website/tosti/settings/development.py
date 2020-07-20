@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
-from tosti.settings.base import *  # noqa
+from tosti.settings import *  # noqa
 
 SECRET_KEY = "7c^z*je^r!@aw!0*vuc1t4cp1rfi+4+xu@x5pva@xc@rf%3#lt"
 

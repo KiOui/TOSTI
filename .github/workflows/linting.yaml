@@ -1,12 +1,12 @@
 ---
 
-name: "Testing"
+name: "Linting"
 on:
   - push
 
 jobs:
-  build:
-    name: "Testing"
+  lint:
+    name: "Linting"
     runs-on: ubuntu-latest
     steps:
 
@@ -35,16 +35,16 @@ jobs:
         run: poetry install
         if: steps.cache.outputs.cache-hit != 'true'
 
-      - name: "Test migrations"
-        run: |
-          poetry run python website/manage.py makemigrations --no-input --check --dry-run
+      - name: "Run Black"
+        run: poetry run black --quiet --check website
 
-      - name: "Perform Django self-check"
-        run: |
-          poetry run python3 website/manage.py check
+      - name: "Run flake8"
+        run: >-
+          poetry run
+          flake8
+          --exclude="migrations,website/tosti/settings/*.py"
+          --max-line-length=119
+          website
 
-      - name: "Run Django tests using Coverage"
-        run: poetry run coverage run website/manage.py test website/
-
-      - name: "Check Coverage report"
-        run: poetry run coverage report
+      - name: "Run PyDocStyle"
+        run: poetry run pydocstyle --explain --add-ignore=D100,D104 --match-dir='(?!migrations).*'

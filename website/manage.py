@@ -6,7 +6,7 @@ import sys
 
 def main():
     """Django management command."""
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tosti.settings.development")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tosti.settings")
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
