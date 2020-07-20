@@ -5,7 +5,7 @@
 {% endif %}
 <h1>{{ shift.venue.venue.name }}</h1>
 <p class="my-4 mx-auto" style="font-size: 1rem; max-width: 400px;">
-    shift #{{ shift.pk }} - {{ shift.number_of_orders }}/{{ shift.max_orders_total }} - {{ shift.start_date }} until {{ shift.end_date }} <br>
+    shift #{{ shift.pk }} - {{ shift.number_of_orders }}/{{ shift.max_orders_total }} - {{ shift.human_readable_start_end_time }}<br>
     {% if shift.get_assignees %}
         At your service:
         {% for assignee in shift.get_assignees %}
