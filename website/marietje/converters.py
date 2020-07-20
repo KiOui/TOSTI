@@ -1,27 +1,27 @@
 from django.urls.converters import IntConverter
-from .models import SpotifyAccount
+from .models import Player
 
 
-class SpotifyAccountConverter(IntConverter):
-    """Converter for SpotifyAccount (player) model."""
+class PlayerConverter(IntConverter):
+    """Converter for Player model."""
 
     def to_python(self, value):
         """
-        Cast integer to SpotifyAccount (player).
+        Cast integer to Player.
 
-        :param value: the primary key of the SpotifyAccount
-        :return: a SpotifyAccount or ValueError
+        :param value: the primary key of the Player
+        :return: a Player or ValueError
         """
         try:
-            return SpotifyAccount.objects.get(id=int(value))
-        except SpotifyAccount.DoesNotExist:
+            return Player.objects.get(id=int(value))
+        except Player.DoesNotExist:
             raise ValueError
 
     def to_url(self, obj):
         """
-        Cast an object of SpotifyAccount (player) to a string.
+        Cast an object of Player to a string.
 
-        :param obj: the SpotifyAccount object
-        :return: the primary key of the SpotifyAccount object in string format
+        :param obj: the Player object
+        :return: the primary key of the Player object in string format
         """
         return str(obj.pk)

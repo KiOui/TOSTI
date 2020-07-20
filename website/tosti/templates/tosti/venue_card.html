@@ -17,18 +17,34 @@
             {% if admin %}
                 {% if venue_shift and venue_shift.is_active %}
                     <a href="{% url 'orders:shift_join' shift=venue_shift %}">
-                        <input class="btn-ml btn-on my-2" type="button" value="Join shift at {{ venue }}" />
+                        <div class="btn-ml btn-on my-2">
+                            <h4 class="my-0">
+                                Join shift at {{ venue }}
+                            </h4>
+                        </div>
                     </a>
                 {% elif venue_shift %}
                     <a href="{% url 'orders:shift_create' venue=venue %}">
-                        <input class="btn-ml btn-on my-2" type="button" value="Start shift" />
+                        <div class="btn-ml btn-on my-2">
+                            <h4 class="my-0">
+                                Start shift
+                            </h4>
+                        </div>
                     </a>
                     <a href="{% url 'orders:shift_join' shift=venue_shift %}">
-                        <input class="btn-ml btn-on my-2" type="button" value="Show last shift" />
+                        <div class="btn-ml btn-on my-2">
+                            <h4 class="my-0">
+                                Show last shift
+                            </h4>
+                        </div>
                     </a>
                 {% else %}
                     <a href="{% url 'orders:shift_create' venue=venue %}">
-                        <input class="btn-ml btn-on my-2" type="button" value="Start shift" />
+                        <div class="btn-ml btn-on my-2">
+                            <h4 class="my-0">
+                                Start shift
+                            </h4>
+                        </div>
                     </a>
                 {% endif %}
             {% endif %}

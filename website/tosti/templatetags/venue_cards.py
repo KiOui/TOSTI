@@ -1,6 +1,6 @@
 from django import template
 
-from marietje.models import SpotifyAccount
+from marietje.models import Player
 from orders.models import OrderVenue
 
 register = template.Library()
@@ -16,7 +16,7 @@ def render_venue_card(context, shift=None, venue=None, show_player=True):
         "venue": venue,
         "request": context.get("request"),
         "admin": context["request"].user in venue.get_users_with_shift_admin_perms(),
-        "show_player": show_player and SpotifyAccount.get_player(venue.venue) is not None,
+        "show_player": show_player and Player.get_player(venue.venue) is not None,
     }
 
 

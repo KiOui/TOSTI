@@ -4,14 +4,14 @@ from django.urls import reverse
 from django.views.generic import TemplateView
 
 from marietje.forms import SpotifyTokenForm
-from marietje.models import SpotifyAccount
+from marietje.models import Player
 from marietje.views import COOKIE_CLIENT_ID
 
 
 class SpofityAuthorizeView(PermissionRequiredMixin, TemplateView):
     """Authorize a Django to access a Spotify account by entering OAuth credentials."""
 
-    permission_required = "marietje.add_spotifyaccount"
+    permission_required = "marietje.add_player"
     template_name = "marietje/admin/authorize.html"
 
     def get(self, request, **kwargs):
@@ -29,7 +29,7 @@ class SpofityAuthorizeView(PermissionRequiredMixin, TemplateView):
         """
         form = SpotifyTokenForm(request.POST)
         if form.is_valid():
-            spotify_auth_code, _ = SpotifyAccount.objects.get_or_create(client_id=form.cleaned_data.get("client_id"))
+            spotify_auth_code, _ = Player.objects.get_or_create(client_id=form.cleaned_data.get("client_id"))
             spotify_auth_code.client_secret = form.cleaned_data.get("client_secret")
             spotify_auth_code.redirect_uri = request.build_absolute_uri(reverse("admin:add_token"))
             spotify_auth_code.save()
@@ -42,7 +42,7 @@ class SpofityAuthorizeView(PermissionRequiredMixin, TemplateView):
 class SpotifyTokenView(PermissionRequiredMixin, TemplateView):
     """Get a Spotify account token."""
 
-    permission_required = "marietje.add_spotifyaccount"
+    permission_required = "marietje.add_player"
     template_name = "marietje/admin/token.html"
 
     def get(self, request, **kwargs):
@@ -51,8 +51,8 @@ class SpotifyTokenView(PermissionRequiredMixin, TemplateView):
         if code is not None:
             client_id = request.COOKIES.get(COOKIE_CLIENT_ID, None)
             try:
-                spotify_auth_code = SpotifyAccount.objects.get(client_id=client_id)
-            except SpotifyAccount.DoesNotExist:
+                spotify_auth_code = Player.objects.get(client_id=client_id)
+            except Player.DoesNotExist:
                 return render(request, self.template_name, {"error": "Client ID was not found."})
             # Generate the first access token and store in cache
             access_token = spotify_auth_code.auth.get_access_token(code=code)
@@ -75,7 +75,7 @@ class SpotifyTokenView(PermissionRequiredMixin, TemplateView):
 class SpotifyAuthorizeSucceededView(PermissionRequiredMixin, TemplateView):
     """Authorization succeeded view."""
 
-    permission_required = "marietje.add_spotifyaccount"
+    permission_required = "marietje.add_player"
     template_name = "marietje/admin/authorize_succeeded.html"
 
     def get(self, request, **kwargs):
