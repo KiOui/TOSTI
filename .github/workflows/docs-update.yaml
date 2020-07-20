@@ -42,8 +42,6 @@ jobs:
 
       - name: "Commit documentation changes"
         run: |
-          cp -r docs/build/html/* gh-pages/
-          cd gh-pages
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add .
@@ -53,5 +51,5 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           branch: gh-pages
-          directory: gh-pages
+          directory: docs/build/html
           github_token: ${{ secrets.GITHUB_TOKEN }}
