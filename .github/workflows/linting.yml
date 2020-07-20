@@ -1,6 +1,6 @@
 ---
 
-name: "Linting and Testing"
+name: "Linting"
 on: "push"
 
 jobs:
