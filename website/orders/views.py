@@ -8,7 +8,7 @@ from orders.exceptions import OrderException
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.template.loader import get_template
-from .models import Shift, Product
+from .models import Product
 from .forms import CreateShiftForm
 import urllib.parse
 
