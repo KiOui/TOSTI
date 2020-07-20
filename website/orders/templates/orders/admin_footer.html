@@ -48,7 +48,7 @@
         </div>
         {% endif %}
     </div>
-    <button class="navbar-toggler m-auto" style="border: 0" type="button" data-toggle="collapse" data-target="#footer-menu">
+    <button id="footer-toggler" class="navbar-toggler m-auto" style="border: 0" type="button" data-toggle="collapse" data-target="#footer-menu">
         <i class="fas fa-caret-up text-white"></i>
     </button>
 </div>
@@ -59,6 +59,7 @@
 {% if not refresh %}
     <link rel="stylesheet" href="{% static 'orders/css/admin-footer.css' %}"/>
     <script src="{% static 'orders/js/asynch-update-admin-footer.js' %}"></script>
+    <script src="{% static 'orders/js/admin-footer-close.js' %}"></script>
     <script>
         add_update_list(update_and_callback,
             ["{% url 'orders:shift_refresh_admin_footer' shift=shift %}",
