@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 
-from tosti.settings.base import *  # noqa
+from tosti.settings import *
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
@@ -20,10 +20,31 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+BASE_DIR = os.path.abspath(
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")
+)
 
 ALLOWED_HOSTS = ["tosti.science.ru.nl", "tosti.total5.nl"]
 
 SESSION_COOKIE_SECURE = True
+
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [os.path.join(BASE_DIR, "templates")],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+                "tosti.context_processors.google_analytics",
+            ],
+        },
+    },
+]
 
 DATABASES = {
     "default": {
@@ -51,6 +72,15 @@ LOGGING = {
     },  # noqa
 }
 
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/2.2/howto/static-files/
+
+STATIC_ROOT = os.path.join(BASE_DIR, "static/")
+STATIC_URL = "/static/"
+
+MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
+MEDIA_URL = "/media/"
+
 if os.environ.get("GOOGLE_ANALYTICS_KEY"):
     GOOGLE_ANALYTICS_KEY = os.environ.get("GOOGLE_ANALYTICS_KEY")
 
@@ -66,6 +96,3 @@ if os.environ.get("DJANGO_SPOTIFY_CACHE_PATH"):
     SPOTIFY_CACHE_PATH = os.environ.get("DJANGO_SPOTIFY_CACHE_PATH")
 else:
     SPOTIFY_CACHE_PATH = os.path.join(BASE_DIR, "cache")  # noqa
-
-if os.environ.get("GOOGLE_ANALYTICS_KEY"):
-    GOOGLE_ANALYTICS_KEY = os.environ.get("GOOGLE_ANALYTICS_KEY")

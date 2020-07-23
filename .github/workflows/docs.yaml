@@ -1,12 +1,12 @@
 ---
 
-name: "Testing"
+name: "Documentation"
 on:
   - push
 
 jobs:
-  build:
-    name: "Testing"
+  docs:
+    name: "Check Sphinx documentation"
     runs-on: ubuntu-latest
     steps:
 
@@ -35,16 +35,7 @@ jobs:
         run: poetry install
         if: steps.cache.outputs.cache-hit != 'true'
 
-      - name: "Test migrations"
+      - name: "Build documentation"
         run: |
-          poetry run python website/manage.py makemigrations --no-input --check --dry-run
-
-      - name: "Perform Django self-check"
-        run: |
-          poetry run python3 website/manage.py check
-
-      - name: "Run Django tests using Coverage"
-        run: poetry run coverage run website/manage.py test website/
-
-      - name: "Check Coverage report"
-        run: poetry run coverage report
+          cd docs
+          poetry run make html

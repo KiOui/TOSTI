@@ -11,7 +11,6 @@ touch -a /tosti/log/django.log
 
 cd /tosti/src/website
 
-./manage.py collectstatic --no-input -v0 --ignore="*.scss"
 ./manage.py migrate --no-input
 
 chown --recursive www-data:www-data /tosti/
