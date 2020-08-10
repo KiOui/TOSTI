@@ -70,7 +70,7 @@ function construct_products_section(products) {
         list_item.appendChild(name);
         list_item.appendChild(price);
         list_item.appendChild(button);
-        if (!(MAX_ORDERS !== null && get_amount_of_cart_items() >= MAX_ORDERS) && products[i].max_allowed !== null && get_amount_of_item_orders(products[i].id) >= products[i].max_allowed) {
+        if (products[i].max_allowed !== null && get_amount_of_item_orders(products[i].id) >= products[i].max_allowed) {
             let overlay = create_element('div', ['item-overlay'], "");
             let overlay_text = create_element('p', ['alert', 'alert-warning'], "You have ordered the maximum of this item.");
             overlay.appendChild(overlay_text);

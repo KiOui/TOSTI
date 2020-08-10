@@ -34,7 +34,7 @@ def execute_data_minimisation(dry_run=False):
 
 def user_can_order_product(user: User, product: Product, shift: Shift):
     """Check if a user can order products in a certain shift."""
-    if not shift.user_can_order_amount(user):
+    if not shift.user_can_order_amount(user) and not product.ignore_shift_restrictions:
         raise OrderException("User can not order more products")
     if not product.user_can_order_amount(user, shift):
         raise OrderException(f"User can not order more {product.name}")
