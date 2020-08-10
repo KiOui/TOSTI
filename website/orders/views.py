@@ -635,7 +635,7 @@ class ShiftScannerView(PermissionRequiredMixin, TemplateView):
                 )
             except Product.DoesNotExist:
                 return JsonResponse({"error": True, "errormsg": "This product does not exist."})
-            Order.objects.create(shift=shift, product=product, type=Order.TYPE_SCANNED)
+            Order.objects.create(shift=shift, product=product, type=Order.TYPE_SCANNED, paid=True, ready=True)
             return JsonResponse({"error": False})
         return JsonResponse({"error": True, "errormsg": "No option defined."})
 

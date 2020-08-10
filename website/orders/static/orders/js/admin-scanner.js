@@ -9,8 +9,6 @@ function start_scanner() {
             type: "LiveStream",
             target: document.querySelector('#scanner'),
             constraints: {
-                width: 480,
-                height: 320,
                 facingMode: "environment"
             },
         },
