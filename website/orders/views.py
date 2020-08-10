@@ -70,7 +70,7 @@ class ProductListView(PermissionRequiredMixin, TemplateView):
         :return: a json list of the products converted to json and an extra dictionary key (max_allowed) indicating
         how many more of the item a user can still order
         """
-        items = Product.objects.filter(available=True, available_at=shift.venue)
+        items = Product.objects.filter(available=True, available_at=shift.venue, orderable=True)
         json_list = list()
         for item in items:
             json_obj = item.to_json()
@@ -128,7 +128,7 @@ class PlaceOrderView(PermissionRequiredMixin, TemplateView):
         product_list = []
         for product_id in order_list:
             try:
-                product_list.append(Product.objects.get(pk=product_id))
+                product_list.append(Product.objects.get(pk=product_id, available=True, orderable=True))
             except (Product.DoesNotExist, ValueError):
                 return "That product does not exist"
         try:

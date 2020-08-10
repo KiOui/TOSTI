@@ -45,10 +45,11 @@ def user_can_order_product(user: User, product: Product, shift: Shift):
 
 def place_orders(products: List[Product], user: User, shift: Shift):
     """Place orders for a user in a certain shift."""
+    products_ignore_shift_restrictions = [x for x in products if x.ignore_shift_restrictions]
     if user not in shift.venue.get_users_with_order_perms():
         raise OrderException("User does not have permissions to order during this shift.")
 
-    if not shift.user_can_order_amount(user, amount=len(products)):
+    if not shift.user_can_order_amount(user, amount=len(products) - len(products_ignore_shift_restrictions)):
         raise OrderException("User can not order that much products in this shift")
     if not shift.can_order:
         raise OrderException("User can not order products for this shift")
@@ -61,7 +62,7 @@ def place_orders(products: List[Product], user: User, shift: Shift):
 
     orders = []
     for product in products:
-        orders.append(Order.objects.create(user=user, shift=shift, product=product))
+        orders.append(Order.objects.create(user=user, shift=shift, product=product, type=Order.TYPE_ORDERED))
 
     return orders
 

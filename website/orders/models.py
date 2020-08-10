@@ -100,7 +100,9 @@ class Product(models.Model):
     name = models.CharField(max_length=50, unique=True, null=False, blank=False)
     icon = models.CharField(
         max_length=20,
-        unique=True,
+        unique=False,
+        null=True,
+        blank=True,
         help_text="Font-awesome icon name that is used for quick display of the product type.",
     )
     available = models.BooleanField(default=True, null=False)
@@ -108,6 +110,15 @@ class Product(models.Model):
 
     current_price = models.DecimalField(
         max_digits=6, decimal_places=2, validators=[MinValueValidator(Decimal("0.00"))]
+    )
+
+    orderable = models.BooleanField(
+        default=True, null=False, help_text="Whether or not this product should appear on the order page."
+    )
+    ignore_shift_restrictions = models.BooleanField(
+        default=False,
+        null=False,
+        help_text="Whether or not this product should ignore the maximum orders per shift restriction.",
     )
 
     max_allowed_per_shift = models.PositiveSmallIntegerField(
@@ -118,6 +129,22 @@ class Product(models.Model):
         help_text="The maximum amount a single user can order this product in a single shift. Note that shifts are "
         "bound to the venue. Empty means no limit.",
     )
+
+    scannable = models.BooleanField(default=False, help_text="Whether or not this product can be scanned.")
+    barcode = models.CharField(null=True, blank=True, max_length=13, help_text="Either an EAN-8 or EAN-13 barcode.")
+
+    def save(self, *args, **kwargs):
+        """
+        Save an object of the Product type.
+
+        :param args: arguments
+        :param kwargs: keyword arguments
+        :return: None, raises a ValueError on error
+        """
+        if self.scannable and (self.barcode is None or self.barcode == ""):
+            raise ValueError("A barcode must be specified for products that can be scanned.")
+
+        super(Product, self).save(*args, **kwargs)
 
     def to_json(self):
         """
@@ -132,6 +159,7 @@ class Product(models.Model):
             "max_per_shift": self.max_allowed_per_shift,
             "available": self.available,
             "id": self.pk,
+            "ignore_shift_restriction": self.ignore_shift_restrictions,
         }
 
     def __str__(self):
@@ -288,6 +316,15 @@ class Shift(models.Model):
         return Order.objects.filter(shift=self).count()
 
     @property
+    def number_of_restricted_orders(self):
+        """
+        Get the total number of restricted orders in this shift.
+
+        :return: the total number of restricted orders in this shift
+        """
+        return Order.objects.filter(shift=self, product__ignore_shift_restrictions=False).count()
+
+    @property
     def max_orders_total_string(self):
         """
         Get the maximum amount of orders in string format.
@@ -401,7 +438,7 @@ class Shift(models.Model):
 
         :param args: arguments
         :param kwargs: keyword arguments
-        :return: an instance of the Shift object if the saving succeeded, raises a ValueError on error
+        :return: None, raises a ValueError on error
         """
         if self.end_date <= self.start_date:
             raise ValueError("End date cannot be before start date.")
@@ -434,8 +471,17 @@ class Shift(models.Model):
         :param amount: the amount that the user wants to order
         :return: True if the user is allowed to order amount of products, False otherwise
         """
-        user_order_amount = Order.objects.filter(user=user, shift=self).count()
-        if self.max_orders_per_user is not None and user_order_amount + amount > self.max_orders_per_user:
+        user_order_amount = Order.objects.filter(
+            user=user, shift=self, product__ignore_shift_restrictions=False
+        ).count()
+        unrestricted_products = Product.objects.filter(
+            ignore_shift_restrictions=True, available=True, available_at=self.venue
+        ).count()
+        if (
+            self.max_orders_per_user is not None
+            and user_order_amount + amount > self.max_orders_per_user
+            and unrestricted_products == 0
+        ):
             return False
 
         return True
@@ -448,7 +494,9 @@ class Shift(models.Model):
         :return: the maximum of orders a user can still place in this shift, None if there is no maximum specified
         """
         if self.max_orders_per_user is not None:
-            user_order_amount = Order.objects.filter(user=user, shift=self).count()
+            user_order_amount = Order.objects.filter(
+                user=user, shift=self, product__ignore_shift_restrictions=False
+            ).count()
             return max(0, self.max_orders_per_user - user_order_amount)
         else:
             return None
@@ -482,10 +530,14 @@ class Order(models.Model):
     Verifying the amount of allowed orders is done via Shifts.
     """
 
+    TYPE_ORDERED = 0
+    TYPE_SCANNED = 1
+    TYPES = ((TYPE_ORDERED, "Ordered"), (TYPE_SCANNED, "Scanned"))
+
     created = models.DateTimeField(auto_now_add=True)
 
     user = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT)
-    shift = models.ForeignKey(Shift, blank=False, null=False, on_delete=models.PROTECT,)
+    shift = models.ForeignKey(Shift, blank=False, null=False, on_delete=models.PROTECT)
     product = models.ForeignKey(
         Product, blank=False, null=False, on_delete=models.PROTECT, validators=[available_product_filter],
     )
@@ -497,6 +549,8 @@ class Order(models.Model):
 
     paid = models.BooleanField(default=False, null=False)
     paid_at = models.DateTimeField(null=True, blank=True)
+
+    type = models.PositiveIntegerField(choices=TYPES, default=0, null=False, blank=False)
 
     def to_json(self):
         """
@@ -535,7 +589,9 @@ class Order(models.Model):
 
         if (
             self.shift.max_orders_per_user is not None
-            and Order.objects.filter(shift=self.shift, user=self.pk).exclude(pk=self.pk).count()
+            and Order.objects.filter(shift=self.shift, user=self.pk, product__ignore_shift_restrictions=False)
+            .exclude(pk=self.pk)
+            .count()
             >= self.shift.max_orders_per_user
         ):
             errors.update(
@@ -546,6 +602,7 @@ class Order(models.Model):
             )
         if (
             self.product.max_allowed_per_shift is not None
+            and not self.product.ignore_shift_restrictions
             and Order.objects.filter(product=self.product, user=self.pk).exclude(pk=self.pk).count()
             >= self.product.max_allowed_per_shift
         ):
@@ -554,6 +611,11 @@ class Order(models.Model):
                     "product": f"You are not allowed to order more than {self.product.max_allowed_per_shift} "
                     f"products of this kind in this shift."
                 }
+            )
+
+        if self.type == self.TYPE_ORDERED and (self.user is None or self.user == ""):
+            errors.update(
+                {"user": "A user must be specified if the order type is {}".format(self.TYPES[self.TYPE_ORDERED][1])}
             )
 
         if errors:
