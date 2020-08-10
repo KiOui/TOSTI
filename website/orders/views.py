@@ -8,7 +8,7 @@ from orders.exceptions import OrderException
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.template.loader import get_template
-from .models import Product
+from .models import Product, Order
 from .forms import CreateShiftForm
 import urllib.parse
 
@@ -583,6 +583,61 @@ class RefreshShiftOrderView(PermissionRequiredMixin, TemplateView):
             render_order_items({"request": request}, shift, refresh=True, admin=admin, user=request.user)
         )
         return JsonResponse({"data": footer})
+
+    def get_permission_object(self):
+        """Get the object to check permissions for."""
+        obj = self.get_object()
+        return obj.venue
+
+    def get_object(self):
+        """Get the object for this view."""
+        return self.kwargs.get("shift")
+
+
+class ShiftScannerView(PermissionRequiredMixin, TemplateView):
+    """Scanner view for the shift admin."""
+
+    permission_required = "orders.can_manage_shift_in_venue"
+    return_403 = True
+    accept_global_perms = True
+
+    template_name = "orders/shift_scanner.html"
+
+    def get(self, request, **kwargs):
+        """GET request for the shift scanner view."""
+        shift = self.kwargs.get("shift")
+        return render(request, self.template_name, {"shift": shift})
+
+    def post(self, request, **kwargs):
+        """
+        POST request for the shift scanner view.
+
+        This view requires a POST option "option" to be set to "barcode" or "add" to either request the product for
+        a barcode in the database or add a scannable product to the shift
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: a JsonResponse with the response message
+        """
+        shift = self.kwargs.get("shift")
+        option = request.POST.get("option", None)
+        if option == "barcode":
+            barcode = request.POST.get("barcode", None)
+            if barcode:
+                products = Product.objects.filter(
+                    barcode=barcode, scannable=True, available=True, available_at=shift.venue
+                )
+                return JsonResponse({"error": False, "products": [x.to_json() for x in products]})
+            return JsonResponse({"error": True, "errormsg": "No barcode defined."})
+        elif option == "add":
+            try:
+                product = Product.objects.get(
+                    id=request.POST.get("product", None), available_at=shift.venue, available=True, scannable=True
+                )
+            except Product.DoesNotExist:
+                return JsonResponse({"error": True, "errormsg": "This product does not exist."})
+            Order.objects.create(shift=shift, product=product, type=Order.TYPE_SCANNED)
+            return JsonResponse({"error": False})
+        return JsonResponse({"error": True, "errormsg": "No option defined."})
 
     def get_permission_object(self):
         """Get the object to check permissions for."""
