@@ -3,6 +3,7 @@ from django import forms
 
 from django.contrib import admin, messages
 from django.contrib.admin import widgets
+from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.urls import reverse
 from guardian.admin import GuardedModelAdmin
@@ -36,6 +37,16 @@ class ProductAdmin(admin.ModelAdmin):
     search_fields = ["name", "venue"]
 
     actions = ["make_available", "make_unavailable"]
+
+    def clean_barcode(self):
+        """Clean barcode."""
+        if self.cleaned_data["barcode"] == "" or self.cleaned_data["barcode"] is None:
+            return None
+
+        if len(self.cleaned_data["barcode"]) == 8 or len(self.cleaned_data["barcode"]) == 13:
+            return self.cleaned_data["barcode"]
+        else:
+            raise ValidationError("A barcode must be either 8 or 13 integers long")
 
     def make_available(self, request, queryset):
         """

@@ -130,21 +130,14 @@ class Product(models.Model):
         "bound to the venue. Empty means no limit.",
     )
 
-    scannable = models.BooleanField(default=False, help_text="Whether or not this product can be scanned.")
-    barcode = models.CharField(null=True, blank=True, max_length=13, help_text="Either an EAN-8 or EAN-13 barcode.")
-
-    def save(self, *args, **kwargs):
-        """
-        Save an object of the Product type.
-
-        :param args: arguments
-        :param kwargs: keyword arguments
-        :return: None, raises a ValueError on error
-        """
-        if self.scannable and (self.barcode is None or self.barcode == ""):
-            raise ValueError("A barcode must be specified for products that can be scanned.")
-
-        super(Product, self).save(*args, **kwargs)
+    barcode = models.PositiveIntegerField(
+        default=None,
+        null=True,
+        blank=False,
+        unique=True,
+        max_length=13,
+        help_text="Either an EAN-8 or EAN-13 barcode.",
+    )
 
     def to_json(self):
         """

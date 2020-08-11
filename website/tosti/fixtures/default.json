@@ -36,7 +36,6 @@
         "orderable": true,
         "ignore_shift_restrictions": false,
         "max_allowed_per_shift": 2,
-        "scannable": false,
         "barcode": null,
         "available_at": [
             1,
@@ -55,7 +54,6 @@
         "orderable": true,
         "ignore_shift_restrictions": false,
         "max_allowed_per_shift": 2,
-        "scannable": false,
         "barcode": null,
         "available_at": [
             1,

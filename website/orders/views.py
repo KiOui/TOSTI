@@ -613,7 +613,7 @@ class ShiftScannerView(PermissionRequiredMixin, TemplateView):
         POST request for the shift scanner view.
 
         This view requires a POST option "option" to be set to "barcode" or "add" to either request the product for
-        a barcode in the database or add a scannable product to the shift
+        a barcode in the database or add a product with barcode to the shift
         :param request: the request
         :param kwargs: keyword arguments
         :return: a JsonResponse with the response message
@@ -623,15 +623,16 @@ class ShiftScannerView(PermissionRequiredMixin, TemplateView):
         if option == "barcode":
             barcode = request.POST.get("barcode", None)
             if barcode:
-                products = Product.objects.filter(
-                    barcode=barcode, scannable=True, available=True, available_at=shift.venue
-                )
+                products = Product.objects.filter(barcode=barcode, available=True, available_at=shift.venue)
                 return JsonResponse({"error": False, "products": [x.to_json() for x in products]})
             return JsonResponse({"error": True, "errormsg": "No barcode defined."})
         elif option == "add":
             try:
                 product = Product.objects.get(
-                    id=request.POST.get("product", None), available_at=shift.venue, available=True, scannable=True
+                    id=request.POST.get("product", None),
+                    available_at=shift.venue,
+                    available=True,
+                    barcode__isnull=False,
                 )
             except Product.DoesNotExist:
                 return JsonResponse({"error": True, "errormsg": "This product does not exist."})
