@@ -87,3 +87,9 @@ def render_order_now_buttons_venues(context):
     buttons = [{"venue": x} for x in venues]
 
     return {"venues": buttons, "request": context.get("request")}
+
+
+@register.inclusion_tag("orders/shift_scanner.html", takes_context=True)
+def render_barcode_scanner(context, shift):
+    """Render shift scanner for shift."""
+    return {"shift": shift, "request": context.get("request")}

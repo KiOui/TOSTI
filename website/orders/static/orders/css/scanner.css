@@ -6,6 +6,13 @@
 
 #scanner {
     position: relative;
+    width: 100%;
+}
+
+#scanner video {
+    max-width: 100%;
+    position: relative;
+    display: block;
 }
 
 #scanner canvas {
@@ -14,4 +21,5 @@
     bottom: 0;
     right: 0;
     left: 0;
+    max-width: 100%;
 }

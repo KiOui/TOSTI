@@ -601,44 +601,26 @@ class ShiftScannerView(PermissionRequiredMixin, TemplateView):
     return_403 = True
     accept_global_perms = True
 
-    template_name = "orders/shift_scanner.html"
-
-    def get(self, request, **kwargs):
-        """GET request for the shift scanner view."""
-        shift = self.kwargs.get("shift")
-        return render(request, self.template_name, {"shift": shift})
-
     def post(self, request, **kwargs):
         """
         POST request for the shift scanner view.
 
-        This view requires a POST option "option" to be set to "barcode" or "add" to either request the product for
-        a barcode in the database or add a product with barcode to the shift
+        Checks if a barcode exists in the database and adds it if it does.
         :param request: the request
         :param kwargs: keyword arguments
         :return: a JsonResponse with the response message
         """
         shift = self.kwargs.get("shift")
-        option = request.POST.get("option", None)
-        if option == "barcode":
-            barcode = request.POST.get("barcode", None)
-            if barcode:
-                products = Product.objects.filter(barcode=barcode, available=True, available_at=shift.venue)
-                return JsonResponse({"error": False, "products": [x.to_json() for x in products]})
-            return JsonResponse({"error": True, "errormsg": "No barcode defined."})
-        elif option == "add":
+        barcode = request.POST.get("barcode", None)
+        if barcode:
             try:
-                product = Product.objects.get(
-                    id=request.POST.get("product", None),
-                    available_at=shift.venue,
-                    available=True,
-                    barcode__isnull=False,
-                )
+                product = Product.objects.get(barcode=barcode, available=True, available_at=shift.venue)
+                Order.objects.create(shift=shift, product=product, type=Order.TYPE_SCANNED, paid=True, ready=True)
+                return JsonResponse({"error": False, "product": product.to_json()})
             except Product.DoesNotExist:
-                return JsonResponse({"error": True, "errormsg": "This product does not exist."})
-            Order.objects.create(shift=shift, product=product, type=Order.TYPE_SCANNED, paid=True, ready=True)
-            return JsonResponse({"error": False})
-        return JsonResponse({"error": True, "errormsg": "No option defined."})
+                return JsonResponse({"error": True, "errormsg": "The product was not found."})
+        else:
+            return JsonResponse({"error": True, "errormsg": "No barcode defined."})
 
     def get_permission_object(self):
         """Get the object to check permissions for."""

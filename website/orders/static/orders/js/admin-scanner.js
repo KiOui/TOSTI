@@ -1,9 +1,9 @@
-var _scannerIsRunning = false;
-
 let scanned_codes = [];
 
 function start_scanner() {
     Quagga.init({
+        numOfWorkers: 4,
+        frequency: 5,
         inputStream: {
             name: "Live",
             type: "LiveStream",
@@ -39,12 +39,11 @@ function start_scanner() {
             console.log(err);
             return
         }
-
         Quagga.start();
     });
 
     Quagga.onProcessed(function (result) {
-        var drawingCtx = Quagga.canvas.ctx.overlay,
+        let drawingCtx = Quagga.canvas.ctx.overlay,
             drawingCanvas = Quagga.canvas.dom.overlay;
 
         if (result) {
@@ -69,27 +68,23 @@ function start_scanner() {
 
 
     Quagga.onDetected(scan_result);
-
-    SCANNER.style.display = "";
-    SCANNER_START_BUTTON.style.display = "none";
 }
 
-function get_product_details_from_barcode(data_url, csrf_token, callback_ok, callback_error, barcode /*, args */) {
-    let args = Array.prototype.slice.call(arguments, 5);
+function add_product_from_barcode(data_url, callback_ok, callback_error, barcode /*, args */) {
+    let args = Array.prototype.slice.call(arguments, 4);
     jQuery(function($) {
         let data = {
-            'csrfmiddlewaretoken': csrf_token,
+            'csrfmiddlewaretoken': get_csrf_token(),
             'barcode': barcode,
-            'option': 'barcode'
         };
         $.ajax({type: 'POST', url: data_url, data, dataType:'json', asynch: true, success:
             function(data) {
                 if (data.error) {
-                    args.unshift(data.error);
+                    args.unshift(data.errormsg);
                     callback_error.apply(args);
                 }
                 else {
-                    args.unshift(data.products);
+                    args.unshift(data.product);
                     callback_ok.apply(this, args);
                 }
             }}).fail(function() {
@@ -100,80 +95,41 @@ function get_product_details_from_barcode(data_url, csrf_token, callback_ok, cal
     )
 }
 
-function create_popup_button(product) {
-    let base = create_element("input", ["popup-button", "btn-ml", "btn-on"], product.name);
-    base.type = "button";
-    base.value = product.name;
-    base.addEventListener("click", add_product.bind(self, DATA_URL, CSRF_TOKEN, product_added_succeeded, product_added_failed, product));
-    return base;
-}
-
 function stop_scanner() {
     Quagga.stop();
-    SCANNER.style.display = "none";
-    SCANNER_START_BUTTON.style.display = "";
 }
 
-function product_scanned(products) {
-    if (products.length > 0) {
-        stop_scanner();
-        scanned_codes = [];
-        POPUP_MODAL_BODY.innerHTML = "";
-        for (let i = 0; i < products.length; i++) {
-            let button = create_popup_button(products[i]);
-            POPUP_MODAL_BODY.append(button);
-        }
-        $(POPUP_MODAL).modal("show");
+function product_scanned(product) {
+    stop_scanner();
+    scanned_codes = [];
+    $(POPUP_MODAL).modal('hide');
+    SUCCESS_CONTAINER.innerHTML = "Added " + product.name + " to the order list.";
+    SUCCESS_CONTAINER.style.display = "";
+    if (typeof(update_update_list) !== 'undefined') {
+        update_update_list();
     }
 }
 
-function product_error() {
-    console.log("No product data for this barcode.");
+function product_error(errormsg, barcode) {
+    console.log(errormsg);
+    console.log("No product data for barcode " + barcode + " .");
 }
 
 function scan_result(result) {
     let code = result.codeResult.code;
+    console.log(code);
     if (!scanned_codes.includes(code)) {
         scanned_codes.push(code);
-        get_product_details_from_barcode(DATA_URL, CSRF_TOKEN, product_scanned, product_error, code);
+        add_product_from_barcode(SCANNER_DATA_URL, product_scanned, product_error, code, code);
     }
 }
 
-function add_product(data_url, csrf_token, callback_ok, callback_error, product /*, args */) {
-    $(POPUP_MODAL).modal("hide");
-    let args = Array.prototype.slice.call(arguments, 5);
-    jQuery(function($) {
-        let data = {
-            'csrfmiddlewaretoken': csrf_token,
-            'option': 'add',
-            'product': product.id
-        };
-        $.ajax({type: 'POST', url: data_url, data, dataType:'json', asynch: true, success:
-            function(data) {
-                if (data.error) {
-                    args.unshift(data.error);
-                    callback_error.apply(args);
-                }
-                else {
-                    args.unshift(data);
-                    callback_ok.apply(this, args);
-                }
-            }}).fail(function() {
-                args.unshift("Error while adding a product.");
-                callback_error.apply(this, args);
-            });
-        }
-    )
-}
+//call function on modal shown
+$(POPUP_MODAL).on('shown.bs.modal', function () {
+    start_scanner();
+});
 
-function product_added_succeeded() {
-    MESSAGE_CONTAINER.innerHTML = "";
-    MESSAGE_CONTAINER.append(create_element("p", ["alert", "alert-success"], "Product added successfully!"))
-}
-
-function product_added_failed(errormsg) {
-    MESSAGE_CONTAINER.innerHTML = "";
-    MESSAGE_CONTAINER.append(create_element("p", ["alert", "alert-danger"], errormsg))
-}
-
-start_scanner();
+//call function on hiding modal
+$(POPUP_MODAL).on('hidden.bs.modal', function () {
+    stop_scanner();
+});

@@ -8,9 +8,9 @@
 
 {% block page %}
     {% render_order_header shift %}
+    {% render_barcode_scanner shift %}
     <div class="container">
         <p id="message-success" class="alert alert-success" style="display: none;"></p>
-        <a class="btn-ml btn-on" href="{% url "orders:shift_admin_scanner" shift=shift %}"><i class="fas fa-barcode"></i> Barcode scanner</a>
     </div>
     {% render_item_overview shift %}
     {% render_order_items shift admin=True %}
