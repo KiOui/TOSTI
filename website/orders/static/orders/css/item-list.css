@@ -31,12 +31,12 @@
     margin: 5px;
 }
 
-.item-name {
-    margin-right: auto;
-}
-
 .item-username {
     margin-right: 5px;
+}
+
+.flex-divider {
+    flex-grow: 1;
 }
 
 .information-row {

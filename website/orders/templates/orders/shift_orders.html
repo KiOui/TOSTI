@@ -19,10 +19,11 @@
                         <li class="pt-2 pb-2 item-list">
                             <div class="information-row">
                                 <p class="item-counter">{{ forloop.counter }}.</p>
+                                <p class="item-name">{{ order.product.name }}</p>
                                 {% if order.product.icon %}
                                     <i class="fas fa-{{ order.product.icon }} item-icon"></i>
                                 {% endif %}
-                                <p class="item-name">{{ order.product.name }}</p>
+                                <div class="flex-divider"></div>
                                 {% if order.user %}
                                     {% if user == order.user %}
                                         <i class="fas fa-user user-icon"></i>
