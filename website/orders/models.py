@@ -9,6 +9,7 @@ from django.db import models
 from guardian.shortcuts import get_objects_for_user
 
 from venues.models import Venue
+from .validators import validate_barcode
 from itertools import chain
 
 from users.models import User
@@ -130,8 +131,14 @@ class Product(models.Model):
         "bound to the venue. Empty means no limit.",
     )
 
-    barcode = models.PositiveIntegerField(
-        default=None, null=True, blank=True, unique=True, help_text="Either an EAN-8 or EAN-13 barcode.",
+    barcode = models.CharField(
+        max_length=13,
+        default=None,
+        null=True,
+        blank=True,
+        unique=True,
+        help_text="Either an EAN-8 or EAN-13 barcode.",
+        validators=[validate_barcode],
     )
 
     def to_json(self):
