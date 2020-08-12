@@ -31,15 +31,18 @@
     margin: 5px;
 }
 
+.item-name {
+    margin-right: auto;
+}
+
 .item-username {
+    margin-right: 5px;
 }
 
 .information-row {
     display: flex;
     flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    margin-right: auto;
+    flex-grow: 1;
 }
 
 .button-row {
@@ -66,11 +69,17 @@
         flex-direction: column;
     }
 
+    .item-list p {
+        font-size: 1rem !important;
+    }
+
     .button-row input {
+        font-size: 0.8rem;
         flex-grow: 1;
     }
 
     .status-button {
+        font-size: 0.8rem;
         flex-grow: 1;
     }
 }

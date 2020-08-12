@@ -131,7 +131,7 @@ class Product(models.Model):
     )
 
     barcode = models.PositiveIntegerField(
-        default=None, null=True, blank=False, unique=True, help_text="Either an EAN-8 or EAN-13 barcode.",
+        default=None, null=True, blank=True, unique=True, help_text="Either an EAN-8 or EAN-13 barcode.",
     )
 
     def to_json(self):

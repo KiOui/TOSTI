@@ -21,18 +21,15 @@
                                 <p class="item-counter">{{ forloop.counter }}.</p>
                                 {% if order.product.icon %}
                                     <i class="fas fa-{{ order.product.icon }} item-icon"></i>
-                                {% else %}
-                                    <p class="item-icon" style="margin-right: 5px;">{{ order.product.name }}</p>
                                 {% endif %}
+                                <p class="item-name">{{ order.product.name }}</p>
                                 {% if order.user %}
+                                    {% if user == order.user %}
+                                        <i class="fas fa-user user-icon"></i>
+                                    {% endif %}
                                     <p class="item-username">{{ order.user }}</p>
                                 {% else %}
-                                    <p class="item-username">
-                                        <i class="fas fa-desktop"></i>
-                                    </p>
-                                {% endif %}
-                                {% if user == order.user %}
-                                    <i class="fas fa-user user-icon"></i>
+                                    <i class="item-username fas fa-desktop"></i>
                                 {% endif %}
                             </div>
                             <div class="button-row">
@@ -84,12 +81,12 @@
 {% if not refresh %}
     <link rel="stylesheet" href="{% static 'orders/css/item-list.css' %}"/>
     <script>
-        add_update_list(update_and_replace,
+        /*add_update_list(update_and_replace,
             ["{% url 'orders:shift_refresh_orders' shift=shift %}",
                 document.getElementById('order-container-{{ shift.id }}'),
                 {"admin": {% if admin %}true{% else %}false{% endif %}}
             ]
-        );
+        );*/
     </script>
     {% if admin %}
         <script src="{% static 'orders/js/asynch-alter-orders.js' %}"></script>
