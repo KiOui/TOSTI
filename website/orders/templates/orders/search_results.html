@@ -1,0 +1,12 @@
+{% load static %}
+
+{% for product in products %}
+    <div class="search-item">
+        <p class="search-item-name">{{ product.name }}</p>
+        {% if product.icon %}
+            <i class="fas fa-{{ product.icon }}"></i>
+        {% endif %}
+        <div class="flex-divider"></div>
+        <input type="button" class="btn btn-success" onclick="" value="Add"/>
+    </div>
+{% endfor %}

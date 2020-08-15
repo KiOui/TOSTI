@@ -114,3 +114,13 @@ def increase_shift_time(shift, amount_minutes=5):
     shift.end_date += datetime.timedelta(minutes=amount_minutes)
     shift.save()
     return shift
+
+
+def query_product_name(query):
+    """Query a product name."""
+    return Product.objects.filter(name__icontains=query, available=True)
+
+
+def query_product_barcode(query):
+    """Query a product barcode."""
+    return Product.objects.filter(barcode__startswith=query, available=True)

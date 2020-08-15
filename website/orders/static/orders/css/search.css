@@ -1,0 +1,9 @@
+.search-container label {
+    width: 100%;
+    margin: 0;
+}
+
+.search-container input {
+    width: 100%;
+    margin-bottom: 5px;
+}

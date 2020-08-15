@@ -14,6 +14,7 @@ urlpatterns = [
     path("venue/<venue:venue>/create/", views.CreateShiftView.as_view(), name="shift_create"),
     path("<shift:shift>/admin/", views.ShiftAdminView.as_view(), name="shift_admin"),
     path("<shift:shift>/admin/scanner", views.ShiftScannerView.as_view(), name="shift_admin_scanner"),
+    path("<shift:shift>/admin/search", views.ProductSearchView.as_view(), name="shift_admin_search"),
     path("order/<order:order>/update/", views.OrderUpdateView.as_view(), name="order_update"),
     path("<shift:shift>/products/", views.ProductListView.as_view(), name="product_list"),
     path("<shift:shift>/overview/", views.ShiftOverviewView.as_view(), name="shift_overview"),

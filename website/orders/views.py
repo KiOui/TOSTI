@@ -632,6 +632,44 @@ class ShiftScannerView(PermissionRequiredMixin, TemplateView):
         return self.kwargs.get("shift")
 
 
+class ProductSearchView(PermissionRequiredMixin, TemplateView):
+
+    permission_required = "orders.can_manage_shift_in_venue"
+    return_403 = True
+    accept_global_perms = True
+
+    def post(self, request, **kwargs):
+        """
+        POST request for the shift search view.
+
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: a JsonResponse with the response message
+        """
+        shift = self.kwargs.get("shift")
+        query = request.POST.get("query")
+        if query:
+            string_query = services.query_product_name(query)
+            barcode_query = services.query_product_barcode(query)
+            all_query = set(string_query)
+            all_query.update(barcode_query)
+            product_list = get_template("orders/search_results.html").render(
+                {"products": all_query, "shift": shift}
+            )
+            return JsonResponse({"error": False, "data": product_list})
+        else:
+            return JsonResponse({"error": True, "errormsg": "No query defined."})
+
+    def get_permission_object(self):
+        """Get the object to check permissions for."""
+        obj = self.get_object()
+        return obj.venue
+
+    def get_object(self):
+        """Get the object for this view."""
+        return self.kwargs.get("shift")
+
+
 class ExplainerView(TemplateView):
     """Explainer view."""
 
