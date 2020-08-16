@@ -1,0 +1,17 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'orders/css/search.css' %}"/>
+
+<div class="search-container">
+    <label>
+        <input type="text" placeholder="Search for a product" id="product-search"/>
+    </label>
+    <div id="search-results" style="display: none;"></div>
+</div>
+
+<script>
+    const SEARCH_URL = "{% url 'orders:shift_admin_search' shift=shift %}";
+    const SEARCH_RESULTS = document.getElementById("search-results");
+    const SEARCH_BOX = document.getElementById("product-search");
+</script>
+<script src="{% static "orders/js/search.js" %}"></script>

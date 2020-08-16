@@ -1,0 +1,25 @@
+.scanner-container {
+    display: flex;
+    justify-content: center;
+    margin: auto;
+}
+
+#scanner {
+    position: relative;
+    width: 100%;
+}
+
+#scanner video {
+    max-width: 100%;
+    position: relative;
+    display: block;
+}
+
+#scanner canvas {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    max-width: 100%;
+}

@@ -13,9 +13,9 @@
     </div>
     <div class="container-sm mb-5 text-center">
         <p>Order your items below</p>
-        <p class="alert-danger" id="update-error"></p>
+        <p style="display: none" class="alert alert-danger" id="update-error"></p>
         {% if error %}
-            <p class="alert-danger">{{ error }}</p>
+            <p class="alert alert-danger">{{ error }}</p>
         {% endif %}
         <div id="product-list">
         </div>

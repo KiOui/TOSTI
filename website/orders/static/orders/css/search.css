@@ -1,0 +1,34 @@
+.search-container label {
+    width: 100%;
+    margin: 0;
+}
+
+.search-container input {
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+.search-item {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: relative;
+}
+
+.search-item input {
+    flex-grow: 0;
+    width: auto;
+}
+
+.search-item .search-item-name {
+    flex-grow: 1;
+    margin-bottom: 0;
+    margin-right: auto;
+    text-align: left;
+}
+
+.search-item .search-item-price {
+    margin-bottom: 0;
+    margin-right: 5px;
+}

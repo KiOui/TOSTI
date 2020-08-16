@@ -33,10 +33,6 @@ function get_cookie(name) {
     return null;
 }
 
-function erase_cookie(name) {
-    document.cookie = name+'=; path=/; domain=kanikervanaf.nl; Max-Age=-99999999;';
-}
-
 function set_list_cookie(name, list, days) {
 	try {
 		let string = JSON.stringify(list);
@@ -72,7 +68,7 @@ function update_and_callback(data_url, data, callback/*, args */) {
                 args.unshift(data);
                 callback.apply(this, args);
             }}).fail(function() {
-                console.error("Failed to update " + container);
+                console.error("Failed to update");
             });
         }
     )

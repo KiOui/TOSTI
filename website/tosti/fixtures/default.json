@@ -1,0 +1,204 @@
+[
+{
+    "model": "venues.venue",
+    "pk": 1,
+    "fields": {
+        "name": "Noordkantine",
+        "active": true
+    }
+},
+{
+    "model": "venues.venue",
+    "pk": 2,
+    "fields": {
+        "name": "Zuidkantine",
+        "active": true
+    }
+},
+{
+    "model": "orders.ordervenue",
+    "pk": 1,
+    "fields": {}
+},
+{
+    "model": "orders.ordervenue",
+    "pk": 2,
+    "fields": {}
+},
+{
+    "model": "orders.product",
+    "pk": 1,
+    "fields": {
+        "name": "Tosti Cheese",
+        "icon": "cheese",
+        "available": true,
+        "current_price": "0.50",
+        "orderable": true,
+        "ignore_shift_restrictions": false,
+        "max_allowed_per_shift": 2,
+        "barcode": null,
+        "available_at": [
+            1,
+            2
+        ]
+    }
+},
+{
+    "model": "orders.product",
+    "pk": 2,
+    "fields": {
+        "name": "Tosti Ham-Cheese",
+        "icon": "bacon",
+        "available": true,
+        "current_price": "0.60",
+        "orderable": true,
+        "ignore_shift_restrictions": false,
+        "max_allowed_per_shift": 2,
+        "barcode": null,
+        "available_at": [
+            1,
+            2
+        ]
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 49,
+    "fields": {
+        "name": "Can control music players",
+        "content_type": 12,
+        "codename": "can_control"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 50,
+    "fields": {
+        "name": "Can request songs",
+        "content_type": 12,
+        "codename": "can_request"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 67,
+    "fields": {
+        "name": "Can order products during shifts in this venue",
+        "content_type": 16,
+        "codename": "can_order_in_venue"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 68,
+    "fields": {
+        "name": "Can manage shifts in this venue",
+        "content_type": 16,
+        "codename": "can_manage_shift_in_venue"
+    }
+},
+{
+    "model": "auth.group",
+    "pk": 1,
+    "fields": {
+        "name": "Noordcie",
+        "permissions": []
+    }
+},
+{
+    "model": "auth.group",
+    "pk": 2,
+    "fields": {
+        "name": "Zuidcie",
+        "permissions": []
+    }
+},
+{
+    "model": "auth.group",
+    "pk": 3,
+    "fields": {
+        "name": "Request music",
+        "permissions": []
+    }
+},
+{
+    "model": "auth.group",
+    "pk": 4,
+    "fields": {
+        "name": "Order",
+        "permissions": []
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 1,
+    "fields": {
+        "permission": 67,
+        "content_type": 16,
+        "object_pk": "1",
+        "group": 4
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 2,
+    "fields": {
+        "permission": 67,
+        "content_type": 16,
+        "object_pk": "2",
+        "group": 4
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 3,
+    "fields": {
+        "permission": 68,
+        "content_type": 16,
+        "object_pk": "1",
+        "group": 1
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 4,
+    "fields": {
+        "permission": 68,
+        "content_type": 16,
+        "object_pk": "2",
+        "group": 2
+    }
+},
+{
+    "model": "users.groupsettings",
+    "pk": 1,
+    "fields": {
+        "is_auto_join_group": false,
+        "gets_staff_permissions": true
+    }
+},
+{
+    "model": "users.groupsettings",
+    "pk": 2,
+    "fields": {
+        "is_auto_join_group": false,
+        "gets_staff_permissions": true
+    }
+},
+{
+    "model": "users.groupsettings",
+    "pk": 3,
+    "fields": {
+        "is_auto_join_group": true,
+        "gets_staff_permissions": false
+    }
+},
+{
+    "model": "users.groupsettings",
+    "pk": 4,
+    "fields": {
+        "is_auto_join_group": true,
+        "gets_staff_permissions": false
+    }
+}
+]

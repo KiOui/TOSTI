@@ -15,40 +15,54 @@
         {% if shift.orders|length != 0 or admin %}
             <ul class="item-orders">
                 {% for order in shift.orders %}
-                    <li class="pt-2 pb-2 item-list">
-                        <div class="information-row">
-                            <p class="item-counter">{{ forloop.counter }}.</p>
-                            <i class="fas fa-{{ order.product.icon }} item-icon"></i>
-                            <p class="item-username">{{ order.user }}</p>
-                            {% if user == order.user %}
-                                <i class="fas fa-user user-icon"></i>
-                            {% endif %}
-                        </div>
-                        <div class="button-row">
-                            {% if admin %}
-                                <input type="button" class="checkbox-paid btn mr-2 {% if order.paid %}btn-success{% else %}btn-danger{% endif %}" onclick="update_order('{% url "orders:order_update" order=order %}', this, 'paid', update_checkbox);" value="Paid"/>
-                                <input type="button" class="checkbox-ready btn {% if order.ready %}btn-success{% else %}btn-danger{% endif %}" onclick="update_order('{% url "orders:order_update" order=order %}', this, 'ready', update_checkbox);" value="Ready"/>
-                            {% else %}
-                                {% if order.user == user %}
-                                    {% if order.ready and order.paid %}
-                                        <div class="status-button mr-2 bg-success text-white">Done</div>
-                                    {% elif order.ready and not order.paid %}
-                                        <div class="status-button mr-2 bg-warning">Done</div>
-                                    {% elif not order.ready and order.paid %}
-                                        <div class="status-button mr-2 bg-warning">Processing</div>
+                    {% if admin or order.type == 0 %}
+                        <li class="pt-2 pb-2 item-list">
+                            <div class="information-row">
+                                <p class="item-counter">{{ forloop.counter }}.</p>
+                                <p class="item-name">{{ order.product.name }} (€{{ order.order_price }})</p>
+                                {% if order.product.icon %}
+                                    <i class="fas fa-{{ order.product.icon }} item-icon"></i>
+                                {% endif %}
+                                <div class="flex-divider"></div>
+                                {% if order.user %}
+                                    {% if user == order.user %}
+                                        <i class="fas fa-user user-icon"></i>
+                                    {% endif %}
+                                    <p class="item-username">{{ order.user }}</p>
+                                {% else %}
+                                    <i class="item-username fas fa-desktop"></i>
+                                {% endif %}
+                            </div>
+                            <div class="button-row">
+                                {% if admin %}
+                                    {% if order.type == 0 %}
+                                        <input type="button" class="checkbox-paid btn mr-2 {% if order.paid %}btn-success{% else %}btn-danger{% endif %}" onclick="update_order('{% url "orders:order_update" order=order %}', this, 'paid', update_checkbox);" value="Paid"/>
+                                        <input type="button" class="checkbox-ready btn {% if order.ready %}btn-success{% else %}btn-danger{% endif %}" onclick="update_order('{% url "orders:order_update" order=order %}', this, 'ready', update_checkbox);" value="Ready"/>
                                     {% else %}
-                                        <div class="status-button mr-2 bg-danger text-white">Not paid</div>
+                                        <input type="button" class="btn btn-danger" onclick="remove_order('{% url "orders:order_remove" order=order %}')" value="Remove"/>
                                     {% endif %}
                                 {% else %}
-                                    {% if order.ready %}
-                                        <div class="status-button mr-2 bg-success text-white">Done</div>
+                                    {% if order.user == user %}
+                                        {% if order.ready and order.paid %}
+                                            <div class="status-button mr-2 bg-success text-white">Done</div>
+                                        {% elif order.ready and not order.paid %}
+                                            <div class="status-button mr-2 bg-warning">Done</div>
+                                        {% elif not order.ready and order.paid %}
+                                            <div class="status-button mr-2 bg-warning">Processing</div>
+                                        {% else %}
+                                            <div class="status-button mr-2 bg-danger text-white">Not paid</div>
+                                        {% endif %}
                                     {% else %}
-                                        <div class="status-button mr-2 bg-warning">Processing</div>
+                                        {% if order.ready %}
+                                            <div class="status-button mr-2 bg-success text-white">Done</div>
+                                        {% else %}
+                                            <div class="status-button mr-2 bg-warning">Processing</div>
+                                        {% endif %}
                                     {% endif %}
                                 {% endif %}
-                            {% endif %}
-                        </div>
-                    </li>
+                            </div>
+                        </li>
+                    {% endif %}
                 {% endfor %}
             </ul>
         {% else %}

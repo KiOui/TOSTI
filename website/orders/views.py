@@ -8,7 +8,7 @@ from orders.exceptions import OrderException
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.template.loader import get_template
-from .models import Product
+from .models import Product, Order
 from .forms import CreateShiftForm
 import urllib.parse
 
@@ -70,7 +70,7 @@ class ProductListView(PermissionRequiredMixin, TemplateView):
         :return: a json list of the products converted to json and an extra dictionary key (max_allowed) indicating
         how many more of the item a user can still order
         """
-        items = Product.objects.filter(available=True, available_at=shift.venue)
+        items = Product.objects.filter(available=True, available_at=shift.venue, orderable=True)
         json_list = list()
         for item in items:
             json_obj = item.to_json()
@@ -128,7 +128,7 @@ class PlaceOrderView(PermissionRequiredMixin, TemplateView):
         product_list = []
         for product_id in order_list:
             try:
-                product_list.append(Product.objects.get(pk=product_id))
+                product_list.append(Product.objects.get(pk=product_id, available=True, orderable=True))
             except (Product.DoesNotExist, ValueError):
                 return "That product does not exist"
         try:
@@ -379,6 +379,36 @@ class OrderUpdateView(PermissionRequiredMixin, TemplateView):
         return self.kwargs.get("order")
 
 
+class OrderRemoveView(PermissionRequiredMixin, TemplateView):
+    """Order remove view."""
+
+    permission_required = "orders.can_manage_shift_in_venue"
+    return_403 = True
+    accept_global_perms = True
+
+    def post(self, request, **kwargs):
+        """
+        POST request for OrderRemoveView.
+
+        Remove an order
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: a json response with an error or success message
+        """
+        order = kwargs.get("order")
+        order.delete()
+        return JsonResponse({"error": False})
+
+    def get_permission_object(self):
+        """Get the object to check permissions for."""
+        obj = self.get_object()
+        return obj.shift.venue
+
+    def get_object(self):
+        """Get the object for this view."""
+        return self.kwargs.get("order")
+
+
 class ToggleShiftActivationView(PermissionRequiredMixin, TemplateView):
     """Toggle the shift activation via a POST request."""
 
@@ -583,6 +613,121 @@ class RefreshShiftOrderView(PermissionRequiredMixin, TemplateView):
             render_order_items({"request": request}, shift, refresh=True, admin=admin, user=request.user)
         )
         return JsonResponse({"data": footer})
+
+    def get_permission_object(self):
+        """Get the object to check permissions for."""
+        obj = self.get_object()
+        return obj.venue
+
+    def get_object(self):
+        """Get the object for this view."""
+        return self.kwargs.get("shift")
+
+
+class ShiftScannerView(PermissionRequiredMixin, TemplateView):
+    """Scanner view for the shift admin."""
+
+    permission_required = "orders.can_manage_shift_in_venue"
+    return_403 = True
+    accept_global_perms = True
+
+    def post(self, request, **kwargs):
+        """
+        POST request for the shift scanner view.
+
+        Checks if a barcode exists in the database and adds it if it does.
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: a JsonResponse with the response message
+        """
+        shift = self.kwargs.get("shift")
+        barcode = request.POST.get("barcode", None)
+        if barcode:
+            try:
+                product = Product.objects.get(barcode=barcode, available=True, available_at=shift.venue)
+                Order.objects.create(shift=shift, product=product, type=Order.TYPE_SCANNED, paid=True, ready=True)
+                return JsonResponse({"error": False, "product": product.to_json()})
+            except Product.DoesNotExist:
+                return JsonResponse({"error": True, "errormsg": "The product was not found."})
+        else:
+            return JsonResponse({"error": True, "errormsg": "No barcode defined."})
+
+    def get_permission_object(self):
+        """Get the object to check permissions for."""
+        obj = self.get_object()
+        return obj.venue
+
+    def get_object(self):
+        """Get the object for this view."""
+        return self.kwargs.get("shift")
+
+
+class ProductSearchView(PermissionRequiredMixin, TemplateView):
+    """Search view."""
+
+    permission_required = "orders.can_manage_shift_in_venue"
+    return_403 = True
+    accept_global_perms = True
+
+    def post(self, request, **kwargs):
+        """
+        POST request for the shift search view.
+
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: a JsonResponse with the response message
+        """
+        shift = self.kwargs.get("shift")
+        query = request.POST.get("query", None)
+        if query:
+            string_query = services.query_product_name(query)
+            barcode_query = services.query_product_barcode(query)
+            all_query = set(string_query)
+            all_query.update(barcode_query)
+            product_list = get_template("orders/search_results.html").render({"products": all_query, "shift": shift})
+            return JsonResponse({"error": False, "data": product_list})
+        else:
+            return JsonResponse({"error": True, "errormsg": "No query defined."})
+
+    def get_permission_object(self):
+        """Get the object to check permissions for."""
+        obj = self.get_object()
+        return obj.venue
+
+    def get_object(self):
+        """Get the object for this view."""
+        return self.kwargs.get("shift")
+
+
+class ProductAddView(PermissionRequiredMixin, TemplateView):
+    """Add product view."""
+
+    permission_required = "orders.can_manage_shift_in_venue"
+    return_403 = True
+    accept_global_perms = True
+
+    def post(self, request, **kwargs):
+        """
+        POST request for the add product view.
+
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: a JsonResponse with the response message
+        """
+        shift = self.kwargs.get("shift")
+        product_id = request.POST.get("product", None)
+        if product_id:
+            try:
+                product = Product.objects.get(id=product_id)
+            except Product.DoesNotExist:
+                return JsonResponse({"error": True, "errormsg": "That product does not exist."})
+            try:
+                services.add_order(product, shift, Order.TYPE_SCANNED, set_done=True)
+            except OrderException as e:
+                return JsonResponse({"error": True, "errormsg": str(e)})
+            return JsonResponse({"error": False, "successmsg": "{} added to the shift.".format(product.name)})
+        else:
+            return JsonResponse({"error": True, "errormsg": "No product defined."})
 
     def get_permission_object(self):
         """Get the object to check permissions for."""

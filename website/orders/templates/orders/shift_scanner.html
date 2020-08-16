@@ -1,0 +1,41 @@
+{% load static order_now %}
+
+<link rel="stylesheet" href="{% static 'orders/css/forms.css' %}"/>
+<link rel="stylesheet" href="{% static 'tosti/css/index.css' %}"/>
+<link rel="stylesheet" href="{% static 'orders/css/scanner.css' %}"/>
+
+<div class="container">
+    <div class="btn-ml btn-on" data-toggle="modal" data-target="#scanner-popup"><i class="fas fa-barcode"></i> Barcode scanner</div>
+</div>
+
+<div class="modal" id="scanner-popup">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Barcode scanner</h2>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    {% render_search_box shift=shift %}
+                </div>
+                <div class="container scanner-container">
+                    <div id="scanner">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const SCANNER_DATA_URL = "{% url 'orders:shift_admin_scanner' shift=shift %}";
+    const POPUP_MODAL = "#scanner-popup";
+    const SCANNER = document.getElementById("scanner");
+</script>
+<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+<script src="{% static "orders/js/quagga.min.js" %}"></script>
+<script src="{% static "orders/js/admin-scanner.js" %}"></script>

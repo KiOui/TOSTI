@@ -18,3 +18,13 @@ function update_checkbox(data, checkbox) {
         checkbox.classList.add('btn-danger');
     }
 }
+
+function remove_order(data_url) {
+    if (window.confirm("Do you want to delete this order?")) {
+        update_and_callback(
+            data_url,
+            {},
+            update_update_list
+        );
+    }
+}

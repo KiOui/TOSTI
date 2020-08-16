@@ -33,6 +33,7 @@ function get_list(data_url, csrf_token, callback_ok, callback_error, /*, args */
 
 function update_page_error(error) {
     ERROR_CONTAINER.innerHTML = error;
+    ERROR_CONTAINER.style.display = "block";
 }
 
 function get_amount_of_item_orders(product_id) {
@@ -52,24 +53,24 @@ function update_page_data(data) {
     refresh();
 }
 
-function construct_products_section() {
+function construct_products_section(products) {
     let base = document.createElement('ul');
     base.classList.add('order-list');
-    for (let i = 0; i < PRODUCTS.length; i++) {
+    for (let i = 0; i < products.length; i++) {
         let list_item = create_element('li', ['order-item', 'pt-2', 'pb-2', 'mt-2', 'mb-2'], '');
-        let icon = create_element('i', ['fas', 'fa-'+PRODUCTS[i].icon], '');
-        let name = create_element('p', ['order-name'], PRODUCTS[i].name);
+        let icon = create_element('i', ['fas', 'fa-'+products[i].icon], '');
+        let name = create_element('p', ['order-name'], products[i].name);
         let button = create_element('input', ['btn', 'btn-success', 'ml-2'], "");
         button.type = 'button';
         button.value = "Add";
-        button.setAttribute('onclick', "add_product(" + PRODUCTS[i].id + ")");
-        let price = create_element('p', ['item-price'], '€' + PRODUCTS[i].price);
+        button.setAttribute('onclick', "add_product(" + products[i].id + ")");
+        let price = create_element('p', ['item-price'], '€' + products[i].price);
 
         list_item.appendChild(icon);
         list_item.appendChild(name);
         list_item.appendChild(price);
         list_item.appendChild(button);
-        if (!(MAX_ORDERS !== null && get_amount_of_cart_items() >= MAX_ORDERS) && PRODUCTS[i].max_allowed !== null && get_amount_of_item_orders(PRODUCTS[i].id) >= PRODUCTS[i].max_allowed) {
+        if (products[i].max_allowed !== null && get_amount_of_item_orders(products[i].id) >= products[i].max_allowed) {
             let overlay = create_element('div', ['item-overlay'], "");
             let overlay_text = create_element('p', ['alert', 'alert-warning'], "You have ordered the maximum of this item.");
             overlay.appendChild(overlay_text);
@@ -78,20 +79,18 @@ function construct_products_section() {
         base.appendChild(list_item);
     }
 
-    if (PRODUCTS.length === 0) {
-        PRODUCT_CONTAINER.innerHTML = "<p class='alert alert-warning'>There are no products you can order.</p>";
-    }
-    else {
-        PRODUCT_CONTAINER.innerHTML = "";
-        PRODUCT_CONTAINER.append(base);
+    if (products.length === 0) {
+        return "<p class='alert alert-warning'>There are no products you can order.</p>";
     }
 
-    if (MAX_ORDERS !== null && get_amount_of_cart_items() >= MAX_ORDERS) {
-        let overlay = create_element('div', ['item-overlay'], "");
-        let overlay_text = create_element('p', ['alert', 'alert-warning'], "You have ordered the maximum amount of orders you can place this shift.");
-        overlay.appendChild(overlay_text);
-        base.append(overlay);
-    }
+    return base;
+}
+
+function create_maximum_ordered_overlay(element) {
+    let overlay = create_element('div', ['item-overlay'], "");
+    let overlay_text = create_element('p', ['alert', 'alert-warning'], "You have ordered the maximum amount of orders you can place this shift.");
+    overlay.appendChild(overlay_text);
+    element.append(overlay);
 }
 
 function construct_order_section() {
@@ -148,22 +147,27 @@ function find_product_details(product_id) {
 
 function get_amount_of_cart_items() {
     let cart = get_cart_list();
-    return cart.length
+    return cart.length;
+}
+
+function get_amount_of_restricted_cart_items() {
+    let cart = get_cart_list();
+    return cart.filter(
+        function(value, index, arr)
+        {
+            let product_details = find_product_details(value);
+            return product_details !== null && !product_details.ignore_shift_restriction;
+    }).length;
 }
 
 function add_product(product_id) {
-    if (get_amount_of_cart_items() < MAX_ORDERS) {
+    let product_details = find_product_details(product_id);
+    if (product_details !== null && (get_amount_of_restricted_cart_items() < MAX_ORDERS || product_details.ignore_shift_restriction)) {
         let cart = get_cart_list();
-        let product_details = find_product_details(product_id);
-        if (product_details !== null) {
-            cart.push(product_id);
-            set_cart_list(cart);
-            refresh();
-            return true;
-        }
-        else {
-            return false;
-        }
+        cart.push(product_id);
+        set_cart_list(cart);
+        refresh();
+        return true;
     }
     else {
         return false;
@@ -193,8 +197,47 @@ function set_cart_list(list) {
     }
 }
 
+function get_restricted_products(products) {
+    let ret = [];
+    for (let i = 0; i < products.length; i++) {
+        if (!products[i].ignore_shift_restriction) {
+            ret.push(products[i]);
+        }
+    }
+    return ret;
+}
+
+function get_unrestricted_products(products) {
+    let ret = [];
+    for (let i = 0; i < products.length; i++) {
+        if (products[i].ignore_shift_restriction) {
+            ret.push(products[i]);
+        }
+    }
+    return ret;
+}
+
 function refresh() {
-    construct_products_section();
+    let restricted_products = get_restricted_products(PRODUCTS);
+    let unrestricted_products = get_unrestricted_products(PRODUCTS);
+    let restricted_base = create_element('div', [], '');
+    let unrestricted_base = create_element('div', [], '');
+    if (restricted_products.length > 0) {
+        let restricted_list = construct_products_section(restricted_products);
+        if (MAX_ORDERS !== null && get_amount_of_restricted_cart_items() >= MAX_ORDERS) {
+            let overlay = create_element('div', ['item-overlay'], "");
+            let overlay_text = create_element('p', ['alert', 'alert-warning'], "You have ordered the maximum amount of orders you can place this shift.");
+            overlay.appendChild(overlay_text);
+            restricted_list.append(overlay);
+        }
+        restricted_base.append(restricted_list);
+    }
+    if (unrestricted_products.length > 0) {
+        unrestricted_base.append(construct_products_section(unrestricted_products));
+    }
+    PRODUCT_CONTAINER.innerHTML = "";
+    PRODUCT_CONTAINER.append(restricted_base);
+    PRODUCT_CONTAINER.append(unrestricted_base);
     construct_order_section();
     display_order_button(get_cart_list().length > 0);
 }

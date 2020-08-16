@@ -34,36 +34,72 @@ def execute_data_minimisation(dry_run=False):
 
 def user_can_order_product(user: User, product: Product, shift: Shift):
     """Check if a user can order products in a certain shift."""
-    if not shift.user_can_order_amount(user):
+    if user not in shift.venue.get_users_with_order_perms():
+        raise OrderException("User does not have permissions to order during this shift.")
+    if not shift.user_can_order_amount(user) and not product.ignore_shift_restrictions:
         raise OrderException("User can not order more products")
     if not product.user_can_order_amount(user, shift):
         raise OrderException(f"User can not order more {product.name}")
-    if not product.available:
-        raise OrderException(f"Product {product.name} is not available")
     return True
 
 
 def place_orders(products: List[Product], user: User, shift: Shift):
     """Place orders for a user in a certain shift."""
-    if user not in shift.venue.get_users_with_order_perms():
-        raise OrderException("User does not have permissions to order during this shift.")
+    products_ignore_shift_restrictions = [x for x in products if x.ignore_shift_restrictions]
 
-    if not shift.user_can_order_amount(user, amount=len(products)):
+    if not shift.user_can_order_amount(user, amount=len(products) - len(products_ignore_shift_restrictions)):
         raise OrderException("User can not order that much products in this shift")
-    if not shift.can_order:
-        raise OrderException("User can not order products for this shift")
-    if not shift.is_active:
-        raise OrderException("This shift is not active")
-
-    for product in products:
-        if not user_can_order_product(user, product, shift):
-            return
 
     orders = []
     for product in products:
-        orders.append(Order.objects.create(user=user, shift=shift, product=product))
+        try:
+            order = add_order(product, shift, Order.TYPE_ORDERED, user=user)
+            orders.append(order)
+        except OrderException as e:
+            orders.append(e)
 
     return orders
+
+
+def add_order(product, shift, order_type, user=None, set_done=False, force=False, dry=False):
+    """
+    Add an order to a shift.
+
+    :param product: the product for the order
+    :param shift: the shift to add the order to
+    :param order_type: the order type, if this is TYPE_ORDERED a user is needed
+    :param user: the user to add the order to, can be None if the type is not TYPE_ORDERED
+    :param set_done: set paid and ready to done for the new order
+    :param force: skip all checks and force add an order
+    :param dry: do all checks but don't actually add the order
+    :return: Either None if dry=True, an OrderException if the Order can't be added or a new Order object
+    """
+    if not force:
+        # Product checks
+        if not product.available:
+            raise OrderException(f"Product {product.name} is not available")
+        # Type checks
+        if order_type is Order.TYPE_ORDERED and user is None:
+            raise OrderException("A user is needed for items that have the 'TYPE_ORDERED' type.")
+        # User limit checks
+        if user is not None and user_can_order_product(user, product, shift):
+            pass
+        # Shift checks
+        if not shift.can_order:
+            raise OrderException("User can not order products for this shift")
+        if not shift.is_active:
+            raise OrderException("This shift is not active")
+
+    if not dry:
+        return Order.objects.create(
+            product=product,
+            shift=shift,
+            type=order_type,
+            user=user,
+            paid=set_done,
+            ready=set_done,
+            order_price=product.current_price,
+        )
 
 
 def has_already_ordered_in_shift(user: User, shift: Shift):
@@ -113,3 +149,13 @@ def increase_shift_time(shift, amount_minutes=5):
     shift.end_date += datetime.timedelta(minutes=amount_minutes)
     shift.save()
     return shift
+
+
+def query_product_name(query):
+    """Query a product name."""
+    return Product.objects.filter(name__icontains=query, available=True)
+
+
+def query_product_barcode(query):
+    """Query a product barcode."""
+    return Product.objects.filter(barcode__startswith=query, available=True)

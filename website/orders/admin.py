@@ -37,6 +37,13 @@ class ProductAdmin(admin.ModelAdmin):
 
     actions = ["make_available", "make_unavailable"]
 
+    def clean_barcode(self):
+        """Clean barcode."""
+        if self.cleaned_data["barcode"] == "" or self.cleaned_data["barcode"] is None:
+            return None
+        else:
+            return self.cleaned_data["barcode"]
+
     def make_available(self, request, queryset):
         """
         Make a QuerySet of products available.
