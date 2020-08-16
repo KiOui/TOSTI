@@ -96,6 +96,7 @@ function add_product_from_barcode(data_url, callback_ok, callback_error, barcode
 }
 
 function stop_scanner() {
+    scanned_codes = [];
     Quagga.stop();
 }
 
