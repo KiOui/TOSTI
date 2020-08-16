@@ -27,3 +27,8 @@
     margin-right: auto;
     text-align: left;
 }
+
+.search-item .search-item-price {
+    margin-bottom: 0;
+    margin-right: 5px;
+}

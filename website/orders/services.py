@@ -92,7 +92,13 @@ def add_order(product, shift, order_type, user=None, set_done=False, force=False
 
     if not dry:
         return Order.objects.create(
-            product=product, shift=shift, type=order_type, user=user, paid=set_done, ready=set_done
+            product=product,
+            shift=shift,
+            type=order_type,
+            user=user,
+            paid=set_done,
+            ready=set_done,
+            order_price=product.current_price,
         )
 
 

@@ -68,7 +68,7 @@ function update_and_callback(data_url, data, callback/*, args */) {
                 args.unshift(data);
                 callback.apply(this, args);
             }}).fail(function() {
-                console.error("Failed to update " + container);
+                console.error("Failed to update");
             });
         }
     )

@@ -379,6 +379,36 @@ class OrderUpdateView(PermissionRequiredMixin, TemplateView):
         return self.kwargs.get("order")
 
 
+class OrderRemoveView(PermissionRequiredMixin, TemplateView):
+    """Order remove view."""
+
+    permission_required = "orders.can_manage_shift_in_venue"
+    return_403 = True
+    accept_global_perms = True
+
+    def post(self, request, **kwargs):
+        """
+        POST request for OrderRemoveView.
+
+        Remove an order
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: a json response with an error or success message
+        """
+        order = kwargs.get("order")
+        order.delete()
+        return JsonResponse({"error": False})
+
+    def get_permission_object(self):
+        """Get the object to check permissions for."""
+        obj = self.get_object()
+        return obj.shift.venue
+
+    def get_object(self):
+        """Get the object for this view."""
+        return self.kwargs.get("order")
+
+
 class ToggleShiftActivationView(PermissionRequiredMixin, TemplateView):
     """Toggle the shift activation via a POST request."""
 

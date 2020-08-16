@@ -35,8 +35,12 @@
                             </div>
                             <div class="button-row">
                                 {% if admin %}
-                                    <input type="button" class="checkbox-paid btn mr-2 {% if order.paid %}btn-success{% else %}btn-danger{% endif %}" onclick="update_order('{% url "orders:order_update" order=order %}', this, 'paid', update_checkbox);" value="Paid"/>
-                                    <input type="button" class="checkbox-ready btn {% if order.ready %}btn-success{% else %}btn-danger{% endif %}" onclick="update_order('{% url "orders:order_update" order=order %}', this, 'ready', update_checkbox);" value="Ready"/>
+                                    {% if order.type == 0 %}
+                                        <input type="button" class="checkbox-paid btn mr-2 {% if order.paid %}btn-success{% else %}btn-danger{% endif %}" onclick="update_order('{% url "orders:order_update" order=order %}', this, 'paid', update_checkbox);" value="Paid"/>
+                                        <input type="button" class="checkbox-ready btn {% if order.ready %}btn-success{% else %}btn-danger{% endif %}" onclick="update_order('{% url "orders:order_update" order=order %}', this, 'ready', update_checkbox);" value="Ready"/>
+                                    {% else %}
+                                        <input type="button" class="btn btn-danger" onclick="remove_order('{% url "orders:order_remove" order=order %}')" value="Remove"/>
+                                    {% endif %}
                                 {% else %}
                                     {% if order.user == user %}
                                         {% if order.ready and order.paid %}
