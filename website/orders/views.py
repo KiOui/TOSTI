@@ -647,7 +647,7 @@ class ProductSearchView(PermissionRequiredMixin, TemplateView):
         :return: a JsonResponse with the response message
         """
         shift = self.kwargs.get("shift")
-        query = request.POST.get("query")
+        query = request.POST.get("query", None)
         if query:
             string_query = services.query_product_name(query)
             barcode_query = services.query_product_barcode(query)
@@ -659,6 +659,46 @@ class ProductSearchView(PermissionRequiredMixin, TemplateView):
             return JsonResponse({"error": False, "data": product_list})
         else:
             return JsonResponse({"error": True, "errormsg": "No query defined."})
+
+    def get_permission_object(self):
+        """Get the object to check permissions for."""
+        obj = self.get_object()
+        return obj.venue
+
+    def get_object(self):
+        """Get the object for this view."""
+        return self.kwargs.get("shift")
+
+
+class ProductAddView(PermissionRequiredMixin, TemplateView):
+
+    permission_required = "orders.can_manage_shift_in_venue"
+    return_403 = True
+    accept_global_perms = True
+
+    def post(self, request, **kwargs):
+        """
+        POST request for the add product view.
+
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: a JsonResponse with the response message
+        """
+        shift = self.kwargs.get("shift")
+        product_id = request.POST.get("product", None)
+        if product_id:
+            try:
+                product = Product.objects.get(id=product_id)
+            except Product.DoesNotExist:
+                return JsonResponse({"error": True, "errormsg": "That product does not exist."})
+            try:
+                order = services.add_product_to_shift(product, shift, Order.TYPE_SCANNED)
+            except OrderException as e:
+                return JsonResponse({"error": True, "errormsg": str(e)})
+            return JsonResponse({"error": False, "successmsg": "{} added to the shift.".format(product.name)})
+        else:
+            return JsonResponse({"error": True, "errormsg": "No product defined."})
+
 
     def get_permission_object(self):
         """Get the object to check permissions for."""

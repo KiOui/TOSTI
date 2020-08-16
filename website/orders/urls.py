@@ -17,6 +17,7 @@ urlpatterns = [
     path("<shift:shift>/admin/search", views.ProductSearchView.as_view(), name="shift_admin_search"),
     path("order/<order:order>/update/", views.OrderUpdateView.as_view(), name="order_update"),
     path("<shift:shift>/products/", views.ProductListView.as_view(), name="product_list"),
+    path("<shift:shift>/products/add", views.ProductAddView.as_view(), name="add_product"),
     path("<shift:shift>/overview/", views.ShiftOverviewView.as_view(), name="shift_overview"),
     path("<shift:shift>/control/toggle/", views.ToggleShiftActivationView.as_view(), name="shift_toggle"),
     path("<shift:shift>/control/add-time/", views.AddShiftTimeView.as_view(), name="shift_add_time"),

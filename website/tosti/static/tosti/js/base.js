@@ -33,10 +33,6 @@ function get_cookie(name) {
     return null;
 }
 
-function erase_cookie(name) {
-    document.cookie = name+'=; path=/; domain=kanikervanaf.nl; Max-Age=-99999999;';
-}
-
 function set_list_cookie(name, list, days) {
 	try {
 		let string = JSON.stringify(list);

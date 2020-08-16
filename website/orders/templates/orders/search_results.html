@@ -3,10 +3,7 @@
 {% for product in products %}
     <div class="search-item">
         <p class="search-item-name">{{ product.name }}</p>
-        {% if product.icon %}
-            <i class="fas fa-{{ product.icon }}"></i>
-        {% endif %}
         <div class="flex-divider"></div>
-        <input type="button" class="btn btn-success" onclick="" value="Add"/>
+        <input type="button" class="btn btn-success" onclick="add_product('{% url "orders:add_product" shift=shift %}', add_product_success, add_product_error, {{ product.id }})" value="Add"/>
     </div>
 {% endfor %}

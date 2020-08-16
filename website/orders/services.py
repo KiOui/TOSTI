@@ -124,3 +124,11 @@ def query_product_name(query):
 def query_product_barcode(query):
     """Query a product barcode."""
     return Product.objects.filter(barcode__startswith=query, available=True)
+
+
+def add_product_to_shift(product, shift, type, user=None):
+    """Add an order of a product to a shift."""
+    if type is Order.TYPE_ORDERED and user is None:
+        raise OrderException("A user is needed for items that have the 'TYPE_ORDERED' type.")
+
+    return Order.objects.create(product=product, shift=shift, type=type, user=user)

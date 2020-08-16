@@ -117,7 +117,6 @@ function product_error(errormsg, barcode) {
 
 function scan_result(result) {
     let code = result.codeResult.code;
-    console.log(code);
     if (!scanned_codes.includes(code)) {
         scanned_codes.push(code);
         add_product_from_barcode(SCANNER_DATA_URL, product_scanned, product_error, code, code);
