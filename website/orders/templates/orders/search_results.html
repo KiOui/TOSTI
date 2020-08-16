@@ -1,9 +1,15 @@
 {% load static %}
 
-{% for product in products %}
+{% if products|length > 0 %}
+    {% for product in products %}
+        <div class="search-item">
+            <p class="search-item-name">{{ product.name }}</p>
+            <div class="flex-divider"></div>
+            <input type="button" class="btn btn-success" onclick="add_product('{% url "orders:add_product" shift=shift %}', add_product_success, add_product_error, {{ product.id }})" value="Add"/>
+        </div>
+    {% endfor %}
+{% else %}
     <div class="search-item">
-        <p class="search-item-name">{{ product.name }}</p>
-        <div class="flex-divider"></div>
-        <input type="button" class="btn btn-success" onclick="add_product('{% url "orders:add_product" shift=shift %}', add_product_success, add_product_error, {{ product.id }})" value="Add"/>
+        <p class="search-item-name">No products found</p>
     </div>
-{% endfor %}
+{% endif %}

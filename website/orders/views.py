@@ -633,6 +633,7 @@ class ShiftScannerView(PermissionRequiredMixin, TemplateView):
 
 
 class ProductSearchView(PermissionRequiredMixin, TemplateView):
+    """Search view."""
 
     permission_required = "orders.can_manage_shift_in_venue"
     return_403 = True
@@ -653,9 +654,7 @@ class ProductSearchView(PermissionRequiredMixin, TemplateView):
             barcode_query = services.query_product_barcode(query)
             all_query = set(string_query)
             all_query.update(barcode_query)
-            product_list = get_template("orders/search_results.html").render(
-                {"products": all_query, "shift": shift}
-            )
+            product_list = get_template("orders/search_results.html").render({"products": all_query, "shift": shift})
             return JsonResponse({"error": False, "data": product_list})
         else:
             return JsonResponse({"error": True, "errormsg": "No query defined."})
@@ -671,6 +670,7 @@ class ProductSearchView(PermissionRequiredMixin, TemplateView):
 
 
 class ProductAddView(PermissionRequiredMixin, TemplateView):
+    """Add product view."""
 
     permission_required = "orders.can_manage_shift_in_venue"
     return_403 = True
@@ -692,13 +692,12 @@ class ProductAddView(PermissionRequiredMixin, TemplateView):
             except Product.DoesNotExist:
                 return JsonResponse({"error": True, "errormsg": "That product does not exist."})
             try:
-                order = services.add_product_to_shift(product, shift, Order.TYPE_SCANNED)
+                services.add_order(product, shift, Order.TYPE_SCANNED, set_done=True)
             except OrderException as e:
                 return JsonResponse({"error": True, "errormsg": str(e)})
             return JsonResponse({"error": False, "successmsg": "{} added to the shift.".format(product.name)})
         else:
             return JsonResponse({"error": True, "errormsg": "No product defined."})
-
 
     def get_permission_object(self):
         """Get the object to check permissions for."""
