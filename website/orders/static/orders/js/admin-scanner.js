@@ -104,7 +104,7 @@ function product_scanned(product) {
     stop_scanner();
     scanned_codes = [];
     $(POPUP_MODAL).modal('hide');
-    SUCCESS_CONTAINER.innerHTML = "Added " + product.name + " to the order list.";
+    SUCCESS_CONTAINER.innerHTML = "Added " + product.name + " (€" + product.price + ") to the order list.";
     SUCCESS_CONTAINER.style.display = "";
     if (typeof(update_update_list) !== 'undefined') {
         update_update_list();
