@@ -21,6 +21,12 @@ class LoginView(TemplateView):
         :param kwargs: keyword arguments
         :return: a render of the login view
         """
+        if request.user.is_authenticated:
+            if request.GET.get("next"):
+                return redirect(request.GET.get("next"))
+            else:
+                return redirect("users:account")
+
         form = LoginForm()
         remembered_username = request.COOKIES.get(self.remember_cookie, None)
         if remembered_username is not None:
@@ -39,6 +45,12 @@ class LoginView(TemplateView):
         otherwise
         """
         form = LoginForm(request.POST)
+
+        if request.user.is_authenticated:
+            if request.GET.get("next"):
+                return redirect(request.GET.get("next"))
+            else:
+                return redirect("users:account")
 
         if form.is_valid():
             openid_verifier = get_openid_verifier(request)
