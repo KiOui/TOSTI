@@ -1,5 +1,5 @@
 
-let MAX_ORDERS = 0;
+let MAX_ORDERS = 5;
 let PRODUCTS = [];
 
 String.prototype.capitalize = function() {
