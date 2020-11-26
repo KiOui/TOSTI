@@ -2,6 +2,8 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import User as BaseUser, Group as BaseGroup
 from django.db import models
 from django.db.models import CASCADE
+from associations.models import Association
+from django.conf import settings
 
 
 class UserManager(BaseUserManager):
@@ -77,6 +79,17 @@ class User(BaseUser):
         """Meta class for Users."""
 
         proxy = True
+
+
+class Profile(models.Model):
+    """Profile model."""
+
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    association = models.ForeignKey(Association, null=True, blank=True, on_delete=models.SET_NULL)
+
+    def __str__(self):
+        """Convert this object to string."""
+        return "Profile for {}".format(self.user)
 
 
 class GroupSettings(models.Model):

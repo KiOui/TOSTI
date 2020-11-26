@@ -24,6 +24,12 @@ class PrivacyView(TemplateView):
     template_name = "tosti/privacy.html"
 
 
+class WelcomeView(TemplateView):
+    """Welcome page."""
+
+    template_name = "tosti/welcome.html"
+
+
 def handler403(request, exception):
     """
     Handle a 403 (permission denied) exception.
