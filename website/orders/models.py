@@ -517,14 +517,7 @@ class Shift(models.Model):
         user_order_amount = Order.objects.filter(
             user=user, shift=self, product__ignore_shift_restrictions=False
         ).count()
-        unrestricted_products = Product.objects.filter(
-            ignore_shift_restrictions=True, available=True, available_at=self.venue
-        ).count()
-        if (
-            self.max_orders_per_user is not None
-            and user_order_amount + amount > self.max_orders_per_user
-            and unrestricted_products == 0
-        ):
+        if self.max_orders_per_user is not None and user_order_amount + amount > self.max_orders_per_user:
             return False
 
         return True
