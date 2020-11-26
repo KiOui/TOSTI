@@ -8,10 +8,12 @@ overrides.
 """
 
 import logging
+import os
 
-# Load all default settings because we need to use settings.configure
-# for sphinx documentation generation.
-from django.conf.global_settings import *
+if os.environ.get("DOCUTILSCONFIG"):
+    # Load all default settings because we need to use settings.configure
+    # for sphinx documentation generation.
+    from django.conf.global_settings import *
 
 # Load base settings
 from .settings import *
