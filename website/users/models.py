@@ -62,10 +62,15 @@ class User(BaseUser):
 
         :return: the username of the user
         """
-        if self.first_name:
-            return self.get_full_name()
-        else:
-            return self.username
+        try:
+            profile = Profile.objects.get(user=self)
+            if profile.association:
+                return "{} ({})".format(
+                    self.get_full_name() if self.first_name else self.username, profile.association
+                )
+        except Profile.DoesNotExist:
+            pass
+        return self.get_full_name() if self.first_name else self.username
 
     def get_short_name(self):
         """
@@ -73,7 +78,7 @@ class User(BaseUser):
 
         :return: first name if it exists, otherwise username
         """
-        return self.first_name if self.first_name != "" and self.first_name is not None else self.username
+        return self.first_name if self.first_name else self.username
 
     class Meta:
         """Meta class for Users."""
