@@ -202,8 +202,8 @@ class OpenIDVerifier:
                 if created:
                     self.set_user_details(user)
                     join_auto_join_groups(user)
-                return user
-        return False
+                return user, created
+        return None, False
 
 
 def join_auto_join_groups(user):

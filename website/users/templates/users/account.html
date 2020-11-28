@@ -11,7 +11,9 @@
             <h1>Account</h1>
             <p>The details of your account are displayed below</p>
             <form class="centered-form" method="POST">
+                {% csrf_token %}
                 {{ form }}
+                <input type="submit" value="Save" class="btn btn-primary"/>
             </form>
         </div>
     </div>

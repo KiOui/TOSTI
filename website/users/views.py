@@ -79,7 +79,7 @@ class VerifyView(TemplateView):
         page otherwise
         """
         openid_verifier = get_openid_verifier(request)
-        user = openid_verifier.extract_user()
+        user, created = openid_verifier.extract_user()
         if user:
             update_staff_status(user)
             login(request, user, backend="django.contrib.auth.backends.ModelBackend")
@@ -87,8 +87,10 @@ class VerifyView(TemplateView):
             next_page = request.GET.get("next")
             if next_page:
                 return redirect(next_page)
-
-            return redirect("index")
+            elif created:
+                return redirect("welcome")
+            else:
+                return redirect("index")
 
         return render(request, self.template_name)
 
@@ -139,6 +141,21 @@ class AccountView(LoginRequiredMixin, TemplateView):
                 "last_name": request.user.last_name,
                 "username": request.user.username,
                 "email": request.user.email,
+                "association": request.user.profile.association,
             }
         )
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request, **kwargs):
+        """
+        POST request for the account view.
+
+        :param request: the request
+        :param kwargs: keyword arguments
+        :return: a render of the account view
+        """
+        form = AccountForm(request.POST)
+        if form.is_valid():
+            request.user.profile.association = form.cleaned_data.get("association")
+            request.user.profile.save()
         return render(request, self.template_name, {"form": form})

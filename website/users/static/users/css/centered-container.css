@@ -18,7 +18,7 @@ label[for=id_remember] {
     margin-top: 10px;
 }
 
-.centered-form input[type=text], .centered-form input[type=submit] {
+.centered-form input[type=text], .centered-form input[type=submit], .centered-form select {
     width: 100%;
     margin-left: 0;
     margin-right: 0;

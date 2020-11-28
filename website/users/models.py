@@ -2,6 +2,8 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import User as BaseUser, Group as BaseGroup
 from django.db import models
 from django.db.models import CASCADE
+from associations.models import Association
+from django.conf import settings
 
 
 class UserManager(BaseUserManager):
@@ -60,10 +62,15 @@ class User(BaseUser):
 
         :return: the username of the user
         """
-        if self.first_name:
-            return self.get_full_name()
-        else:
-            return self.username
+        try:
+            profile = Profile.objects.get(user=self)
+            if profile.association:
+                return "{} ({})".format(
+                    self.get_full_name() if self.first_name else self.username, profile.association
+                )
+        except Profile.DoesNotExist:
+            pass
+        return self.get_full_name() if self.first_name else self.username
 
     def get_short_name(self):
         """
@@ -71,12 +78,23 @@ class User(BaseUser):
 
         :return: first name if it exists, otherwise username
         """
-        return self.first_name if self.first_name != "" and self.first_name is not None else self.username
+        return self.first_name if self.first_name else self.username
 
     class Meta:
         """Meta class for Users."""
 
         proxy = True
+
+
+class Profile(models.Model):
+    """Profile model."""
+
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    association = models.ForeignKey(Association, null=True, blank=True, on_delete=models.SET_NULL)
+
+    def __str__(self):
+        """Convert this object to string."""
+        return "Profile for {}".format(self.user)
 
 
 class GroupSettings(models.Model):

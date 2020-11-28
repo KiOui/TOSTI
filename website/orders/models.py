@@ -8,6 +8,7 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from guardian.shortcuts import get_objects_for_user
 
+from associations.models import Association
 from venues.models import Venue
 from itertools import chain
 
@@ -573,6 +574,7 @@ class Order(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     user = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT)
+    user_association = models.ForeignKey(Association, blank=True, null=True, on_delete=models.SET_NULL)
     shift = models.ForeignKey(Shift, blank=False, null=False, on_delete=models.PROTECT)
     product = models.ForeignKey(
         Product, blank=False, null=False, on_delete=models.PROTECT, validators=[available_product_filter],
