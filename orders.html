@@ -292,7 +292,7 @@
 
 <dl class="py attribute">
 <dt id="orders.admin.OrderAdminForm.base_fields">
-<code class="sig-name descname">base_fields</code><em class="property"> = {'order_price': &lt;django.forms.fields.DecimalField object&gt;, 'paid': &lt;django.forms.fields.BooleanField object&gt;, 'paid_at': &lt;django.forms.fields.DateTimeField object&gt;, 'product': &lt;django.forms.models.ModelChoiceField object&gt;, 'ready': &lt;django.forms.fields.BooleanField object&gt;, 'ready_at': &lt;django.forms.fields.DateTimeField object&gt;, 'shift': &lt;django.forms.models.ModelChoiceField object&gt;, 'type': &lt;django.forms.fields.TypedChoiceField object&gt;, 'user': &lt;django.forms.models.ModelChoiceField object&gt;}</em><a class="headerlink" href="#orders.admin.OrderAdminForm.base_fields" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">base_fields</code><em class="property"> = {'order_price': &lt;django.forms.fields.DecimalField object&gt;, 'paid': &lt;django.forms.fields.BooleanField object&gt;, 'paid_at': &lt;django.forms.fields.DateTimeField object&gt;, 'product': &lt;django.forms.models.ModelChoiceField object&gt;, 'ready': &lt;django.forms.fields.BooleanField object&gt;, 'ready_at': &lt;django.forms.fields.DateTimeField object&gt;, 'shift': &lt;django.forms.models.ModelChoiceField object&gt;, 'type': &lt;django.forms.fields.TypedChoiceField object&gt;, 'user': &lt;django.forms.models.ModelChoiceField object&gt;, 'user_association': &lt;django.forms.models.ModelChoiceField object&gt;}</em><a class="headerlink" href="#orders.admin.OrderAdminForm.base_fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -885,6 +885,24 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
 </dd></dl>
+
+<dl class="py attribute">
+<dt id="orders.models.Order.user_association">
+<code class="sig-name descname">user_association</code><a class="headerlink" href="#orders.models.Order.user_association" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="orders.models.Order.user_association_id">
+<code class="sig-name descname">user_association_id</code><a class="headerlink" href="#orders.models.Order.user_association_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.models.Order.user_id">
