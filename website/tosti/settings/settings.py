@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "admin_auto_filters",
     "import_export",
     "guardian",
+    'rest_framework',
     "users",
     "venues",
     "marietje",

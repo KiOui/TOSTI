@@ -722,7 +722,7 @@ class ProductAddView(PermissionRequiredMixin, TemplateView):
             except Product.DoesNotExist:
                 return JsonResponse({"error": True, "errormsg": "That product does not exist."})
             try:
-                services.add_order(product, shift, Order.TYPE_SCANNED, set_done=True)
+                services.add_order(product, shift, Order.TYPE_SCANNED, paid=True, ready=True)
             except OrderException as e:
                 return JsonResponse({"error": True, "errormsg": str(e)})
             return JsonResponse({"error": False, "successmsg": "{} added to the shift.".format(product.name)})

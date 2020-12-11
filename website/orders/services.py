@@ -1,3 +1,4 @@
+import json
 import logging
 
 import datetime
@@ -45,23 +46,23 @@ def user_can_order_product(user: User, product: Product, shift: Shift):
 
 def place_orders(products: List[Product], user: User, shift: Shift):
     """Place orders for a user in a certain shift."""
+    # TODO: It could be that an Order exceeds Order limits after the dry run
     products_ignore_shift_restrictions = [x for x in products if x.ignore_shift_restrictions]
 
     if not shift.user_can_order_amount(user, amount=len(products) - len(products_ignore_shift_restrictions)):
         raise OrderException("User can not order that much products in this shift")
 
-    orders = []
     for product in products:
         try:
-            order = add_order(product, shift, Order.TYPE_ORDERED, user=user)
-            orders.append(order)
+            add_order(product, shift, Order.TYPE_ORDERED, user=user, dry=True)
         except OrderException as e:
-            orders.append(e)
+            raise e
 
-    return orders
+    for product in products:
+        add_order(product, shift, Order.TYPE_ORDERED, user=user)
 
 
-def add_order(product, shift, order_type, user=None, set_done=False, force=False, dry=False):
+def add_order(product, shift, order_type, user=None, paid=False, ready=False, force=False, dry=False):
     """
     Add an order to a shift.
 
@@ -69,7 +70,8 @@ def add_order(product, shift, order_type, user=None, set_done=False, force=False
     :param shift: the shift to add the order to
     :param order_type: the order type, if this is TYPE_ORDERED a user is needed
     :param user: the user to add the order to, can be None if the type is not TYPE_ORDERED
-    :param set_done: set paid and ready to done for the new order
+    :param paid: set paid for the new order
+    :param ready: set ready for the new order
     :param force: skip all checks and force add an order
     :param dry: do all checks but don't actually add the order
     :return: Either None if dry=True, an OrderException if the Order can't be added or a new Order object
@@ -96,8 +98,8 @@ def add_order(product, shift, order_type, user=None, set_done=False, force=False
             shift=shift,
             type=order_type,
             user=user,
-            paid=set_done,
-            ready=set_done,
+            paid=paid,
+            ready=ready,
             order_price=product.current_price,
         )
 
@@ -159,3 +161,39 @@ def query_product_name(query):
 def query_product_barcode(query):
     """Query a product barcode."""
     return Product.objects.filter(barcode__startswith=query, available=True)
+
+
+class Cart:
+
+    def __init__(self, cart_items: List[Product]):
+        self.cart_items = cart_items
+
+    def get_item_list(self):
+        return self.cart_items
+
+    def get_item_list_ids(self):
+        return [x.id for x in self.cart_items]
+
+    @staticmethod
+    def from_json(json_str):
+        try:
+            cart_item_ids = json.loads(json_str)
+        except json.JSONDecodeError as e:
+            raise e
+
+        return Cart.from_list(cart_item_ids)
+
+    @staticmethod
+    def from_list(cart_item_ids):
+        cart_items = list()
+        for item_id in cart_item_ids:
+            try:
+                item = Product.objects.get(id=item_id)
+                cart_items.append(item)
+            except Product.DoesNotExist:
+                raise ValueError(f"Product with id {item_id} does not exist.")
+
+        return Cart(cart_items)
+
+    def to_json(self):
+        return json.dumps(self.get_item_list_ids())
