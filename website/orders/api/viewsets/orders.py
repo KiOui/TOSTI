@@ -2,14 +2,14 @@ from django.db.models import ProtectedError
 from rest_framework import viewsets, mixins
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.exceptions import PermissionDenied, ParseError, ValidationError, NotFound
+from rest_framework.exceptions import PermissionDenied, ParseError, ValidationError
 from rest_framework.views import APIView
 from rest_framework import status
 
 from orders.api.serializers.orders import OrderSerializer, ShiftSerializer, ProductSerializer
 from orders.exceptions import OrderException
 from orders.models import Order, Shift, Product
-from orders.services import Cart, place_orders, increase_shift_time, increase_shift_capacity, add_order
+from orders.services import Cart, place_orders, increase_shift_time, increase_shift_capacity
 
 
 class OrderView(APIView):
@@ -41,15 +41,16 @@ class OrderView(APIView):
 
     def post(self, request, **kwargs):
         """
-        API endpoint for creating multiple orders in one go (handling of a cart).
+        Create multiple Orders in one go.
 
+        API endpoint for creating multiple orders in one go (handling of a cart).
         A "cart" POST parameter must be specified including the ID's of the Products the user wants to order.
         Permission required: can_order_in_venue
         :param request: the request
         :param kwargs: keyword arguments
         :return: a 201 response code if all orders in the cart were successfully processed. Raises a ValidationError
-        if some Orders in the cart can not be processed. Returns a 400 response code if the cart could not be read or is
-        not present in the POST data, raises a PermissionDenied error when the user does not have permission
+        if some Orders in the cart can not be processed. Returns a 400 response code if the cart could not be read or
+        is not present in the POST data, raises a PermissionDenied error when the user does not have permission
         """
         shift = self.get_object()
         if not self.request.user.has_perm("orders.can_order_in_venue", shift.venue):
@@ -68,11 +69,13 @@ class OrderView(APIView):
         return Response(status=status.HTTP_201_CREATED)
 
 
-class OrderViewSet(mixins.CreateModelMixin,
-                   mixins.ListModelMixin,
-                   mixins.RetrieveModelMixin,
-                   mixins.UpdateModelMixin,
-                   viewsets.GenericViewSet):
+class OrderViewSet(
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    viewsets.GenericViewSet,
+):
     """
     API endpoint for Order model.
 
@@ -86,44 +89,43 @@ class OrderViewSet(mixins.CreateModelMixin,
     serializer_class = OrderSerializer
     queryset = Order.objects.all()
 
-    def get_permissions(self):
-        # TODO: Implement get_permissions instead of permissions in each method
-        """
-        if self.action == 'list':
-            permission_classes = [IsAuthenticated]
-        else:
-            permission_classes = [IsAdmin]
-        """
-        return super().get_permissions()
-
     def create(self, request, *args, **kwargs):
         """
-        API endpoint for creating a single Order.
+        Create a single Order.
 
+        API endpoint for creating a single Order.
         A 'shift' POST parameter must be present indicating the Shift the order must be added to.
-        Permission required: can_order_in_venue
+        Permission required: can_order_in_venue if Order is placed for the logged in user, otherwise
+        can_manage_shift_in_venue
         :param request: the request
         :param args: arguments
         :param kwargs: keyword arguments
-        :return:
+        :return: a 404 response when the Shift in the POST data could not be found, a 204 response indicating the Order
+        has been created or PermissionDenied when the user does not have the required permissions
         """
-        shift_id = request.data.get('shift', None)
+        shift_id = request.data.get("shift", None)
         if shift_id is not None:
             try:
                 shift = Shift.objects.get(id=shift_id)
             except Shift.DoesNotExist:
-                return Response(status=status.HTTP_404_NOT_FOUND)
+                return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        if request.user.has_perm("orders.can_order_in_venue", shift.venue):
-            pass
-            # TODO: Use serializer create method?
+        if (
+            request.user.has_perm("orders.can_order_in_venue", shift.venue)
+            and request.user == request.data.get("user")
+            or request.user.has_perm("orders.can_manage_shift_in_venue", shift.venue)
+        ):
+            return super().create(request, *args, **kwargs)
+        else:
+            raise PermissionDenied
 
     def list(self, request, *args, **kwargs):
         """
-        API endpoint for listing all Orders.
+        List all Orders.
 
+        API endpoint for listing all Orders.
         Optionally a 'shift' parameter can be specified indicating the Shift to list the Orders for.
         Permission required: None
         :param request: the request
@@ -131,7 +133,7 @@ class OrderViewSet(mixins.CreateModelMixin,
         :param kwargs: keyword arguments
         :return: super method
         """
-        shift_id = request.data.get('shift', None)
+        shift_id = request.data.get("shift", None)
         if shift_id:
             self.queryset = Order.objects.filter(shift=shift_id)
 
@@ -139,8 +141,9 @@ class OrderViewSet(mixins.CreateModelMixin,
 
     def update(self, request, *args, **kwargs):
         """
-        API endpoint for updating an Order.
+        Update an Order.
 
+        API endpoint for updating an Order.
         Permission required: can_manage_shift_in_venue
         :param request: the request
         :param args: arguments
@@ -154,11 +157,13 @@ class OrderViewSet(mixins.CreateModelMixin,
             raise PermissionDenied
 
 
-class ShiftViewSet(mixins.CreateModelMixin,
-                   mixins.ListModelMixin,
-                   mixins.RetrieveModelMixin,
-                   mixins.UpdateModelMixin,
-                   viewsets.GenericViewSet):
+class ShiftViewSet(
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    viewsets.GenericViewSet,
+):
     """
     API endpoint for Shift model.
 
@@ -174,8 +179,9 @@ class ShiftViewSet(mixins.CreateModelMixin,
 
     def create(self, request, *args, **kwargs):
         """
-        API endpoint for creating a Shift.
+        Create a Shift.
 
+        API endpoint for creating a Shift.
         Permission required: can_manage_shift_in_venue
         :param request: the request
         :param args: arguments
@@ -183,7 +189,7 @@ class ShiftViewSet(mixins.CreateModelMixin,
         :return: super method or PermissionDenied when 'venue' POST data is None or when user does not have permission
         in indicated venue
         """
-        venue = request.data.get('venue', None)
+        venue = request.data.get("venue", None)
         if venue is not None and self.request.user.has_perm("orders.can_manage_shift_in_venue", venue):
             return super().create(request, *args, **kwargs)
         else:
@@ -191,8 +197,9 @@ class ShiftViewSet(mixins.CreateModelMixin,
 
     def update(self, request, *args, **kwargs):
         """
-        API endpoint for updating a Shift.
+        Update a Shift.
 
+        API endpoint for updating a Shift.
         Permission required: can_manage_shift_in_venue
         :param request: the request
         :param args: arguments
@@ -207,8 +214,9 @@ class ShiftViewSet(mixins.CreateModelMixin,
 
     def list(self, request, *args, **kwargs):
         """
-        API endpoint for listing Shift objects.
+        List all Shifts.
 
+        API endpoint for listing Shift objects.
         Optionally an 'active' POST parameter can be set indicating whether or not to only show active Shifts.
         Permission required: None
         :param request: the request
@@ -227,8 +235,9 @@ class ShiftViewSet(mixins.CreateModelMixin,
 
     def retrieve(self, request, *args, **kwargs):
         """
-        API endpoint for retrieving a Shift object.
+        Retrieve a Shift.
 
+        API endpoint for retrieving a Shift object.
         Permission required: None
         :param request: the request
         :param args: arguments
@@ -238,12 +247,14 @@ class ShiftViewSet(mixins.CreateModelMixin,
         return super().retrieve(request, *args, **kwargs)
 
 
-class ProductViewSet(mixins.ListModelMixin,
-                     mixins.CreateModelMixin,
-                     mixins.RetrieveModelMixin,
-                     mixins.UpdateModelMixin,
-                     mixins.DestroyModelMixin,
-                     viewsets.GenericViewSet):
+class ProductViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
     """
     API endpoint for Product model.
 
@@ -260,8 +271,9 @@ class ProductViewSet(mixins.ListModelMixin,
 
     def create(self, request, *args, **kwargs):
         """
-        API endpoint for creating a Product.
+        Create a Product.
 
+        API endpoint for creating a Product.
         Permission required: is_staff
         :param request: the request
         :param args: arguments
@@ -269,14 +281,15 @@ class ProductViewSet(mixins.ListModelMixin,
         :return: super method or PermissionDenied
         """
         if request.user.is_staff:
-            super().create(request, *args, **kwargs)
+            return super().create(request, *args, **kwargs)
         else:
             raise PermissionDenied
 
     def update(self, request, *args, **kwargs):
         """
-        API endpoint for updating a Product.
+        Update a Product.
 
+        API endpoint for updating a Product.
         Permission required: is_staff
         :param request: the request
         :param args: arguments
@@ -284,14 +297,15 @@ class ProductViewSet(mixins.ListModelMixin,
         :return: super method or PermissionDenied
         """
         if request.user.is_staff:
-            super().create(request, *args, **kwargs)
+            return super().create(request, *args, **kwargs)
         else:
             raise PermissionDenied
 
     def destroy(self, request, *args, **kwargs):
         """
-        API endpoint for destroying a Product.
+        Destroy a Product.
 
+        API endpoint for destroying a Product.
         Permission required: is_staff
         :param request: the request
         :param args: arguments
@@ -303,40 +317,49 @@ class ProductViewSet(mixins.ListModelMixin,
             try:
                 return super().destroy(request, *args, **kwargs)
             except ProtectedError as e:
-                return Response(data={"detail": "Cannot delete some instances of model 'Product' because some orders still use them.", "objects": [x.pk for x in e.protected_objects]}, status=status.HTTP_403_FORBIDDEN)
+                return Response(
+                    data={
+                        "detail": "Cannot delete some instances of model 'Product' because some orders still use them",
+                        "objects": [x.pk for x in e.protected_objects],
+                    },
+                    status=status.HTTP_403_FORBIDDEN,
+                )
         else:
             raise PermissionDenied
 
     def list(self, request, *args, **kwargs):
         """
-        API endpoint for listing Products.
+        List all Products.
 
+        API endpoint for listing Products.
         Permission required: None
         :param request: the request
         :param args: arguments
         :param kwargs: keyword arguments
         :return: super method
         """
-        super().list(request, *args, **kwargs)
+        return super().list(request, *args, **kwargs)
 
     def retrieve(self, request, *args, **kwargs):
         """
-        API endpoint for retrieving a Product.
+        Retrieve a Product.
 
+        API endpoint for retrieving a Product.
         Permission required: None
         :param request: the request
         :param args: arguments
         :param kwargs: keyword arguments
         :return: super method
         """
-        super().retrieve(request, *args, **kwargs)
+        return super().retrieve(request, *args, **kwargs)
 
 
-@api_view(['POST'])
+@api_view(["POST"])
 def shift_add_time(request, **kwargs):
     """
-    API endpoint for adding an amount of minutes to the end of a Shift.
+    Add an amount of minutes to the end of a Shift.
 
+    API endpoint for adding an amount of minutes to the end of a Shift.
     Optionally a "minutes" POST parameter can be set indicating with how many minutes the time should be extended.
     Permission required: can_manage_shift_in_venue
     :param request: the request
@@ -352,11 +375,12 @@ def shift_add_time(request, **kwargs):
         raise PermissionDenied
 
 
-@api_view(['POST'])
+@api_view(["POST"])
 def shift_add_capacity(request, **kwargs):
     """
-    API endpoint for adding capacity to a Shift.
+    Add capacity to a Shift.
 
+    API endpoint for adding capacity to a Shift.
     Optionally a "capacity" POST parameter can be set indicating how many capacity should be added.
     Permission required: can_manage_shift_in_venue
     :param request: the request
@@ -372,11 +396,12 @@ def shift_add_capacity(request, **kwargs):
         raise PermissionDenied
 
 
-@api_view(['POST'])
+@api_view(["POST"])
 def shift_scanner(request, **kwargs):
     """
-    API endpoint for adding a scanned order to a Shift.
+    Add a scanned order to a Shift.
 
+    API endpoint for adding a scanned order to a Shift.
     A "barcode" POST parameter should be specified indicating the barcode of the product to add.
     Permission required: can_manage_shift_in_venue
     :param request: the request

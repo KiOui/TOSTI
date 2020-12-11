@@ -164,18 +164,32 @@ def query_product_barcode(query):
 
 
 class Cart:
+    """Cart model for Orders."""
 
     def __init__(self, cart_items: List[Product]):
+        """
+        Initialize a Cart.
+
+        :param cart_items: a List of Products indicating the Products in a Cart
+        """
         self.cart_items = cart_items
 
     def get_item_list(self):
+        """Get the item list."""
         return self.cart_items
 
     def get_item_list_ids(self):
+        """Get the ids of all Products in the item list."""
         return [x.id for x in self.cart_items]
 
     @staticmethod
     def from_json(json_str):
+        """
+        Convert a JSON string to a Cart object.
+
+        :param json_str: the JSON string
+        :return: a Cart object or a JSONDecodeError on failed decoding
+        """
         try:
             cart_item_ids = json.loads(json_str)
         except json.JSONDecodeError as e:
@@ -185,6 +199,12 @@ class Cart:
 
     @staticmethod
     def from_list(cart_item_ids):
+        """
+        Convert a List of Product ids to a Cart.
+
+        :param cart_item_ids: a List of Product ids
+        :return: a Cart object or a ValueError if a Product could not be found
+        """
         cart_items = list()
         for item_id in cart_item_ids:
             try:
@@ -196,4 +216,5 @@ class Cart:
         return Cart(cart_items)
 
     def to_json(self):
+        """Convert this object to JSON."""
         return json.dumps(self.get_item_list_ids())
