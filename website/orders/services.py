@@ -29,7 +29,7 @@ def execute_data_minimisation(dry_run=False):
             if not dry_run:
                 order.save()
         else:
-            logging.warning(f"An unpaid order of {order.user.get_full_name()} has not been touched.")
+            logging.warning(f"An unpaid order of {order.user} has not been touched.")
     return users
 
 
@@ -98,6 +98,7 @@ def add_order(product, shift, order_type, user=None, paid=False, ready=False, fo
             shift=shift,
             type=order_type,
             user=user,
+            user_association=user.profile.association,
             paid=paid,
             ready=ready,
             order_price=product.current_price,
