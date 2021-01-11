@@ -44,7 +44,7 @@ function set_list_cookie(name, list, days) {
     }
 }
 
-function update_and_replace(data_url, container, data) {
+function post_and_replace(data_url, container, data) {
     let csrf_token = get_csrf_token();
     jQuery(function($) {
         data.csrfmiddlewaretoken = csrf_token;
@@ -58,17 +58,88 @@ function update_and_replace(data_url, container, data) {
     )
 }
 
-function update_and_callback(data_url, data, callback/*, args */) {
+function post_and_callback(data_url, data, callback/*, args */) {
     let args = Array.prototype.slice.call(arguments, 3);
     let csrf_token = get_csrf_token();
     jQuery(function($) {
+        let headers = {"X-CSRFToken": get_csrf_token()};
         data.csrfmiddlewaretoken = csrf_token;
-        $.ajax({type: 'POST', url: data_url, data, dataType:'json', asynch: true, success:
+        data = JSON.stringify(data);
+        $.ajax({type: 'POST', url: data_url, data, dataType:'json', contentType: "application/json", headers: headers, asynch: true, success:
             function(data) {
                 args.unshift(data);
                 callback.apply(this, args);
             }}).fail(function() {
                 console.error("Failed to update");
+            });
+        }
+    )
+}
+
+function post_and_callback_with_error(data_url, data, callback, callback_error/*, args */) {
+    let args = Array.prototype.slice.call(arguments, 4);
+    let csrf_token = get_csrf_token();
+    jQuery(function($) {
+        let headers = {"X-CSRFToken": get_csrf_token()};
+        data.csrfmiddlewaretoken = csrf_token;
+        data = JSON.stringify(data);
+        $.ajax({type: 'POST', url: data_url, data, contentType: "application/json", headers: headers, asynch: true, success:
+            function(data) {
+                args.unshift(data);
+                callback.apply(this, args);
+            }, error: function(data) {
+                args.unshift(data);
+                callback_error.apply(this, args);
+            }});
+        }
+    )
+}
+
+function patch(data_url, data, callback/*, args */) {
+    let args = Array.prototype.slice.call(arguments, 3);
+    jQuery(function($) {
+        let headers = {"X-CSRFToken": get_csrf_token()};
+        $.ajax({type: 'PATCH', url: data_url, data, dataType:'json', asynch: true, headers: headers, success:
+            function(data) {
+                args.unshift(data);
+                callback.apply(this, args);
+            }}).fail(function() {
+                console.error("Error")
+            });
+        }
+    )
+}
+
+function delete_and_callback(data_url, data, callback/*, args*/) {
+    let args = Array.prototype.slice.call(arguments, 4);
+    jQuery(function($) {
+        let headers = {"X-CSRFToken": get_csrf_token()};
+        $.ajax({type: 'DELETE', url: data_url, data, dataType:'json', asynch: true, headers: headers, success:
+            function(data) {
+                args.unshift(data);
+                callback.apply(this, args);
+            }}).fail(function() {
+                console.error("Error")
+            });
+        }
+    )
+}
+
+function get_and_callback(data_url, data, callback/*, args */) {
+    let args = Array.prototype.slice.call(arguments, 4);
+    jQuery(function($) {
+        let headers = {"X-CSRFToken": get_csrf_token()};
+        $.ajax({type: 'GET', url: data_url, data, dataType:'json', asynch: true, headers: headers, success:
+            function(data) {
+                if (data.error) {
+                    console.error(data.error);
+                }
+                else {
+                    args.unshift(data);
+                    callback.apply(this, args);
+                }
+            }}).fail(function() {
+                console.error("Error")
             });
         }
     )

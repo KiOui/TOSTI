@@ -41,5 +41,5 @@ urlpatterns = [
     path("users/", include(("users.urls", "users"), namespace="users"),),
     path("shifts/", include(("orders.urls", "orders"), namespace="orders"),),
     path("marietje/", include(("marietje.urls", "marietje"), namespace="marietje"),),
-    path("api/", include([path("v1/", include("tosti.api.v1.urls"))])),
+    path("api/", include("tosti.api.urls")),
 ]

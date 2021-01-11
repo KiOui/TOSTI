@@ -23,80 +23,84 @@
     <link rel="manifest" href="{% static 'tosti/favicon/site.webmanifest' %}">
     <meta name="msapplication-TileColor" content="#d9a75d">
     <meta name="theme-color" content="#ff0000">
+    <!-- Vue JS -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
 </head>
 <body>
-    {% block header %}
-        <nav class="navbar navbar-expand-md sticky-top site-header mb-5 navbar-dark">
-            <div class="container">
-                <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link extra-margin-top-mobile" href="{% url "index" %}">
-                                Home
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url "orders:explainer" %}">
-                                How does this work?
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-                <div class="mx-auto order-0 navbar-collapse collapse position-relative">
-                    <a class="navbar-brand drop-out-header" href="/"><img src="{% static 'tosti/svg/TOSTI-logo.svg' %}" height="120"/></a>
-                </div>
-                <div class="order-0 d-block d-md-none">
-                    <a class="navbar-brand drop-out-header-mobile" href="/"><img src="{% static 'tosti/svg/TOSTI-logo.svg' %}" height="80"/></a>
-                </div>
-                <div class="navbar-collapse collapse w-100 order-3 dual-collapse2 ">
-                    <ul class="navbar-nav ml-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url "marietje:index" %}">
-                                Marietje
-                            </a>
-                        </li>
-                        {% if not user.is_authenticated %}
+    <div id="page-container">
+        {% block header %}
+            <nav class="navbar navbar-expand-md sticky-top site-header mb-5 navbar-dark">
+                <div class="container">
+                    <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+                        <ul class="navbar-nav">
                             <li class="nav-item">
-                                <a class="nav-link" href="{% url "users:login" %}">
-                                    Login
+                                <a class="nav-link extra-margin-top-mobile" href="{% url "index" %}">
+                                    Home
                                 </a>
                             </li>
-                        {% else %}
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    {{ user.username }}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url "orders:explainer" %}">
+                                    How does this work?
                                 </a>
-                                <div class="dropdown-menu p-2" aria-labelledby="navbarDropdownMenuLink">
-                                    {% if user.is_staff %}
-                                        <a class="nav-link text-dark" href="{% url "admin:index" %}">
-                                            Site admin
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="mx-auto order-0 navbar-collapse collapse position-relative">
+                        <a class="navbar-brand drop-out-header" href="/"><img src="{% static 'tosti/svg/TOSTI-logo.svg' %}" height="120"/></a>
+                    </div>
+                    <div class="order-0 d-block d-md-none">
+                        <a class="navbar-brand drop-out-header-mobile" href="/"><img src="{% static 'tosti/svg/TOSTI-logo.svg' %}" height="80"/></a>
+                    </div>
+                    <div class="navbar-collapse collapse w-100 order-3 dual-collapse2 ">
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url "marietje:index" %}">
+                                    Marietje
+                                </a>
+                            </li>
+                            {% if not user.is_authenticated %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url "users:login" %}">
+                                        Login
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        {{ user.username }}
+                                    </a>
+                                    <div class="dropdown-menu p-2" aria-labelledby="navbarDropdownMenuLink">
+                                        {% if user.is_staff %}
+                                            <a class="nav-link text-dark" href="{% url "admin:index" %}">
+                                                Site admin
+                                            </a>
+                                        {% endif %}
+                                        <a class="nav-link text-dark" href="{% url "privacy" %}">
+                                            Privacy
                                         </a>
-                                    {% endif %}
-                                    <a class="nav-link text-dark" href="{% url "privacy" %}">
-                                        Privacy
-                                    </a>
-                                    <a class="nav-link text-dark" href="{% url "users:account" %}">
-                                        Account
-                                    </a>
-                                    <a class="nav-link text-dark" href="{% url "users:logout" %}">
-                                        Logout
-                                    </a>
-                                </div>
-                            </li>
-                        {% endif %}
-                    </ul>
+                                        <a class="nav-link text-dark" href="{% url "users:account" %}">
+                                            Account
+                                        </a>
+                                        <a class="nav-link text-dark" href="{% url "users:logout" %}">
+                                            Logout
+                                        </a>
+                                    </div>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".dual-collapse2">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
                 </div>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".dual-collapse2">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-            </div>
-        </nav>
-    {% endblock %}
-    <div class="page">
-        {% block page %}{% endblock %}
+            </nav>
+        {% endblock %}
+        <div class="page">
+            {% block page %}{% endblock %}
+        </div>
+        {% block footer %}
+        {% endblock %}
     </div>
-    {% block footer %}
-    {% endblock %}
     <script src="{% static 'tosti/js/bootstrap/bootstrap.js' %}"></script>
     <script>
         CSRF_TOKEN = "{{ csrf_token }}";

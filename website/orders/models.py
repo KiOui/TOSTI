@@ -551,7 +551,9 @@ class Shift(models.Model):
 
 def available_product_filter(value):
     """Filter to only allow ordering available products."""
-    if Product.objects.get(pk=value).available:
+    if type(value) == int and Product.objects.get(pk=value).available:
+        return True
+    elif type(value) == Product and value.available:
         return True
     else:
         raise ValidationError("This product is not available.")
