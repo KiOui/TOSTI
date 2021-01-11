@@ -25,6 +25,7 @@ from django.urls import path, include
 from .views import (
     IndexView,
     PrivacyView,
+    WelcomeView,
     handler403 as custom_handler403,
     handler404 as custom_handler404,
     handler500 as custom_handler500,
@@ -37,6 +38,7 @@ handler500 = custom_handler500
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", IndexView.as_view(), name="index"),
+    path("welcome", WelcomeView.as_view(), name="welcome"),
     path("privacy/", PrivacyView.as_view(), name="privacy"),
     path("users/", include(("users.urls", "users"), namespace="users"),),
     path("shifts/", include(("orders.urls", "orders"), namespace="orders"),),

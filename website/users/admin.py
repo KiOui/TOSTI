@@ -8,7 +8,15 @@ from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.auth.models import Group, Permission
 from django import forms
 
-from .models import GroupSettings
+from .models import GroupSettings, Profile
+
+
+class ProfileInline(admin.StackedInline):
+    """Profile inline."""
+
+    model = Profile
+    verbose_name_plural = "Profiles"
+    can_delete = False
 
 
 class UserAdminForm(forms.ModelForm):
@@ -68,6 +76,7 @@ class UserAdmin(BaseUserAdmin):
         "is_staff",
     ]
     model = User
+    inlines = (ProfileInline,)
 
     class Meta:
         """Meta class for the UserAdmin model."""
