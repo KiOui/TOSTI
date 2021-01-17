@@ -124,48 +124,27 @@ class ShiftSerializer(serializers.ModelSerializer):
         """Get the max orders a user can still place in the shift."""
         return instance.user_max_order_amount(self.context["request"].user)
 
-    def validate(self, data):
+    def create(self, validated_data):
         """
-        Validate serialized data.
+        Create a Shift.
 
-        :param data: serialized data
-        :return: the serialized data or a ValidationError if the Shift has a wrong start or end date
+        Catch any ValueError exception that may be caused by the save() method of the Shift object.
         """
-        if self.instance:
-            start_date = data["start_date"] if "start_date" in data.keys() else self.instance.start_date
-            end_date = data["end_date"] if "end_date" in data.keys() else self.instance.end_date
-            venue = data["venue"] if "venue" in data.keys() else self.instance.venue
-        else:
-            start_date = data["start_date"]
-            end_date = data["end_date"]
-            venue = data["venue"]
+        try:
+            super().create(validated_data)
+        except ValueError as e:
+            raise serializers.ValidationError(e)
 
-        if end_date <= start_date:
-            raise serializers.ValidationError("End date cannot be before start date.")
+    def update(self, instance, validated_data):
+        """
+        Update a Shift.
 
-        if self.instance:
-            overlapping_start = (
-                models.Shift.objects.filter(start_date__gte=start_date, start_date__lte=end_date, venue=venue,)
-                .exclude(pk=self.instance.pk)
-                .count()
-            )
-            overlapping_end = (
-                models.Shift.objects.filter(end_date__gte=start_date, end_date__lte=end_date, venue=venue,)
-                .exclude(pk=self.instance.pk)
-                .count()
-            )
-        else:
-            overlapping_start = models.Shift.objects.filter(
-                start_date__gte=start_date, start_date__lte=end_date, venue=venue,
-            ).count()
-            overlapping_end = models.Shift.objects.filter(
-                end_date__gte=start_date, end_date__lte=end_date, venue=venue,
-            ).count()
-
-        if overlapping_start > 0 or overlapping_end > 0:
-            raise serializers.ValidationError("Overlapping shifts for the same venue are not allowed.")
-        data = super().validate(data)
-        return data
+        Catch any ValueError exception that may be caused by the save() method of the Shift object.
+        """
+        try:
+            super().update(instance, validated_data)
+        except ValueError as e:
+            raise serializers.ValidationError(e)
 
     class Meta:
         """Meta class."""
