@@ -1,53 +1,56 @@
 {% load static %}
-{% if player and player.configured %}
-{% if not refresh %}
-    <link rel="stylesheet" href="{% static 'marietje/css/player.css' %}"/>
-    <div class="player" id="player-container-{{ player.id }}">
-{% endif %}
-{% if player.currently_playing %}
+<link rel="stylesheet" href="{% static 'marietje/css/player.css' %}"/>
+<div class="player" id="player-container-{{ player.id }}">
+<template v-if="player_data.track !== null">
     <div class="w-50 mx-auto mb-2">
         <a href="{% url "marietje:now_playing" venue=player.venue %}">
-            <img class="w-100" src="{{ player.currently_playing.image }}"/>
+            <img class="w-100" :src="player_data.track.image"/>
         </a>
     </div>
-    <div class="text-center m-auto">{{ player.currently_playing.name }}</div>
+    <div class="text-center m-auto"><% player_data.track.name %></div>
     <div class="text-center w-100">
-        {% for artist in player.currently_playing.artists %}
-            {% if forloop.last %}
-                {{ artist }}
-            {% else %}
-                {{ artist }} -
-            {% endif %}
-        {% endfor %}
+        <template v-for="(artist, index) in player_data.track.artists">
+            <template v-if="index === player_data.track.artists.length - 1">
+                <% artist %>
+            </template>
+            <template v-else>
+                <% artist %> -
+            </template>
+        </template>
     </div>
-{% else %}
+</template>
+<template v-else>
     <div class="text-center m-auto">No currently playing track</div>
-{% endif %}
+</template>
 {% if controls %}
     <div class="player-controls mt-3 mb-3">
-        <i class="fas fa-backward" onclick="update_and_callback('{% url "marietje:player_previous" player=player %}', {}, update_update_list)"></i>
-        {% if player.currently_playing.is_playing %}
-            <i class="fas fa-pause" onclick="update_and_callback('{% url "marietje:player_pause" player=player %}', {}, update_update_list)"></i>
-        {% else %}
-            <i class="fas fa-play" onclick="update_and_callback('{% url "marietje:player_play" player=player %}', {}, update_update_list)"></i>
-        {% endif %}
-        <i class="fas fa-forward" onclick="update_and_callback('{% url "marietje:player_next" player=player %}', {}, update_update_list)"></i>
+        <i class="fas fa-backward" onclick="patch_no_data('{% url "v1:player_previous" player=player %}', {}, update_update_list)"></i>
+        <template v-if="player_data.is_playing">
+            <i class="fas fa-pause" onclick="patch_no_data('{% url "v1:player_pause" player=player %}', {}, update_update_list)"></i>
+        </template>
+        <template v-else>
+            <i class="fas fa-play" onclick="patch_no_data('{% url "v1:player_play" player=player %}', {}, update_update_list)"></i>
+        </template>
+        <i class="fas fa-forward" onclick="patch_no_data('{% url "v1:player_next" player=player %}', {}, update_update_list)"></i>
     </div>
 {% endif %}
-{% if not refresh %}
-    </div>
-{% endif %}
-
-{% if not refresh %}
-    <script>
-        add_update_list(
-            update_and_replace,
-            [
-                "{% url 'marietje:player_refresh' player=player %}",
-                document.getElementById('player-container-{{ player.id }}'),
-                {'controls': {% if controls %}true{% else %}false{% endif %}}
-            ]
-        );
-    </script>
-{% endif %}
-{% endif %}
+</div>
+<script>
+    let player_{{ player.id }}_vue = new Vue({
+        el: '#player-container-{{ player.id }}',
+        delimiters: ['<%', '%>'],
+        data: {
+            player_data: {
+                is_playing: false,
+            }
+        },
+        created() {
+            fetch('{% url "v1:player_retrieve" pk=player.id %}')
+            .then(response => response.json())
+            .then(json => {
+                this.player_data = json;
+            });
+        }
+    });
+    add_update_list(get_and_callback, ['{% url "v1:player_retrieve" pk=player.id %}', {}, function(data) {player_{{ player.id }}_vue.player_data = data}]);
+</script>

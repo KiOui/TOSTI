@@ -1,5 +1,5 @@
 {% extends 'tosti/base.html' %}
-{% load static marietje %}
+{% load static players %}
 
 {% block page %}
     <div class="container-sm">
@@ -24,7 +24,7 @@
                     <hr class="my-5"/>
                     {% endif %}
                     <div class="mb-5">
-                        {% render_queue_list player refresh=False %}
+                        {% render_queue_list player %}
                     </div>
                 </div>
             </div>

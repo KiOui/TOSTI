@@ -110,6 +110,21 @@ function patch(data_url, data, callback/*, args */) {
     )
 }
 
+function patch_no_data(data_url, data, callback/*, args */) {
+    let args = Array.prototype.slice.call(arguments, 3);
+    jQuery(function($) {
+        let headers = {"X-CSRFToken": get_csrf_token()};
+        $.ajax({type: 'PATCH', url: data_url, data, asynch: true, headers: headers, success:
+            function(data) {
+                args.unshift(data);
+                callback.apply(this, args);
+            }}).fail(function() {
+                console.error("Error")
+            });
+        }
+    )
+}
+
 function delete_and_callback(data_url, data, callback/*, args*/) {
     let args = Array.prototype.slice.call(arguments, 4);
     jQuery(function($) {

@@ -1,12 +1,9 @@
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
 
 from orders import models
 from orders.exceptions import OrderException
 from orders.services import add_order
-from django.contrib.auth import get_user_model
-
-User = get_user_model()
+from users.api.v1.serializers import UserRelatedField, UserSerializer
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -48,22 +45,6 @@ class ProductAbbrSerializer(serializers.ModelSerializer):
             "icon",
         ]
         read_only_fields = ["name", "icon"]
-
-
-class UserRelatedField(serializers.ModelSerializer):
-    """Serializers for Users."""
-
-    username = serializers.CharField(source="__str__")
-
-    class Meta:
-        """Meta class."""
-
-        model = User
-        fields = [
-            "id",
-            "username",
-        ]
-        read_only_fields = ["id", "username"]
 
 
 class OrderCreateSerializer(serializers.ModelSerializer):
@@ -127,24 +108,6 @@ class OrderSerializer(serializers.ModelSerializer):
             "type",
         ]
         read_only_fields = ["id", "created", "user", "product", "order_price", "ready_at", "paid_at", "type"]
-
-
-class UserSerializer(serializers.RelatedField):
-    """User serializer."""
-
-    def get_queryset(self):
-        """Get queryset."""
-        return User.objects.all()
-
-    def to_representation(self, value):
-        """Convert to string."""
-        return value.__str__()
-
-    def to_internal_value(self, data):
-        """Convert a user to internal value."""
-        if type(data) == int:
-            return data
-        raise ValidationError("Incorrect type. Expected pk value, received {}.".format(type(data)))
 
 
 class ShiftSerializer(serializers.ModelSerializer):
