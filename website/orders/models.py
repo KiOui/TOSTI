@@ -221,6 +221,8 @@ class Product(models.Model):
         :return: None if the user can order unlimited of the product, the maximum allowed to still order otherwise
         """
         if self.max_allowed_per_shift is not None:
+            if user.is_anonymous:
+                return 0
             user_order_amount_product = Order.objects.filter(user=user, shift=shift, product=self).count()
             return max(0, self.max_allowed_per_shift - user_order_amount_product)
         else:
@@ -531,6 +533,8 @@ class Shift(models.Model):
         :return: the maximum of orders a user can still place in this shift, None if there is no maximum specified
         """
         if self.max_orders_per_user is not None:
+            if user.is_anonymous:
+                return 0
             user_order_amount = Order.objects.filter(
                 user=user, shift=self, product__ignore_shift_restrictions=False
             ).count()
