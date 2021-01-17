@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from orders import models
 from orders.exceptions import OrderException
+from orders.models import Order
 from orders.services import add_order
 from users.api.v1.serializers import UserRelatedField, UserSerializer
 
@@ -64,8 +65,8 @@ class OrderCreateSerializer(serializers.ModelSerializer):
                 validated_data["shift"],
                 validated_data["type"],
                 user=validated_data["user"],
-                paid=validated_data["paid"],
-                ready=validated_data["ready"],
+                paid=validated_data["type"] == Order.TYPE_SCANNED,
+                ready=validated_data["type"] == Order.TYPE_SCANNED,
                 force=False,
                 dry=False,
             )
@@ -79,8 +80,6 @@ class OrderCreateSerializer(serializers.ModelSerializer):
         fields = [
             "user",
             "product",
-            "ready",
-            "paid",
             "type",
         ]
 

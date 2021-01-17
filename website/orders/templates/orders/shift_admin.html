@@ -14,7 +14,7 @@
     <div class="container-sm mb-2 text-center" id="header-container-{{ shift.id }}">
         <h1>{{ shift.venue.venue.name }}</h1>
         <p class="my-4 mx-auto" style="font-size: 1rem; max-width: 400px;">
-            shift #{{ shift.pk }} - <% shift.amount_of_orders %>/<% shift.max_orders_total %> - <% shift.start_date %> until <% shift.end_date %><br>
+            shift #{{ shift.pk }} - <% shift.amount_of_orders %>/<% shift.max_orders_total %> - <% start_end_time %><br>
             <template v-if="shift.assignees && shift.assignees.length > 0">
                 At your service:
                 <template v-for="(assignee, index) in shift.assignees">
@@ -52,7 +52,7 @@
                                         <p class="search-item-name"><% product.name %></p>
                                         <div class="flex-divider"></div>
                                         <p class="search-item-price">€<% product.current_price %></p>
-                                        <input type="button" class="btn btn-success" :onclick="`post_and_callback_with_error('{% url "v1:orders_create" shift=shift %}', {'product': ${product.id}, 'type': 1, 'user': null, 'paid': true, 'ready': true}, order_added, order_added_error)`" value="Add"/>
+                                        <input type="button" class="btn btn-success" :onclick="`post_and_callback_with_error('{% url "v1:orders_create" shift=shift %}', {'product': ${product.id}, 'type': 1, 'user': null}, order_added, order_added_error)`" value="Add"/>
                                     </div>
                                 </div>
                                 <div v-else id="search-results">
@@ -241,6 +241,24 @@
                 search_input: ""
             },
             computed: {
+                start_end_time: function() {
+                    if (this.shift.start_date) {
+                        const start_date = new Date(this.shift.start_date);
+                        const end_date = new Date(this.shift.end_date);
+                        const today_date = new Date();
+                        if (start_date.getDate() === end_date.getDate() && start_date.getFullYear() === end_date.getFullYear() && start_date.getMonth() === end_date.getMonth()) {
+                            if (start_date.getDate() === today_date.getDate() && start_date.getFullYear() === today_date.getFullYear() && start_date.getMonth() === today_date.getMonth()) {
+                                return `${start_date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} until ${end_date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+                            }
+                            return `${start_date.toLocaleDateString()}, ${start_date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} until ${end_date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+                        }
+                        if (start_date.getDate() === today_date.getDate() && start_date.getFullYear() === today_date.getFullYear() && start_date.getMonth() === today_date.getMonth()) {
+                            return `${start_date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} until ${end_date.toLocaleDateString()}, ${end_date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+                        }
+                        return `${start_date.toLocaleDateString()}, ${start_date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} until ${end_date.toLocaleDateString()}, ${end_date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+                    }
+                    return "";
+                },
                 orders_to_make: function() {
                     let orders_to_make = {};
                     this.orders.filter(order => !order.ready).forEach(order => {

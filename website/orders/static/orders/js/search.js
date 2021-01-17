@@ -36,7 +36,12 @@ function order_added(data) {
 }
 
 function order_added_error(error_data) {
-    alert("Error while adding product.");
+    if (error_data.responseJSON) {
+        alert("Failed to add product. The following error(s) occurred: ".concat(error_data.responseJSON.join()));
+    }
+    else {
+        alert("Failed to add product.")
+    }
 }
 
 function search_string() {

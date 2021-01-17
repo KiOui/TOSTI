@@ -88,7 +88,7 @@ def add_order(product, shift, order_type, user=None, paid=False, ready=False, fo
             pass
         # Shift checks
         if not shift.can_order:
-            raise OrderException("User can not order products for this shift")
+            raise OrderException("This shift is closed.")
         if not shift.is_active:
             raise OrderException("This shift is not active")
 
@@ -98,7 +98,7 @@ def add_order(product, shift, order_type, user=None, paid=False, ready=False, fo
             shift=shift,
             type=order_type,
             user=user,
-            user_association=user.profile.association,
+            user_association=user.profile.association if user is not None else None,
             paid=paid,
             ready=ready,
             order_price=product.current_price,

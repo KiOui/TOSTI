@@ -12,7 +12,7 @@
     <div class="container-sm mb-2 text-center" id="header-container-{{ shift.id }}">
         <h1>{{ shift.venue.venue.name }}</h1>
         <p class="my-4 mx-auto" style="font-size: 1rem; max-width: 400px;">
-            shift #{{ shift.pk }} - <% shift.amount_of_orders %>/<% shift.max_orders_total %> - <% shift.start_date %> until <% shift.end_date %><br>
+            shift #{{ shift.pk }} - <% shift.amount_of_orders %>/<% shift.max_orders_total %> - <% start_end_time %><br>
             <template v-if="shift.assignees && shift.assignees.length > 0">
                 At your service:
                 <template v-for="(assignee, index) in shift.assignees">
@@ -132,6 +132,26 @@
             data: {
                 orders: [],
                 shift: {}
+            },
+            computed: {
+                start_end_time: function() {
+                    if (this.shift.start_date) {
+                        const start_date = new Date(this.shift.start_date);
+                        const end_date = new Date(this.shift.end_date);
+                        const today_date = new Date();
+                        if (start_date.getDate() === end_date.getDate() && start_date.getFullYear() === end_date.getFullYear() && start_date.getMonth() === end_date.getMonth()) {
+                            if (start_date.getDate() === today_date.getDate() && start_date.getFullYear() === today_date.getFullYear() && start_date.getMonth() === today_date.getMonth()) {
+                                return `${start_date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} until ${end_date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+                            }
+                            return `${start_date.toLocaleDateString()}, ${start_date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} until ${end_date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+                        }
+                        if (start_date.getDate() === today_date.getDate() && start_date.getFullYear() === today_date.getFullYear() && start_date.getMonth() === today_date.getMonth()) {
+                            return `${start_date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} until ${end_date.toLocaleDateString()}, ${end_date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+                        }
+                        return `${start_date.toLocaleDateString()}, ${start_date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} until ${end_date.toLocaleDateString()}, ${end_date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+                    }
+                    return "";
+                },
             },
             created() {
                 fetch('{% url "v1:orders_list" shift=shift %}')
