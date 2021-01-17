@@ -11,10 +11,16 @@ class ProductSerializer(serializers.ModelSerializer):
     """Serializer for Product model."""
 
     max_allowed = serializers.SerializerMethodField()
+    # Swagger UI does not know a DecimalField so we have to do it this way
+    current_price = serializers.SerializerMethodField()
 
     def get_max_allowed(self, instance):
         """Get the maximum amount of orders a user can still place for this product."""
         return instance.user_max_order_amount(self.context["request"].user, self.context["request"].data.get("shift"))
+
+    def get_current_price(self, instance):
+        """Get the current price."""
+        return instance.current_price
 
     class Meta:
         """Meta class."""
