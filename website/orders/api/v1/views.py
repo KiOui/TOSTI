@@ -16,7 +16,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 
 from orders import services
-from orders.api.v1.permissions import HasGuardianPermission
+from orders.api.v1.permissions import HasPermissionOnObject
 from orders.api.v1.serializers import OrderSerializer, ShiftSerializer, ProductSerializer, OrderCreateSerializer
 from orders.exceptions import OrderException
 from orders.models import Order, Shift, Product
@@ -84,7 +84,7 @@ class OrderCreateAPIView(CreateAPIView):
 
     serializer_class = OrderCreateSerializer
     permission_required = "oders.can_order_in_venue"
-    permission_classes = [HasGuardianPermission]
+    permission_classes = [HasPermissionOnObject]
     queryset = Order.objects.all()
 
     def perform_create(self, serializer):
@@ -125,7 +125,7 @@ class OrderListAPIView(ListAPIView):
 
     serializer_class = OrderSerializer
     permission_required = "orders.can_order_in_venue"
-    permission_classes = [HasGuardianPermission]
+    permission_classes = [HasPermissionOnObject]
     queryset = Order.objects.all()
 
     def get_queryset(self):
@@ -143,7 +143,7 @@ class OrderRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
 
     serializer_class = OrderSerializer
     permission_required = "orders.can_order_in_venue"
-    permission_classes = [HasGuardianPermission]
+    permission_classes = [HasPermissionOnObject]
     queryset = Order.objects.all()
 
     def update(self, request, *args, **kwargs):
