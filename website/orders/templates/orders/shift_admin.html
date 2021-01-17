@@ -175,13 +175,13 @@
                     </div>
                 </div>
                 <div class="col expand-mobile">
-                    <div class="h-100 btn-ml btn-on m-auto" onclick="post_and_callback('{% url "v1:shifts_add_time" shift=shift %}', {}, function(data) {vue.shift = data; vue.message = 'Added 5 minutes to the end time of this shift';});">
+                    <div class="h-100 btn-ml btn-on m-auto" onclick="patch('{% url "v1:shifts_add_time" shift=shift %}', {}, function(data) {vue.shift = data; vue.message = 'Added 5 minutes to the end time of this shift';});">
                         <p class="font-footer flex-fixed"><i class="far fa-clock"></i> + 5</p>
                         <p class="font-footer">Extend time</p>
                     </div>
                 </div>
                 <div class="col expand-mobile">
-                    <div class="h-100 btn-ml btn-on m-auto" onclick="post_and_callback('{% url "v1:shifts_add_capacity" shift=shift %}', {}, function(data) {vue.shift = data; vue.message = 'Added 5 capacity to this shift';});">
+                    <div class="h-100 btn-ml btn-on m-auto" onclick="patch('{% url "v1:shifts_add_capacity" shift=shift %}', {}, function(data) {vue.shift = data; vue.message = 'Added 5 capacity to this shift';});">
                         <p class="font-footer flex-fixed"><i class="fas fa-list"></i> + 5</p>
                         <p class="font-footer">Add orders</p>
                     </div>

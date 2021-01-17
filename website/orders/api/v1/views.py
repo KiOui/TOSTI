@@ -253,13 +253,13 @@ class ProductListAPIView(ListAPIView):
         return self.queryset.filter(available_at=self.kwargs.get("shift").venue)
 
 
-@api_view(["POST"])
+@api_view(["PATCH"])
 def shift_add_time(request, **kwargs):
     """
     Add an amount of minutes to the end of a Shift.
 
     API endpoint for adding an amount of minutes to the end of a Shift.
-    Optionally a "minutes" POST parameter can be set indicating with how many minutes the time should be extended.
+    Optionally a "minutes" PATCH parameter can be set indicating with how many minutes the time should be extended.
     Permission required: can_manage_shift_in_venue
     :param request: the request
     :param kwargs: keyword arguments
@@ -274,13 +274,13 @@ def shift_add_time(request, **kwargs):
         raise PermissionDenied
 
 
-@api_view(["POST"])
+@api_view(["PATCH"])
 def shift_add_capacity(request, **kwargs):
     """
     Add capacity to a Shift.
 
     API endpoint for adding capacity to a Shift.
-    Optionally a "capacity" POST parameter can be set indicating how many capacity should be added.
+    Optionally a "capacity" PATCH parameter can be set indicating how many capacity should be added.
     Permission required: can_manage_shift_in_venue
     :param request: the request
     :param kwargs: keyword arguments
