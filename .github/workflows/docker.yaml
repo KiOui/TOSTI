@@ -29,4 +29,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: tosti/website:latest
+          tags: ghcr.io/${{ github.repository_owner }}/tosti:latest
