@@ -2,9 +2,7 @@
 
 name: "Build Production Docker Image"
 on:
-  push:
-    branches:
-      - master
+  - push
 
 jobs:
   build-docker:
@@ -15,19 +13,12 @@ jobs:
       - name: "Checkout repository"
         uses: actions/checkout@v2
 
-      - name: "Create environment for repository names"
-        run: |
-            echo "::set-env name=DOCKER_LATEST::docker.pkg.github.com/${GITHUB_REPOSITORY}/${GITHUB_REPOSITORY##*/}:latest"
-            echo "::set-env name=DOCKER_TAG_PRODUCTION::docker.pkg.github.com/${GITHUB_REPOSITORY}/${GITHUB_REPOSITORY##*/}:${GITHUB_SHA}"
-
-      - name: "Build Docker image"
-        run: docker build --tag ${DOCKER_LATEST,,} .
-
-      - name: "Login to GitHub"
-        run: echo "${{ secrets.GH_TOKEN }}" | docker login docker.pkg.github.com -u "${{ github.repository_owner }}" --password-stdin
-
-      - name: "Tag and publish"
-        run: |
-            docker tag "${DOCKER_LATEST,,}" "${DOCKER_TAG_PRODUCTION,,}"
-            docker push "${DOCKER_TAG_PRODUCTION,,}"
-            docker push "${DOCKER_LATEST,,}"
+      - name: Build and publish container image
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ secrets.GH_ACTOR }}
+          password: ${{ secrets.GH_TOKEN }}
+          registry: docker.pkg.github.com
+          repository: ${{ github.repository }}/tosti
+          tag_with_sha: true
+          tag_with_ref: true
