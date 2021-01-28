@@ -5,8 +5,8 @@ let PRODUCTS = [];
 
 function get_amount_of_item_orders(product_id) {
     let amount_of_items = 0;
-    for (let i = 0; i < vue.cart.length; i++) {
-        if (vue.cart[i].id === product_id) {
+    for (let i = 0; i < cart_list_vue.cart.length; i++) {
+        if (cart_list_vue.cart[i].id === product_id) {
             amount_of_items += 1;
         }
     }
@@ -14,30 +14,30 @@ function get_amount_of_item_orders(product_id) {
 }
 
 function delete_product(product_id) {
-    for (let i = 0; i < vue.cart.length; i++) {
-        if (vue.cart[i].id === product_id) {
-            vue.cart.splice(i, 1);
-            set_cart_list(vue.cart);
+    for (let i = 0; i < cart_list_vue.cart.length; i++) {
+        if (cart_list_vue.cart[i].id === product_id) {
+            cart_list_vue.cart.splice(i, 1);
+            set_cart_list(cart_list_vue.cart);
             return;
         }
     }
 }
 
 function find_product_details(product_id) {
-    for (let i = 0; i < vue.products.length; i++) {
-        if (vue.products[i].id === product_id) {
-            return vue.products[i];
+    for (let i = 0; i < product_list_vue.products.length; i++) {
+        if (product_list_vue.products[i].id === product_id) {
+            return product_list_vue.products[i];
         }
     }
     return null;
 }
 
 function get_amount_of_cart_items() {
-    return vue.cart.length;
+    return cart_list_vue.cart.length;
 }
 
 function get_amount_of_restricted_cart_items() {
-    return vue.cart.filter(
+    return cart_list_vue.cart.filter(
         function(value, index, arr)
         {
             return !value.ignore_shift_restrictions;
@@ -46,9 +46,9 @@ function get_amount_of_restricted_cart_items() {
 
 function add_product(product_id) {
     let product_details = find_product_details(product_id);
-    if (product_details !== null && (get_amount_of_restricted_cart_items() < vue.shift.max_user_orders || product_details.ignore_shift_restrictions)) {
-        vue.cart.push(product_details);
-        set_cart_list(vue.cart);
+    if (product_details !== null && (get_amount_of_restricted_cart_items() < product_list_vue.shift.max_user_orders || product_details.ignore_shift_restrictions)) {
+        cart_list_vue.cart.push(product_details);
+        set_cart_list(cart_list_vue.cart);
         return true;
     }
     else {
@@ -100,16 +100,17 @@ function get_unrestricted_products(products) {
 }
 
 function order_callback(data) {
-    vue.loading = false;
-    vue.cart = [];
+    cart_list_vue.loading = false;
+    cart_list_vue.cart = [];
     set_cart_list([]);
     update_update_list();
-    alert("Your order has been placed!");
+    toastr.success("Your order has been placed!", "Order notification");
+    setTimeout(function() {window.location.reload()}, 1000);
 }
 
 function order_error_callback(data) {
-    vue.loading = false;
-    let error_msg = "The following errors occurred: ";
+    cart_list_vue.loading = false;
+    let error_msg = "";
     data.responseJSON.forEach(error => error_msg = error_msg.concat(`${error}; `));
-    alert(error_msg);
+    toastr.error(error_msg, "The following errors occurred: ");
 }

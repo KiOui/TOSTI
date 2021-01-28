@@ -148,7 +148,7 @@ class ShiftSerializer(serializers.ModelSerializer):
         Catch any ValueError exception that may be caused by the save() method of the Shift object.
         """
         try:
-            super().update(instance, validated_data)
+            return super().update(instance, validated_data)
         except ValueError as e:
             raise serializers.ValidationError(e)
 

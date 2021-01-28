@@ -3,30 +3,11 @@
 
 {% block styles %}
     <link rel="stylesheet" href="{% static 'tosti/css/index.css' %}"/>
-    <link rel="stylesheet" href="{% static 'orders/css/forms.css' %}"/>
-    <link rel="stylesheet" href="{% static 'orders/css/admin-footer.css' %}"/>
-    <link rel="stylesheet" href="{% static 'orders/css/item-list.css' %}"/>
 {% endblock %}
 
 {% block page %}
-    <div class="container-sm mb-2 text-center" id="header-container-{{ shift.id }}">
-        <h1>{{ shift.venue.venue.name }}</h1>
-        <p class="my-4 mx-auto" style="font-size: 1rem; max-width: 400px;">
-            shift #{{ shift.pk }} - <% shift.amount_of_orders %>/<% shift.max_orders_total %> - <% start_end_time %><br>
-            <template v-if="shift.assignees && shift.assignees.length > 0">
-                At your service:
-                <template v-for="(assignee, index) in shift.assignees">
-                    <% assignee %>
-                    <template v-if="index !== shift.assignees.length-1">, </template>
-                </template>
-            </template>
-            <template v-else>
-                No assignees
-            </template>
-        </p>
-        <p v-if="!shift.can_order" class="alert alert-danger"><i class="far fa-hand-paper"></i><br>This shift does not accept orders at this moment.</p>
-    </div>
-    <div class="container-sm">
+    {% include 'orders/shift_header.html' with shift=shift %}
+    <div class="container-sm" id="orders-container">
         {% if has_order_permissions and shift.is_active and shift.can_order %}
             <a href="{% url "orders:order" shift=shift %}">
                 <div class="btn-ml btn-on">
@@ -51,40 +32,7 @@
         <div class="container">
             <hr>
         </div>
-        <div id="item-orders">
-            <ul v-if="orders.length > 0" class="item-orders">
-                <template v-for="(order, index) in orders">
-                    <li class="pt-2 pb-2 item-list">
-                        <div class="information-row">
-                            <p class="item-counter"><% index + 1 %>.</p>
-                            <p class="item-name"><% order.product.name %> (€<% order.order_price %>)</p>
-                            <i v-if="order.product.icon !== null" :class="`fas fa-${order.product.icon} item-icon`"></i>
-                            <div class="flex-divider"></div>
-                            <i v-if="order.user !== null && user_id === order.user.id" class="fas fa-user user-icon"></i>
-                            <p v-if="order.user !== null" class="item-username"><% order.user.username %></p>
-                            <i v-else class="item-username fas fa-desktop"></i>
-                        </div>
-                        <div class="button-row">
-                            <template v-if="user_id === order.user.id">
-                                <div v-if="order.ready && order.paid" class="status-button mr-2 bg-success text-white">Done</div>
-                                <div v-else-if="order.ready && !order.paid" class="status-button mr-2 bg-warning">Done</div>
-                                <div v-else-if="!order.ready && order.paid" class="status-button mr-2 bg-warning">Processing</div>
-                                <div v-else class="status-button mr-2 bg-danger text-white">Not paid</div>
-                            </template>
-                            <template v-else>
-                                <div v-if="order.ready" class="status-button mr-2 bg-success text-white">Done</div>
-                                <div v-else class="status-button mr-2 bg-warning">Processing</div>
-                            </template>
-                        </div>
-                    </li>
-                </template>
-            </ul>
-            <div v-else id="outer" class="container d-flex align-items-center justify-content-center text-center" style="height:200px;">
-                <div id="inner">
-                    Be the first to place an order...
-                </div>
-            </div>
-        </div>
+        {% include 'orders/order_list.html' with shift=shift admin=False user=user %}
     </div>
     <div class="container pt-5 pb-5"></div>
 {% endblock %}
@@ -121,53 +69,4 @@
     {% else %}
         {{ block.super }}
     {% endif %}
-{% endblock %}
-
-{% block js %}
-    <script>
-        let user_id = {{ user.id }};
-        let vue = new Vue({
-            el: '#page-container',
-            delimiters: ['<%', '%>'],
-            data: {
-                orders: [],
-                shift: {}
-            },
-            computed: {
-                start_end_time: function() {
-                    if (this.shift.start_date) {
-                        const start_date = new Date(this.shift.start_date);
-                        const end_date = new Date(this.shift.end_date);
-                        const today_date = new Date();
-                        if (start_date.getDate() === end_date.getDate() && start_date.getFullYear() === end_date.getFullYear() && start_date.getMonth() === end_date.getMonth()) {
-                            if (start_date.getDate() === today_date.getDate() && start_date.getFullYear() === today_date.getFullYear() && start_date.getMonth() === today_date.getMonth()) {
-                                return `${start_date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} until ${end_date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-                            }
-                            return `${start_date.toLocaleDateString()}, ${start_date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} until ${end_date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-                        }
-                        if (start_date.getDate() === today_date.getDate() && start_date.getFullYear() === today_date.getFullYear() && start_date.getMonth() === today_date.getMonth()) {
-                            return `${start_date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} until ${end_date.toLocaleDateString()}, ${end_date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-                        }
-                        return `${start_date.toLocaleDateString()}, ${start_date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} until ${end_date.toLocaleDateString()}, ${end_date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-                    }
-                    return "";
-                },
-            },
-            created() {
-                fetch('{% url "v1:orders_list" shift=shift %}')
-                    .then(response => response.json())
-                    .then(json => {
-                        json = json.filter(order => order.type === 0);
-                        this.orders = json;
-                    });
-                 fetch('{% url "v1:shift_retrieveupdate" pk=shift.id %}')
-                    .then(response => response.json())
-                    .then(json => {
-                        this.shift = json;
-                    });
-            }
-        });
-        add_update_list(get_and_callback, ["{% url "v1:orders_list" shift=shift %}", {}, function(data) {vue.orders = data}]);
-        add_update_list(get_and_callback, ["{% url "v1:shift_retrieveupdate" pk=shift.id %}", {}, function(data) {vue.shift = data}]);
-    </script>
 {% endblock %}

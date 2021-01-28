@@ -1,0 +1,180 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'orders/css/admin-footer.css' %}"/>
+
+<div id="admin-footer-wrapper-{{ shift.id }}">
+    <!-- Order modal popup -->
+    <div class="modal" id="order-overview-popup-{{ shift.id }}">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Shift summary</h2>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body" id="order-overview-popup-list-{{ shift.id }}">
+                    <h3>Orders to make</h3>
+                    <template v-if="Object.keys(orders_to_make).length > 0">
+                        <p v-for="(product_dict, product_name) in orders_to_make" class="mb-2" style="font-size: 1em;">
+                            <% product_dict.product.name %> <i :class="`fas fa-${product_dict.product.icon}`"></i>
+                            &times; <% product_dict.amount %></p>
+                    </template>
+                    <template v-else>
+                        <p class="mb-2" style="font-size: 1em;">No open products.</p>
+                    </template>
+                    <div class="dropdown-divider"></div>
+                    <h3 class="mt-3">Orders made</h3>
+                    <template v-if="Object.keys(orders_made).length > 0">
+                        <p v-for="(product_dict, product_name) in orders_made" class="mb-2" style="font-size: 1em;"><%
+                            product_dict.product.name %> <i :class="`fas fa-${product_dict.product.icon}`"></i> &times;
+                            <% product_dict.amount %></p>
+                    </template>
+                    <template v-else>
+                        <p class="mb-2" style="font-size: 1em;">No ready products.</p>
+                    </template>
+                    <div class="dropdown-divider"></div>
+                    <h3 class="mt-3">Orders total</h3>
+                    <template v-if="Object.keys(orders_total).length > 0">
+                        <p v-for="(product_dict, product_name) in orders_total" class="mb-2" style="font-size: 1em;"><%
+                            product_dict.product.name %> <i :class="`fas fa-${product_dict.product.icon}`"></i> &times;
+                            <% product_dict.amount %></p>
+                    </template>
+                    <template v-else>
+                        <p class="mb-2" style="font-size: 1em;">No products.</p>
+                    </template>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin footer -->
+    <footer class="page-footer navbar navbar-expand-md fixed-bottom" id="shift-footer-container-{{ shift.id }}">
+        <div class="container text-center">
+            <div class="row flex-grow-1 navbar-collapse collapse" id="footer-menu">
+                <div class="col expand-mobile">
+                    <div v-if="shift.can_order" :id="`shift-status-${shift.id}`"
+                         class="h-100 btn-ml m-auto cursor-pointer bg-success"
+                         onclick="patch('{% url "v1:shift_retrieveupdate" pk=shift.pk %}', {'can_order': false}, function(data) {admin_footer_vue_{{ shift.id }}.shift = data; update_update_list();});">
+                        <p class="font-footer flex-fixed"><i class="far fa-hand-paper"></i></p>
+                        <p class="font-footer">Allow/disallow</p>
+                    </div>
+                    <div v-else :id="`shift-status-${shift.id}`" class="h-100 btn-ml m-auto cursor-pointer bg-danger"
+                         onclick="patch('{% url "v1:shift_retrieveupdate" pk=shift.pk %}', {'can_order': true}, function(data) {admin_footer_vue_{{ shift.id }}.shift = data; update_update_list();});">
+                        <p class="font-footer flex-fixed"><i class="far fa-hand-paper"></i></p>
+                        <p class="font-footer">Allow/disallow</p>
+                    </div>
+                </div>
+                <div class="col expand-mobile">
+                    <div class="h-100 btn-ml btn-on m-auto"
+                         onclick="patch('{% url "v1:shifts_add_time" shift=shift %}', {}, function(data) {admin_footer_vue_{{ shift.id }}.shift = data; toastr.success('Added 5 minutes to the end of this shift'); update_update_list();});">
+                        <p class="font-footer flex-fixed"><i class="far fa-clock"></i> + 5</p>
+                        <p class="font-footer">Extend time</p>
+                    </div>
+                </div>
+                <div class="col expand-mobile">
+                    <div class="h-100 btn-ml btn-on m-auto"
+                         onclick="patch('{% url "v1:shifts_add_capacity" shift=shift %}', {}, function(data) {admin_footer_vue_{{ shift.id }}.shift = data; toastr.success('Added 5 capacity to this shift'); update_update_list();});">
+                        <p class="font-footer flex-fixed"><i class="fas fa-list"></i> + 5</p>
+                        <p class="font-footer">Add orders</p>
+                    </div>
+                </div>
+                <div class="col expand-mobile">
+                    <a href="{% url "orders:shift_overview" shift=shift %}">
+                        <div class="h-100 btn-ml btn-on m-auto w-100">
+                            <p class="font-footer flex-fixed"><i class="fas fa-users"></i></p>
+                            <p class="font-footer">Order page</p>
+                        </div>
+                    </a>
+                </div>
+                {% if request.user.is_staff and has_change_order_permissions %}
+                    <div class="col expand-mobile">
+                        <a href="{% url "admin:orders_shift_change" shift.id %}">
+                            <div class="h-100 btn-ml btn-on m-auto w-100">
+                                <p class="font-footer flex-fixed"><i class="fas fa-cog"></i></p>
+                                <p class="font-footer">Settings</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col expand-mobile">
+                        <div class="h-100 btn-ml btn-on m-auto w-100" id="overview-button" data-toggle="modal"
+                             data-target="#order-overview-popup-{{ shift.id }}">
+                            <p class="font-footer flex-fixed"><i class="fas fa-binoculars"></i></p>
+                            <p class="font-footer">Summary</p>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+            <button id="footer-toggler" class="navbar-toggler m-auto" style="border: 0" type="button"
+                    data-toggle="collapse"
+                    data-target="#footer-menu">
+                <i class="fas fa-caret-up text-white"></i>
+            </button>
+        </div>
+    </footer>
+</div>
+
+<script>
+    let admin_footer_vue_{{ shift.id }} = new Vue({
+        el: '#admin-footer-wrapper-{{ shift.id }}',
+        delimiters: ['<%', '%>'],
+        data: {
+            orders: [],
+            shift: {},
+        },
+        created() {
+            fetch('{% url "v1:orders_list" shift=shift %}')
+                .then(response => response.json())
+                .then(json => {
+                    this.orders = json;
+                });
+            fetch('{% url "v1:shift_retrieveupdate" pk=shift.id %}')
+                .then(response => response.json())
+                .then(json => {
+                    this.shift = json;
+                });
+        },
+        computed: {
+            orders_to_make: function () {
+                let orders_to_make = {};
+                this.orders.filter(order => !order.ready).forEach(order => {
+                    if (order.product.name in orders_to_make) {
+                        orders_to_make[order.product.name].amount += 1;
+                    } else {
+                        orders_to_make[order.product.name] = {"product": order.product, "amount": 1};
+                    }
+                });
+                return orders_to_make;
+            },
+            orders_made: function () {
+                let orders_made = {};
+                this.orders.filter(order => order.ready).forEach(order => {
+                    if (order.product.name in orders_made) {
+                        orders_made[order.product.name].amount += 1;
+                    } else {
+                        orders_made[order.product.name] = {"product": order.product, "amount": 1};
+                    }
+                });
+                return orders_made;
+            },
+            orders_total: function () {
+                let orders_total = {};
+                this.orders.forEach(order => {
+                    if (order.product.name in orders_total) {
+                        orders_total[order.product.name].amount += 1;
+                    } else {
+                        orders_total[order.product.name] = {"product": order.product, "amount": 1};
+                    }
+                });
+                return orders_total;
+            }
+        }
+    });
+    add_update_list(get_and_callback, ["{% url "v1:orders_list" shift=shift %}", {}, function (data) {
+        admin_footer_vue_{{ shift.id }}.orders = data
+    }]);
+    add_update_list(get_and_callback, ["{% url "v1:shift_retrieveupdate" pk=shift.id %}", {}, function (data) {
+        admin_footer_vue_{{ shift.id }}.shift = data
+    }]);
+</script>

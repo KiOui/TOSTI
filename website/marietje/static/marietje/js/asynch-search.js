@@ -11,10 +11,10 @@ function add_to_queue(track_id) {
 		};
 		$.ajax({type: 'POST', url: ADD_URL, data, asynch: true, success:
 		function(data) {
-			alert("Track added to queue.");
+			toastr.success("Track added to queue.");
 			update_update_list();
 		}}).fail(function() {
-			alert("Failed to add track to the queue, please try again later.");
+			toastr.error("Failed to add track to the queue, please try again later.");
 		});
 	});
 }

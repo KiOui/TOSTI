@@ -98,7 +98,7 @@ function product_scanned(order) {
     stop_scanner();
     scanned_codes = [];
     $(POPUP_MODAL).modal('hide');
-    vue.message = "Added " + order.product.name + " (€" + order.order_price + ") to the order list.";
+    toastr.success("Added " + order.product.name + " (€" + order.order_price + ") to the queue.");
     if (typeof(update_update_list) !== 'undefined') {
         update_update_list();
     }

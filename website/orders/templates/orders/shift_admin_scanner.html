@@ -1,0 +1,101 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'orders/css/forms.css' %}"/>
+<link rel="stylesheet" href="{% static 'orders/css/scanner.css' %}"/>
+<link rel="stylesheet" href="{% static 'orders/css/search.css' %}"/>
+
+<div id="scanner-wrapper-{{ shift.id }}">
+    <div class="container">
+        <div class="btn-ml btn-on" data-toggle="modal" data-target="#scanner-popup"><i class="fas fa-barcode"></i> Barcode scanner</div>
+    </div>
+
+    <div class="modal" id="scanner-popup">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Barcode scanner</h2>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="search-container">
+                            <label>
+                                <input v-model="search_input" type="text" placeholder="Search for a product" id="product-search"/>
+                            </label>
+                            <template v-if="search_input !== ''">
+                                <div v-if="search_results.length > 0" id="search-results">
+                                    <div v-for="product in search_results" class="search-item">
+                                        <p class="search-item-name"><% product.name %></p>
+                                        <div class="flex-divider"></div>
+                                        <p class="search-item-price">€<% product.current_price %></p>
+                                        <input type="button" class="btn btn-success" :onclick="`post_and_callback_with_error('{% url "v1:orders_create" shift=shift %}', {'product': ${product.id}, 'type': 1, 'user': null}, order_added, order_added_error)`" value="Add"/>
+                                    </div>
+                                </div>
+                                <div v-else id="search-results">
+                                    <div class="search-item">
+                                        <p class="search-item-name">No products found</p>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                    <div class="container scanner-container">
+                        <div id="scanner">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const SCANNER_DATA_URL = "{% url 'v1:shifts_scanner' shift=shift %}";
+    const POPUP_MODAL = "#scanner-popup";
+    const SEARCH_URL = "{% url 'v1:product_search' shift=shift %}";
+</script>
+<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+<script src="{% static "orders/js/quagga.min.js" %}"></script>
+<script src="{% static "orders/js/admin-scanner.js" %}"></script>
+<script src="{% static "orders/js/search.js" %}"></script>
+
+<script>
+    let scanner_vue = new Vue({
+        el: '#scanner-wrapper-{{ shift.id }}',
+        delimiters: ['<%', '%>'],
+        data: {
+            shift: {},
+            search_results: [],
+            search_input: ""
+        },
+        watch: {
+            search_input: {
+                handler(val, oldVal) {
+                    set_search_timeout();
+                }
+            }
+        },
+        created() {
+            fetch('{% url "v1:shift_retrieveupdate" pk=shift.id %}')
+                .then(response => response.json())
+                .then(json => {
+                    this.shift = json;
+                });
+        },
+        mounted() {
+            //call function on modal shown
+            $(POPUP_MODAL).on('shown.bs.modal', function () {
+                start_scanner();
+            });
+
+            //call function on hiding modal
+            $(POPUP_MODAL).on('hidden.bs.modal', function () {
+                stop_scanner();
+            });
+        }
+    });
+    add_update_list(get_and_callback, ["{% url "v1:shift_retrieveupdate" pk=shift.id %}", {}, function(data) {scanner_vue.shift = data}]);
+</script>

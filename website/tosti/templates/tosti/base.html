@@ -11,12 +11,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Neucha&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'tosti/css/bootstrap/bootstrap.css' %}"/>
     {% block styles %}{% endblock %}
+    <!-- JQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
+    <!-- Fontawesome -->
     <script src="https://kit.fontawesome.com/cb8ec32f27.js" crossorigin="anonymous"></script>
+    <!-- Base script -->
     <script src="{% static 'tosti/js/base.js'  %}"></script>
+    <!-- Base CSS -->
     <link rel="stylesheet" href="{% static 'tosti/css/base.css' %}"/>
 
-
+    <!-- Icons -->
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'tosti/favicon/apple-touch-icon.png' %}">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'tosti/favicon/favicon-32x32.png' %}">
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'tosti/favicon/favicon-16x16.png' %}">
@@ -25,6 +29,9 @@
     <meta name="theme-color" content="#ff0000">
     <!-- Vue JS -->
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
+    <!-- Toastr notifications -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 </head>
 <body>
     <div id="page-container">

@@ -31,21 +31,22 @@ function order_added(data) {
         update_update_list();
     }
     $(POPUP_MODAL).modal('hide');
-    vue.search_results = [];
-    vue.search_input = "";
+    scanner_vue.search_results = [];
+    scanner_vue.search_input = "";
+    toastr.success("Order added to queue.")
 }
 
 function order_added_error(error_data) {
     if (error_data.responseJSON) {
-        alert("Failed to add product. The following error(s) occurred: ".concat(error_data.responseJSON.join()));
+        toastr.error("Failed to add product. The following error(s) occurred: ".concat(error_data.responseJSON.join()));
     }
     else {
-        alert("Failed to add product.")
+        toastr.error("Failed to add product.")
     }
 }
 
 function search_string() {
-    query_string(SEARCH_URL, search_success, search_error, vue.search_input);
+    query_string(SEARCH_URL, search_success, search_error, scanner_vue.search_input);
 }
 
 function query_string(data_url, callback_ok, callback_error, search /*, args */) {
@@ -71,13 +72,13 @@ function query_string(data_url, callback_ok, callback_error, search /*, args */)
 
 function set_search_timeout() {
     clearTimeout(typingTimer);
-    if (vue.search_input !== "") {
+    if (scanner_vue.search_input !== "") {
         typingTimer = setTimeout(search_string, typingInterval);
     }
 }
 
 function search_success(products) {
-    vue.search_results = products;
+    scanner_vue.search_results = products;
 }
 
 function search_error(errormsg) {
