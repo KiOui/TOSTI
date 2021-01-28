@@ -5,8 +5,11 @@
 <link rel="stylesheet" href="{% static 'orders/css/search.css' %}"/>
 
 <div id="scanner-wrapper-{{ shift.id }}">
-    <div class="container">
+    <div v-if="shift.can_order" class="container">
         <div class="btn-ml btn-on" data-toggle="modal" data-target="#scanner-popup"><i class="fas fa-barcode"></i> Barcode scanner</div>
+    </div>
+    <div v-else>
+        <div class="btn-ml btn-off"><h4><i class="fas fa-barcode"></i> Barcode scanner</h4><p class="btn-note">Orders for this shift are disabled</p></div>
     </div>
 
     <div class="modal" id="scanner-popup">

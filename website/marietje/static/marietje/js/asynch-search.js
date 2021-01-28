@@ -12,6 +12,7 @@ function add_to_queue(track_id) {
 		$.ajax({type: 'POST', url: ADD_URL, data, asynch: true, success:
 		function(data) {
 			toastr.success("Track added to queue.");
+			player_search_vue.query = "";
 			update_update_list();
 		}}).fail(function() {
 			toastr.error("Failed to add track to the queue, please try again later.");
