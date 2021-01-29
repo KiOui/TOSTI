@@ -39,20 +39,6 @@ class QueueItemSerializer(serializers.ModelSerializer):
 class PlayerSerializer(serializers.ModelSerializer):
     """Player serializer."""
 
-    class Meta:
-        """Meta class."""
-
-        model = models.Player
-        fields = [
-            "id",
-            "display_name",
-            "venue",
-        ]
-
-
-class PlayerRetrieveSerializer(serializers.ModelSerializer):
-    """Player Retrieve Serializer."""
-
     is_playing = serializers.SerializerMethodField()
     track = serializers.SerializerMethodField()
 

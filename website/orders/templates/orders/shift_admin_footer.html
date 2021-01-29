@@ -124,7 +124,7 @@
             shift: {},
         },
         created() {
-            fetch('{% url "v1:orders_list" shift=shift %}')
+            fetch('{% url "v1:orders_listcreate" shift=shift %}')
                 .then(response => response.json())
                 .then(json => {
                     this.orders = json;
@@ -171,7 +171,7 @@
             }
         }
     });
-    add_update_list(get_and_callback, ["{% url "v1:orders_list" shift=shift %}", {}, function (data) {
+    add_update_list(get_and_callback, ["{% url "v1:orders_listcreate" shift=shift %}", {}, function (data) {
         admin_footer_vue_{{ shift.id }}.orders = data
     }]);
     add_update_list(get_and_callback, ["{% url "v1:shift_retrieveupdate" pk=shift.id %}", {}, function (data) {

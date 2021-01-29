@@ -110,7 +110,5 @@ function order_callback(data) {
 
 function order_error_callback(data) {
     cart_list_vue.loading = false;
-    let error_msg = "";
-    data.responseJSON.forEach(error => error_msg = error_msg.concat(`${error}; `));
-    toastr.error(error_msg, "The following errors occurred: ");
+    toastr.error(data.detail, "The following errors occurred: ");
 }

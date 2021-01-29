@@ -19,7 +19,7 @@ function add_product(data_url, callback_ok, callback_error, product_id) {
                     args.unshift(data.successmsg);
                     callback_ok.apply(this, args);
                 }
-            }}).fail(function() {
+            }}).fail(function(jqXHR, textStatus, errorThrown) {
                 callback_error.apply(this, args);
             });
         }
@@ -37,8 +37,8 @@ function order_added(data) {
 }
 
 function order_added_error(error_data) {
-    if (error_data.responseJSON) {
-        toastr.error("Failed to add product. The following error(s) occurred: ".concat(error_data.responseJSON.join()));
+    if (error_data.detail) {
+        toastr.error("The following error(s) occurred: ".concat(error_data.detail), "Failed to add product");
     }
     else {
         toastr.error("Failed to add product.")

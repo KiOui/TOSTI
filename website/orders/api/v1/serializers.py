@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from orders import models
 from orders.exceptions import OrderException
-from orders.models import Order
+from orders.models import Order, Product
 from orders.services import add_order
 from users.api.v1.serializers import UserRelatedField, UserSerializer
 
@@ -40,22 +40,23 @@ class ProductSerializer(serializers.ModelSerializer):
         ]
 
 
-class ProductAbbrSerializer(serializers.ModelSerializer):
-    """Serializer for Product name only."""
+class OrderSerializer(serializers.ModelSerializer):
+    """Serializer for Order model."""
 
-    class Meta:
-        """Meta class."""
+    product_id = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all(), many=False, read_only=False)
+    product = ProductSerializer(many=False, read_only=True)
+    user = UserRelatedField(many=False, read_only=True)
 
-        model = models.Product
-        fields = [
-            "name",
-            "icon",
-        ]
-        read_only_fields = ["name", "icon"]
-
-
-class OrderCreateSerializer(serializers.ModelSerializer):
-    """Serializer for creation of Order."""
+    def validate_product_id(self, value):
+        """Validate the product id."""
+        shift = self.context.get("shift", None)
+        if shift:
+            if value in Product.objects.filter(available_at=shift.venue):
+                return value
+            else:
+                raise serializers.ValidationError("This product is not available in this venue.")
+        else:
+            return value
 
     def create(self, validated_data):
         """
@@ -67,34 +68,17 @@ class OrderCreateSerializer(serializers.ModelSerializer):
         """
         try:
             return add_order(
-                validated_data["product"],
+                validated_data["product_id"],
                 validated_data["shift"],
                 validated_data["type"],
-                user=validated_data["user"],
+                user=None if validated_data["type"] == Order.TYPE_SCANNED else validated_data["user"],
                 paid=validated_data["type"] == Order.TYPE_SCANNED,
                 ready=validated_data["type"] == Order.TYPE_SCANNED,
                 force=False,
                 dry=False,
             )
         except OrderException as e:
-            raise serializers.ValidationError(e.__str__())
-
-    class Meta:
-        """Meta class."""
-
-        model = models.Order
-        fields = [
-            "user",
-            "product",
-            "type",
-        ]
-
-
-class OrderSerializer(serializers.ModelSerializer):
-    """Serializer for Order model."""
-
-    product = ProductAbbrSerializer(many=False, read_only=True)
-    user = UserRelatedField(many=False, read_only=True)
+            raise serializers.ValidationError({"detail": e.__str__()})
 
     class Meta:
         """Meta class."""
@@ -104,6 +88,7 @@ class OrderSerializer(serializers.ModelSerializer):
             "id",
             "created",
             "user",
+            "product_id",
             "product",
             "order_price",
             "ready",
@@ -112,7 +97,7 @@ class OrderSerializer(serializers.ModelSerializer):
             "paid_at",
             "type",
         ]
-        read_only_fields = ["id", "created", "user", "product", "order_price", "ready_at", "paid_at", "type"]
+        read_only_fields = ["id", "created", "product", "user", "order_price", "ready_at", "paid_at"]
 
 
 class ShiftSerializer(serializers.ModelSerializer):

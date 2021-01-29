@@ -88,7 +88,7 @@ function post_and_callback_with_error(data_url, data, callback, callback_error/*
                 args.unshift(data);
                 callback.apply(this, args);
             }, error: function(data) {
-                args.unshift(data);
+                args.unshift(data.responseJSON);
                 callback_error.apply(this, args);
             }});
         }

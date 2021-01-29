@@ -7,26 +7,45 @@ from rest_framework.response import Response
 
 from marietje import services
 from marietje.api.v1.pagination import StandardResultsSetPagination
-from marietje.api.v1.serializers import PlayerSerializer, PlayerRetrieveSerializer, QueueItemSerializer
+from marietje.api.v1.serializers import PlayerSerializer, QueueItemSerializer
 from marietje.models import Player, SpotifyQueueItem
 
 
 class PlayerListAPIView(ListAPIView):
-    """Player List API View."""
+    """
+    Player List API View.
+
+    Permissions required: None
+
+    Use this endpoint to get a list of all installed Spotify Players.
+    """
 
     serializer_class = PlayerSerializer
     queryset = Player.objects.all()
 
 
 class PlayerRetrieveAPIView(RetrieveAPIView):
-    """Player Retrieve API View."""
+    """
+    Player Retrieve API View.
 
-    serializer_class = PlayerRetrieveSerializer
+    Permissions required: None
+
+    Use this endpoint to get the details of an installed Spotify Players.
+    """
+
+    serializer_class = PlayerSerializer
     queryset = Player.objects.all()
 
 
 class PlayerQueueListAPIView(ListAPIView):
-    """Player Queue List API View."""
+    """
+    Player Queue List API View.
+
+    Permissions required: None
+
+    Use this endpoint to get a list of tracks that are in the queue of the Spotify Player. Tracks are sorted on the time
+    that they were added, the track that was added last will appear first in the list.
+    """
 
     serializer_class = QueueItemSerializer
     queryset = SpotifyQueueItem.objects.all()
@@ -40,13 +59,14 @@ class PlayerQueueListAPIView(ListAPIView):
 @api_view(["GET"])
 def track_search(request, **kwargs):
     """
-    Search for Spotify tracks.
+    Track Search API View.
+
+    Permissions required: marietje.can_request
+
+    Search for a Spotify track.
 
     This method requires a query GET parameter to be present indicating the query to search for. Optionally an id GET
     parameter may be specified which will be echoed in the response.
-    :param request: the request
-    :param kwargs: keyword arguments
-    :return: A PermissionDenied error on permission denied or a 200 response with the results
     """
     player = kwargs.get("player")
     query = request.GET.get("query", "")
@@ -68,13 +88,12 @@ def track_search(request, **kwargs):
 @api_view(["POST"])
 def track_add(request, **kwargs):
     """
-    Add a track to the queue of a Player.
+    Track Add API View.
 
-    The Spotify ID of a track must be present as the id POST parameter.
-    :param request: the request
-    :param kwargs: keyword arguments
-    :return: A PermissionDenied error on permission denied, A validation error when no track id is specified, a 503
-    response when a Spotify Exception occurs or a 200 response on success
+    Permission required: marietje.can_request
+
+    This method requires an ID POST parameter to be present indicating the Spotify ID of the track that must be added
+    to the queue.
     """
     player = kwargs.get("player")
     track_id = request.POST.get("id", None)
@@ -94,12 +113,11 @@ def track_add(request, **kwargs):
 @api_view(["PATCH"])
 def player_play(request, **kwargs):
     """
-    Play a Player.
+    Player Play API View.
 
-    :param request: the request
-    :param kwargs: keyword arguments
-    :return: A PermissionDenied error on permission denied, a 503 response when a Spotify Exception occurs or a 200
-    response on success
+    Permission required: marietje.can_request
+
+    Start playback on a Player.
     """
     player = kwargs.get("player")
     if request.user.has_perm("marietje.can_request", player):
@@ -115,12 +133,11 @@ def player_play(request, **kwargs):
 @api_view(["PATCH"])
 def player_pause(request, **kwargs):
     """
-    Pause a Player.
+    Player Pause API View.
 
-    :param request: the request
-    :param kwargs: keyword arguments
-    :return: A PermissionDenied error on permission denied, a 503 response when a Spotify Exception occurs or a 200
-    response on success
+    Permission required: marietje.can_request
+
+    Pause playback on a Player.
     """
     player = kwargs.get("player")
     if request.user.has_perm("marietje.can_request", player):
@@ -136,12 +153,11 @@ def player_pause(request, **kwargs):
 @api_view(["PATCH"])
 def player_next(request, **kwargs):
     """
-    Skip a song of a Player.
+    Player Next API View.
 
-    :param request: the request
-    :param kwargs: keyword arguments
-    :return: A PermissionDenied error on permission denied, a 503 response when a Spotify Exception occurs or a 200
-    response on success
+    Permission required: marietje.can_request
+
+    Skip the current song of a Player.
     """
     player = kwargs.get("player")
     if request.user.has_perm("marietje.can_request", player):
@@ -157,12 +173,11 @@ def player_next(request, **kwargs):
 @api_view(["PATCH"])
 def player_previous(request, **kwargs):
     """
-    Go back a song of a Player.
+    Player Previous API View.
 
-    :param request: the request
-    :param kwargs: keyword arguments
-    :return: A PermissionDenied error on permission denied, a 503 response when a Spotify Exception occurs or a 200
-    response on success
+    Permission required: marietje.can_request
+
+    Go back to the previous song of a Player.
     """
     player = kwargs.get("player")
     if request.user.has_perm("marietje.can_request", player):

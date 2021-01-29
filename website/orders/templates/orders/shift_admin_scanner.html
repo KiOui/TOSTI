@@ -30,8 +30,8 @@
                                     <div v-for="product in search_results" class="search-item">
                                         <p class="search-item-name"><% product.name %></p>
                                         <div class="flex-divider"></div>
-                                        <p class="search-item-price">€<% product.current_price %></p>
-                                        <input type="button" class="btn btn-success" :onclick="`post_and_callback_with_error('{% url "v1:orders_create" shift=shift %}', {'product': ${product.id}, 'type': 1, 'user': null}, order_added, order_added_error)`" value="Add"/>
+                                        <p class="search-item-price">€<% (Math.round(product.current_price * 100) / 100).toFixed(2) %></p>
+                                        <input type="button" class="btn btn-success" :onclick="`post_and_callback_with_error('{% url "v1:orders_listcreate" shift=shift %}', {'product_id': ${product.id}, 'type': 1}, order_added, order_added_error)`" value="Add"/>
                                     </div>
                                 </div>
                                 <div v-else id="search-results">
