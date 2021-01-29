@@ -43,8 +43,8 @@ class PlayerQueueListAPIView(ListAPIView):
 
     Permissions required: None
 
-    Use this endpoint to get a list of tracks that are in the queue of the Spotify Player. Tracks are sorted on the time
-    that they were added, the track that was added last will appear first in the list.
+    Use this endpoint to get a list of tracks that are in the queue of the Spotify Player. Tracks are sorted on the
+    time that they were added, the track that was added last will appear first in the list.
     """
 
     serializer_class = QueueItemSerializer
