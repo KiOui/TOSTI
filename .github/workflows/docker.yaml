@@ -6,28 +6,22 @@ on:
     branches:
       - master
 
+env:
+  DOCKER_IMAGE: "docker.pkg.github.com/kioui/tosti/tosti-production:latest"
+
 jobs:
   build-docker:
-    name: "Build Production Docker Image"
-    runs-on: ubuntu-latest
+    name: "Build Docker image"
+    runs-on: "ubuntu-latest"
     steps:
+      - name: "Checkout the repository"
+        uses: "actions/checkout@v1"
 
-      - name: "Checkout repository"
-        uses: actions/checkout@v2
-
-      - name: "Create environment for repository names"
-        run: |
-            echo "::set-env name=DOCKER_LATEST::docker.pkg.github.com/${GITHUB_REPOSITORY}/${GITHUB_REPOSITORY##*/}:latest"
-            echo "::set-env name=DOCKER_TAG_PRODUCTION::docker.pkg.github.com/${GITHUB_REPOSITORY}/${GITHUB_REPOSITORY##*/}:${GITHUB_SHA}"
+      - name: "Login to GitHub Packages"
+        run: "echo \"${{ secrets.GITHUB_TOKEN }}\" | docker login https://docker.pkg.github.com --username ${{ github.repository_owner }} --password-stdin"
 
       - name: "Build Docker image"
-        run: docker build --tag ${DOCKER_LATEST,,} .
+        run: "docker build --build-arg commit_hash=\"${{ github.sha }}\" --tag \"${DOCKER_IMAGE}\" ."
 
-      - name: "Login to GitHub"
-        run: echo "${{ secrets.GH_TOKEN }}" | docker login docker.pkg.github.com -u "${{ github.repository_owner }}" --password-stdin
-
-      - name: "Tag and publish"
-        run: |
-            docker tag "${DOCKER_LATEST,,}" "${DOCKER_TAG_PRODUCTION,,}"
-            docker push "${DOCKER_TAG_PRODUCTION,,}"
-            docker push "${DOCKER_LATEST,,}"
+      - name: "Push Docker image"
+        run: "docker push ${DOCKER_IMAGE}"
