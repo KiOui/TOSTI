@@ -3,7 +3,7 @@ import datetime
 import pytz
 from django.db.models import Q
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, schema
 from rest_framework.exceptions import PermissionDenied, ParseError, ValidationError
 from rest_framework.generics import (
     ListCreateAPIView,

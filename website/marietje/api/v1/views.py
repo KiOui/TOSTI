@@ -4,6 +4,8 @@ from rest_framework.decorators import api_view
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.response import Response
+from rest_framework.schemas.openapi import AutoSchema
+from rest_framework.views import APIView
 
 from marietje import services
 from marietje.api.v1.pagination import StandardResultsSetPagination
@@ -56,58 +58,62 @@ class PlayerQueueListAPIView(ListAPIView):
         return self.queryset.filter(player=self.kwargs.get("player"))
 
 
-@api_view(["GET"])
-def track_search(request, **kwargs):
+class PlayerTrackSearchAPIViewSchema(AutoSchema):
+    def get_operation(self, path, method):
+        op = super().get_operation(path, method)
+        op['parameters'].append({
+            "name": "query",
+            "in": "query",
+            "required": True,
+            'schema': {'type': 'string'}
+        }
+        ) # TODO idk whether this is really the best solution, or that we maybe can use ManualFields
+        return op
+
+class PlayerTrackSearchAPIView(APIView):
     """
-    Track Search API View.
-
-    Permissions required: marietje.can_request
-
     Search for a Spotify track.
-
-    This method requires a query GET parameter to be present indicating the query to search for. Optionally an id GET
-    parameter may be specified which will be echoed in the response.
     """
-    player = kwargs.get("player")
-    query = request.GET.get("query", "")
-    request_id = request.GET.get("id", None)
-    try:
-        maximum = int(request.GET.get("maximum", 5))
-    except ValueError:
-        maximum = 5
-    if request.user.has_perm("marietje.can_request", player):
-        if query != "":
-            results = services.search_tracks(query, player, maximum)
+
+    schema = PlayerTrackSearchAPIViewSchema()
+    # TODO: in this class based view, we can separate a lot of validation and permission management
+    # TODO: add OAuth scopes
+
+    def get(self, request, player):
+        """
+        Search for a Spotify track.
+
+        This method requires a query GET parameter to be present indicating the query to search for. Optionally an id GET
+        parameter may be specified which will be echoed in the response.
+        """
+        
+        query = request.GET.get("query", "")
+        request_id = request.GET.get("id", None)
+        try:
+            maximum = int(request.GET.get("maximum", 5))
+        except ValueError:
+            maximum = 5
+        if request.user.has_perm("marietje.can_request", player):
+            if query != "":
+                results = services.search_tracks(query, player, maximum)
+            else:
+                results = []
+            return Response(status=status.HTTP_200_OK, data={"query": query, "id": request_id, "results": results})
+
+class PlayerTrackAddAPIView(APIView):
+    def post(self, request, player):
+        track_id = request.POST.get("id", None)
+        if request.user.has_perm("marietje.can_request", player):
+            if track_id is not None:
+                try:
+                    services.request_song(request.user, player, track_id)
+                except spotipy.SpotifyException:
+                    return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+                return Response(status=status.HTTP_200_OK)
+            else:
+                raise ValidationError("A track id is required.")
         else:
-            results = []
-        return Response(status=status.HTTP_200_OK, data={"query": query, "id": request_id, "results": results})
-    else:
-        raise PermissionDenied
-
-
-@api_view(["POST"])
-def track_add(request, **kwargs):
-    """
-    Track Add API View.
-
-    Permission required: marietje.can_request
-
-    This method requires an ID POST parameter to be present indicating the Spotify ID of the track that must be added
-    to the queue.
-    """
-    player = kwargs.get("player")
-    track_id = request.POST.get("id", None)
-    if request.user.has_perm("marietje.can_request", player):
-        if track_id is not None:
-            try:
-                services.request_song(request.user, player, track_id)
-            except spotipy.SpotifyException:
-                return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
-            return Response(status=status.HTTP_200_OK)
-        else:
-            raise ValidationError("A track id is required.")
-    else:
-        raise PermissionDenied
+            raise PermissionDenied
 
 
 @api_view(["PATCH"])
