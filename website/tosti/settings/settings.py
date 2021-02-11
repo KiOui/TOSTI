@@ -38,11 +38,14 @@ INSTALLED_APPS = [
     "admin_auto_filters",
     "import_export",
     "guardian",
+    'rest_framework',
     "users",
     "venues",
     "marietje",
     "orders",
     "associations",
+    "oauth2_provider",
+    "corsheaders",
 ]
 
 ANONYMOUS_USER_NAME = None
@@ -57,6 +60,7 @@ AUTHENTICATION_BACKENDS = (
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -64,7 +68,32 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+
 ROOT_URLCONF = "tosti.urls"
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.TokenAuthentication",
+        "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
+    ),
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.URLPathVersioning",
+}
+
+
+# Cors configuration
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_URLS_REGEX = r"^/(?:api|user/oauth)/.*"
+
+# OAuth configuration
+OAUTH2_PROVIDER = {
+    "ALLOWED_REDIRECT_URI_SCHEMES": ["https"] if not DEBUG else ["http", "https"],
+    "SCOPES": {
+        "read": "Authenticated read access to the website",
+        "write": "Authenticated write access to the website",
+    },
+}
 
 TEMPLATES = [
     {
@@ -84,7 +113,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "tosti.wsgi.application"
-
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases

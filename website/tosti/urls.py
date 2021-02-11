@@ -38,9 +38,11 @@ handler500 = custom_handler500
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", IndexView.as_view(), name="index"),
+    path("oauth/", include("oauth2_provider.urls", namespace="oauth2_provider")),
     path("welcome", WelcomeView.as_view(), name="welcome"),
     path("privacy/", PrivacyView.as_view(), name="privacy"),
     path("users/", include(("users.urls", "users"), namespace="users"),),
     path("shifts/", include(("orders.urls", "orders"), namespace="orders"),),
     path("marietje/", include(("marietje.urls", "marietje"), namespace="marietje"),),
+    path("api/", include("tosti.api.urls")),
 ]

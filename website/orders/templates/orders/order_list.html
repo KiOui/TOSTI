@@ -1,0 +1,91 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'orders/css/item-list.css' %}"/>
+
+<div id="item-orders-{{ shift.id }}">
+    <!-- Item orders -->
+    <ul v-if="orders.length > 0" class="item-orders">
+        <template v-for="(order, index) in orders">
+            <li class="pt-2 pb-2 item-list">
+                <div class="information-row">
+                    <p class="item-counter"><% index + 1 %>.</p>
+                    <p class="item-name"><% order.product.name %> (€<% (Math.round(order.order_price * 100) / 100).toFixed(2) %>)</p>
+                    <i v-if="order.product.icon !== null" :class="`fas fa-${order.product.icon} item-icon`"></i>
+                    <div class="flex-divider"></div>
+                    <i v-if="order.user !== null && {{ user.id }} === order.user.id" class="fas fa-user user-icon"></i>
+                    <p v-if="order.user !== null" class="item-username"><% order.user.username %></p>
+                    <i v-else class="item-username fas fa-desktop"></i>
+                </div>
+                {% if admin %}
+                    <div class="button-row">
+                        <template v-if="order.type === 0">
+                            <input v-if="order.paid" type="button" class="checkbox-paid btn mr-2 btn-success"
+                                   :onclick="`patch('/api/v1/shifts/{{ shift.id }}/orders/${order.id}/paid', {}, function(data) {update_update_list()});`"
+                                   value="Paid"/>
+                            <input v-else type="button" class="checkbox-paid btn mr-2 btn-danger"
+                                   :onclick="`patch('/api/v1/shifts/{{ shift.id }}/orders/${order.id}/paid', {}, function(data) {update_update_list()});`"
+                                   value="Paid"/>
+                            <input v-if="order.ready" type="button" class="checkbox-ready btn btn-success"
+                                   :onclick="`patch('/api/v1/shifts/{{ shift.id }}/orders/${order.id}/ready', {}, function(data) {update_update_list()});`"
+                                   value="Ready"/>
+                            <input v-else type="button" class="checkbox-ready btn btn-danger"
+                                   :onclick="`patch('/api/v1/shifts/{{ shift.id }}/orders/${order.id}/ready', {}, function(data) {update_update_list()});`"
+                                   value="Ready"/>
+                        </template>
+                        <template v-else>
+                            <input type="button" class="btn btn-danger"
+                                   :onclick="`if (window.confirm('Do you want to delete this order?')) { delete_and_callback('/api/v1/shifts/{{ shift.id }}/orders/${order.id}', {}, function() {update_update_list(); toastr.success('Order has been deleted.');})}`"
+                                   value="Remove"/>
+                        </template>
+                    </div>
+                {% else %}
+                    <div class="button-row">
+                        <template v-if="{{ user.id }} === order.user.id">
+                            <div v-if="order.ready && order.paid" class="status-button mr-2 bg-success text-white">
+                                Done
+                            </div>
+                            <div v-else-if="order.ready && !order.paid" class="status-button mr-2 bg-warning">Done</div>
+                            <div v-else-if="!order.ready && order.paid" class="status-button mr-2 bg-warning">
+                                Processing
+                            </div>
+                            <div v-else class="status-button mr-2 bg-danger text-white">Not paid</div>
+                        </template>
+                        <template v-else>
+                            <div v-if="order.ready" class="status-button mr-2 bg-success text-white">Done</div>
+                            <div v-else class="status-button mr-2 bg-warning">Processing</div>
+                        </template>
+                    </div>
+                {% endif %}
+            </li>
+        </template>
+    </ul>
+    <div v-else id="outer" class="container d-flex align-items-center justify-content-center text-center"
+         style="height:200px;">
+        <div id="inner">
+            No orders yet...
+        </div>
+    </div>
+</div>
+
+<script>
+    let orders_vue_{{ shift.id }} = new Vue({
+        el: '#item-orders-{{ shift.id }}',
+        delimiters: ['<%', '%>'],
+        data: {
+            orders: []
+        },
+        created() {
+            fetch('{% url "v1:orders_listcreate" shift=shift %}')
+                .then(response => response.json())
+                .then(json => {
+                    {% if not admin %}
+                        json = json.filter(order => order.type === 0);
+                    {% endif %}
+                    this.orders = json;
+                });
+        }
+    });
+    add_update_list(get_and_callback, ["{% url "v1:orders_listcreate" shift=shift %}", {}, function (data) {
+        orders_vue_{{ shift.id }}.orders = data
+    }]);
+</script>

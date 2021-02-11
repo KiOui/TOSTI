@@ -19,51 +19,49 @@ function add_product(data_url, callback_ok, callback_error, product_id) {
                     args.unshift(data.successmsg);
                     callback_ok.apply(this, args);
                 }
-            }}).fail(function() {
-                args.unshift("Error while adding product.");
+            }}).fail(function(jqXHR, textStatus, errorThrown) {
                 callback_error.apply(this, args);
             });
         }
     )
 }
 
-function add_product_success(successmsg) {
-    SUCCESS_CONTAINER.innerHTML = successmsg;
-    SUCCESS_CONTAINER.style.display = "";
+function order_added(data) {
     if (typeof(update_update_list) !== "undefined") {
         update_update_list();
     }
     $(POPUP_MODAL).modal('hide');
-    SEARCH_BOX.value = "";
-    SEARCH_RESULTS.style.display = "none";
+    scanner_vue.search_results = [];
+    scanner_vue.search_input = "";
+    toastr.success("Order added to queue.")
 }
 
-function add_product_error(errormsg) {
-
+function order_added_error(error_data) {
+    if (error_data.detail) {
+        toastr.error("The following error(s) occurred: ".concat(error_data.detail), "Failed to add product");
+    }
+    else {
+        toastr.error("Failed to add product.")
+    }
 }
 
 function search_string() {
-    let inputted = SEARCH_BOX.value;
-    query_string(SEARCH_URL, search_success, search_error, inputted);
+    query_string(SEARCH_URL, search_success, search_error, scanner_vue.search_input);
 }
 
 function query_string(data_url, callback_ok, callback_error, search /*, args */) {
     let args = Array.prototype.slice.call(arguments, 4);
     jQuery(function($) {
-        let data = {
-            'csrfmiddlewaretoken': get_csrf_token(),
-            'query': search,
+        let headers = {
+            "X-CSRFToken": get_csrf_token(),
         };
-        $.ajax({type: 'POST', url: data_url, data, dataType:'json', asynch: true, success:
+        let data = {
+            "query": search
+        }
+        $.ajax({type: 'GET', url: data_url, data, asynch: true, headers: headers, success:
             function(data) {
-                if (data.error) {
-                    args.unshift(data.errormsg);
-                    callback_error.apply(args);
-                }
-                else {
-                    args.unshift(data.data);
-                    callback_ok.apply(this, args);
-                }
+                args.unshift(data);
+                callback_ok.apply(this, args);
             }}).fail(function() {
                 args.unshift("Error while getting product data.");
                 callback_error.apply(this, args);
@@ -72,28 +70,17 @@ function query_string(data_url, callback_ok, callback_error, search /*, args */)
     )
 }
 
+function set_search_timeout() {
+    clearTimeout(typingTimer);
+    if (scanner_vue.search_input !== "") {
+        typingTimer = setTimeout(search_string, typingInterval);
+    }
+}
+
 function search_success(products) {
-    SEARCH_RESULTS.innerHTML = products;
-    SEARCH_RESULTS.style.display = "";
+    scanner_vue.search_results = products;
 }
 
 function search_error(errormsg) {
 
 }
-
-jQuery(document).ready(function($) {
-	SEARCH_BOX.addEventListener('keyup', () => {
-	    clearTimeout(typingTimer);
-	    let inputted = SEARCH_BOX.value;
-	    if (inputted === "") {
-    		SEARCH_RESULTS.style.display = "none";
-	    }
-	    else {
-	    	SEARCH_RESULTS.style.display = "";
-	    }
-
-	    if (SEARCH_BOX.value) {
-	        typingTimer = setTimeout(search_string, typingInterval);
-	    }
-	});
-});

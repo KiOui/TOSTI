@@ -8,30 +8,61 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container-sm mb-5 text-center">
-        {% render_order_header shift %}
-    </div>
-    <div class="container-sm mb-5 text-center">
+    {% include 'orders/shift_header.html' with shift=shift %}
+    <div class="container-sm mb-5 text-center" id="product-list">
         <p>Order your items below</p>
-        <p style="display: none" class="alert alert-danger" id="update-error"></p>
-        {% if error %}
-            <p class="alert alert-danger">{{ error }}</p>
-        {% endif %}
         <div id="product-list">
+            <ul v-if="get_restricted_products(products).length > 0" class="order-list">
+                <li v-for="product in get_restricted_products(products)" class="order-item pt-2 pb-2 mt-2 mb-2">
+                    <i v-if="product.icon" :class="`fas fa-${product.icon}`"></i>
+                    <p class="order-name"><% product.name %></p>
+                    <p class="item-price">€<% (Math.round(product.current_price * 100) / 100).toFixed(2) %></p>
+                    <div v-if="product.max_allowed !== null && get_amount_of_item_orders(product.id) >= product.max_allowed"
+                         class="item-overlay">
+                        <p class="alert alert-warning">You have ordered the maximum of this item.</p>
+                    </div>
+                    <input class="btn btn-success ml-2" type="button" value="Add"
+                           :onclick="`add_product(${product.id});`"/>
+                </li>
+                <li v-if="shift.max_user_orders !== null && get_amount_of_restricted_cart_items() >= shift.max_user_orders"
+                    class="item-overlay">
+                    <p class="alert alert-warning">You have ordered the maximum amount of orders you can place this
+                        shift.</p>
+                </li>
+            </ul>
+            <ul v-if="get_unrestricted_products(products).length > 0" class="order-list">
+                <li v-for="product in get_unrestricted_products(products)" class="order-item pt-2 pb-2 mt-2 mb-2">
+                    <i v-if="product.icon" :class="`fas fa-${product.icon}`"></i>
+                    <p class="order-name"><% product.name %></p>
+                    <p class="item-price">€<% (Math.round(product.current_price * 100) / 100).toFixed(2) %></p>
+                    <input class="btn btn-success ml-2" type="button" value="Add"
+                           :onclick="`add_product(${product.id});`"/>
+                </li>
+            </ul>
+            <p v-if="products.length === 0" class="alert alert-warning">There are no products you can order.</p>
         </div>
     </div>
 {% endblock %}
 
 {% block sidebar %}
-    <div class="container-sm text-center pb-5">
+    <div class="container-sm text-center pb-5" id="cart-list">
         <h2>Selected items</h2>
         <p>Manage the items in your cart</p>
         <div id="order-list">
+            <ul v-if="cart.length > 0" class="order-list">
+                <li v-for="item in cart" class="order-item">
+                    <i v-if="item.icon" :class="`fas fa-${item.icon}`"></i>
+                    <p class="order-name"><% item.name %></p>
+                    <input class="btn btn-danger ml-2" type="button" value="Remove"
+                           :onclick="`delete_product(${item.id});`"/>
+                </li>
+            </ul>
+            <p v-else class='alert alert-warning'>There are no items in your cart.</p>
         </div>
-        <form method="POST">
-            {% csrf_token %}
-            <input type="submit" value="Place order" class="btn-on btn-ml" id="order-button" style="display: none"/>
-        </form>
+        <div v-show="cart.length > 0" class="btn-on btn-ml" id="order-button"
+             onclick="cart_list_vue.loading = true; post_and_callback_with_error('{% url "v1:shifts_cart_order" shift=shift %}', {cart: cart_list_vue.cart.map(product => product.id)}, order_callback, order_error_callback);">
+            Place order
+        </div>
     </div>
 {% endblock %}
 
@@ -45,13 +76,47 @@
 
 {% block js %}
     <script>
-        const PRODUCT_CONTAINER = document.getElementById('product-list');
-        const ORDER_CONTAINER = document.getElementById('order-list');
-        const UPDATE_URL = "{% url 'orders:product_list' shift=shift %}";
         const CART_COOKIE_NAME = "cart_{{ shift.id }}";
-        const ORDER_BUTTON = document.getElementById('order-button');
-        const ERROR_CONTAINER = document.getElementById('update-error');
-        const CSRF_TOKEN = "{{ csrf_token }}";
     </script>
     <script src="{% static 'orders/js/asynch-order-orders.js' %}"></script>
+    <script>
+        let product_list_vue = new Vue({
+            el: '#product-list',
+            delimiters: ['<%', '%>'],
+            data: {
+                products: [],
+                shift: {}
+            },
+            created() {
+                fetch('{% url "v1:product_list" shift=shift %}')
+                    .then(response => response.json())
+                    .then(json => {
+                        json = json.filter(product => product.orderable);
+                        this.products = json;
+                    });
+                fetch('{% url "v1:shift_retrieveupdate" pk=shift.id %}')
+                    .then(response => response.json())
+                    .then(json => {
+                        this.shift = json;
+                    });
+            }
+        });
+        let cart_list_vue = new Vue({
+            el: '#cart-list',
+            delimiters: ['<%', '%>'],
+            data: {
+                cart: [],
+                loading: false,
+            },
+            created() {
+                fetch('{% url "v1:product_list" shift=shift %}')
+                    .then(response => response.json())
+                    .then(json => {
+                        json = json.filter(product => product.orderable);
+                        this.products = json;
+                    });
+                this.cart = get_cart_list();
+            },
+        });
+    </script>
 {% endblock %}

@@ -219,7 +219,7 @@ class SpotifyQueueItem(models.Model):
     """
 
     track = models.ForeignKey(SpotifyTrack, on_delete=models.SET_NULL, null=True)
-    player = models.ForeignKey(Player, null=False, on_delete=models.CASCADE)
+    player = models.ForeignKey(Player, related_name="queue", null=False, on_delete=models.CASCADE)
     added = models.DateTimeField(auto_now_add=True)
     requested_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 

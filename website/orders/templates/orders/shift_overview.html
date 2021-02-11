@@ -3,13 +3,38 @@
 
 {% block styles %}
     <link rel="stylesheet" href="{% static 'tosti/css/index.css' %}"/>
-    <link rel="stylesheet" href="{% static 'orders/css/forms.css' %}"/>
-    <link rel="stylesheet" href="{% static 'orders/css/admin-footer.css' %}"/>
 {% endblock %}
 
 {% block page %}
-    {% render_order_header shift %}
-    {% render_order_items shift user=request.user %}
+    {% include 'orders/shift_header.html' with shift=shift %}
+    <div class="container-sm" id="orders-container">
+        {% if has_order_permissions and shift.is_active and shift.can_order %}
+            <a href="{% url "orders:order" shift=shift %}">
+                <div class="btn-ml btn-on">
+                    <h4>Place your order</h4>
+                    <p class="btn-note">Click to order items</p>
+                </div>
+            </a>
+        {% else %}
+            <div class="btn-ml btn-off">
+                <h4>Place your order</h4>
+                <p class="btn-note">
+                    {% if not has_order_permissions %}
+                        You can't place orders
+                    {% elif not shift.is_active %}
+                        This shift is closed
+                    {% else %}
+                        This shift does not accept orders currently
+                    {% endif %}
+                </p>
+            </div>
+        {% endif %}
+        <div class="container">
+            <hr>
+        </div>
+        {% include 'orders/order_list.html' with shift=shift admin=False user=user %}
+    </div>
+    <div class="container pt-5 pb-5"></div>
 {% endblock %}
 
 {% block footer %}

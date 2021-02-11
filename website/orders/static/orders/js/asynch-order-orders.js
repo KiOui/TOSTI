@@ -2,171 +2,53 @@
 let MAX_ORDERS = 5;
 let PRODUCTS = [];
 
-String.prototype.capitalize = function() {
-    return this.charAt(0).toUpperCase() + this.slice(1);
-};
-
-function get_list(data_url, csrf_token, callback_ok, callback_error, /*, args */) {
-    let args = Array.prototype.slice.call(arguments, 4);
-    jQuery(function($) {
-        let data = {
-            'csrfmiddlewaretoken': csrf_token,
-            'option': "list"
-        };
-        $.ajax({type: 'POST', url: data_url, data, dataType:'json', asynch: true, success:
-            function(data) {
-                if (data.error) {
-                    args.unshift(data.error);
-                    callback_error.apply(args);
-                }
-                else {
-                    args.unshift(data);
-                    callback_ok.apply(this, args);
-                }
-            }}).fail(function() {
-                args.unshift("Error while getting order data.");
-                callback_error.apply(this, args);
-            });
-        }
-    )
-}
-
-function update_page_error(error) {
-    ERROR_CONTAINER.innerHTML = error;
-    ERROR_CONTAINER.style.display = "block";
-}
 
 function get_amount_of_item_orders(product_id) {
     let amount_of_items = 0;
-    let cart = get_cart_list();
-    for (let i = 0; i < cart.length; i++) {
-        if (cart[i] === product_id) {
+    for (let i = 0; i < cart_list_vue.cart.length; i++) {
+        if (cart_list_vue.cart[i].id === product_id) {
             amount_of_items += 1;
         }
     }
     return amount_of_items;
 }
 
-function update_page_data(data) {
-    MAX_ORDERS = data.shift_max;
-    PRODUCTS = data.products;
-    refresh();
-}
-
-function construct_products_section(products) {
-    let base = document.createElement('ul');
-    base.classList.add('order-list');
-    for (let i = 0; i < products.length; i++) {
-        let list_item = create_element('li', ['order-item', 'pt-2', 'pb-2', 'mt-2', 'mb-2'], '');
-        let icon = create_element('i', ['fas', 'fa-'+products[i].icon], '');
-        let name = create_element('p', ['order-name'], products[i].name);
-        let button = create_element('input', ['btn', 'btn-success', 'ml-2'], "");
-        button.type = 'button';
-        button.value = "Add";
-        button.setAttribute('onclick', "add_product(" + products[i].id + ")");
-        let price = create_element('p', ['item-price'], '€' + products[i].price);
-
-        list_item.appendChild(icon);
-        list_item.appendChild(name);
-        list_item.appendChild(price);
-        list_item.appendChild(button);
-        if (products[i].max_allowed !== null && get_amount_of_item_orders(products[i].id) >= products[i].max_allowed) {
-            let overlay = create_element('div', ['item-overlay'], "");
-            let overlay_text = create_element('p', ['alert', 'alert-warning'], "You have ordered the maximum of this item.");
-            overlay.appendChild(overlay_text);
-            list_item.appendChild(overlay);
-        }
-        base.appendChild(list_item);
-    }
-
-    if (products.length === 0) {
-        return "<p class='alert alert-warning'>There are no products you can order.</p>";
-    }
-
-    return base;
-}
-
-function create_maximum_ordered_overlay(element) {
-    let overlay = create_element('div', ['item-overlay'], "");
-    let overlay_text = create_element('p', ['alert', 'alert-warning'], "You have ordered the maximum amount of orders you can place this shift.");
-    overlay.appendChild(overlay_text);
-    element.append(overlay);
-}
-
-function construct_order_section() {
-    let base = document.createElement('ul');
-    base.classList.add('order-list');
-    let cart = get_cart_list();
-    for (let i = 0; i < cart.length; i++) {
-        let product = find_product_details(cart[i]);
-        if (product !== null) {
-            let list_item = create_element('li', ['order-item'], '');
-            let icon = create_element('i', ['fas', 'fa-' + product.icon], '');
-            let name = create_element('p', ['order-name'], product.name);
-            let button = create_element('input', ['btn', 'btn-danger', 'ml-2'], "");
-            button.type = 'button';
-            button.value = "Remove";
-            button.setAttribute('onclick', "delete_product(" + product.id + ")");
-
-            list_item.appendChild(icon);
-            list_item.appendChild(name);
-            list_item.appendChild(button);
-            base.appendChild(list_item);
-        }
-    }
-
-    if (cart.length === 0) {
-        ORDER_CONTAINER.innerHTML = "<p class='alert alert-warning'>There are no items in your cart.</p>";
-    }
-    else {
-        ORDER_CONTAINER.innerHTML = "";
-        ORDER_CONTAINER.append(base);
-    }
-}
-
 function delete_product(product_id) {
-    let cart = get_cart_list();
-    for (let i = 0; i < cart.length; i++) {
-        if (cart[i] === product_id) {
-            cart.splice(i, 1);
-            set_cart_list(cart);
-            refresh();
+    for (let i = 0; i < cart_list_vue.cart.length; i++) {
+        if (cart_list_vue.cart[i].id === product_id) {
+            cart_list_vue.cart.splice(i, 1);
+            set_cart_list(cart_list_vue.cart);
             return;
         }
     }
 }
 
 function find_product_details(product_id) {
-    for (let i = 0; i < PRODUCTS.length; i++) {
-        if (PRODUCTS[i].id === product_id) {
-            return PRODUCTS[i];
+    for (let i = 0; i < product_list_vue.products.length; i++) {
+        if (product_list_vue.products[i].id === product_id) {
+            return product_list_vue.products[i];
         }
     }
     return null;
 }
 
 function get_amount_of_cart_items() {
-    let cart = get_cart_list();
-    return cart.length;
+    return cart_list_vue.cart.length;
 }
 
 function get_amount_of_restricted_cart_items() {
-    let cart = get_cart_list();
-    return cart.filter(
+    return cart_list_vue.cart.filter(
         function(value, index, arr)
         {
-            let product_details = find_product_details(value);
-            return product_details !== null && !product_details.ignore_shift_restriction;
+            return !value.ignore_shift_restrictions;
     }).length;
 }
 
 function add_product(product_id) {
     let product_details = find_product_details(product_id);
-    if (product_details !== null && (get_amount_of_restricted_cart_items() < MAX_ORDERS || product_details.ignore_shift_restriction)) {
-        let cart = get_cart_list();
-        cart.push(product_id);
-        set_cart_list(cart);
-        refresh();
+    if (product_details !== null && (get_amount_of_restricted_cart_items() < product_list_vue.shift.max_user_orders || product_details.ignore_shift_restrictions)) {
+        cart_list_vue.cart.push(product_details);
+        set_cart_list(cart_list_vue.cart);
         return true;
     }
     else {
@@ -200,7 +82,7 @@ function set_cart_list(list) {
 function get_restricted_products(products) {
     let ret = [];
     for (let i = 0; i < products.length; i++) {
-        if (!products[i].ignore_shift_restriction) {
+        if (!products[i].ignore_shift_restrictions) {
             ret.push(products[i]);
         }
     }
@@ -210,60 +92,23 @@ function get_restricted_products(products) {
 function get_unrestricted_products(products) {
     let ret = [];
     for (let i = 0; i < products.length; i++) {
-        if (products[i].ignore_shift_restriction) {
+        if (products[i].ignore_shift_restrictions) {
             ret.push(products[i]);
         }
     }
     return ret;
 }
 
-function refresh() {
-    let restricted_products = get_restricted_products(PRODUCTS);
-    let unrestricted_products = get_unrestricted_products(PRODUCTS);
-    let restricted_base = create_element('div', [], '');
-    let unrestricted_base = create_element('div', [], '');
-    if (restricted_products.length > 0) {
-        let restricted_list = construct_products_section(restricted_products);
-        if (MAX_ORDERS !== null && get_amount_of_restricted_cart_items() >= MAX_ORDERS) {
-            let overlay = create_element('div', ['item-overlay'], "");
-            let overlay_text = create_element('p', ['alert', 'alert-warning'], "You have ordered the maximum amount of orders you can place this shift.");
-            overlay.appendChild(overlay_text);
-            restricted_list.append(overlay);
-        }
-        restricted_base.append(restricted_list);
-    }
-    if (unrestricted_products.length > 0) {
-        unrestricted_base.append(construct_products_section(unrestricted_products));
-    }
-    PRODUCT_CONTAINER.innerHTML = "";
-    PRODUCT_CONTAINER.append(restricted_base);
-    PRODUCT_CONTAINER.append(unrestricted_base);
-    construct_order_section();
-    display_order_button(get_cart_list().length > 0);
+function order_callback(data) {
+    cart_list_vue.loading = false;
+    cart_list_vue.cart = [];
+    set_cart_list([]);
+    update_update_list();
+    toastr.success("Your order has been placed!", "Order notification");
+    setTimeout(function() {window.location.reload()}, 1000);
 }
 
-function display_order_button(display) {
-    if (display) {
-        ORDER_BUTTON.style.display = '';
-    }
-    else {
-        ORDER_BUTTON.style.display = 'none';
-    }
+function order_error_callback(data) {
+    cart_list_vue.loading = false;
+    toastr.error(data.detail, "The following errors occurred: ");
 }
-
-$(document).ready(function() {
-    if (typeof(PRODUCT_CONTAINER) !== 'undefined' &&
-        typeof(UPDATE_URL) !== 'undefined' &&
-        typeof(CSRF_TOKEN) !== 'undefined' &&
-        typeof(ERROR_CONTAINER) !== 'undefined' &&
-        typeof(CART_COOKIE_NAME) !== 'undefined' &&
-        typeof(ORDER_BUTTON) !== 'undefined') {
-        if (get_cookie(CART_COOKIE_NAME) === null) {
-            set_list_cookie(CART_COOKIE_NAME, [], 1);
-        }
-        get_list(UPDATE_URL, CSRF_TOKEN, update_page_data, update_page_error, PRODUCT_CONTAINER);
-    }
-    else {
-        console.warn("One of the required javascript variables is not defined, automatic update is disabled.")
-    }
-});

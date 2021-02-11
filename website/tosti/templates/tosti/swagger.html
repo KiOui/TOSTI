@@ -1,0 +1,50 @@
+{% load static %}
+<!DOCTYPE html>
+<html class="swagger-ui">
+<head>
+    <title>API reference</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" href="{% static "tosti/css/swagger-ui.css" %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static "tosti/css/swagger-ui-tosti-styling.css" %}"/>
+</head>
+<body>
+<div id="swagger-ui"></div>
+<script src="{% static "tosti/js/swagger-ui-bundle.js" %}" type="application/javascript"></script>
+<script src="{% static "tosti/js/swagger-ui-standalone-preset.js" %}" type="application/javascript"></script>
+<script type="application/javascript">
+    window.onload = function () {
+        const ui = SwaggerUIBundle({
+            oauth2RedirectUrl: "{{ request.scheme }}://{{ request.get_host }}{% url "swagger-oauth-redirect" %}",
+            urls: [
+                {% for schema_url in schema_urls %}
+                    {"url": "{% url schema_url %}", name: "{% url schema_url %}"}
+                {% endfor %}
+            ],
+            dom_id: '#swagger-ui',
+            presets: [
+                SwaggerUIBundle.presets.apis,
+                SwaggerUIStandalonePreset
+            ],
+            plugins: [
+                SwaggerUIBundle.plugins.DownloadUrl
+            ],
+            layout: "StandaloneLayout",
+            requestInterceptor: (request) => {
+                request.headers['X-CSRFToken'] = "{{ csrf_token }}"
+                return request;
+            }
+        });
+
+        ui.initOAuth({
+            clientId: ""
+        });
+    }
+    // Overwrite swagger logo
+    $(document).ready(function () {
+        $('.topbar-wrapper a:first-child img').attr('src','{% static 'tosti/svg/TOSTI-logo.svg' %}');
+    });
+</script>
+</body>
+</html>

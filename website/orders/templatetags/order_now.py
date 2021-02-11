@@ -6,36 +6,6 @@ from orders.models import Shift, OrderVenue
 register = template.Library()
 
 
-@register.inclusion_tag("orders/shift_header.html", takes_context=True)
-def render_order_header(context, shift, refresh=False):
-    """Render order header."""
-    return {"shift": shift, "refresh": refresh, "request": context.get("request")}
-
-
-@register.inclusion_tag("orders/admin_footer.html", takes_context=True)
-def render_admin_footer(context, shift, refresh=False):
-    """Render order footer."""
-    has_change_order_permissions = context["request"].user in shift.get_users_with_change_perms()
-    return {
-        "shift": shift,
-        "refresh": refresh,
-        "request": context.get("request"),
-        "has_change_order_permissions": has_change_order_permissions,
-    }
-
-
-@register.inclusion_tag("orders/shift_orders.html", takes_context=True)
-def render_order_items(context, shift, refresh=False, admin=False, user=None):
-    """Render order items."""
-    return {"shift": shift, "refresh": refresh, "admin": admin, "user": user, "request": context.get("request")}
-
-
-@register.inclusion_tag("orders/shift_summary.html", takes_context=True)
-def render_item_overview(context, shift, refresh=False):
-    """Render item overview."""
-    return {"shift": shift, "refresh": refresh, "request": context.get("request")}
-
-
 @register.inclusion_tag("orders/order_now_button.html", takes_context=True)
 def render_order_now_button(context, shift=None, venue=None):
     """Render order now button."""
@@ -87,12 +57,6 @@ def render_order_now_buttons_venues(context):
     buttons = [{"venue": x} for x in venues]
 
     return {"venues": buttons, "request": context.get("request")}
-
-
-@register.inclusion_tag("orders/shift_scanner.html", takes_context=True)
-def render_barcode_scanner(context, shift):
-    """Render shift scanner for shift."""
-    return {"shift": shift, "request": context.get("request")}
 
 
 @register.inclusion_tag("orders/search.html", takes_context=True)

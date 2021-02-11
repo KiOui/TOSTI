@@ -1,57 +1,38 @@
 let typingTimer;
-let typingInterval = 200;
 
 let current_search_index = 0;
 
-function display_message(data) {
-	MESSAGE_FIELD.innerHTML = "";
-	if (data.error) {
-		MESSAGE_FIELD.appendChild(create_element('p', ['alert', 'alert-danger'], data.msg));
-	}
-	else {
-		MESSAGE_FIELD.appendChild(create_element('p', ['alert', 'alert-success'], data.msg));
-	}
-	update_update_list();
-}
-
-function add_to_queue(track_id, callback/*, args */) {
-	let args = Array.prototype.slice.call(arguments, 2);
+function add_to_queue(track_id) {
     let csrf_token = get_cookie('csrftoken');
 	jQuery(function($) {
 		let data = {
 			'id': track_id,
             'csrfmiddlewaretoken': csrf_token
 		};
-		$.ajax({type: 'POST', url: ADD_URL, data, dataType:'json', asynch: true, success:
+		$.ajax({type: 'POST', url: ADD_URL, data, asynch: true, success:
 		function(data) {
-			args.unshift(data);
-			callback.apply(this, args);
+			toastr.success("Track added to queue.");
+			player_search_vue.query = "";
+			update_update_list();
 		}}).fail(function() {
-			console.log("Error while adding " + track_id + " to queue");
+			toastr.error("Failed to add track to the queue, please try again later.");
 		});
 	});
 }
 
-function update_search_list(data) {
-	RESULT_FIELD.innerHTML = data;
-}
-
-function query(search, callback/*, args */) {
-	let args = Array.prototype.slice.call(arguments, 2);
+function query() {
     let csrf_token = get_cookie('csrftoken');
 	jQuery(function($) {
 		current_search_index = current_search_index + 1;
 		let data = {
-			'maximum': 5,
-			'query': search,
+			'query': player_search_vue.query,
 			'id': current_search_index,
             'csrfmiddlewaretoken': csrf_token
 		};
-		$.ajax({type: 'POST', url: SEARCH_URL, data, dataType:'json', asynch: true, success:
+		$.ajax({type: 'GET', url: SEARCH_URL, data, dataType:'json', asynch: true, success:
 		function(data) {
-            if (parseInt(data.id) === current_search_index && search === data.query) {
-				args.unshift(data.result);
-                callback.apply(this, args);
+            if (parseInt(data.id) === current_search_index && player_search_vue.query === data.query) {
+				player_search_vue.tracks = data.results;
             }
 		}}).fail(function() {
 			console.log("Error while getting search results for query " + search);
@@ -59,27 +40,13 @@ function query(search, callback/*, args */) {
 	});
 }
 
-$(document).ready(function() {
-	if (typeof(QUERY_FIELD) !== 'undefined' &&
-        typeof(RESULT_FIELD) !== 'undefined' &&
-		typeof(SEARCH_URL) !== 'undefined' &&
-		typeof(ADD_URL) !== 'undefined' &&
-		typeof(MESSAGE_FIELD) !== 'undefined') {
-		QUERY_FIELD.addEventListener('keyup', () => {
-			clearTimeout(typingTimer);
-			let inputted = QUERY_FIELD.value;
-			if (inputted === "") {
-				RESULT_FIELD.style.display = "none";
-			} else {
-				RESULT_FIELD.style.display = "";
-			}
+function set_search_timeout() {
+    clearTimeout(typingTimer);
+    if (player_search_vue.query !== "") {
+        typingTimer = setTimeout(query, 200);
+    }
+}
 
-			if (QUERY_FIELD.value) {
-				typingTimer = setTimeout(query.bind(null, inputted, update_search_list), typingInterval);
-			}
-		});
-	}
-	else {
-		console.warn("One of the required javascript variables is not defined, searching is disabled.")
-	}
-});
+function search_success(products) {
+    player_search_vue.search_results = products;
+}

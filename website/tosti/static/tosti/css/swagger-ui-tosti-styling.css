@@ -1,0 +1,26 @@
+.swagger-ui .info .title small.version-stamp {
+    background-color: rgba(232, 179, 101, 1);
+}
+
+.swagger-ui .topbar .download-url-wrapper .select-label select {
+    border: 2px solid black;
+}
+
+.swagger-ui .topbar {
+    background-color: rgba(232, 179, 101, 1);
+}
+
+.swagger-ui .topbar img {
+    height: 120px;
+    position: absolute;
+    margin-top: 20px;
+}
+
+@media screen and (max-width: 767px) {
+    .swagger-ui .topbar img {
+        position: relative;
+        margin: 0;
+        max-width: 100%;
+        height: 40px;
+    }
+}
