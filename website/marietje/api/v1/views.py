@@ -4,13 +4,13 @@ from rest_framework.decorators import api_view
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.response import Response
-from rest_framework.schemas.openapi import AutoSchema
 from rest_framework.views import APIView
 
 from marietje import services
 from marietje.api.v1.pagination import StandardResultsSetPagination
 from marietje.api.v1.serializers import PlayerSerializer, QueueItemSerializer
 from marietje.models import Player, SpotifyQueueItem
+from tosti.api.openapi import CustomAutoSchema
 
 
 class PlayerListAPIView(ListAPIView):
@@ -58,35 +58,40 @@ class PlayerQueueListAPIView(ListAPIView):
         return self.queryset.filter(player=self.kwargs.get("player"))
 
 
-class PlayerTrackSearchAPIViewSchema(AutoSchema):
-    def get_operation(self, path, method):
-        op = super().get_operation(path, method)
-        op['parameters'].append({
-            "name": "query",
-            "in": "query",
-            "required": True,
-            'schema': {'type': 'string'}
-        }
-        ) # TODO idk whether this is really the best solution, or that we maybe can use ManualFields
-        return op
-
 class PlayerTrackSearchAPIView(APIView):
-    """
-    Search for a Spotify track.
-    """
+    """Player Track Search API View."""
 
-    schema = PlayerTrackSearchAPIViewSchema()
-    # TODO: in this class based view, we can separate a lot of validation and permission management
-    # TODO: add OAuth scopes
+    schema = CustomAutoSchema(
+        manual_operations=[{"name": "query", "in": "query", "required": True, "schema": {"type": "string"}}],
+        response_schema={
+            "type": "object",
+            "properties": {
+                "query": {"type": "string", "example": "string"},
+                "id": {"type": "int", "example": "123"},
+                "results": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {"type": "string", "example": "string"},
+                            "artists": {"type": "array", "items": {"type": "string", "example": "string"}},
+                            "id": {"type": "string", "example": "string"},
+                        },
+                    },
+                },
+            },
+        },
+    )
 
-    def get(self, request, player):
+    def get(self, request, **kwargs):
         """
         Search for a Spotify track.
 
-        This method requires a query GET parameter to be present indicating the query to search for. Optionally an id GET
-        parameter may be specified which will be echoed in the response.
+        Permission required: marietje.can_request
+
+        Use this endpoint to search for a Spotify Track. Tracks can be searched via their Spotify id.
         """
-        
+        player = kwargs.get("player")
         query = request.GET.get("query", "")
         request_id = request.GET.get("id", None)
         try:
@@ -99,9 +104,26 @@ class PlayerTrackSearchAPIView(APIView):
             else:
                 results = []
             return Response(status=status.HTTP_200_OK, data={"query": query, "id": request_id, "results": results})
+        else:
+            raise PermissionDenied
+
 
 class PlayerTrackAddAPIView(APIView):
-    def post(self, request, player):
+    """Player Track Add API View."""
+
+    schema = CustomAutoSchema(
+        request_schema={"type": "object", "properties": {"id": {"type": "string", "example": "string"}}}
+    )
+
+    def post(self, request, **kwargs):
+        """
+        Add a Spotify Track to the queue.
+
+        Permission required: marietje.can_request
+
+        Use this endpoint to add a spotify track to the queue.
+        """
+        player = kwargs.get("player")
         track_id = request.POST.get("id", None)
         if request.user.has_perm("marietje.can_request", player):
             if track_id is not None:
@@ -121,12 +143,12 @@ def player_play(request, **kwargs):
     """
     Player Play API View.
 
-    Permission required: marietje.can_request
+    Permission required: marietje.can_control
 
     Start playback on a Player.
     """
     player = kwargs.get("player")
-    if request.user.has_perm("marietje.can_request", player):
+    if request.user.has_perm("marietje.can_control", player):
         try:
             services.player_start(player)
         except spotipy.SpotifyException:
@@ -141,12 +163,12 @@ def player_pause(request, **kwargs):
     """
     Player Pause API View.
 
-    Permission required: marietje.can_request
+    Permission required: marietje.can_control
 
     Pause playback on a Player.
     """
     player = kwargs.get("player")
-    if request.user.has_perm("marietje.can_request", player):
+    if request.user.has_perm("marietje.can_control", player):
         try:
             services.player_pause(player)
         except spotipy.SpotifyException:
@@ -161,12 +183,12 @@ def player_next(request, **kwargs):
     """
     Player Next API View.
 
-    Permission required: marietje.can_request
+    Permission required: marietje.can_control
 
     Skip the current song of a Player.
     """
     player = kwargs.get("player")
-    if request.user.has_perm("marietje.can_request", player):
+    if request.user.has_perm("marietje.can_control", player):
         try:
             services.player_next(player)
         except spotipy.SpotifyException:
@@ -181,12 +203,12 @@ def player_previous(request, **kwargs):
     """
     Player Previous API View.
 
-    Permission required: marietje.can_request
+    Permission required: marietje.can_control
 
     Go back to the previous song of a Player.
     """
     player = kwargs.get("player")
-    if request.user.has_perm("marietje.can_request", player):
+    if request.user.has_perm("marietje.can_control", player):
         try:
             services.player_previous(player)
         except spotipy.SpotifyException:

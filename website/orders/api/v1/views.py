@@ -3,7 +3,6 @@ import datetime
 import pytz
 from django.db.models import Q
 from rest_framework import status
-from rest_framework.decorators import api_view, schema
 from rest_framework.exceptions import PermissionDenied, ParseError, ValidationError
 from rest_framework.generics import (
     ListCreateAPIView,
@@ -21,17 +20,22 @@ from orders.exceptions import OrderException
 from orders.models import Order, Shift, Product
 from orders.services import Cart, place_orders, increase_shift_time, increase_shift_capacity
 from tosti import settings
+from tosti.api.openapi import CustomAutoSchema
 
 
 class CartOrderAPIView(APIView):
     """
     Cart Order API View.
 
-    Permission required: shift.can_order_in_venue
+    Permission required: orders.can_order_in_venue
 
     Use this API endpoint to order a list of Products in one go. The list of Products should be set as an array of
     Product id's in the "cart" POST parameter.
     """
+
+    schema = CustomAutoSchema(
+        request_schema={"type": "object", "properties": {"cart": {"type": "array", "example": "[1,2,3]"}}}
+    )
 
     def _extract_cart(self):
         """
@@ -61,14 +65,10 @@ class CartOrderAPIView(APIView):
         """
         Create multiple Orders in one go.
 
+        Permission required: orders.can_order_in_venue
+
         API endpoint for creating multiple orders in one go (handling of a cart).
         A "cart" POST parameter must be specified including the ID's of the Products the user wants to order.
-        Permission required: can_order_in_venue
-        :param request: the request
-        :param kwargs: keyword arguments
-        :return: a 201 response code if all orders in the cart were successfully processed. Raises a ValidationError
-        if some Orders in the cart can not be processed. Returns a 400 response code if the cart could not be read or
-        is not present in the POST data, raises a PermissionDenied error when the user does not have permission
         """
         shift = self.get_object()
         if not self.request.user.has_perm("orders.can_order_in_venue", shift.venue):
@@ -113,6 +113,8 @@ class OrderListCreateAPIView(ListCreateAPIView):
         """
         Perform the creation of a new Order.
 
+        Permission required: orders.can_manage_shift_in_venue
+
         This method actually checks if the user has manage permissions in the shift and else ignores the order_type,
         paid and ready fields.
         :param serializer: the serializer
@@ -138,7 +140,6 @@ class OrderRetrieveDestroyAPIView(RetrieveDestroyAPIView):
     Order Retrieve Destroy API View.
 
     Permission required: orders.can_order_in_venue
-    For destroying an Order, the orders.can_manage_shift_in_venue permission is required.
     """
 
     serializer_class = OrderSerializer
@@ -150,7 +151,7 @@ class OrderRetrieveDestroyAPIView(RetrieveDestroyAPIView):
         """
         Destroy an order.
 
-        This method needs the orders.can_manage_shift_in_venue permission
+        Permission required: orders.can_manage_shift_in_venue
         """
         if self.request.user.has_perm("orders.can_manage_shift_in_venue", self.kwargs.get("shift").venue):
             return super().destroy(request, *args, **kwargs)
@@ -168,11 +169,7 @@ class OrderRetrieveDestroyAPIView(RetrieveDestroyAPIView):
 
 
 class ShiftListCreateAPIView(ListCreateAPIView):
-    """
-    Shift List Create API View.
-
-    Permission required: orders.can_manage_shift_in_venue
-    """
+    """Shift List Create API View."""
 
     serializer_class = ShiftSerializer
     queryset = Shift.objects.all()
@@ -195,8 +192,9 @@ class ShiftListCreateAPIView(ListCreateAPIView):
         """
         Create a Shift.
 
+        Permission required: orders.can_manage_shift_in_venue
+
         API endpoint for creating a Shift.
-        Permission required: can_manage_shift_in_venue
         :param request: the request
         :param args: arguments
         :param kwargs: keyword arguments
@@ -224,8 +222,9 @@ class ShiftRetrieveUpdateAPIView(RetrieveUpdateAPIView):
         """
         Update a Shift.
 
+        Permission required: orders.can_manage_shift_in_venue
+
         API endpoint for updating a Shift.
-        Permission required: can_manage_shift_in_venue
         :param request: the request
         :param args: arguments
         :param kwargs: keyword arguments
@@ -254,140 +253,187 @@ class ProductListAPIView(ListAPIView):
         return self.queryset.filter(available_at=self.kwargs.get("shift").venue)
 
 
-@api_view(["PATCH"])
-def shift_add_time(request, **kwargs):
-    """
-    Shift Add Time API View.
+class ShiftAddTimeAPIView(APIView):
+    """Shift Add Time API View."""
 
-    Permission required: can_manage_shift_in_venue
+    schema = CustomAutoSchema(
+        request_schema={"type": "object", "properties": {"minutes": {"type": "int", "example": "5"}}}
+    )
 
-    API endpoint for adding an amount of minutes to the end of a Shift.
-    Optionally a "minutes" PATCH parameter can be set indicating with how many minutes the time should be extended.
-    """
-    shift = kwargs.get("shift")
-    if request.user.has_perm("orders.can_manage_shift_in_venue", shift.venue):
-        time_minutes = request.data.get("minutes", 5)
-        increase_shift_time(shift, time_minutes)
-        return Response(status=status.HTTP_200_OK, data=ShiftSerializer(shift, context={"request": request}).data)
-    else:
-        raise PermissionDenied
+    def patch(self, request, **kwargs):
+        """
+        Shift Add Time API View.
 
+        Permission required: orders.can_manage_shift_in_venue
 
-@api_view(["PATCH"])
-def shift_add_capacity(request, **kwargs):
-    """
-    Shift Add Capacity API View.
-
-    Permission required: can_manage_shift_in_venue
-
-    API endpoint for adding capacity to a Shift.
-    Optionally a "capacity" PATCH parameter can be set indicating how many capacity should be added.
-    """
-    shift = kwargs.get("shift")
-    if request.user.has_perm("orders.can_manage_shift_in_venue", shift.venue):
-        time_minutes = request.data.get("capacity", 5)
-        increase_shift_capacity(shift, time_minutes)
-        return Response(status=status.HTTP_200_OK, data=ShiftSerializer(shift, context={"request": request}).data)
-    else:
-        raise PermissionDenied
-
-
-@api_view(["POST"])
-def shift_scanner(request, **kwargs):
-    """
-    Shift Scanner API View.
-
-    Permission required: can_manage_shift_in_venue
-
-    API endpoint for adding a scanned order to a Shift.
-    A "barcode" POST parameter should be specified indicating the barcode of the product to add.
-    """
-    shift = kwargs.get("shift")
-    barcode = request.data.get("barcode", None)
-    if request.user.has_perm("orders.can_manage_shift_in_venue", shift.venue):
-        try:
-            product = Product.objects.get(barcode=barcode, available=True, available_at=shift.venue)
-        except Product.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        order = Order.objects.create(shift=shift, product=product, type=Order.TYPE_SCANNED, paid=True, ready=True)
-        return Response(status=status.HTTP_200_OK, data=OrderSerializer(order, context={"request": request}).data)
-    else:
-        raise PermissionDenied
-
-
-@api_view(["GET"])
-def product_search(request, **kwargs):
-    """
-    Product Search API View.
-
-    Permission required: can_manage_shift_in_venue
-
-    API endpoint for searching products.
-    A "query" GET parameter should be specified indicating the product or barcode search query.
-    """
-    shift = kwargs.get("shift")
-    query = request.GET.get("query")
-    if request.user.has_perm("orders.can_manage_shift_in_venue", shift.venue):
-        if query is not None:
-            string_query = services.query_product_name(query)
-            barcode_query = services.query_product_barcode(query)
-            all_query = set(string_query)
-            all_query.update(barcode_query)
-            all_query = list(all_query)
+        API endpoint for adding an amount of minutes to the end of a Shift.
+        Optionally a "minutes" PATCH parameter can be set indicating with how many minutes the time should be extended.
+        """
+        shift = kwargs.get("shift")
+        if request.user.has_perm("orders.can_manage_shift_in_venue", shift.venue):
+            time_minutes = request.data.get("minutes", 5)
+            increase_shift_time(shift, time_minutes)
+            return Response(status=status.HTTP_200_OK, data=ShiftSerializer(shift, context={"request": request}).data)
         else:
-            all_query = []
-        return Response(
-            status=status.HTTP_200_OK, data=ProductSerializer(all_query, many=True, context={"request": request}).data
-        )
-    else:
-        raise PermissionDenied
+            raise PermissionDenied
 
 
-@api_view(["PATCH"])
-def order_toggle_paid(request, **kwargs):
-    """
-    Order Toggle Paid API view.
+class ShiftAddCapacityAPIView(APIView):
+    """Shift Add Capacity API View."""
 
-    Permission required: orders.can_manage_shift_in_venue
+    schema = CustomAutoSchema(
+        request_schema={"type": "object", "properties": {"capacity": {"type": "int", "example": "5"}}}
+    )
 
-    This toggles the paid option on an Order. Will return the Order object afterwards. If the Order does not exist
-    within the Shift a 404 will be returned.
-    """
-    shift = kwargs.get("shift")
-    order = kwargs.get("order")
-    if request.user.has_perm("orders.can_manage_shift_in_venue", shift.venue):
-        if order in Order.objects.filter(shift=shift):
-            order.paid = not order.paid
-            order.save()
+    def patch(self, request, **kwargs):
+        """
+        Shift Add Capacity API View.
+
+        Permission required: orders.can_manage_shift_in_venue
+
+        API endpoint for adding capacity to a Shift.
+        Optionally a "capacity" PATCH parameter can be set indicating how many capacity should be added.
+        """
+        shift = kwargs.get("shift")
+        if request.user.has_perm("orders.can_manage_shift_in_venue", shift.venue):
+            time_minutes = request.data.get("capacity", 5)
+            increase_shift_capacity(shift, time_minutes)
+            return Response(status=status.HTTP_200_OK, data=ShiftSerializer(shift, context={"request": request}).data)
+        else:
+            raise PermissionDenied
+
+
+class ProductSearchAPIView(APIView):
+    """Product Search API View."""
+
+    serializer_class = ProductSerializer
+
+    schema = CustomAutoSchema(
+        manual_operations=[{"name": "query", "in": "query", "required": True, "schema": {"type": "string"}}],
+        response_schema={"type": "array", "items": {"$ref": "#/components/schemas/Product"}},
+    )
+
+    def get(self, request, **kwargs):
+        """
+        Product Search API View.
+
+        Permission required: orders.can_manage_shift_in_venue
+
+        API endpoint for searching products.
+        A "query" GET parameter should be specified indicating the product or barcode search query.
+        """
+        shift = kwargs.get("shift")
+        query = request.GET.get("query")
+        if request.user.has_perm("orders.can_manage_shift_in_venue", shift.venue):
+            if query is not None:
+                string_query = services.query_product_name(query)
+                barcode_query = services.query_product_barcode(query)
+                all_query = set(string_query)
+                all_query.update(barcode_query)
+                all_query = list(all_query)
+            else:
+                all_query = []
             return Response(
-                status=status.HTTP_200_OK, data=OrderSerializer(order, many=False, context={"request": request}).data
+                status=status.HTTP_200_OK,
+                data=self.serializer_class(all_query, many=True, context={"request": request}).data,
             )
         else:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-    else:
-        raise PermissionDenied
+            raise PermissionDenied
 
 
-@api_view(["PATCH"])
-def order_toggle_ready(request, **kwargs):
-    """
-    Order Toggle Ready API view.
+class ShiftScannerAPIView(APIView):
+    """Shift Scanner API View."""
 
-    Permission required: orders.can_manage_shift_in_venue
+    serializer_class = OrderSerializer
 
-    This toggles the ready option on an Order. Will return the Order object afterwards. If the Order does not exist
-    within the Shift a 404 will be returned.
-    """
-    shift = kwargs.get("shift")
-    order = kwargs.get("order")
-    if request.user.has_perm("orders.can_manage_shift_in_venue", shift.venue):
-        if order in Order.objects.filter(shift=shift):
-            order.ready = not order.ready
-            order.save()
+    schema = CustomAutoSchema(
+        request_schema={"type": "object", "properties": {"barcode": {"type": "string", "example": "string"}}},
+        response_schema={"$ref": "#/components/schemas/Order"},
+    )
+
+    def post(self, request, **kwargs):
+        """
+        Shift Scanner API View.
+
+        Permission required: orders.can_manage_shift_in_venue
+
+        API endpoint for adding a scanned order to a Shift.
+        A "barcode" POST parameter should be specified indicating the barcode of the product to add.
+        """
+        shift = kwargs.get("shift")
+        barcode = request.data.get("barcode", None)
+        if request.user.has_perm("orders.can_manage_shift_in_venue", shift.venue):
+            try:
+                product = Product.objects.get(barcode=barcode, available=True, available_at=shift.venue)
+            except Product.DoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+            order = Order.objects.create(shift=shift, product=product, type=Order.TYPE_SCANNED, paid=True, ready=True)
             return Response(
-                status=status.HTTP_200_OK, data=OrderSerializer(order, many=False, context={"request": request}).data
+                status=status.HTTP_200_OK, data=self.serializer_class(order, context={"request": request}).data
             )
         else:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-    else:
-        raise PermissionDenied
+            raise PermissionDenied
+
+
+class OrderTogglePaidAPIView(APIView):
+    """Order Toggle Paid API View."""
+
+    serializer_class = OrderSerializer
+
+    schema = CustomAutoSchema(response_schema={"$ref": "#/components/schemas/Order"})
+
+    def patch(self, request, **kwargs):
+        """
+        Order Toggle Paid API view.
+
+        Permission required: orders.can_manage_shift_in_venue
+
+        This toggles the paid option on an Order. Will return the Order object afterwards. If the Order does not exist
+        within the Shift a 404 will be returned.
+        """
+        shift = kwargs.get("shift")
+        order = kwargs.get("order")
+        if request.user.has_perm("orders.can_manage_shift_in_venue", shift.venue):
+            if order in Order.objects.filter(shift=shift):
+                order.paid = not order.paid
+                order.save()
+                return Response(
+                    status=status.HTTP_200_OK,
+                    data=self.serializer_class(order, many=False, context={"request": request}).data,
+                )
+            else:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+        else:
+            raise PermissionDenied
+
+
+class OrderToggleReadyAPIView(APIView):
+    """Order Toggle Ready API View."""
+
+    serializer_class = OrderSerializer
+
+    schema = CustomAutoSchema(response_schema={"$ref": "#/components/schemas/Order"})
+
+    def patch(self, request, **kwargs):
+        """
+        Order Toggle Ready API view.
+
+        Permission required: orders.can_manage_shift_in_venue
+
+        This toggles the ready option on an Order. Will return the Order object afterwards. If the Order does not exist
+        within the Shift a 404 will be returned.
+        """
+        shift = kwargs.get("shift")
+        order = kwargs.get("order")
+        if request.user.has_perm("orders.can_manage_shift_in_venue", shift.venue):
+            if order in Order.objects.filter(shift=shift):
+                order.ready = not order.ready
+                order.save()
+                return Response(
+                    status=status.HTTP_200_OK,
+                    data=OrderSerializer(order, many=False, context={"request": request}).data,
+                )
+            else:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+        else:
+            raise PermissionDenied
