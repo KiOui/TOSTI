@@ -15,7 +15,7 @@ class OpenAPISchemaGenerator(SchemaGenerator):
         """
         try:
             return super().has_view_permissions(path, method, view)
-        except AttributeError:
+        except (AttributeError, ValueError):
             return True
 
     def get_schema(self, request=None, public=False):

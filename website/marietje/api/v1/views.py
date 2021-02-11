@@ -10,6 +10,7 @@ from marietje import services
 from marietje.api.v1.pagination import StandardResultsSetPagination
 from marietje.api.v1.serializers import PlayerSerializer, QueueItemSerializer
 from marietje.models import Player, SpotifyQueueItem
+from tosti.api.permissions import HasPermissionOnObject
 from tosti.api.openapi import CustomAutoSchema
 
 
@@ -82,6 +83,12 @@ class PlayerTrackSearchAPIView(APIView):
             },
         },
     )
+    permission_required = "marietje.can_request"
+    permission_classes = [HasPermissionOnObject]
+
+    def get_permission_object(self):
+        """Get the object to check permissions for."""
+        return self.kwargs.get("player")
 
     def get(self, request, **kwargs):
         """
@@ -98,14 +105,12 @@ class PlayerTrackSearchAPIView(APIView):
             maximum = int(request.GET.get("maximum", 5))
         except ValueError:
             maximum = 5
-        if request.user.has_perm("marietje.can_request", player):
-            if query != "":
-                results = services.search_tracks(query, player, maximum)
-            else:
-                results = []
-            return Response(status=status.HTTP_200_OK, data={"query": query, "id": request_id, "results": results})
+
+        if query != "":
+            results = services.search_tracks(query, player, maximum)
         else:
-            raise PermissionDenied
+            results = []
+        return Response(status=status.HTTP_200_OK, data={"query": query, "id": request_id, "results": results})
 
 
 class PlayerTrackAddAPIView(APIView):
@@ -114,6 +119,12 @@ class PlayerTrackAddAPIView(APIView):
     schema = CustomAutoSchema(
         request_schema={"type": "object", "properties": {"id": {"type": "string", "example": "string"}}}
     )
+    permission_required = "marietje.can_request"
+    permission_classes = [HasPermissionOnObject]
+
+    def get_permission_object(self):
+        """Get the object to check permissions for."""
+        return self.kwargs.get("player")
 
     def post(self, request, **kwargs):
         """
@@ -125,94 +136,115 @@ class PlayerTrackAddAPIView(APIView):
         """
         player = kwargs.get("player")
         track_id = request.POST.get("id", None)
-        if request.user.has_perm("marietje.can_request", player):
-            if track_id is not None:
-                try:
-                    services.request_song(request.user, player, track_id)
-                except spotipy.SpotifyException:
-                    return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
-                return Response(status=status.HTTP_200_OK)
-            else:
-                raise ValidationError("A track id is required.")
+        if track_id is not None:
+            try:
+                services.request_song(request.user, player, track_id)
+            except spotipy.SpotifyException:
+                return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+            return Response(status=status.HTTP_200_OK)
         else:
-            raise PermissionDenied
+            raise ValidationError("A track id is required.")
 
 
-@api_view(["PATCH"])
-def player_play(request, **kwargs):
-    """
-    Player Play API View.
+class PlayerPlayAPIView(APIView):
+    """Player Play API View."""
 
-    Permission required: marietje.can_control
+    permission_required = "marietje.can_control"
+    permission_classes = [HasPermissionOnObject]
 
-    Start playback on a Player.
-    """
-    player = kwargs.get("player")
-    if request.user.has_perm("marietje.can_control", player):
+    def get_permission_object(self):
+        """Get the object to check permissions for."""
+        return self.kwargs.get("player")
+
+    def patch(self, request, **kwargs):
+        """
+        Player Play API View.
+
+        Permission required: marietje.can_control
+
+        Start playback on a Player.
+        """
+        player = kwargs.get("player")
         try:
             services.player_start(player)
         except spotipy.SpotifyException:
             return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
         return Response(status=status.HTTP_200_OK)
-    else:
-        raise PermissionDenied
 
 
-@api_view(["PATCH"])
-def player_pause(request, **kwargs):
-    """
-    Player Pause API View.
+class PlayerPauseAPIView(APIView):
+    """Player Pause API View."""
 
-    Permission required: marietje.can_control
+    permission_required = "marietje.can_control"
+    permission_classes = [HasPermissionOnObject]
 
-    Pause playback on a Player.
-    """
-    player = kwargs.get("player")
-    if request.user.has_perm("marietje.can_control", player):
+    def get_permission_object(self):
+        """Get the object to check permissions for."""
+        return self.kwargs.get("player")
+
+    def patch(self, request, **kwargs):
+        """
+        Player Pause API View.
+
+        Permission required: marietje.can_control
+
+        Start playback on a Player.
+        """
+        player = kwargs.get("player")
         try:
             services.player_pause(player)
         except spotipy.SpotifyException:
             return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
         return Response(status=status.HTTP_200_OK)
-    else:
-        raise PermissionDenied
 
 
-@api_view(["PATCH"])
-def player_next(request, **kwargs):
-    """
-    Player Next API View.
+class PlayerNextAPIView(APIView):
+    """Player Next API View."""
 
-    Permission required: marietje.can_control
+    permission_required = "marietje.can_control"
+    permission_classes = [HasPermissionOnObject]
 
-    Skip the current song of a Player.
-    """
-    player = kwargs.get("player")
-    if request.user.has_perm("marietje.can_control", player):
+    def get_permission_object(self):
+        """Get the object to check permissions for."""
+        return self.kwargs.get("player")
+
+    def patch(self, request, **kwargs):
+        """
+        Player Play API View.
+
+        Permission required: marietje.can_control
+
+        Start playback on a Player.
+        """
+        player = kwargs.get("player")
         try:
             services.player_next(player)
         except spotipy.SpotifyException:
             return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
         return Response(status=status.HTTP_200_OK)
-    else:
-        raise PermissionDenied
 
 
-@api_view(["PATCH"])
-def player_previous(request, **kwargs):
-    """
-    Player Previous API View.
+class PlayerPreviousAPIView(APIView):
+    """Player Previous API View."""
 
-    Permission required: marietje.can_control
+    permission_required = "marietje.can_control"
+    permission_classes = [HasPermissionOnObject]
 
-    Go back to the previous song of a Player.
-    """
-    player = kwargs.get("player")
-    if request.user.has_perm("marietje.can_control", player):
+    def get_permission_object(self):
+        """Get the object to check permissions for."""
+        return self.kwargs.get("player")
+
+    def patch(self, request, **kwargs):
+        """
+        Player Previous API View.
+
+        Permission required: marietje.can_control
+
+        Start playback on a Player.
+        """
+        player = kwargs.get("player")
         try:
             services.player_previous(player)
         except spotipy.SpotifyException:
             return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
         return Response(status=status.HTTP_200_OK)
-    else:
-        raise PermissionDenied
