@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>Orders package &mdash; TOSTI  documentation</title>
   
@@ -16,7 +16,10 @@
 
   
   
+
   
+  
+
   
 
   
@@ -29,7 +32,6 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -51,7 +53,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> TOSTI
+            <a href="index.html" class="icon icon-home"> TOSTI
           
 
           
@@ -144,6 +146,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -157,7 +161,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="_sources/orders.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -203,7 +207,7 @@
 <dl class="py attribute">
 <dt id="orders.admin.OrderAdmin.form">
 <code class="sig-name descname">form</code><a class="headerlink" href="#orders.admin.OrderAdmin.form" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <a class="reference internal" href="#orders.admin.OrderAdminForm" title="orders.admin.OrderAdminForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">OrderAdminForm</span></code></a></p>
+<dd><p>alias of <a class="reference internal" href="#orders.admin.OrderAdminForm" title="orders.admin.OrderAdminForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">orders.admin.OrderAdminForm</span></code></a></p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -503,7 +507,7 @@
 <dl class="py attribute">
 <dt id="orders.admin.ShiftAdmin.form">
 <code class="sig-name descname">form</code><a class="headerlink" href="#orders.admin.ShiftAdmin.form" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <a class="reference internal" href="#orders.admin.ShiftAdminForm" title="orders.admin.ShiftAdminForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">ShiftAdminForm</span></code></a></p>
+<dd><p>alias of <a class="reference internal" href="#orders.admin.ShiftAdminForm" title="orders.admin.ShiftAdminForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">orders.admin.ShiftAdminForm</span></code></a></p>
 </dd></dl>
 
 <dl class="py method">
@@ -1597,36 +1601,6 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 <div class="section" id="module-orders.templatetags.order_now">
 <span id="orders-templatetags-module"></span><h2>orders.templatetags module<a class="headerlink" href="#module-orders.templatetags.order_now" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
-<dt id="orders.templatetags.order_now.render_admin_footer">
-<code class="sig-prename descclassname">orders.templatetags.order_now.</code><code class="sig-name descname">render_admin_footer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em>, <em class="sig-param"><span class="n">shift</span></em>, <em class="sig-param"><span class="n">refresh</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.templatetags.order_now.render_admin_footer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Render order footer.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="orders.templatetags.order_now.render_barcode_scanner">
-<code class="sig-prename descclassname">orders.templatetags.order_now.</code><code class="sig-name descname">render_barcode_scanner</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em>, <em class="sig-param"><span class="n">shift</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.templatetags.order_now.render_barcode_scanner" title="Permalink to this definition">¶</a></dt>
-<dd><p>Render shift scanner for shift.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="orders.templatetags.order_now.render_item_overview">
-<code class="sig-prename descclassname">orders.templatetags.order_now.</code><code class="sig-name descname">render_item_overview</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em>, <em class="sig-param"><span class="n">shift</span></em>, <em class="sig-param"><span class="n">refresh</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.templatetags.order_now.render_item_overview" title="Permalink to this definition">¶</a></dt>
-<dd><p>Render item overview.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="orders.templatetags.order_now.render_order_header">
-<code class="sig-prename descclassname">orders.templatetags.order_now.</code><code class="sig-name descname">render_order_header</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em>, <em class="sig-param"><span class="n">shift</span></em>, <em class="sig-param"><span class="n">refresh</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.templatetags.order_now.render_order_header" title="Permalink to this definition">¶</a></dt>
-<dd><p>Render order header.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="orders.templatetags.order_now.render_order_items">
-<code class="sig-prename descclassname">orders.templatetags.order_now.</code><code class="sig-name descname">render_order_items</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em>, <em class="sig-param"><span class="n">shift</span></em>, <em class="sig-param"><span class="n">refresh</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">admin</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">user</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.templatetags.order_now.render_order_items" title="Permalink to this definition">¶</a></dt>
-<dd><p>Render order items.</p>
-</dd></dl>
-
-<dl class="py function">
 <dt id="orders.templatetags.order_now.render_order_now_button">
 <code class="sig-prename descclassname">orders.templatetags.order_now.</code><code class="sig-name descname">render_order_now_button</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">venue</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.templatetags.order_now.render_order_now_button" title="Permalink to this definition">¶</a></dt>
 <dd><p>Render order now button.</p>
@@ -1680,110 +1654,6 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 </div>
 <div class="section" id="module-orders.views">
 <span id="orders-views-module"></span><h2>orders.views module<a class="headerlink" href="#module-orders.views" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt id="orders.views.AddShiftCapacityView">
-<em class="property">class </em><code class="sig-prename descclassname">orders.views.</code><code class="sig-name descname">AddShiftCapacityView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.AddShiftCapacityView" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">guardian.mixins.PermissionRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
-<p>Add shift capacity view.</p>
-<dl class="py attribute">
-<dt id="orders.views.AddShiftCapacityView.accept_global_perms">
-<code class="sig-name descname">accept_global_perms</code><em class="property"> = True</em><a class="headerlink" href="#orders.views.AddShiftCapacityView.accept_global_perms" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="orders.views.AddShiftCapacityView.add_amount">
-<code class="sig-name descname">add_amount</code><em class="property"> = 5</em><a class="headerlink" href="#orders.views.AddShiftCapacityView.add_amount" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="orders.views.AddShiftCapacityView.get_object">
-<code class="sig-name descname">get_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.AddShiftCapacityView.get_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the object for this view.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="orders.views.AddShiftCapacityView.get_permission_object">
-<code class="sig-name descname">get_permission_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.AddShiftCapacityView.get_permission_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the object to check permissions for.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="orders.views.AddShiftCapacityView.permission_required">
-<code class="sig-name descname">permission_required</code><em class="property"> = 'orders.can_manage_shift_in_venue'</em><a class="headerlink" href="#orders.views.AddShiftCapacityView.permission_required" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="orders.views.AddShiftCapacityView.post">
-<code class="sig-name descname">post</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.AddShiftCapacityView.post" title="Permalink to this definition">¶</a></dt>
-<dd><p>POST request for AddShiftCapacityView.</p>
-<p>Add to the capacity of a shift via a POST request
-:param request: the request
-:param kwargs: keyword arguments
-:return: a JsonResponse of the following format:</p>
-<blockquote>
-<div><p>error: False</p>
-</div></blockquote>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="orders.views.AddShiftCapacityView.return_403">
-<code class="sig-name descname">return_403</code><em class="property"> = True</em><a class="headerlink" href="#orders.views.AddShiftCapacityView.return_403" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="orders.views.AddShiftTimeView">
-<em class="property">class </em><code class="sig-prename descclassname">orders.views.</code><code class="sig-name descname">AddShiftTimeView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.AddShiftTimeView" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">guardian.mixins.PermissionRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
-<p>Add shift time view.</p>
-<dl class="py attribute">
-<dt id="orders.views.AddShiftTimeView.accept_global_perms">
-<code class="sig-name descname">accept_global_perms</code><em class="property"> = True</em><a class="headerlink" href="#orders.views.AddShiftTimeView.accept_global_perms" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="orders.views.AddShiftTimeView.add_amount_minutes">
-<code class="sig-name descname">add_amount_minutes</code><em class="property"> = 5</em><a class="headerlink" href="#orders.views.AddShiftTimeView.add_amount_minutes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="orders.views.AddShiftTimeView.get_object">
-<code class="sig-name descname">get_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.AddShiftTimeView.get_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the object for this view.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="orders.views.AddShiftTimeView.get_permission_object">
-<code class="sig-name descname">get_permission_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.AddShiftTimeView.get_permission_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the object to check permissions for.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="orders.views.AddShiftTimeView.permission_required">
-<code class="sig-name descname">permission_required</code><em class="property"> = 'orders.can_manage_shift_in_venue'</em><a class="headerlink" href="#orders.views.AddShiftTimeView.permission_required" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="orders.views.AddShiftTimeView.post">
-<code class="sig-name descname">post</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.AddShiftTimeView.post" title="Permalink to this definition">¶</a></dt>
-<dd><p>POST request for AddShiftTimeView.</p>
-<p>Add to the time of a shift via a POST request
-:param request: the request
-:param kwargs: keyword arguments
-:return: a JsonResponse of the following format:</p>
-<blockquote>
-<div><p>error: False</p>
-</div></blockquote>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="orders.views.AddShiftTimeView.return_403">
-<code class="sig-name descname">return_403</code><em class="property"> = True</em><a class="headerlink" href="#orders.views.AddShiftTimeView.return_403" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
 <dl class="py class">
 <dt id="orders.views.AdminExplainerView">
 <em class="property">class </em><code class="sig-prename descclassname">orders.views.</code><code class="sig-name descname">AdminExplainerView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.AdminExplainerView" title="Permalink to this definition">¶</a></dt>
@@ -1951,94 +1821,6 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="orders.views.OrderRemoveView">
-<em class="property">class </em><code class="sig-prename descclassname">orders.views.</code><code class="sig-name descname">OrderRemoveView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.OrderRemoveView" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">guardian.mixins.PermissionRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
-<p>Order remove view.</p>
-<dl class="py attribute">
-<dt id="orders.views.OrderRemoveView.accept_global_perms">
-<code class="sig-name descname">accept_global_perms</code><em class="property"> = True</em><a class="headerlink" href="#orders.views.OrderRemoveView.accept_global_perms" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="orders.views.OrderRemoveView.get_object">
-<code class="sig-name descname">get_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.OrderRemoveView.get_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the object for this view.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="orders.views.OrderRemoveView.get_permission_object">
-<code class="sig-name descname">get_permission_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.OrderRemoveView.get_permission_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the object to check permissions for.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="orders.views.OrderRemoveView.permission_required">
-<code class="sig-name descname">permission_required</code><em class="property"> = 'orders.can_manage_shift_in_venue'</em><a class="headerlink" href="#orders.views.OrderRemoveView.permission_required" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="orders.views.OrderRemoveView.post">
-<code class="sig-name descname">post</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.OrderRemoveView.post" title="Permalink to this definition">¶</a></dt>
-<dd><p>POST request for OrderRemoveView.</p>
-<p>Remove an order
-:param request: the request
-:param kwargs: keyword arguments
-:return: a json response with an error or success message</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="orders.views.OrderRemoveView.return_403">
-<code class="sig-name descname">return_403</code><em class="property"> = True</em><a class="headerlink" href="#orders.views.OrderRemoveView.return_403" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="orders.views.OrderUpdateView">
-<em class="property">class </em><code class="sig-prename descclassname">orders.views.</code><code class="sig-name descname">OrderUpdateView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.OrderUpdateView" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">guardian.mixins.PermissionRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
-<p>Order update view.</p>
-<dl class="py attribute">
-<dt id="orders.views.OrderUpdateView.accept_global_perms">
-<code class="sig-name descname">accept_global_perms</code><em class="property"> = True</em><a class="headerlink" href="#orders.views.OrderUpdateView.accept_global_perms" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="orders.views.OrderUpdateView.get_object">
-<code class="sig-name descname">get_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.OrderUpdateView.get_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the object for this view.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="orders.views.OrderUpdateView.get_permission_object">
-<code class="sig-name descname">get_permission_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.OrderUpdateView.get_permission_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the object to check permissions for.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="orders.views.OrderUpdateView.permission_required">
-<code class="sig-name descname">permission_required</code><em class="property"> = 'orders.can_manage_shift_in_venue'</em><a class="headerlink" href="#orders.views.OrderUpdateView.permission_required" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="orders.views.OrderUpdateView.post">
-<code class="sig-name descname">post</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.OrderUpdateView.post" title="Permalink to this definition">¶</a></dt>
-<dd><p>POST request for OrderUpdateView.</p>
-<p>Updates the status of an order
-:param request: the request
-:param kwargs: keyword arguments
-:return: a json response with an error or the value of the updated status</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="orders.views.OrderUpdateView.return_403">
-<code class="sig-name descname">return_403</code><em class="property"> = True</em><a class="headerlink" href="#orders.views.OrderUpdateView.return_403" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
 <dt id="orders.views.PlaceOrderView">
 <em class="property">class </em><code class="sig-prename descclassname">orders.views.</code><code class="sig-name descname">PlaceOrderView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.PlaceOrderView" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">guardian.mixins.PermissionRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
@@ -2126,346 +1908,6 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 <dl class="py attribute">
 <dt id="orders.views.PlaceOrderView.template_name">
 <code class="sig-name descname">template_name</code><em class="property"> = 'orders/place_order.html'</em><a class="headerlink" href="#orders.views.PlaceOrderView.template_name" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="orders.views.ProductAddView">
-<em class="property">class </em><code class="sig-prename descclassname">orders.views.</code><code class="sig-name descname">ProductAddView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ProductAddView" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">guardian.mixins.PermissionRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
-<p>Add product view.</p>
-<dl class="py attribute">
-<dt id="orders.views.ProductAddView.accept_global_perms">
-<code class="sig-name descname">accept_global_perms</code><em class="property"> = True</em><a class="headerlink" href="#orders.views.ProductAddView.accept_global_perms" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="orders.views.ProductAddView.get_object">
-<code class="sig-name descname">get_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ProductAddView.get_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the object for this view.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="orders.views.ProductAddView.get_permission_object">
-<code class="sig-name descname">get_permission_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ProductAddView.get_permission_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the object to check permissions for.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="orders.views.ProductAddView.permission_required">
-<code class="sig-name descname">permission_required</code><em class="property"> = 'orders.can_manage_shift_in_venue'</em><a class="headerlink" href="#orders.views.ProductAddView.permission_required" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="orders.views.ProductAddView.post">
-<code class="sig-name descname">post</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ProductAddView.post" title="Permalink to this definition">¶</a></dt>
-<dd><p>POST request for the add product view.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>request</strong> – the request</p></li>
-<li><p><strong>kwargs</strong> – keyword arguments</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>a JsonResponse with the response message</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="orders.views.ProductAddView.return_403">
-<code class="sig-name descname">return_403</code><em class="property"> = True</em><a class="headerlink" href="#orders.views.ProductAddView.return_403" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="orders.views.ProductListView">
-<em class="property">class </em><code class="sig-prename descclassname">orders.views.</code><code class="sig-name descname">ProductListView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ProductListView" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">guardian.mixins.PermissionRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
-<p>Product list view.</p>
-<dl class="py attribute">
-<dt id="orders.views.ProductListView.accept_global_perms">
-<code class="sig-name descname">accept_global_perms</code><em class="property"> = True</em><a class="headerlink" href="#orders.views.ProductListView.accept_global_perms" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="orders.views.ProductListView.get_available_products">
-<em class="property">static </em><code class="sig-name descname">get_available_products</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">shift</span></em>, <em class="sig-param"><span class="n">user</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ProductListView.get_available_products" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get available products for a shift and a user in json format.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>shift</strong> – the shift</p></li>
-<li><p><strong>user</strong> – the user</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>a json list of the products converted to json and an extra dictionary key (max_allowed) indicating</p>
-</dd>
-</dl>
-<p>how many more of the item a user can still order</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="orders.views.ProductListView.get_object">
-<code class="sig-name descname">get_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ProductListView.get_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the object for this view.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="orders.views.ProductListView.get_permission_object">
-<code class="sig-name descname">get_permission_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ProductListView.get_permission_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the object to check permissions for.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="orders.views.ProductListView.permission_required">
-<code class="sig-name descname">permission_required</code><em class="property"> = 'orders.can_order_in_venue'</em><a class="headerlink" href="#orders.views.ProductListView.permission_required" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="orders.views.ProductListView.post">
-<code class="sig-name descname">post</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ProductListView.post" title="Permalink to this definition">¶</a></dt>
-<dd><p>POST request for ProductListView.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>request</strong> – the request</p></li>
-<li><p><strong>kwargs</strong> – keyword arguments</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>a json response with the products a user can order and the shift maximum</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="orders.views.ProductListView.return_403">
-<code class="sig-name descname">return_403</code><em class="property"> = True</em><a class="headerlink" href="#orders.views.ProductListView.return_403" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="orders.views.ProductSearchView">
-<em class="property">class </em><code class="sig-prename descclassname">orders.views.</code><code class="sig-name descname">ProductSearchView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ProductSearchView" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">guardian.mixins.PermissionRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
-<p>Search view.</p>
-<dl class="py attribute">
-<dt id="orders.views.ProductSearchView.accept_global_perms">
-<code class="sig-name descname">accept_global_perms</code><em class="property"> = True</em><a class="headerlink" href="#orders.views.ProductSearchView.accept_global_perms" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="orders.views.ProductSearchView.get_object">
-<code class="sig-name descname">get_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ProductSearchView.get_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the object for this view.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="orders.views.ProductSearchView.get_permission_object">
-<code class="sig-name descname">get_permission_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ProductSearchView.get_permission_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the object to check permissions for.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="orders.views.ProductSearchView.permission_required">
-<code class="sig-name descname">permission_required</code><em class="property"> = 'orders.can_manage_shift_in_venue'</em><a class="headerlink" href="#orders.views.ProductSearchView.permission_required" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="orders.views.ProductSearchView.post">
-<code class="sig-name descname">post</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ProductSearchView.post" title="Permalink to this definition">¶</a></dt>
-<dd><p>POST request for the shift search view.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>request</strong> – the request</p></li>
-<li><p><strong>kwargs</strong> – keyword arguments</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>a JsonResponse with the response message</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="orders.views.ProductSearchView.return_403">
-<code class="sig-name descname">return_403</code><em class="property"> = True</em><a class="headerlink" href="#orders.views.ProductSearchView.return_403" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="orders.views.RefreshAdminFooterView">
-<em class="property">class </em><code class="sig-prename descclassname">orders.views.</code><code class="sig-name descname">RefreshAdminFooterView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.RefreshAdminFooterView" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">guardian.mixins.PermissionRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
-<p>Refresh the administrator footer.</p>
-<dl class="py attribute">
-<dt id="orders.views.RefreshAdminFooterView.accept_global_perms">
-<code class="sig-name descname">accept_global_perms</code><em class="property"> = True</em><a class="headerlink" href="#orders.views.RefreshAdminFooterView.accept_global_perms" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="orders.views.RefreshAdminFooterView.get_object">
-<code class="sig-name descname">get_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.RefreshAdminFooterView.get_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the object for this view.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="orders.views.RefreshAdminFooterView.get_permission_object">
-<code class="sig-name descname">get_permission_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.RefreshAdminFooterView.get_permission_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the object to check permissions for.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="orders.views.RefreshAdminFooterView.permission_required">
-<code class="sig-name descname">permission_required</code><em class="property"> = 'orders.can_manage_shift_in_venue'</em><a class="headerlink" href="#orders.views.RefreshAdminFooterView.permission_required" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="orders.views.RefreshAdminFooterView.post">
-<code class="sig-name descname">post</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.RefreshAdminFooterView.post" title="Permalink to this definition">¶</a></dt>
-<dd><p>POST request for refreshing the admin footer.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>request</strong> – the request</p></li>
-<li><p><strong>kwargs</strong> – keyword arguments</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The footer in the following JSON format:
-status: [shift.can_order]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="orders.views.RefreshAdminFooterView.return_403">
-<code class="sig-name descname">return_403</code><em class="property"> = True</em><a class="headerlink" href="#orders.views.RefreshAdminFooterView.return_403" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="orders.views.RefreshShiftHeaderView">
-<em class="property">class </em><code class="sig-prename descclassname">orders.views.</code><code class="sig-name descname">RefreshShiftHeaderView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.RefreshShiftHeaderView" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
-<p>Refresh for the order header.</p>
-<dl class="py method">
-<dt id="orders.views.RefreshShiftHeaderView.post">
-<code class="sig-name descname">post</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.RefreshShiftHeaderView.post" title="Permalink to this definition">¶</a></dt>
-<dd><p>POST request for refreshing the order header.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>request</strong> – the request</p></li>
-<li><p><strong>kwargs</strong> – keyword arguments</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The header in the following JSON format:
-data: [header]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="orders.views.RefreshShiftHeaderView.template_name">
-<code class="sig-name descname">template_name</code><em class="property"> = 'orders/shift_header.html'</em><a class="headerlink" href="#orders.views.RefreshShiftHeaderView.template_name" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="orders.views.RefreshShiftOrderView">
-<em class="property">class </em><code class="sig-prename descclassname">orders.views.</code><code class="sig-name descname">RefreshShiftOrderView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.RefreshShiftOrderView" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">guardian.mixins.PermissionRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
-<p>Refresh the orders view.</p>
-<dl class="py attribute">
-<dt id="orders.views.RefreshShiftOrderView.accept_global_perms">
-<code class="sig-name descname">accept_global_perms</code><em class="property"> = True</em><a class="headerlink" href="#orders.views.RefreshShiftOrderView.accept_global_perms" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="orders.views.RefreshShiftOrderView.get_object">
-<code class="sig-name descname">get_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.RefreshShiftOrderView.get_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the object for this view.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="orders.views.RefreshShiftOrderView.get_permission_object">
-<code class="sig-name descname">get_permission_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.RefreshShiftOrderView.get_permission_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the object to check permissions for.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="orders.views.RefreshShiftOrderView.permission_required">
-<code class="sig-name descname">permission_required</code><em class="property"> = 'orders.can_order_in_venue'</em><a class="headerlink" href="#orders.views.RefreshShiftOrderView.permission_required" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="orders.views.RefreshShiftOrderView.post">
-<code class="sig-name descname">post</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.RefreshShiftOrderView.post" title="Permalink to this definition">¶</a></dt>
-<dd><p>POST request for refreshing the orders.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>request</strong> – the request</p></li>
-<li><p><strong>kwargs</strong> – keyword arguments</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The orders in the following JSON format:
-data: [orders]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="orders.views.RefreshShiftOrderView.return_403">
-<code class="sig-name descname">return_403</code><em class="property"> = True</em><a class="headerlink" href="#orders.views.RefreshShiftOrderView.return_403" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="orders.views.RefreshShiftOrderView.template_name">
-<code class="sig-name descname">template_name</code><em class="property"> = 'orders/shift_orders.html'</em><a class="headerlink" href="#orders.views.RefreshShiftOrderView.template_name" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="orders.views.RefreshShiftSummaryView">
-<em class="property">class </em><code class="sig-prename descclassname">orders.views.</code><code class="sig-name descname">RefreshShiftSummaryView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.RefreshShiftSummaryView" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
-<p>Refresh for the shift summary.</p>
-<dl class="py method">
-<dt id="orders.views.RefreshShiftSummaryView.post">
-<code class="sig-name descname">post</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.RefreshShiftSummaryView.post" title="Permalink to this definition">¶</a></dt>
-<dd><p>POST request for refreshing the product summary on the shift admin page.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>request</strong> – the request</p></li>
-<li><p><strong>kwargs</strong> – keyword arguments</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The product overview in the following JSON format:
-data: [header]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="orders.views.RefreshShiftSummaryView.template_name">
-<code class="sig-name descname">template_name</code><em class="property"> = 'orders/shift_summary.html'</em><a class="headerlink" href="#orders.views.RefreshShiftSummaryView.template_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -2582,97 +2024,6 @@ data: [header]</p>
 
 </dd></dl>
 
-<dl class="py class">
-<dt id="orders.views.ShiftScannerView">
-<em class="property">class </em><code class="sig-prename descclassname">orders.views.</code><code class="sig-name descname">ShiftScannerView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ShiftScannerView" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">guardian.mixins.PermissionRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
-<p>Scanner view for the shift admin.</p>
-<dl class="py attribute">
-<dt id="orders.views.ShiftScannerView.accept_global_perms">
-<code class="sig-name descname">accept_global_perms</code><em class="property"> = True</em><a class="headerlink" href="#orders.views.ShiftScannerView.accept_global_perms" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="orders.views.ShiftScannerView.get_object">
-<code class="sig-name descname">get_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ShiftScannerView.get_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the object for this view.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="orders.views.ShiftScannerView.get_permission_object">
-<code class="sig-name descname">get_permission_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ShiftScannerView.get_permission_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the object to check permissions for.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="orders.views.ShiftScannerView.permission_required">
-<code class="sig-name descname">permission_required</code><em class="property"> = 'orders.can_manage_shift_in_venue'</em><a class="headerlink" href="#orders.views.ShiftScannerView.permission_required" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="orders.views.ShiftScannerView.post">
-<code class="sig-name descname">post</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ShiftScannerView.post" title="Permalink to this definition">¶</a></dt>
-<dd><p>POST request for the shift scanner view.</p>
-<p>Checks if a barcode exists in the database and adds it if it does.
-:param request: the request
-:param kwargs: keyword arguments
-:return: a JsonResponse with the response message</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="orders.views.ShiftScannerView.return_403">
-<code class="sig-name descname">return_403</code><em class="property"> = True</em><a class="headerlink" href="#orders.views.ShiftScannerView.return_403" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="orders.views.ToggleShiftActivationView">
-<em class="property">class </em><code class="sig-prename descclassname">orders.views.</code><code class="sig-name descname">ToggleShiftActivationView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ToggleShiftActivationView" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">guardian.mixins.PermissionRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
-<p>Toggle the shift activation via a POST request.</p>
-<dl class="py attribute">
-<dt id="orders.views.ToggleShiftActivationView.accept_global_perms">
-<code class="sig-name descname">accept_global_perms</code><em class="property"> = True</em><a class="headerlink" href="#orders.views.ToggleShiftActivationView.accept_global_perms" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="orders.views.ToggleShiftActivationView.get_object">
-<code class="sig-name descname">get_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ToggleShiftActivationView.get_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the object for this view.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="orders.views.ToggleShiftActivationView.get_permission_object">
-<code class="sig-name descname">get_permission_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ToggleShiftActivationView.get_permission_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the object to check permissions for.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="orders.views.ToggleShiftActivationView.permission_required">
-<code class="sig-name descname">permission_required</code><em class="property"> = 'orders.can_manage_shift_in_venue'</em><a class="headerlink" href="#orders.views.ToggleShiftActivationView.permission_required" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="orders.views.ToggleShiftActivationView.post">
-<code class="sig-name descname">post</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ToggleShiftActivationView.post" title="Permalink to this definition">¶</a></dt>
-<dd><p>POST request for ToggleShiftActivationView.</p>
-<p>Toggle the can_order variable of a shift to the value of the “active” parameter in the POST data
-:param request: the request
-:param kwargs: keyword arguments
-:return: a JsonResponse of the following format:</p>
-<blockquote>
-<div><p>active: [shift.can_order]</p>
-</div></blockquote>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="orders.views.ToggleShiftActivationView.return_403">
-<code class="sig-name descname">return_403</code><em class="property"> = True</em><a class="headerlink" href="#orders.views.ToggleShiftActivationView.return_403" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
 </div>
 </div>
 
@@ -2681,37 +2032,29 @@ data: [header]</p>
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="tosti.html" class="btn btn-neutral float-right" title="Tosti package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="marietje.html" class="btn btn-neutral float-left" title="Marietje package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="tosti.html" class="btn btn-neutral float-right" title="Tosti package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="marietje.html" class="btn btn-neutral float-left" title="Marietje package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2020, Tartarus
+        &#169; Copyright 2020, Tartarus.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 

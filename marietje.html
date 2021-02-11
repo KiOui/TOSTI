@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>Marietje package &mdash; TOSTI  documentation</title>
   
@@ -16,7 +16,10 @@
 
   
   
+
   
+  
+
   
 
   
@@ -29,7 +32,6 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -51,7 +53,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> TOSTI
+            <a href="index.html" class="icon icon-home"> TOSTI
           
 
           
@@ -94,7 +96,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#module-marietje.apps">marietje.apps module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-marietje.forms">marietje.forms module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-marietje.models">marietje.models module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-marietje.templatetags.marietje">marietje.templatetags module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#marietje-templatetags-module">marietje.templatetags module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-marietje.urls">marietje.urls module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-marietje.views">marietje.views module</a></li>
 </ul>
@@ -145,6 +147,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -158,7 +162,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="_sources/marietje.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -500,6 +504,21 @@ object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
+<dt id="marietje.models.Player.queue">
+<code class="sig-name descname">queue</code><a class="headerlink" href="#marietje.models.Player.queue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
 <dt id="marietje.models.Player.redirect_uri">
 <code class="sig-name descname">redirect_uri</code><a class="headerlink" href="#marietje.models.Player.redirect_uri" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
@@ -515,21 +534,6 @@ object the first time, the query is executed.</p>
 <dd class="field-odd"><p>a Spotipy Spotify object</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="marietje.models.Player.spotifyqueueitem_set">
-<code class="sig-name descname">spotifyqueueitem_set</code><a class="headerlink" href="#marietje.models.Player.spotifyqueueitem_set" title="Permalink to this definition">¶</a></dt>
-<dd><p>Accessor to the related objects manager on the reverse side of a
-many-to-one relation.</p>
-<p>In the example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
-    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
-<p>Most of the implementation is delegated to a dynamically defined manager
-class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -793,90 +797,14 @@ object the first time, the query is executed.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-marietje.templatetags.marietje">
-<span id="marietje-templatetags-module"></span><h2>marietje.templatetags module<a class="headerlink" href="#module-marietje.templatetags.marietje" title="Permalink to this headline">¶</a></h2>
-<dl class="py function">
-<dt id="marietje.templatetags.marietje.render_player">
-<code class="sig-prename descclassname">marietje.templatetags.marietje.</code><code class="sig-name descname">render_player</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em>, <em class="sig-param"><span class="n">player</span></em>, <em class="sig-param"><span class="n">refresh</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#marietje.templatetags.marietje.render_player" title="Permalink to this definition">¶</a></dt>
-<dd><p>Render queue.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="marietje.templatetags.marietje.render_player_card">
-<code class="sig-prename descclassname">marietje.templatetags.marietje.</code><code class="sig-name descname">render_player_card</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em>, <em class="sig-param"><span class="n">player</span></em><span class="sig-paren">)</span><a class="headerlink" href="#marietje.templatetags.marietje.render_player_card" title="Permalink to this definition">¶</a></dt>
-<dd><p>Render a player in card format.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="marietje.templatetags.marietje.render_players">
-<code class="sig-prename descclassname">marietje.templatetags.marietje.</code><code class="sig-name descname">render_players</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em><span class="sig-paren">)</span><a class="headerlink" href="#marietje.templatetags.marietje.render_players" title="Permalink to this definition">¶</a></dt>
-<dd><p>Render all players in card format.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>context</strong> – needed because the render_player must know the request</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>a dictionary</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="marietje.templatetags.marietje.render_queue_list">
-<code class="sig-prename descclassname">marietje.templatetags.marietje.</code><code class="sig-name descname">render_queue_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">player</span></em>, <em class="sig-param"><span class="n">refresh</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">max_items</span><span class="o">=</span><span class="default_value">10</span></em><span class="sig-paren">)</span><a class="headerlink" href="#marietje.templatetags.marietje.render_queue_list" title="Permalink to this definition">¶</a></dt>
-<dd><p>Render queue.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="marietje.templatetags.marietje.render_venue_player">
-<code class="sig-prename descclassname">marietje.templatetags.marietje.</code><code class="sig-name descname">render_venue_player</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em>, <em class="sig-param"><span class="n">venue</span></em>, <em class="sig-param"><span class="n">refresh</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#marietje.templatetags.marietje.render_venue_player" title="Permalink to this definition">¶</a></dt>
-<dd><p>Render queue.</p>
-</dd></dl>
-
+<div class="section" id="marietje-templatetags-module">
+<h2>marietje.templatetags module<a class="headerlink" href="#marietje-templatetags-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-marietje.urls">
 <span id="marietje-urls-module"></span><h2>marietje.urls module<a class="headerlink" href="#module-marietje.urls" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-marietje.views">
 <span id="marietje-views-module"></span><h2>marietje.views module<a class="headerlink" href="#module-marietje.views" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt id="marietje.views.AddView">
-<em class="property">class </em><code class="sig-prename descclassname">marietje.views.</code><code class="sig-name descname">AddView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#marietje.views.AddView" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">guardian.mixins.PermissionRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
-<p>Add a track to the queue view.</p>
-<dl class="py attribute">
-<dt id="marietje.views.AddView.accept_global_perms">
-<code class="sig-name descname">accept_global_perms</code><em class="property"> = True</em><a class="headerlink" href="#marietje.views.AddView.accept_global_perms" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="marietje.views.AddView.get_object">
-<code class="sig-name descname">get_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#marietje.views.AddView.get_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the object for this view.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="marietje.views.AddView.permission_required">
-<code class="sig-name descname">permission_required</code><em class="property"> = 'marietje.can_request'</em><a class="headerlink" href="#marietje.views.AddView.permission_required" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="marietje.views.AddView.post">
-<code class="sig-name descname">post</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#marietje.views.AddView.post" title="Permalink to this definition">¶</a></dt>
-<dd><p>POST request for AddView.</p>
-<p>Add a track to the Spotify queue
-:param request: the request
-:param kwargs: keyword arguments
-:return: a json response indicating the track has been added to the queue or an error</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="marietje.views.AddView.return_403">
-<code class="sig-name descname">return_403</code><em class="property"> = True</em><a class="headerlink" href="#marietje.views.AddView.return_403" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
 <dl class="py class">
 <dt id="marietje.views.IndexView">
 <em class="property">class </em><code class="sig-prename descclassname">marietje.views.</code><code class="sig-name descname">IndexView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#marietje.views.IndexView" title="Permalink to this definition">¶</a></dt>
@@ -891,44 +819,6 @@ object the first time, the query is executed.</p>
 <dl class="py attribute">
 <dt id="marietje.views.IndexView.template_name">
 <code class="sig-name descname">template_name</code><em class="property"> = 'marietje/index.html'</em><a class="headerlink" href="#marietje.views.IndexView.template_name" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="marietje.views.NextView">
-<em class="property">class </em><code class="sig-prename descclassname">marietje.views.</code><code class="sig-name descname">NextView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#marietje.views.NextView" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">guardian.mixins.PermissionRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
-<p>Next track view.</p>
-<dl class="py attribute">
-<dt id="marietje.views.NextView.accept_global_perms">
-<code class="sig-name descname">accept_global_perms</code><em class="property"> = True</em><a class="headerlink" href="#marietje.views.NextView.accept_global_perms" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="marietje.views.NextView.get_object">
-<code class="sig-name descname">get_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#marietje.views.NextView.get_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the object for this view.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="marietje.views.NextView.permission_required">
-<code class="sig-name descname">permission_required</code><em class="property"> = 'marietje.can_control'</em><a class="headerlink" href="#marietje.views.NextView.permission_required" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="marietje.views.NextView.post">
-<code class="sig-name descname">post</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#marietje.views.NextView.post" title="Permalink to this definition">¶</a></dt>
-<dd><p>POST request for NextView.</p>
-<p>Go to the next track in a Spotify queue
-:param request: the request
-:param kwargs: keyword arguments
-:return: a json response indicating the track has been skipped or an error</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="marietje.views.NextView.return_403">
-<code class="sig-name descname">return_403</code><em class="property"> = True</em><a class="headerlink" href="#marietje.views.NextView.return_403" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -951,190 +841,6 @@ object the first time, the query is executed.</p>
 
 </dd></dl>
 
-<dl class="py class">
-<dt id="marietje.views.PauseView">
-<em class="property">class </em><code class="sig-prename descclassname">marietje.views.</code><code class="sig-name descname">PauseView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#marietje.views.PauseView" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">guardian.mixins.PermissionRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
-<p>Pause playback view.</p>
-<dl class="py attribute">
-<dt id="marietje.views.PauseView.accept_global_perms">
-<code class="sig-name descname">accept_global_perms</code><em class="property"> = True</em><a class="headerlink" href="#marietje.views.PauseView.accept_global_perms" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="marietje.views.PauseView.get_object">
-<code class="sig-name descname">get_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#marietje.views.PauseView.get_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the object for this view.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="marietje.views.PauseView.permission_required">
-<code class="sig-name descname">permission_required</code><em class="property"> = 'marietje.can_control'</em><a class="headerlink" href="#marietje.views.PauseView.permission_required" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="marietje.views.PauseView.post">
-<code class="sig-name descname">post</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#marietje.views.PauseView.post" title="Permalink to this definition">¶</a></dt>
-<dd><p>POST request for PauseView.</p>
-<p>Pause playback on a Spotify queue
-:param request: the request
-:param kwargs: keyword arguments
-:return: a json response indicating playback has paused or an error</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="marietje.views.PauseView.return_403">
-<code class="sig-name descname">return_403</code><em class="property"> = True</em><a class="headerlink" href="#marietje.views.PauseView.return_403" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="marietje.views.PlayView">
-<em class="property">class </em><code class="sig-prename descclassname">marietje.views.</code><code class="sig-name descname">PlayView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#marietje.views.PlayView" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">guardian.mixins.PermissionRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
-<p>Start playback view.</p>
-<dl class="py attribute">
-<dt id="marietje.views.PlayView.accept_global_perms">
-<code class="sig-name descname">accept_global_perms</code><em class="property"> = True</em><a class="headerlink" href="#marietje.views.PlayView.accept_global_perms" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="marietje.views.PlayView.get_object">
-<code class="sig-name descname">get_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#marietje.views.PlayView.get_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the object for this view.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="marietje.views.PlayView.permission_required">
-<code class="sig-name descname">permission_required</code><em class="property"> = 'marietje.can_control'</em><a class="headerlink" href="#marietje.views.PlayView.permission_required" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="marietje.views.PlayView.post">
-<code class="sig-name descname">post</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#marietje.views.PlayView.post" title="Permalink to this definition">¶</a></dt>
-<dd><p>POST request for PlayView.</p>
-<p>Start playback on a Spotify queue
-:param request: the request
-:param kwargs: keyword arguments
-:return: a json response indicating playback has started or an error</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="marietje.views.PlayView.return_403">
-<code class="sig-name descname">return_403</code><em class="property"> = True</em><a class="headerlink" href="#marietje.views.PlayView.return_403" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="marietje.views.PlayerRefreshView">
-<em class="property">class </em><code class="sig-prename descclassname">marietje.views.</code><code class="sig-name descname">PlayerRefreshView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#marietje.views.PlayerRefreshView" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
-<p>Refresh the player.</p>
-<dl class="py method">
-<dt id="marietje.views.PlayerRefreshView.post">
-<code class="sig-name descname">post</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="n">player</span></em><span class="sig-paren">)</span><a class="headerlink" href="#marietje.views.PlayerRefreshView.post" title="Permalink to this definition">¶</a></dt>
-<dd><p>POST request for refreshing the player.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="marietje.views.PlayerRefreshView.render_template">
-<em class="property">static </em><code class="sig-name descname">render_template</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">player</span></em>, <em class="sig-param"><span class="n">request</span></em><span class="sig-paren">)</span><a class="headerlink" href="#marietje.views.PlayerRefreshView.render_template" title="Permalink to this definition">¶</a></dt>
-<dd><p>Render the player template.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="marietje.views.PreviousView">
-<em class="property">class </em><code class="sig-prename descclassname">marietje.views.</code><code class="sig-name descname">PreviousView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#marietje.views.PreviousView" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">guardian.mixins.PermissionRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
-<p>Previous track view.</p>
-<dl class="py attribute">
-<dt id="marietje.views.PreviousView.accept_global_perms">
-<code class="sig-name descname">accept_global_perms</code><em class="property"> = True</em><a class="headerlink" href="#marietje.views.PreviousView.accept_global_perms" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="marietje.views.PreviousView.get_object">
-<code class="sig-name descname">get_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#marietje.views.PreviousView.get_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the object for this view.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="marietje.views.PreviousView.permission_required">
-<code class="sig-name descname">permission_required</code><em class="property"> = 'marietje.can_control'</em><a class="headerlink" href="#marietje.views.PreviousView.permission_required" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="marietje.views.PreviousView.post">
-<code class="sig-name descname">post</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#marietje.views.PreviousView.post" title="Permalink to this definition">¶</a></dt>
-<dd><p>POST request for NextView.</p>
-<p>Go to the previous track in a Spotify queue
-:param request: the request
-:param kwargs: keyword arguments
-:return: a json response indicating the track has been reverted or an error</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="marietje.views.PreviousView.return_403">
-<code class="sig-name descname">return_403</code><em class="property"> = True</em><a class="headerlink" href="#marietje.views.PreviousView.return_403" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="marietje.views.QueueRefreshView">
-<em class="property">class </em><code class="sig-prename descclassname">marietje.views.</code><code class="sig-name descname">QueueRefreshView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#marietje.views.QueueRefreshView" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
-<p>Refresh the queue.</p>
-<dl class="py method">
-<dt id="marietje.views.QueueRefreshView.post">
-<code class="sig-name descname">post</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="n">player</span></em><span class="sig-paren">)</span><a class="headerlink" href="#marietje.views.QueueRefreshView.post" title="Permalink to this definition">¶</a></dt>
-<dd><p>POST request for refreshing the queue.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="marietje.views.SearchView">
-<em class="property">class </em><code class="sig-prename descclassname">marietje.views.</code><code class="sig-name descname">SearchView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#marietje.views.SearchView" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">guardian.mixins.PermissionRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
-<p>Search track view.</p>
-<dl class="py attribute">
-<dt id="marietje.views.SearchView.accept_global_perms">
-<code class="sig-name descname">accept_global_perms</code><em class="property"> = True</em><a class="headerlink" href="#marietje.views.SearchView.accept_global_perms" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="marietje.views.SearchView.get_object">
-<code class="sig-name descname">get_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#marietje.views.SearchView.get_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the object for this view.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="marietje.views.SearchView.permission_required">
-<code class="sig-name descname">permission_required</code><em class="property"> = 'marietje.can_request'</em><a class="headerlink" href="#marietje.views.SearchView.permission_required" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="marietje.views.SearchView.post">
-<code class="sig-name descname">post</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#marietje.views.SearchView.post" title="Permalink to this definition">¶</a></dt>
-<dd><p>POST request for SearchView.</p>
-<p>Search a Spotify track.
-:param request: the request
-:param kwargs: keyword arguments
-:return: a render of the search page with the response to the search query</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="marietje.views.SearchView.return_403">
-<code class="sig-name descname">return_403</code><em class="property"> = True</em><a class="headerlink" href="#marietje.views.SearchView.return_403" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
 </div>
 </div>
 
@@ -1143,37 +849,29 @@ object the first time, the query is executed.</p>
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="orders.html" class="btn btn-neutral float-right" title="Orders package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="modules.html" class="btn btn-neutral float-left" title="Website modules" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="orders.html" class="btn btn-neutral float-right" title="Orders package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="modules.html" class="btn btn-neutral float-left" title="Website modules" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2020, Tartarus
+        &#169; Copyright 2020, Tartarus.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
