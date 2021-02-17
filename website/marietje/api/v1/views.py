@@ -9,8 +9,8 @@ from marietje import services
 from marietje.api.v1.pagination import StandardResultsSetPagination
 from marietje.api.v1.serializers import PlayerSerializer, QueueItemSerializer
 from marietje.models import Player, SpotifyQueueItem
-from tosti.api.permissions import HasPermissionOnObject
 from tosti.api.openapi import CustomAutoSchema
+from tosti.api.permissions import HasPermissionOnObject
 
 
 class PlayerListAPIView(ListAPIView):
@@ -62,7 +62,11 @@ class PlayerTrackSearchAPIView(APIView):
     """Player Track Search API View."""
 
     schema = CustomAutoSchema(
-        manual_operations=[{"name": "query", "in": "query", "required": True, "schema": {"type": "string"}}],
+        manual_operations=[
+            {"name": "query", "in": "query", "required": True, "schema": {"type": "string"}},
+            {"name": "id", "in": "query", "required": False, "schema": {"type": "string"}},
+            {"name": "maximum", "in": "query", "required": False, "schema": {"type": "int"}},
+        ],
         response_schema={
             "type": "object",
             "properties": {
@@ -134,7 +138,7 @@ class PlayerTrackAddAPIView(APIView):
         Use this endpoint to add a spotify track to the queue.
         """
         player = kwargs.get("player")
-        track_id = request.POST.get("id", None)
+        track_id = request.data.get("id", None)
         if track_id is not None:
             try:
                 services.request_song(request.user, player, track_id)
