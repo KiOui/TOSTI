@@ -56,10 +56,3 @@ def copy_order_price(sender, instance, **kwargs):
     else:
         if not instance.product == obj.product:
             instance.order_price = instance.product.current_price
-
-
-@receiver(post_save, sender=Order)
-def update_shift_capacity_can_order(sender, instance, **kwargs):
-    """Update the can_order field from a shift when an order is placed."""
-    shift = instance.shift
-    shift.update_can_order()
