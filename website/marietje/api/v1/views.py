@@ -62,9 +62,11 @@ class PlayerTrackSearchAPIView(APIView):
     """Player Track Search API View."""
 
     schema = CustomAutoSchema(
-        manual_operations=[{"name": "query", "in": "query", "required": True, "schema": {"type": "string"}},
-                           {"name": "id", "in": "query", "required": False, "schema": {"type": "string"}},
-                           {"name": "maximum", "in": "query", "required": False, "schema": {"type": "int"}}],
+        manual_operations=[
+            {"name": "query", "in": "query", "required": True, "schema": {"type": "string"}},
+            {"name": "id", "in": "query", "required": False, "schema": {"type": "string"}},
+            {"name": "maximum", "in": "query", "required": False, "schema": {"type": "int"}},
+        ],
         response_schema={
             "type": "object",
             "properties": {
