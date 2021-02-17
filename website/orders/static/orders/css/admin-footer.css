@@ -7,7 +7,17 @@
     align-items: stretch;
 }
 
+@media screen and (max-width: 992px) {
+    .footer-button-text {
+        display: none;
+    }
+}
+
 @media screen and (max-width: 767px) {
+    .footer-button-text {
+        display: block;
+    }
+
     .expand-mobile {
         flex-basis: unset;
         flex-grow: 0;
@@ -17,5 +27,16 @@
 
     .expand-mobile div {
         display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .expand-mobile div p.font-footer {
+        flex-grow: 0;
+        width: auto;
+    }
+
+    .expand-mobile div p.footer-button-icon {
+        margin-right: 5px;
     }
 }

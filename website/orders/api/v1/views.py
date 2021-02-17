@@ -3,7 +3,8 @@ import datetime
 import pytz
 from django.db.models import Q
 from rest_framework import status
-from rest_framework.exceptions import PermissionDenied, ParseError, ValidationError
+from django.core.exceptions import ValidationError as DjangoValidationError
+from rest_framework.exceptions import PermissionDenied, ParseError, ValidationError as RestValidationError
 from rest_framework.generics import (
     ListCreateAPIView,
     ListAPIView,
@@ -18,7 +19,7 @@ from tosti.api.permissions import HasPermissionOnObject
 from orders.api.v1.serializers import OrderSerializer, ShiftSerializer, ProductSerializer
 from orders.exceptions import OrderException
 from orders.models import Order, Shift, Product
-from orders.services import Cart, place_orders, increase_shift_time, increase_shift_capacity
+from orders.services import Cart, increase_shift_time, increase_shift_capacity, add_user_orders
 from tosti import settings
 from tosti.api.openapi import CustomAutoSchema
 
@@ -53,7 +54,7 @@ class CartOrderAPIView(APIView):
         """
         cart_as_id_list = self.request.data.get("cart", None)
         if cart_as_id_list is None:
-            raise ValidationError
+            raise RestValidationError
 
         try:
             return Cart.from_list(cart_as_id_list)
@@ -75,9 +76,9 @@ class CartOrderAPIView(APIView):
         except ValueError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         try:
-            place_orders(cart.get_item_list(), request.user, shift)
+            add_user_orders(cart.get_item_list(), shift, request.user)
         except OrderException as e:
-            raise ValidationError(e.__str__())
+            return Response(status=status.HTTP_403_FORBIDDEN, data={"detail": e.__str__()})
         return Response(status=status.HTTP_200_OK)
 
 
@@ -129,6 +130,13 @@ class OrderListCreateAPIView(ListCreateAPIView):
             serializer.save(
                 shift=shift, order_type=Order.TYPE_ORDERED, user=self.request.user, paid=False, ready=False
             )
+
+    def create(self, request, *args, **kwargs):
+        """Catch the OrderException that might be thrown by creating a new Order."""
+        try:
+            return super(OrderListCreateAPIView, self).create(request, *args, **kwargs)
+        except OrderException as e:
+            return Response(status=status.HTTP_403_FORBIDDEN, data={"detail": e.__str__()})
 
 
 class OrderRetrieveDestroyAPIView(RetrieveDestroyAPIView):
@@ -248,7 +256,8 @@ class ShiftAddTimeAPIView(APIView):
     """Shift Add Time API View."""
 
     schema = CustomAutoSchema(
-        request_schema={"type": "object", "properties": {"minutes": {"type": "int", "example": "5"}}}
+        request_schema={"type": "object", "properties": {"minutes": {"type": "int", "example": "5"}}},
+        response_schema={"$ref": "#/components/schemas/Shift"}
     )
     permission_required = "orders.can_manage_shift_in_venue"
     permission_classes = [HasPermissionOnObject]
@@ -269,15 +278,19 @@ class ShiftAddTimeAPIView(APIView):
         """
         shift = kwargs.get("shift")
         time_minutes = request.data.get("minutes", 5)
-        increase_shift_time(shift, time_minutes)
-        return Response(status=status.HTTP_200_OK, data=ShiftSerializer(shift, context={"request": request}).data)
+        try:
+            increase_shift_time(shift, time_minutes)
+            return Response(status=status.HTTP_200_OK, data=ShiftSerializer(shift, context={"request": request}).data)
+        except ValueError as e:
+            return Response(status=status.HTTP_403_FORBIDDEN, data={"detail": e.__str__()})
 
 
 class ShiftAddCapacityAPIView(APIView):
     """Shift Add Capacity API View."""
 
     schema = CustomAutoSchema(
-        request_schema={"type": "object", "properties": {"capacity": {"type": "int", "example": "5"}}}
+        request_schema={"type": "object", "properties": {"capacity": {"type": "int", "example": "5"}}},
+        response_schema={"$ref": "#/components/schemas/Shift"}
     )
     permission_required = "orders.can_manage_shift_in_venue"
     permission_classes = [HasPermissionOnObject]
@@ -299,6 +312,39 @@ class ShiftAddCapacityAPIView(APIView):
         shift = kwargs.get("shift")
         time_minutes = request.data.get("capacity", 5)
         increase_shift_capacity(shift, time_minutes)
+        return Response(status=status.HTTP_200_OK, data=ShiftSerializer(shift, context={"request": request}).data)
+
+
+class ShiftFinalizeAPIView(APIView):
+    """Shift Finalize API View."""
+
+    schema = CustomAutoSchema(
+        response_schema={"$ref": "#/components/schemas/Shift"}
+    )
+    permission_required = "orders.can_manage_shift_in_venue"
+    permission_classes = [HasPermissionOnObject]
+
+    def get_permission_object(self):
+        """Get the object to check permissions for."""
+        obj = self.kwargs.get("shift")
+        return obj.venue
+
+    def patch(self, request, **kwargs):
+        """
+        Finalize a Shift.
+
+        Permission required: orders.can_manage_shift_in_venue
+
+        API endpoint for finalizing a Shift.
+        """
+        shift = kwargs.get("shift")
+        if shift.finalized:
+            return Response(status=status.HTTP_403_FORBIDDEN, data={"detail": "Shift was already finalized."})
+        try:
+            shift.finalized = True
+            shift.save()
+        except DjangoValidationError as e:
+            return Response(status=status.HTTP_403_FORBIDDEN, data={"detail": ", ".join(e.messages)})
         return Response(status=status.HTTP_200_OK, data=ShiftSerializer(shift, context={"request": request}).data)
 
 

@@ -1,7 +1,7 @@
+import datetime
 import json
 import logging
-
-import datetime
+from collections import Counter
 from typing import List
 
 from django.utils import timezone
@@ -33,81 +33,134 @@ def execute_data_minimisation(dry_run=False):
     return users
 
 
-def user_can_order_product(user: User, product: Product, shift: Shift):
-    """Check if a user can order products in a certain shift."""
-    if user not in shift.venue.get_users_with_order_perms():
-        raise OrderException("User does not have permissions to order during this shift.")
-    if not shift.user_can_order_amount(user) and not product.ignore_shift_restrictions:
-        raise OrderException("User can not order more products")
-    if not product.user_can_order_amount(user, shift):
-        raise OrderException(f"User can not order more {product.name}")
-    return True
+def add_user_orders(products: [Product], shift: Shift, user: User) -> [Order]:
+    """
+    Add a list of User orders after checking if those orders can be added.
 
+    :param products: A list of Products for which Orders have to be created
+    :param shift: The shift for which the Orders have to be created
+    :param user: The User for which the Orders have to be created
+    :return: A list of created Orders
+    """
+    # Check order permissions
+    if not user.has_perm("orders.can_order_in_venue", shift.venue):
+        raise OrderException("User has no order permission for this Venue.")
 
-def place_orders(products: List[Product], user: User, shift: Shift):
-    """Place orders for a user in a certain shift."""
-    # TODO: It could be that an Order exceeds Order limits after the dry run
+    # Check if Shift is not finalized
+    if shift.finalized:
+        raise OrderException("Shift is finalized, no Orders can be added anymore")
+
+    # Check if Shift is active
+    if not shift.is_active:
+        raise OrderException("Shift is not active")
+
+    # Check if Shift is not closed
+    if not shift.can_order:
+        raise OrderException("This Shift is closed.")
+
+    # Check Shift order maximum while ignoring Products without Shift restrictions
     products_ignore_shift_restrictions = [x for x in products if x.ignore_shift_restrictions]
-
     if not shift.user_can_order_amount(user, amount=len(products) - len(products_ignore_shift_restrictions)):
-        raise OrderException("User can not order that much products in this shift")
+        raise OrderException("User can not order that many products in this shift")
 
-    for product in products:
-        try:
-            add_order(product, shift, Order.TYPE_ORDERED, user=user, dry=True)
-        except OrderException as e:
-            raise e
-
-    for product in products:
-        add_order(product, shift, Order.TYPE_ORDERED, user=user)
-
-
-def add_order(product, shift, order_type, user=None, paid=False, ready=False, force=False, dry=False):
-    """
-    Add an order to a shift.
-
-    :param product: the product for the order
-    :param shift: the shift to add the order to
-    :param order_type: the order type, if this is TYPE_ORDERED a user is needed
-    :param user: the user to add the order to, can be None if the type is not TYPE_ORDERED
-    :param paid: set paid for the new order
-    :param ready: set ready for the new order
-    :param force: skip all checks and force add an order
-    :param dry: do all checks but don't actually add the order
-    :return: Either None if dry=True, an OrderException if the Order can't be added or a new Order object
-    """
-    if not force:
-        # Product checks
+    mapped_product_amounts = Counter(products)
+    for product, amount in mapped_product_amounts.items():
+        # Check Product availability
         if not product.available:
-            raise OrderException(f"Product {product.name} is not available")
-        # Type checks
-        if order_type is Order.TYPE_ORDERED and user is None:
-            raise OrderException("A user is needed for items that have the 'TYPE_ORDERED' type.")
-        # User limit checks
-        if user is not None and user_can_order_product(user, product, shift):
-            pass
-        # Shift checks
-        if not shift.can_order:
-            raise OrderException("This shift is closed.")
-        if not shift.is_active:
-            raise OrderException("This shift is not active")
+            raise OrderException("This product is not available")
 
-    if not dry:
-        return Order.objects.create(
-            product=product,
-            shift=shift,
-            type=order_type,
-            user=user,
-            user_association=user.profile.association if user is not None else None,
-            paid=paid,
-            ready=ready,
-            order_price=product.current_price,
-        )
+        # Check Product-Shift availability
+        if shift.venue not in product.available_at.all():
+            raise OrderException("This Product is not available in this Shift")
+
+        # Check per-Product order maximum
+        if not product.user_can_order_amount(user, shift, amount=amount):
+            raise OrderException("User can not order {} {} for this shift".format(product, amount))
+
+    return [Order.objects.create(product=product,
+                                 shift=shift,
+                                 type=Order.TYPE_ORDERED,
+                                 user=user,
+                                 user_association=user.profile.association,) for product in products]
 
 
-def has_already_ordered_in_shift(user: User, shift: Shift):
-    """Check if a user has already ordered in a shift."""
-    return Order.objects.filter(user=user, shift=shift).count() > 0
+def add_scanned_order(product: Product, shift: Shift, ready=True, paid=True) -> Order:
+    """
+    Add a single Scanned Order (of type TYPE_SCANNED).
+
+    :param product: A Product for which an Order has to be created
+    :param shift: The shift for which the Orders have to be created
+    :param ready: Whether or not the Order should be directly made ready
+    :param paid: Whether or not the Order should be directly made paid
+    :return: The created Order
+    """
+    # Check if Shift is not finalized
+    if shift.finalized:
+        raise OrderException("Shift is finalized, no Orders can be added anymore")
+
+    # Check if Shift is active
+    if not shift.is_active:
+        raise OrderException("Shift is not active")
+
+    # Check Product availability
+    if not product.available:
+        raise OrderException("This Product is not available")
+
+    # Check Product-Shift availability
+    if shift.venue not in product.available_at.all():
+        raise OrderException("This Product is not available in this Shift")
+
+    return Order.objects.create(product=product, shift=shift, type=Order.TYPE_SCANNED, user=None, user_association=None,
+                                ready=ready, paid=paid)
+
+
+def add_user_order(product: Product, shift: Shift, user: User) -> Order:
+    """
+    Add a single Order (of type TYPE_ORDERED).
+
+    :param product: A Product for which an Order has to be created
+    :param shift: The shift for which the Orders have to be created
+    :param user: The User for which the Orders have to be created
+    :return: The created Order
+    """
+    # Check order permissions
+    if not user.has_perm("orders.can_order_in_venue", shift.venue):
+        raise OrderException("User has no order permission for this Venue.")
+
+    # Check if Shift is not finalized
+    if shift.finalized:
+        raise OrderException("Shift is finalized, no Orders can be added anymore")
+
+    # Check if Shift is active
+    if not shift.is_active:
+        raise OrderException("Shift is not active")
+
+    # Check if Shift is not closed
+    if not shift.can_order:
+        raise OrderException("This Shift is closed.")
+
+    # Check Shift order maximum while ignoring Products without Shift restrictions
+    if not shift.user_can_order_amount(user, amount=1):
+        raise OrderException("User can not order that many products in this shift")
+
+    # Check Product availability
+    if not product.available:
+        raise OrderException("This product is not available")
+
+    # Check Product-Shift availability
+    if shift.venue not in product.available_at.all():
+        raise OrderException("This Product is not available in this Shift")
+
+    # Check per-Product order maximum
+    if not product.user_can_order_amount(user, shift, amount=1):
+        raise OrderException("User can not order {} {} for this shift".format(product, 1))
+
+    return Order.objects.create(product=product,
+                                shift=shift,
+                                type=Order.TYPE_ORDERED,
+                                user=user,
+                                user_association=user.profile.association,
+                                )
 
 
 def add_user_to_assignees_of_shift(user, shift: Shift):
