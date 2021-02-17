@@ -134,7 +134,7 @@ class PlayerTrackAddAPIView(APIView):
         Use this endpoint to add a spotify track to the queue.
         """
         player = kwargs.get("player")
-        track_id = request.POST.get("id", None)
+        track_id = request.data.get("id", None)
         if track_id is not None:
             try:
                 services.request_song(request.user, player, track_id)
