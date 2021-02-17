@@ -5,7 +5,7 @@ from spotipy import SpotifyException
 
 from django.utils import timezone
 
-from marietje.models import (
+from thaliedje.models import (
     SpotifyArtist,
     SpotifyTrack,
     SpotifyQueueItem,

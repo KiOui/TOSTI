@@ -46,7 +46,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('track_id', models.CharField(max_length=256, unique=True)),
                 ('track_name', models.CharField(max_length=1024)),
-                ('track_artists', models.ManyToManyField(to='marietje.SpotifyArtist')),
+                ('track_artists', models.ManyToManyField(to='thaliedje.SpotifyArtist')),
             ],
         ),
         migrations.CreateModel(
@@ -54,9 +54,9 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('added', models.DateTimeField(auto_now_add=True)),
-                ('player', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='marietje.Player')),
+                ('player', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='thaliedje.Player')),
                 ('requested_by', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='users.User')),
-                ('track', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='marietje.SpotifyTrack')),
+                ('track', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='thaliedje.SpotifyTrack')),
             ],
             options={
                 'ordering': ['-added'],

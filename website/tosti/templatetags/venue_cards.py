@@ -1,6 +1,6 @@
 from django import template
 
-from marietje.models import Player
+from thaliedje.models import Player
 from orders.models import OrderVenue
 
 register = template.Library()

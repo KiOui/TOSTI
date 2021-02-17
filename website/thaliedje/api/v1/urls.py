@@ -1,5 +1,5 @@
 from django.urls import path, register_converter
-from marietje.api.v1.views import (
+from thaliedje.api.v1.views import (
     PlayerListAPIView,
     PlayerRetrieveAPIView,
     PlayerQueueListAPIView,
@@ -10,7 +10,7 @@ from marietje.api.v1.views import (
     PlayerPlayAPIView,
     PlayerPauseAPIView,
 )
-from marietje.converters import PlayerConverter
+from thaliedje.converters import PlayerConverter
 
 register_converter(PlayerConverter, "player")
 

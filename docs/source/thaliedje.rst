@@ -1,7 +1,7 @@
-Marietje package
+Thaliedje package
 =================
 
-.. automodule:: marietje
+.. automodule:: thaliedje
    :members:
    :undoc-members:
    :show-inheritance:
@@ -9,65 +9,65 @@ Marietje package
 Spotipy
 -------
 
-The Marietje package uses spotipy_ for the connection to Spotify_. Note that the spotipy package uses caching files for
+The Thaliedje package uses spotipy_ for the connection to Spotify_. Note that the spotipy package uses caching files for
 caching the Spotify OAuth2 tokens. When using the default settings, a ``cache`` folder will be created in the
 ``website`` folder storing these caching files.
 
 Submodules
 ----------
 
-marietje.admin module
+thaliedje.admin module
 ----------------------
 
-.. automodule:: marietje.admin
+.. automodule:: thaliedje.admin
    :members:
    :undoc-members:
    :show-inheritance:
 
-marietje.apps module
+thaliedje.apps module
 ---------------------
 
-.. automodule:: marietje.apps
+.. automodule:: thaliedje.apps
    :members:
    :undoc-members:
    :show-inheritance:
 
-marietje.forms module
+thaliedje.forms module
 ----------------------
 
-.. automodule:: marietje.forms
+.. automodule:: thaliedje.forms
    :members:
    :undoc-members:
    :show-inheritance:
 
-marietje.models module
+thaliedje.models module
 -----------------------
 
-.. automodule:: marietje.models
+.. automodule:: thaliedje.models
    :members:
    :undoc-members:
    :show-inheritance:
 
-marietje.templatetags module
+thaliedje.templatetags module
 ----------------------------
 
-.. automodule:: marietje.templatetags.marietje
+.. automodule:: thaliedje.templatetags.v
    :members:
    :undoc-members:
    :show-inheritance:
 
-marietje.urls module
+thaliedje.urls module
 ---------------------
 
-.. automodule:: marietje.urls
+.. automodule:: thaliedje.urls
    :members:
    :undoc-members:
    :show-inheritance:
 
-marietje.views module
+thaliedje.views module
 ----------------------
 
-.. automodule:: marietje.views
+.. automodule:: thaliedje.views
    :members:
    :undoc-members:
    :show-inheritance:

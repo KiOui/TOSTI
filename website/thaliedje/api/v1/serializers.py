@@ -1,6 +1,6 @@
 from users.api.v1.serializers import UserRelatedField
 from rest_framework import serializers
-from marietje import models
+from thaliedje import models
 
 
 class TrackSerializer(serializers.ModelSerializer):
