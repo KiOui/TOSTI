@@ -60,7 +60,7 @@
                 </div>
                 <div v-if="!shift.finalized" class="col expand-mobile">
                     <div class="h-100 btn-ml m-auto cursor-pointer bg-danger"
-                         onclick="if (confirm('Do you really want to finialize this Shift? Finalizing a Shift will make it read-only, this action can not be reverted!')) {patch('{% url "v1:shifts_finalize" shift=shift %}', {}, function(data) {console.log('ran'); admin_footer_vue_{{ shift.id }}.shift = data; toastr.success('Shift finalized succesfully'); update_update_list();}, show_error_from_api);}">
+                         onclick="if (confirm('Do you really want to finialize this Shift? Finalizing a Shift will make it read-only, this action can not be reverted!')) {patch('{% url "v1:shifts_finalize" shift=shift %}', {}, function(data) {admin_footer_vue_{{ shift.id }}.shift = data; toastr.success('Shift finalized succesfully'); update_update_list();}, show_error_from_api);}">
                         <p class="font-footer flex-fixed footer-button-icon"><i class="fas fa-times-circle"></i></p>
                         <p class="font-footer footer-button-text">Finalize shift</p>
                     </div>
