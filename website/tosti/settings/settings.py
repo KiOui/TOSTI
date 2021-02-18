@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     "users",
     "venues",
-    "marietje",
+    "thaliedje",
     "orders",
     "associations",
     "oauth2_provider",

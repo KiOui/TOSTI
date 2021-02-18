@@ -14,7 +14,7 @@ class Player(models.Model):
     """
     Player model for Spotify players.
 
-    Marietje can be authorized to access multiple Spotify accounts via the Spotify API.
+    Thaliedje can be authorized to access multiple Spotify accounts via the Spotify API.
     The Spotify account model contains data of the authorized accounts. Each account can
     be added to a venue to provide a music player for that venue. This expects a Spotify
     client (playback device) is playing in that venue. Communciation happens via the
@@ -134,14 +134,14 @@ class Player(models.Model):
 
     def get_absolute_url(self):
         """Get the front-end url for a Player."""
-        return reverse("marietje:now_playing", args=[self.venue])
+        return reverse("thaliedje:now_playing", args=[self.venue])
 
     def get_users_with_request_permissions(self):
         """Get users that have the permission to request songs for this player."""
         users = []
         for user in User.objects.all():
             if self in get_objects_for_user(
-                user, "marietje.can_request", accept_global_perms=True, with_superuser=True
+                user, "thaliedje.can_request", accept_global_perms=True, with_superuser=True
             ):
                 users.append(user)
         return users
@@ -151,7 +151,7 @@ class Player(models.Model):
         users = []
         for user in User.objects.all():
             if self in get_objects_for_user(
-                user, "marietje.can_control", accept_global_perms=True, with_superuser=True
+                user, "thaliedje.can_control", accept_global_perms=True, with_superuser=True
             ):
                 users.append(user)
         return users

@@ -1,6 +1,6 @@
 {% load static %}
 
-<link rel="stylesheet" href="{% static 'marietje/css/search.css' %}"/>
+<link rel="stylesheet" href="{% static 'thaliedje/css/search.css' %}"/>
 <div id="player-search-container-{{ player.id }}">
     <input v-model="query" id="search" type="text" maxlength="100" placeholder="Search a track" class="container-fluid"/>
     <div id="results" class="px-3 bg-light">
@@ -51,4 +51,4 @@
         },
     });
 </script>
-<script src="{% static 'marietje/js/asynch-search.js' %}"></script>
+<script src="{% static 'thaliedje/js/asynch-search.js' %}"></script>

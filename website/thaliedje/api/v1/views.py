@@ -5,10 +5,10 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from marietje import services
-from marietje.api.v1.pagination import StandardResultsSetPagination
-from marietje.api.v1.serializers import PlayerSerializer, QueueItemSerializer
-from marietje.models import Player, SpotifyQueueItem
+from thaliedje import services
+from thaliedje.api.v1.pagination import StandardResultsSetPagination
+from thaliedje.api.v1.serializers import PlayerSerializer, QueueItemSerializer
+from thaliedje.models import Player, SpotifyQueueItem
 from tosti.api.openapi import CustomAutoSchema
 from tosti.api.permissions import HasPermissionOnObject
 
@@ -86,7 +86,7 @@ class PlayerTrackSearchAPIView(APIView):
             },
         },
     )
-    permission_required = "marietje.can_request"
+    permission_required = "thaliedje.can_request"
     permission_classes = [HasPermissionOnObject]
 
     def get_permission_object(self):
@@ -97,7 +97,7 @@ class PlayerTrackSearchAPIView(APIView):
         """
         Search for a Spotify track.
 
-        Permission required: marietje.can_request
+        Permission required: thaliedje.can_request
 
         Use this endpoint to search for a Spotify Track. Tracks can be searched via their Spotify id.
         """
@@ -122,7 +122,7 @@ class PlayerTrackAddAPIView(APIView):
     schema = CustomAutoSchema(
         request_schema={"type": "object", "properties": {"id": {"type": "string", "example": "string"}}}
     )
-    permission_required = "marietje.can_request"
+    permission_required = "thaliedje.can_request"
     permission_classes = [HasPermissionOnObject]
 
     def get_permission_object(self):
@@ -133,7 +133,7 @@ class PlayerTrackAddAPIView(APIView):
         """
         Add a Spotify Track to the queue.
 
-        Permission required: marietje.can_request
+        Permission required: thaliedje.can_request
 
         Use this endpoint to add a spotify track to the queue.
         """
@@ -152,7 +152,7 @@ class PlayerTrackAddAPIView(APIView):
 class PlayerPlayAPIView(APIView):
     """Player Play API View."""
 
-    permission_required = "marietje.can_control"
+    permission_required = "thaliedje.can_control"
     permission_classes = [HasPermissionOnObject]
 
     def get_permission_object(self):
@@ -163,7 +163,7 @@ class PlayerPlayAPIView(APIView):
         """
         Player Play API View.
 
-        Permission required: marietje.can_control
+        Permission required: thaliedje.can_control
 
         Start playback on a Player.
         """
@@ -178,7 +178,7 @@ class PlayerPlayAPIView(APIView):
 class PlayerPauseAPIView(APIView):
     """Player Pause API View."""
 
-    permission_required = "marietje.can_control"
+    permission_required = "thaliedje.can_control"
     permission_classes = [HasPermissionOnObject]
 
     def get_permission_object(self):
@@ -189,7 +189,7 @@ class PlayerPauseAPIView(APIView):
         """
         Player Pause API View.
 
-        Permission required: marietje.can_control
+        Permission required: thaliedje.can_control
 
         Start playback on a Player.
         """
@@ -204,7 +204,7 @@ class PlayerPauseAPIView(APIView):
 class PlayerNextAPIView(APIView):
     """Player Next API View."""
 
-    permission_required = "marietje.can_control"
+    permission_required = "thaliedje.can_control"
     permission_classes = [HasPermissionOnObject]
 
     def get_permission_object(self):
@@ -215,7 +215,7 @@ class PlayerNextAPIView(APIView):
         """
         Player Play API View.
 
-        Permission required: marietje.can_control
+        Permission required: thaliedje.can_control
 
         Start playback on a Player.
         """
@@ -230,7 +230,7 @@ class PlayerNextAPIView(APIView):
 class PlayerPreviousAPIView(APIView):
     """Player Previous API View."""
 
-    permission_required = "marietje.can_control"
+    permission_required = "thaliedje.can_control"
     permission_classes = [HasPermissionOnObject]
 
     def get_permission_object(self):
@@ -241,7 +241,7 @@ class PlayerPreviousAPIView(APIView):
         """
         Player Previous API View.
 
-        Permission required: marietje.can_control
+        Permission required: thaliedje.can_control
 
         Start playback on a Player.
         """

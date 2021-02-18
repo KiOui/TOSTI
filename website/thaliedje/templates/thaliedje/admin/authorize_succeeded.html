@@ -1,8 +1,8 @@
 {% extends 'admin/base_site.html' %}
 
 {% block content %}
-    <h1> Spotify Authorization</h1>
+    <h1>Spotify Authorization</h1>
     <p>Authorization finished successfully! You have now added authorization for the account <strong>{{ username }}</strong>.</p>
-    <p>Now make sure to complete configuration by selecting a playback device and optionally a venue in <a href="{% url "admin:marietje_player_change" spotify.id %}">here</a>.</p>
+    <p>Now make sure to complete configuration by selecting a playback device and optionally a venue in <a href="{% url "admin:thaliedje_player_change" spotify.id %}">here</a>.</p>
     <p>Also, don't forget to grant the correct permissions to users and groups for this player!</p>
 {% endblock %}

@@ -3,8 +3,8 @@ from django.shortcuts import redirect
 from django.urls import path, register_converter
 from guardian.admin import GuardedModelAdmin
 
-from marietje.converters import PlayerConverter
-from marietje.admin_views import (
+from thaliedje.converters import PlayerConverter
+from thaliedje.admin_views import (
     SpofityAuthorizeView,
     SpotifyTokenView,
     SpotifyAuthorizeSucceededView,
@@ -27,7 +27,7 @@ class PlayerAdmin(GuardedModelAdmin):
     view_on_site = True
 
     def get_configured(self, obj):
-        """Get whether a Player player is configured."""
+        """Get whether a Player  is configured."""
         return obj.configured
 
     get_configured.short_description = "Configured"

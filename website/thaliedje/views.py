@@ -6,9 +6,9 @@ COOKIE_CLIENT_ID = "client_id"
 
 
 class IndexView(TemplateView):
-    """Index view for marietje."""
+    """Index view for thaliedje."""
 
-    template_name = "marietje/index.html"
+    template_name = "thaliedje/index.html"
 
     def get(self, request, **kwargs):
         """GET an overview of all players."""
@@ -18,7 +18,7 @@ class IndexView(TemplateView):
 class NowPlayingView(TemplateView):
     """Now playing view with the player for a venue."""
 
-    template_name = "marietje/now_playing.html"
+    template_name = "thaliedje/now_playing.html"
 
     def get(self, request, *args, **kwargs):
         """GET the player for a venue."""
