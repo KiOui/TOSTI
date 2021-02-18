@@ -77,11 +77,16 @@ def add_user_orders(products: [Product], shift: Shift, user: User) -> [Order]:
         if not product.user_can_order_amount(user, shift, amount=amount):
             raise OrderException("User can not order {} {} for this shift".format(product, amount))
 
-    return [Order.objects.create(product=product,
-                                 shift=shift,
-                                 type=Order.TYPE_ORDERED,
-                                 user=user,
-                                 user_association=user.profile.association,) for product in products]
+    return [
+        Order.objects.create(
+            product=product,
+            shift=shift,
+            type=Order.TYPE_ORDERED,
+            user=user,
+            user_association=user.profile.association,
+        )
+        for product in products
+    ]
 
 
 def add_scanned_order(product: Product, shift: Shift, ready=True, paid=True) -> Order:
@@ -110,8 +115,9 @@ def add_scanned_order(product: Product, shift: Shift, ready=True, paid=True) -> 
     if shift.venue not in product.available_at.all():
         raise OrderException("This Product is not available in this Shift")
 
-    return Order.objects.create(product=product, shift=shift, type=Order.TYPE_SCANNED, user=None, user_association=None,
-                                ready=ready, paid=paid)
+    return Order.objects.create(
+        product=product, shift=shift, type=Order.TYPE_SCANNED, user=None, user_association=None, ready=ready, paid=paid
+    )
 
 
 def add_user_order(product: Product, shift: Shift, user: User) -> Order:
@@ -155,12 +161,9 @@ def add_user_order(product: Product, shift: Shift, user: User) -> Order:
     if not product.user_can_order_amount(user, shift, amount=1):
         raise OrderException("User can not order {} {} for this shift".format(product, 1))
 
-    return Order.objects.create(product=product,
-                                shift=shift,
-                                type=Order.TYPE_ORDERED,
-                                user=user,
-                                user_association=user.profile.association,
-                                )
+    return Order.objects.create(
+        product=product, shift=shift, type=Order.TYPE_ORDERED, user=user, user_association=user.profile.association,
+    )
 
 
 def add_user_to_assignees_of_shift(user, shift: Shift):

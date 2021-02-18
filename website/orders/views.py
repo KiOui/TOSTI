@@ -1,14 +1,10 @@
-import json
 
 from django.views.generic import TemplateView
 from guardian.mixins import PermissionRequiredMixin
 
 from orders import services
-from orders.exceptions import OrderException
 from django.shortcuts import render, redirect
-from .models import Product
 from .forms import CreateShiftForm
-import urllib.parse
 
 
 class ShiftOverviewView(PermissionRequiredMixin, TemplateView):
@@ -210,11 +206,7 @@ class PlaceOrderView(PermissionRequiredMixin, TemplateView):
         """
         shift = kwargs.get("shift")
 
-        return render(
-            request,
-            self.template_name,
-            {"shift": shift},
-        )
+        return render(request, self.template_name, {"shift": shift},)
 
     def get_permission_object(self):
         """Get the object to check permissions for."""

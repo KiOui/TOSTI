@@ -96,3 +96,9 @@ if os.environ.get("DJANGO_SPOTIFY_CACHE_PATH"):
     SPOTIFY_CACHE_PATH = os.environ.get("DJANGO_SPOTIFY_CACHE_PATH")
 else:
     SPOTIFY_CACHE_PATH = os.path.join(BASE_DIR, "cache")  # noqa
+
+if os.environ.get("TANTALUS_ENDPOINT_URL"):
+    TANTALUS_ENDPOINT_URL = os.environ.get("TANTALUS_ENDPOINT_URL")
+    TANTALUS_USERNAME = os.environ.get("TANTALUS_USERNAME")
+    TANTALUS_PASSWORD = os.environ.get("TANTALUS_PASSWORD")
+    TANTALUS_ENDPOINT_ID = os.environ.get("TANTALUS_ENDPOINT_ID")

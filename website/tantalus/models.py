@@ -8,3 +8,7 @@ class TantalusProduct(models.Model):
 
     product = models.OneToOneField(Product, on_delete=models.CASCADE, blank=False, null=False)
     tantalus_id = models.PositiveIntegerField(blank=False, null=False)
+
+    def __str__(self):
+        """Convert to string."""
+        return "Tantalus Product for {} with id {}".format(self.product, self.tantalus_id)

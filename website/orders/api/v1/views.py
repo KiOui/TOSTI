@@ -257,7 +257,7 @@ class ShiftAddTimeAPIView(APIView):
 
     schema = CustomAutoSchema(
         request_schema={"type": "object", "properties": {"minutes": {"type": "int", "example": "5"}}},
-        response_schema={"$ref": "#/components/schemas/Shift"}
+        response_schema={"$ref": "#/components/schemas/Shift"},
     )
     permission_required = "orders.can_manage_shift_in_venue"
     permission_classes = [HasPermissionOnObject]
@@ -290,7 +290,7 @@ class ShiftAddCapacityAPIView(APIView):
 
     schema = CustomAutoSchema(
         request_schema={"type": "object", "properties": {"capacity": {"type": "int", "example": "5"}}},
-        response_schema={"$ref": "#/components/schemas/Shift"}
+        response_schema={"$ref": "#/components/schemas/Shift"},
     )
     permission_required = "orders.can_manage_shift_in_venue"
     permission_classes = [HasPermissionOnObject]
@@ -318,9 +318,7 @@ class ShiftAddCapacityAPIView(APIView):
 class ShiftFinalizeAPIView(APIView):
     """Shift Finalize API View."""
 
-    schema = CustomAutoSchema(
-        response_schema={"$ref": "#/components/schemas/Shift"}
-    )
+    schema = CustomAutoSchema(response_schema={"$ref": "#/components/schemas/Shift"})
     permission_required = "orders.can_manage_shift_in_venue"
     permission_classes = [HasPermissionOnObject]
 
