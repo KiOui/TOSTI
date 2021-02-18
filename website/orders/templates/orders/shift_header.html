@@ -1,5 +1,5 @@
 <div class="container-sm mb-2 text-center" id="shift-header-container-{{ shift.id }}">
-    <h1>{{ shift.venue.venue.name }}</h1><i class="fas fa-cog"></i><i class="fas fa-users"></i>
+    <h1>{{ shift.venue.venue.name }}</h1>
     <p class="my-4 mx-auto" style="font-size: 1rem; max-width: 400px;">
         shift #{{ shift.pk }} - <% shift.amount_of_orders %>/<% shift.max_orders_total %> - <% start_end_time %><br>
         <template v-if="shift.assignees && shift.assignees.length > 0">

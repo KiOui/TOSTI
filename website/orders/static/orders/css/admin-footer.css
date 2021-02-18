@@ -4,6 +4,8 @@
 }
 
 #footer-menu {
+    max-height: 70vh;
+    overflow: scroll;
     align-items: stretch;
 }
 

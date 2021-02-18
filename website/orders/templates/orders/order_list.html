@@ -36,16 +36,16 @@
                         <div v-if="!shift.finalized" class="button-row">
                             <template v-if="order.type === 0">
                                 <input v-if="order.paid" type="button" class="checkbox-paid btn mr-2 btn-success"
-                                       :onclick="`patch('/api/v1/shifts/{{ shift.id }}/orders/${order.id}/paid', {}, function(data) {update_update_list()});`"
+                                       :onclick="`patch('/api/v1/shifts/{{ shift.id }}/orders/${order.id}/paid', {}, function(data) {update_update_list()}, function(data) {toastr.error('Failed to toggle paid of order.')});`"
                                        value="Paid"/>
                                 <input v-else type="button" class="checkbox-paid btn mr-2 btn-danger"
-                                       :onclick="`patch('/api/v1/shifts/{{ shift.id }}/orders/${order.id}/paid', {}, function(data) {update_update_list()});`"
+                                       :onclick="`patch('/api/v1/shifts/{{ shift.id }}/orders/${order.id}/paid', {}, function(data) {update_update_list()}, function(data) {toastr.error('Failed to toggle paid of order.')});`"
                                        value="Paid"/>
                                 <input v-if="order.ready" type="button" class="checkbox-ready btn btn-success"
-                                       :onclick="`patch('/api/v1/shifts/{{ shift.id }}/orders/${order.id}/ready', {}, function(data) {update_update_list()});`"
+                                       :onclick="`patch('/api/v1/shifts/{{ shift.id }}/orders/${order.id}/ready', {}, function(data) {update_update_list()}, function(data) {toastr.error('Failed to toggle ready of order.')});`"
                                        value="Ready"/>
                                 <input v-else type="button" class="checkbox-ready btn btn-danger"
-                                       :onclick="`patch('/api/v1/shifts/{{ shift.id }}/orders/${order.id}/ready', {}, function(data) {update_update_list()});`"
+                                       :onclick="`patch('/api/v1/shifts/{{ shift.id }}/orders/${order.id}/ready', {}, function(data) {update_update_list()}, function(data) {toastr.error('Failed to toggle ready of order.')});`"
                                        value="Ready"/>
                             </template>
                             <template v-else>

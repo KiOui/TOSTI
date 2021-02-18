@@ -28,7 +28,7 @@ def render_place_order_button(context, shift):
 def render_order_now_buttons_active_shifts(context, shifts=None):
     """Render order now buttons for all active shifts."""
     if shifts is None:
-        shifts = Shift.objects.filter(start_date__lte=timezone.now(), end_date__gte=timezone.now(),).order_by(
+        shifts = Shift.objects.filter(start_date__lte=timezone.now(), end_date__gte=timezone.now(), finalized=False).order_by(
             "start_date", "venue__venue__name"
         )
 
