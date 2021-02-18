@@ -4,7 +4,7 @@ Website modules
 .. toctree::
    :maxdepth: 4
 
-   marietje
+   thaliedje
    orders
    tosti
    users
