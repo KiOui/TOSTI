@@ -479,7 +479,8 @@ class Shift(models.Model):
 
     def _make_finalized(self):
         """Make this Shift ready to be finalized."""
-        self.end_date = datetime.now()
+        timezone = pytz.timezone(settings.TIME_ZONE)
+        self.end_date = timezone.localize(datetime.now())
         self.can_order = False
 
     @property
@@ -492,7 +493,7 @@ class Shift(models.Model):
         """
         return False not in [x.done for x in self.orders if x.type != Order.TYPE_SCANNED]
 
-    def check_configuration(self):
+    def _clean(self):
         """
         Check the configuration of a Shift on clean or save.
 
@@ -506,10 +507,13 @@ class Shift(models.Model):
         if old_instance is not None and old_instance.finalized and not self.finalized:
             # Shift was already finalized so can't be un-finalized
             raise ValidationError({"finalized": "A finalized shift can not be un-finalized."})
+        elif old_instance is not None and old_instance.finalized and self.finalized:
+            # Shift was already finalized and is still finalized but something else changed
+            raise ValidationError("A finalized shift can not be changed")
         elif old_instance is not None and not old_instance.finalized and self.finalized:
             # Shift was not finalized yet but will be made finalized now
             if not self.shift_done:
-                raise ValidationError({"finalized": "Shift can't be finalized if not all Orders are ready and done"})
+                raise ValidationError({"finalized": "Shift can't be finalized if not all Orders are paid and ready"})
 
         if self.end_date <= self.start_date:
             raise ValidationError({"end_date": "End date cannot be before start date."})
@@ -529,12 +533,12 @@ class Shift(models.Model):
 
     def clean(self):
         """Clean a Shift."""
-        self.check_configuration()
+        self._clean()
         return super(Shift, self).clean()
 
     def save(self, *args, **kwargs):
         """Save a Shift."""
-        self.check_configuration()
+        self._clean()
         try:
             old_instance = Shift.objects.get(id=self.id)
         except Shift.DoesNotExist:

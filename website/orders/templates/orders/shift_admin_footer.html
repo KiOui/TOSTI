@@ -3,131 +3,34 @@
 <link rel="stylesheet" href="{% static 'orders/css/admin-footer.css' %}"/>
 
 <div id="admin-footer-wrapper-{{ shift.id }}">
+    <!-- Admin footer -->
     <footer class="page-footer navbar navbar-expand-md fixed-bottom" id="shift-footer-container-{{ shift.id }}">
-        <!-- Admin footer for small displays (modal) -->
-        <div class="container text-center d-flex d-md-none flex-column w-100 small-footer">
-            <div class="modal d-md-none" aria-modal="true"
-                 data-backdrop="false" id="footer-menu-modal-{{ shift.id }}">
-                <div class="d-flex align-items-center flex-row min-vh-100">
-                    <div class="modal-dialog" style="flex-grow: 1; background-color: rgba(232, 179, 101, 1); margin: 0;">
-                        <div class="modal-content" style="background: transparent; border: none;">
-                            <div class="modal-header" style="border: none; color: white;">
-                                <button style="color: white;" aria-label="Close" class="close" data-dismiss="modal"
-                                        type="button">x
-                                </button>
-                            </div>
-                            <div class="modal-body d-flex flex-column justify-content-center align-items-center">
-                                <template v-if="!shift.finalized">
-                                    <div class="col expand-mobile">
-                                        <div v-if="shift.can_order" :id="`shift-status-${shift.id}`"
-                                             class="h-100 btn-ml m-auto cursor-pointer bg-success"
-                                             onclick="patch('{% url "v1:shift_retrieveupdate" pk=shift.pk %}', {'can_order': false}, function(data) {admin_footer_vue_{{ shift.id }}.shift = data; update_update_list();});">
-                                            <p class="font-footer flex-fixed footer-button-icon"><i
-                                                    class="far fa-hand-paper"></i>
-                                            </p>
-                                            <p class="font-footer footer-button-text">Allow/disallow</p>
-                                        </div>
-                                        <div v-else :id="`shift-status-${shift.id}`"
-                                             class="h-100 btn-ml m-auto cursor-pointer bg-danger"
-                                             onclick="patch('{% url "v1:shift_retrieveupdate" pk=shift.pk %}', {'can_order': true}, function(data) {admin_footer_vue_{{ shift.id }}.shift = data; update_update_list();});">
-                                            <p class="font-footer flex-fixed footer-button-icon"><i
-                                                    class="far fa-hand-paper"></i>
-                                            </p>
-                                            <p class="font-footer footer-button-text">Allow/disallow</p>
-                                        </div>
-                                    </div>
-                                    <div class="col expand-mobile">
-                                        <div class="h-100 btn-ml btn-on m-auto"
-                                             onclick="patch('{% url "v1:shifts_add_time" shift=shift %}', {}, function(data) {admin_footer_vue_{{ shift.id }}.shift = data; toastr.success('Added 5 minutes to the end of this shift'); update_update_list();});">
-                                            <p class="font-footer flex-fixed footer-button-icon"><i
-                                                    class="far fa-clock"></i> + 5
-                                            </p>
-                                            <p class="font-footer footer-button-text">Extend time</p>
-                                        </div>
-                                    </div>
-                                    <div class="col expand-mobile">
-                                        <div class="h-100 btn-ml btn-on m-auto"
-                                             onclick="patch('{% url "v1:shifts_add_capacity" shift=shift %}', {}, function(data) {admin_footer_vue_{{ shift.id }}.shift = data; toastr.success('Added 5 capacity to this shift'); update_update_list();});">
-                                            <p class="font-footer flex-fixed footer-button-icon"><i
-                                                    class="fas fa-list"></i> + 5</p>
-                                            <p class="font-footer footer-button-text">Add orders</p>
-                                        </div>
-                                    </div>
-                                    <div class="col expand-mobile">
-                                        <div class="h-100 btn-ml btn-on m-auto" data-toggle="modal"
-                                             data-target="#scanner-popup">
-                                            <p class="font-footer flex-fixed footer-button-icon"><i
-                                                    class="fas fa-barcode"></i></p>
-                                            <p class="font-footer footer-button-text">Barcode scanner</p>
-                                        </div>
-                                    </div>
-                                </template>
-                                <div class="col expand-mobile">
-                                    <a href="{% url "orders:shift_overview" shift=shift %}">
-                                        <div class="h-100 btn-ml btn-on m-auto w-100">
-                                            <p class="font-footer flex-fixed footer-button-icon"><i
-                                                    class="fas fa-users"></i></p>
-                                            <p class="font-footer footer-button-text">Order page</p>
-                                        </div>
-                                    </a>
-                                </div>
-                                <div class="col expand-mobile">
-                                    <a href="{% url "admin:orders_shift_change" shift.id %}">
-                                        <div class="h-100 btn-ml btn-on m-auto w-100">
-                                            <p class="font-footer flex-fixed footer-button-icon"><i
-                                                    class="fas fa-cog"></i></p>
-                                            <p class="font-footer footer-button-text">Settings</p>
-                                        </div>
-                                    </a>
-                                </div>
-                                <div v-if="!shift.finalized" class="col expand-mobile">
-                                    <div class="h-100 btn-ml m-auto cursor-pointer bg-danger" data-toggle="modal"
-                                         data-target="#scanner-popup">
-                                        <p class="font-footer flex-fixed footer-button-icon"><i
-                                                class="fas fa-times-circle"></i></p>
-                                        <p class="font-footer footer-button-text">Finalize shift</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <button id="footer-toggler" class="navbar-toggler m-auto" style="border: 0" type="button"
-                    data-toggle="modal"
-                    data-target="#footer-menu-modal-{{ shift.id }}">
-                <i class="fas fa-caret-up text-white"></i>
-            </button>
-        </div>
-
-        <!-- Admin footer for large displays -->
-        <div class="container text-center large-footer">
-            <div class="row flex-grow-1 d-none d-md-flex" id="footer-menu-{{ shift.id }}">
+        <div class="container text-center">
+            <div class="row flex-grow-1 navbar-collapse collapse" id="footer-menu">
                 <template v-if="!shift.finalized">
                     <div class="col expand-mobile">
                         <div v-if="shift.can_order" :id="`shift-status-${shift.id}`"
                              class="h-100 btn-ml m-auto cursor-pointer bg-success"
-                             onclick="patch('{% url "v1:shift_retrieveupdate" pk=shift.pk %}', {'can_order': false}, function(data) {admin_footer_vue_{{ shift.id }}.shift = data; update_update_list();});">
+                             onclick="patch('{% url "v1:shift_retrieveupdate" pk=shift.pk %}', {'can_order': false}, function(data) {admin_footer_vue_{{ shift.id }}.shift = data; update_update_list();}, show_error_from_api);">
                             <p class="font-footer flex-fixed footer-button-icon"><i class="far fa-hand-paper"></i></p>
                             <p class="font-footer footer-button-text">Allow/disallow</p>
                         </div>
-                        <div v-else :id="`shift-status-${shift.id}`"
-                             class="h-100 btn-ml m-auto cursor-pointer bg-danger"
-                             onclick="patch('{% url "v1:shift_retrieveupdate" pk=shift.pk %}', {'can_order': true}, function(data) {admin_footer_vue_{{ shift.id }}.shift = data; update_update_list();});">
+                        <div v-else :id="`shift-status-${shift.id}`" class="h-100 btn-ml m-auto cursor-pointer bg-danger"
+                             onclick="patch('{% url "v1:shift_retrieveupdate" pk=shift.pk %}', {'can_order': true}, function(data) {admin_footer_vue_{{ shift.id }}.shift = data; update_update_list();}, show_error_from_api);">
                             <p class="font-footer flex-fixed footer-button-icon"><i class="far fa-hand-paper"></i></p>
                             <p class="font-footer footer-button-text">Allow/disallow</p>
                         </div>
                     </div>
                     <div class="col expand-mobile">
                         <div class="h-100 btn-ml btn-on m-auto"
-                             onclick="patch('{% url "v1:shifts_add_time" shift=shift %}', {}, function(data) {admin_footer_vue_{{ shift.id }}.shift = data; toastr.success('Added 5 minutes to the end of this shift'); update_update_list();});">
+                             onclick="patch('{% url "v1:shifts_add_time" shift=shift %}', {}, function(data) {admin_footer_vue_{{ shift.id }}.shift = data; toastr.success('Added 5 minutes to the end of this shift'); update_update_list();}, show_error_from_api);">
                             <p class="font-footer flex-fixed footer-button-icon"><i class="far fa-clock"></i> + 5</p>
                             <p class="font-footer footer-button-text">Extend time</p>
                         </div>
                     </div>
                     <div class="col expand-mobile">
                         <div class="h-100 btn-ml btn-on m-auto"
-                             onclick="patch('{% url "v1:shifts_add_capacity" shift=shift %}', {}, function(data) {admin_footer_vue_{{ shift.id }}.shift = data; toastr.success('Added 5 capacity to this shift'); update_update_list();});">
+                             onclick="patch('{% url "v1:shifts_add_capacity" shift=shift %}', {}, function(data) {admin_footer_vue_{{ shift.id }}.shift = data; toastr.success('Added 5 capacity to this shift'); update_update_list();}, show_error_from_api);">
                             <p class="font-footer flex-fixed footer-button-icon"><i class="fas fa-list"></i> + 5</p>
                             <p class="font-footer footer-button-text">Add orders</p>
                         </div>
@@ -156,13 +59,18 @@
                     </a>
                 </div>
                 <div v-if="!shift.finalized" class="col expand-mobile">
-                    <div class="h-100 btn-ml m-auto cursor-pointer bg-danger" data-toggle="modal"
-                         data-target="#scanner-popup">
+                    <div class="h-100 btn-ml m-auto cursor-pointer bg-danger"
+                         onclick="if (confirm('Do you really want to finialize this Shift? Finalizing a Shift will make it read-only, this action can not be reverted!')) {patch('{% url "v1:shifts_finalize" shift=shift %}', {}, function(data) {console.log('ran'); admin_footer_vue_{{ shift.id }}.shift = data; toastr.success('Shift finalized succesfully'); update_update_list();}, show_error_from_api);}">
                         <p class="font-footer flex-fixed footer-button-icon"><i class="fas fa-times-circle"></i></p>
                         <p class="font-footer footer-button-text">Finalize shift</p>
                     </div>
                 </div>
             </div>
+            <button id="footer-toggler" class="navbar-toggler m-auto" style="border: 0" type="button"
+                    data-toggle="collapse"
+                    data-target="#footer-menu">
+                <i class="fas fa-caret-up text-white"></i>
+            </button>
         </div>
     </footer>
 </div>
