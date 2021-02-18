@@ -25,5 +25,5 @@ class TantalusProductAdminForm(forms.ModelForm):
             self.fields["tantalus_id"] = forms.IntegerField(
                 min_value=1,
                 help_text="Could not retrieve data from Tantalus, you are still able to enter the Tantalus id "
-                          "yourself. Check the logs for more information.",
+                "yourself. Check the logs for more information.",
             )
