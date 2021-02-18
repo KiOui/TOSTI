@@ -82,7 +82,9 @@ def search_tracks(query, player, maximum=5):
         logging.error(e)
         raise e
 
-    result = sorted(result["tracks"]["items"], key=lambda x: -x["popularity"])
+    # Filter out None values as the Spotipy library might return None for data it can't decode
+    result = [x for x in result["tracks"]["items"] if x is not None]
+    result = sorted(result, key=lambda x: -x["popularity"])
     trimmed_result = [{"name": x["name"], "artists": [y["name"] for y in x["artists"]], "id": x["id"]} for x in result]
     return trimmed_result
 
