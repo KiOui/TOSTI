@@ -100,3 +100,14 @@ Setting a venue is easy, just select the venue from the dropdown list and it wil
 3. Using the playback functions
 
 If everything went well, a Spotify player is displayed on the `/Marietje/index` page. Administrators are able to play/pause and skip or revert songs, normal users are not. If you open the Spotify player, a search view is displayed and the recent items added to the queue. The search view can be used to search tracks on Spotify. The queue displays only tracks added via Marietje, as there is currently no way to request the queue from a Spotify playback device.
+
+### Tantalus
+
+The `tantalus` module is used to synchronize Orders to a [Tantalus](https://github.com/thijsmie/tantalus) instance. The following (Docker environment) settings must be set in order for synchronization to work:
+
+- `TANTALUS_ENDPOINT_URL`: the endpoint of the Tantalus client, usually ending with `/poscl/`
+- `TANTALUS_USERNAME`: the username of the account that is used to log into Tantalus
+- `TANTALUS_PASSWORD`: the password of the account that is used to log into Tantalus
+- `TANTALUS_ENDPOINT_ID`: the endpoint id to use when registering orders in Tantalus
+
+Order registration will happen once a `Shift` is made finalized for all `Product` objects with a registered `TantalusProduct` object.
