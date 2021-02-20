@@ -1,0 +1,92 @@
+:root {
+    --background-color: #ffffff;
+    --background-shade: #dddddd;
+    --background-shade-light: #f7f7f7;
+
+    --button-background: #000000;
+    --button-contrast: #ffffff;
+    --button-hover-background: #ffffff;
+    --button-hover-contrast: #000000;
+
+    --card-background: #ffffff;
+    --card-background-shade: rgba(0, 0, 0, 0.03);
+    --card-background-contrast: #000000;
+
+    --title-color: #000000;
+    --sub-title-color: #dddddd;
+    --link-color: #007bff;
+    --text-color: #000000;
+
+    --nav-background-color: #e8b365;
+    --nav-link-color: #ffffff;
+    --nav-link-hover-color: rgba(255,255,255,0.75);
+
+    --footer-background-color: #e8b365;
+    --footer-text-color: #ffffff;
+
+    --primary: #e8b365;
+    --primary-shade: #c8831e;
+    --primary-contrast: #ffffff;
+    --primary-contrast-hover: #dddddd;
+
+    --secondary: #000000;
+    --secondary-hover: #212121;
+    --secondary-contrast: #ffffff;
+
+    --success: #28a745;
+    --success-hover: #218838;
+    --success-contrast: #ffffff;
+    --warning: #ffc107;
+    --warning-hover: #e0a800;
+    --warning-contrast: #ffffff;
+    --danger: #dc3545;
+    --danger-hover: #c82333;
+    --danger-contrast: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background-color: #404040;
+        --background-shade: #404040;
+        --background-shade-light: #696969;
+
+        --button-background: #000000;
+        --button-contrast: #ffffff;
+        --button-hover-background: #ffffff;
+        --button-hover-contrast: #000000;
+
+        --card-background: #696969;
+        --card-background-shade: #404040;
+        --card-background-contrast: #ffffff;
+
+        --title-color: #000000;
+        --sub-title-color: #dddddd;
+        --link-color: #007bff;
+        --text-color: #ffffff;
+
+        --nav-background-color: #e8b365;
+        --nav-link-color: #ffffff;
+
+        --footer-background-color: #e8b365;
+        --footer-text-color: #ffffff;
+
+        --primary: #e8b365;
+        --primary-hover: #c8831e;
+        --primary-contrast: #ffffff;
+        --primary-contrast-hover: #dddddd;
+
+        --secondary: #000000;
+        --secondary-hover: #212121;
+        --secondary-contrast: #ffffff;
+
+        --success: #28a745;
+        --success-hover: #218838;
+        --success-contrast: #ffffff;
+        --warning: #ffc107;
+        --warning-hover: #e0a800;
+        --warning-contrast: #ffffff;
+        --danger: #dc3545;
+        --danger-hover: #c82333;
+        --danger-contrast: #ffffff;
+    }
+}
