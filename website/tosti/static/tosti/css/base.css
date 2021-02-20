@@ -103,11 +103,11 @@ p.btn-note {
 }
 
 .card-header {
-    background-color: var(--card-background);
+    background-color: var(--card-background-shade);
 }
 
 .card-body {
-    background-color: var(--card-background-shade);
+    background-color: var(--card-background);
 }
 
 .card-footer {
