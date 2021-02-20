@@ -1,14 +1,26 @@
+@import "variables.css";
+
 body {
     font-family: 'Neucha', cursive;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+a {
+    color: var(--link-color);
 }
 
 .site-header, .page-footer {
-    background-color: rgba(232, 179, 101, 1);
-    color: white;
+    background-color: var(--nav-background-color);
+    color: var(--nav-link-color);
 }
 
 .navbar-expand-md .navbar-nav .nav-link {
-    color: white;
+    color: var(--nav-link-color);
+}
+
+.navbar-expand-md .navbar-nav .nav-link:hover {
+    color: var(--nav-link-hover-color);
 }
 
 .navbar-toggler {
@@ -32,24 +44,29 @@ h1 {
     text-align: center;
     font-size: 3rem
 }
+
 h2 {
     letter-spacing: 4px;
     text-align: center;
     font-size: 2.5rem;
 }
+
 h3 {
     letter-spacing: 4px;
     text-align: center;
     font-size: 2rem
 }
+
 h4 {
     text-align: center;
     font-size: 1.75rem
 }
+
 h5 {
     text-align: center;
     font-size: 1.5rem
 }
+
 h6 {
     text-align: center;
     font-size: 1rem
@@ -65,10 +82,6 @@ p.btn-note {
     font-size: .8rem
 }
 
-footer a {
-    color: #ffffff;
-}
-
 .tosti-title {
     letter-spacing: 20px;
 }
@@ -82,6 +95,72 @@ footer a {
 .drop-out-header-mobile {
     position: absolute;
     margin-top: -20px;
+}
+
+.card {
+    background-color: var(--card-background);
+    color: var(--card-background-contrast);
+}
+
+.card-header, .modal-header {
+    background-color: var(--card-background-shade);
+}
+
+.card-body, .modal-body {
+    background-color: var(--card-background);
+}
+
+.card-footer, .modal-footer {
+    background-color: var(--card-background-shade);
+}
+
+.close {
+    color: var(--text-color);
+}
+
+.btn-ml {
+    display: block;
+    padding: 10px;
+    max-width: 400px;
+    margin: 40px auto;
+    width: 100%;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    text-align: center;
+    text-decoration: none !important;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+.btn-on:hover {
+    background-color: var(--button-hover-background);
+    color: var(--button-hover-contrast);
+    border-color: var(--button-hover-border-color);
+}
+
+.btn-ml h2 {
+    width: 100%;
+    text-align: center;
+}
+
+.btn-ml p {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 0;
+}
+
+.btn-on {
+    border: 1px solid var(--button-border-color);
+    background-color: var(--button-background);
+    color: var(--button-contrast);
+    cursor: pointer;
+}
+
+.btn-off {
+    border: 1px solid var(--background-shade-light);
+    background-color: var(--background-shade-light);
+    color: var(--text-color);
 }
 
 @media screen and (max-width: 767px) {

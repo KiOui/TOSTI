@@ -1,10 +1,6 @@
 {% extends 'tosti/base.html' %}
 {% load static order_now %}
 
-{% block styles %}
-    <link rel="stylesheet" href="{% static 'tosti/css/index.css' %}"/>
-{% endblock %}
-
 {% block page %}
     {% include 'orders/shift_header.html' with shift=shift %}
     <div class="container-sm" id="orders-container">
