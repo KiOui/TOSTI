@@ -8,7 +8,6 @@ on:
 
 env:
   DOCKER_IMAGE: docker.pkg.github.com/kioui/tosti/tosti:latest
-  DOCKER_TAG_PRODUCTION: docker.pkg.github.com/kioui/tosti/tosti:${{ github.sha }}
 
 jobs:
   build-docker:
@@ -31,10 +30,7 @@ jobs:
       - name: "Build Docker image"
         run: |
             docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 --build-arg commit_hash=\"${{ github.sha }}\" --tag "${DOCKER_IMAGE}" .
-            docker buildx build --load -t "${DOCKER_LATEST}" .
+            docker buildx build --load -t "${DOCKER_IMAGE}" .
 
       - name: "Tag and Publish Docker image"
-        run: |
-            docker tag "${DOCKER_IMAGE}" "${DOCKER_TAG_PRODUCTION}"
-            docker push "${DOCKER_TAG_PRODUCTION}"
-            docker push "${DOCKER_IMAGE}"
+        run: docker push "${DOCKER_IMAGE}"
