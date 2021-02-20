@@ -168,6 +168,8 @@ class ShiftAdminView(PermissionRequiredMixin, TemplateView):
         :return: the Shift admin view page for seeing the current orders of a shift and modifying it
         """
         shift = kwargs.get("shift")
+        if request.user not in shift.get_assignees():
+            return redirect("orders:shift_join", shift=shift)
 
         return render(
             request,

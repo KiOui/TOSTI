@@ -14,6 +14,7 @@ from orders.api.v1.views import (
     OrderTogglePaidAPIView,
     OrderToggleReadyAPIView,
     ShiftFinalizeAPIView,
+    JoinShiftAPIView,
 )
 from orders.converters import ShiftConverter, OrderConverter
 
@@ -38,4 +39,5 @@ urlpatterns = [
     path("shifts/<shift:shift>/products", ProductListAPIView.as_view(), name="product_list"),
     path("shifts/<shift:shift>/search", ProductSearchAPIView.as_view(), name="product_search"),
     path("shifts/<shift:shift>/finalize", ShiftFinalizeAPIView.as_view(), name="shifts_finalize"),
+    path("shifts/<shift:shift>/join", JoinShiftAPIView.as_view(), name="join_shift"),
 ]
