@@ -281,7 +281,7 @@ class ShiftAddTimeAPIView(APIView):
         try:
             increase_shift_time(shift, time_minutes)
             return Response(status=status.HTTP_200_OK, data=ShiftSerializer(shift, context={"request": request}).data)
-        except ValueError as e:
+        except DjangoValidationError as e:
             return Response(status=status.HTTP_403_FORBIDDEN, data={"detail": e.__str__()})
 
 
@@ -310,9 +310,12 @@ class ShiftAddCapacityAPIView(APIView):
         Optionally a "capacity" PATCH parameter can be set indicating how many capacity should be added.
         """
         shift = kwargs.get("shift")
-        time_minutes = request.data.get("capacity", 5)
-        increase_shift_capacity(shift, time_minutes)
-        return Response(status=status.HTTP_200_OK, data=ShiftSerializer(shift, context={"request": request}).data)
+        capacity = request.data.get("capacity", 5)
+        try:
+            increase_shift_capacity(shift, capacity)
+            return Response(status=status.HTTP_200_OK, data=ShiftSerializer(shift, context={"request": request}).data)
+        except DjangoValidationError as e:
+            return Response(status=status.HTTP_403_FORBIDDEN, data={"detail": e.__str__()})
 
 
 class ShiftFinalizeAPIView(APIView):
