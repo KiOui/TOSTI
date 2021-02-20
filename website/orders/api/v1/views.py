@@ -341,7 +341,11 @@ class ShiftFinalizeAPIView(APIView):
 
     schema = CustomAutoSchema(response_schema={"$ref": "#/components/schemas/Shift"})
     permission_required = "orders.can_manage_shift_in_venue"
-    permission_classes = [HasPermissionOnObject]
+    permission_classes = [HasPermissionOnObject, IsOnBakersList]
+
+    def get_shift(self):
+        """Get Shift."""
+        return self.kwargs.get("shift")
 
     def get_permission_object(self):
         """Get the object to check permissions for."""

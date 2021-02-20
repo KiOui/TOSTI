@@ -18,29 +18,29 @@ class TantalusClient:
         self.endpoint_url = endpoint_url
         session = requests.session()
 
-        r = session.post(self.login_url, json={"username": username, "password": password})
         try:
+            r = session.post(self.login_url, json={"username": username, "password": password})
             r.raise_for_status()
-        except requests.HTTPError as e:
+        except (requests.HTTPError, requests.ConnectionError) as e:
             raise TantalusException(e)
 
         self._session = session
 
     def get_products(self):
         """Get all registered Tantalus products."""
-        r = self._session.get(self.products_url)
         try:
+            r = self._session.get(self.products_url)
             r.raise_for_status()
-        except requests.HTTPError as e:
+        except (requests.HTTPError, requests.ConnectionError) as e:
             raise TantalusException(e)
         return [{"name": x["name"], "id": x["id"]} for x in r.json()["products"]]
 
     def get_endpoints(self):
         """Get all registered Tantalus endpoints."""
-        r = self._session.get(self.endpoints_url)
         try:
+            r = self._session.get(self.endpoints_url)
             r.raise_for_status()
-        except requests.HTTPError as e:
+        except (requests.HTTPError, requests.ConnectionError) as e:
             raise TantalusException(e)
         return [{"name": x["name"], "id": x["id"]} for x in r.json()["endpoints"]]
 
@@ -51,7 +51,7 @@ class TantalusClient:
                 self.sell_url, json={"product": product.tantalus_id, "endpoint": endpoint_id, "amount": amount}
             )
             r.raise_for_status()
-        except requests.HTTPError as e:
+        except (requests.HTTPError, requests.ConnectionError) as e:
             raise TantalusException(
                 "The following error occurred while registering TantalusProduct {} with amount {}: {}".format(
                     product, amount, e
