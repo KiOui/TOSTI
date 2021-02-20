@@ -14,13 +14,14 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from orders import services
-from tosti.api.permissions import HasPermissionOnObject
+from orders.api.v1.permissions import IsOnBakersList
 from orders.api.v1.serializers import OrderSerializer, ShiftSerializer, ProductSerializer
 from orders.exceptions import OrderException
 from orders.models import Order, Shift, Product
 from orders.services import Cart, place_orders, increase_shift_time, increase_shift_capacity
 from tosti import settings
 from tosti.api.openapi import CustomAutoSchema
+from tosti.api.permissions import HasPermissionOnObject
 
 
 class CartOrderAPIView(APIView):
@@ -109,7 +110,7 @@ class OrderListCreateAPIView(ListCreateAPIView):
         """
         Perform the creation of a new Order.
 
-        Permission required: orders.can_manage_shift_in_venue
+        Permission required: orders.can_manage_shift_in_venue and user in shift assignees
 
         This method actually checks if the user has manage permissions in the shift and else ignores the order_type,
         paid and ready fields.
@@ -119,7 +120,10 @@ class OrderListCreateAPIView(ListCreateAPIView):
         :rtype: None
         """
         shift = self.kwargs.get("shift")
-        if self.request.user.has_perm("orders.can_manage_shift_in_venue", shift.venue):
+        if (
+            self.request.user.has_perm("orders.can_manage_shift_in_venue", shift.venue)
+            and self.request.user in shift.get_assignees()
+        ):
             # Save the order as it was passed to the API as the user has permission to save orders for all users in
             # the shift
             serializer.save(shift=shift, user=self.request.user)
@@ -147,9 +151,12 @@ class OrderRetrieveDestroyAPIView(RetrieveDestroyAPIView):
         """
         Destroy an order.
 
-        Permission required: orders.can_manage_shift_in_venue
+        Permission required: orders.can_manage_shift_in_venue and user must be in shift assignees
         """
-        if self.request.user.has_perm("orders.can_manage_shift_in_venue", self.kwargs.get("shift").venue):
+        if (
+            self.request.user.has_perm("orders.can_manage_shift_in_venue", self.kwargs.get("shift").venue)
+            and request.user in self.kwargs.get("shift").get_assignees()
+        ):
             return super().destroy(request, *args, **kwargs)
         else:
             raise PermissionDenied
@@ -213,7 +220,7 @@ class ShiftRetrieveUpdateAPIView(RetrieveUpdateAPIView):
         """
         Update a Shift.
 
-        Permission required: orders.can_manage_shift_in_venue
+        Permission required: orders.can_manage_shift_in_venue and user must be in shift assignees
 
         API endpoint for updating a Shift.
         :param request: the request
@@ -223,7 +230,10 @@ class ShiftRetrieveUpdateAPIView(RetrieveUpdateAPIView):
         in indicated venue
         """
         venue = request.data.get("venue")
-        if request.user.has_perm("orders.can_manage_shift_in_venue", venue):
+        if (
+            request.user.has_perm("orders.can_manage_shift_in_venue", venue)
+            and request.user in self.get_object().get_assignees()
+        ):
             return super().update(request, *args, **kwargs)
         else:
             raise PermissionDenied
@@ -251,7 +261,11 @@ class ShiftAddTimeAPIView(APIView):
         request_schema={"type": "object", "properties": {"minutes": {"type": "int", "example": "5"}}}
     )
     permission_required = "orders.can_manage_shift_in_venue"
-    permission_classes = [HasPermissionOnObject]
+    permission_classes = [HasPermissionOnObject, IsOnBakersList]
+
+    def get_shift(self):
+        """Get Shift."""
+        return self.kwargs.get("shift")
 
     def get_permission_object(self):
         """Get the object to check permissions for."""
@@ -262,7 +276,7 @@ class ShiftAddTimeAPIView(APIView):
         """
         Shift Add Time API View.
 
-        Permission required: orders.can_manage_shift_in_venue
+        Permission required: orders.can_manage_shift_in_venue and user must be in shift assignees
 
         API endpoint for adding an amount of minutes to the end of a Shift.
         Optionally a "minutes" PATCH parameter can be set indicating with how many minutes the time should be extended.
@@ -280,7 +294,11 @@ class ShiftAddCapacityAPIView(APIView):
         request_schema={"type": "object", "properties": {"capacity": {"type": "int", "example": "5"}}}
     )
     permission_required = "orders.can_manage_shift_in_venue"
-    permission_classes = [HasPermissionOnObject]
+    permission_classes = [HasPermissionOnObject, IsOnBakersList]
+
+    def get_shift(self):
+        """Get Shift."""
+        return self.kwargs.get("shift")
 
     def get_permission_object(self):
         """Get the object to check permissions for."""
@@ -291,7 +309,7 @@ class ShiftAddCapacityAPIView(APIView):
         """
         Shift Add Capacity API View.
 
-        Permission required: orders.can_manage_shift_in_venue
+        Permission required: orders.can_manage_shift_in_venue and user must be in shift assignees
 
         API endpoint for adding capacity to a Shift.
         Optionally a "capacity" PATCH parameter can be set indicating how many capacity should be added.
@@ -311,7 +329,11 @@ class ProductSearchAPIView(APIView):
         response_schema={"type": "array", "items": {"$ref": "#/components/schemas/Product"}},
     )
     permission_required = "orders.can_manage_shift_in_venue"
-    permission_classes = [HasPermissionOnObject]
+    permission_classes = [HasPermissionOnObject, IsOnBakersList]
+
+    def get_shift(self):
+        """Get Shift."""
+        return self.kwargs.get("shift")
 
     def get_permission_object(self):
         """Get the object to check permissions for."""
@@ -322,7 +344,7 @@ class ProductSearchAPIView(APIView):
         """
         Product Search API View.
 
-        Permission required: orders.can_manage_shift_in_venue
+        Permission required: orders.can_manage_shift_in_venue and user must be in shift assignees
 
         API endpoint for searching products.
         A "query" GET parameter should be specified indicating the product or barcode search query.
@@ -351,7 +373,11 @@ class ShiftScannerAPIView(APIView):
         response_schema={"$ref": "#/components/schemas/Order"},
     )
     permission_required = "orders.can_manage_shift_in_venue"
-    permission_classes = [HasPermissionOnObject]
+    permission_classes = [HasPermissionOnObject, IsOnBakersList]
+
+    def get_shift(self):
+        """Get Shift."""
+        return self.kwargs.get("shift")
 
     def get_permission_object(self):
         """Get the object to check permissions for."""
@@ -362,7 +388,7 @@ class ShiftScannerAPIView(APIView):
         """
         Shift Scanner API View.
 
-        Permission required: orders.can_manage_shift_in_venue
+        Permission required: orders.can_manage_shift_in_venue and user must be in shift assignees
 
         API endpoint for adding a scanned order to a Shift.
         A "barcode" POST parameter should be specified indicating the barcode of the product to add.
@@ -385,7 +411,11 @@ class OrderTogglePaidAPIView(APIView):
     serializer_class = OrderSerializer
     schema = CustomAutoSchema(response_schema={"$ref": "#/components/schemas/Order"})
     permission_required = "orders.can_manage_shift_in_venue"
-    permission_classes = [HasPermissionOnObject]
+    permission_classes = [HasPermissionOnObject, IsOnBakersList]
+
+    def get_shift(self):
+        """Get Shift."""
+        return self.kwargs.get("shift")
 
     def get_permission_object(self):
         """Get the object to check permissions for."""
@@ -396,7 +426,7 @@ class OrderTogglePaidAPIView(APIView):
         """
         Order Toggle Paid API view.
 
-        Permission required: orders.can_manage_shift_in_venue
+        Permission required: orders.can_manage_shift_in_venue and user must be in shift assignees
 
         This toggles the paid option on an Order. Will return the Order object afterwards. If the Order does not exist
         within the Shift a 404 will be returned.
@@ -420,7 +450,11 @@ class OrderToggleReadyAPIView(APIView):
     serializer_class = OrderSerializer
     schema = CustomAutoSchema(response_schema={"$ref": "#/components/schemas/Order"})
     permission_required = "orders.can_manage_shift_in_venue"
-    permission_classes = [HasPermissionOnObject]
+    permission_classes = [HasPermissionOnObject, IsOnBakersList]
+
+    def get_shift(self):
+        """Get Shift."""
+        return self.kwargs.get("shift")
 
     def get_permission_object(self):
         """Get the object to check permissions for."""
@@ -431,7 +465,7 @@ class OrderToggleReadyAPIView(APIView):
         """
         Order Toggle Ready API view.
 
-        Permission required: orders.can_manage_shift_in_venue
+        Permission required: orders.can_manage_shift_in_venue and user must be in shift assignees
 
         This toggles the ready option on an Order. Will return the Order object afterwards. If the Order does not exist
         within the Shift a 404 will be returned.
@@ -446,3 +480,35 @@ class OrderToggleReadyAPIView(APIView):
             )
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+class JoinShiftAPIView(APIView):
+    """Join Shift API View."""
+
+    serializer_class = ShiftSerializer
+    schema = CustomAutoSchema(response_schema={"$ref": "#/components/schemas/Shift"})
+    permission_required = "orders.can_manage_shift_in_venue"
+    permission_classes = [HasPermissionOnObject]
+
+    def get_permission_object(self):
+        """Get the object to check permissions for."""
+        obj = self.kwargs.get("shift")
+        return obj.venue
+
+    def patch(self, request, **kwargs):
+        """
+        Join Shift as baker view.
+
+        Permission required: orders.can_manage_shift_in_venue
+
+        This adds the requesting User to the Shift assignees.
+        """
+        shift = kwargs.get("shift")
+        try:
+            shift.assignees.add(request.user.id)
+            shift.save()
+        except ValueError:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        return Response(
+            status=status.HTTP_200_OK, data=self.serializer_class(shift, many=False, context={"request": request}).data
+        )
