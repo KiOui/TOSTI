@@ -7,7 +7,7 @@ on:
       - master
 
 env:
-  DOCKER_IMAGE: docker.pkg.github.com/kioui/tosti/tosti-production:latest
+  DOCKER_IMAGE: docker.pkg.github.com/kioui/tosti/tosti:latest
   DOCKER_TAG_PRODUCTION: docker.pkg.github.com/kioui/tosti/tosti-production:${{ github.sha }}
 
 jobs:
