@@ -102,16 +102,20 @@ p.btn-note {
     color: var(--card-background-contrast);
 }
 
-.card-header {
+.card-header, .modal-header {
     background-color: var(--card-background-shade);
 }
 
-.card-body {
+.card-body, .modal-body {
     background-color: var(--card-background);
 }
 
-.card-footer {
+.card-footer, .modal-footer {
     background-color: var(--card-background-shade);
+}
+
+.close {
+    color: var(--text-color);
 }
 
 .btn-ml {
@@ -132,6 +136,7 @@ a:hover {
 .btn-on:hover {
     background-color: var(--button-hover-background);
     color: var(--button-hover-contrast);
+    border-color: var(--button-hover-border-color);
 }
 
 .btn-ml h2 {
@@ -146,7 +151,7 @@ a:hover {
 }
 
 .btn-on {
-    border: 1px solid var(--button-background);
+    border: 1px solid var(--button-border-color);
     background-color: var(--button-background);
     color: var(--button-contrast);
     cursor: pointer;

@@ -29,8 +29,8 @@ label[for=id_remember] {
     list-style-type: none;
     padding: 5px;
     margin: 0;
-    background-color: #ff3232;
-    color: white;
+    background-color: var(--danger);
+    color: var(--text-color);
 }
 
 .helptext {

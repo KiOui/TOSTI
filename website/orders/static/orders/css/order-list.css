@@ -29,7 +29,8 @@
     bottom: 0;
     justify-content: center;
     align-items: center;
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: var(--background-color);
+    opacity: 90%;
     display: flex;
 }
 

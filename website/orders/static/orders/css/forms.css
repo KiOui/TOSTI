@@ -22,19 +22,6 @@ p span {
     width: 100%;
 }
 
-ul.errorlist {
-    margin: 0;
-    padding: 0;
-}
-
-ul.errorlist li {
-    display: block;
-    color: #721c24;
-    background-color: #f8d7da;
-    border-color: #f5c6cb;
-    margin: 0;
-}
-
 input[type=text], select {
     padding:5px;
     border:2px solid #ccc;
