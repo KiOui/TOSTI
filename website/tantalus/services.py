@@ -13,10 +13,9 @@ class TantalusException(Exception):
 class TantalusClient:
     """Tantalus Client."""
 
-    def __init__(self, endpoint_url, username, password, endpoint_id):
+    def __init__(self, endpoint_url, username, password):
         """Initialise Tantalus Client by creating a session."""
         self.endpoint_url = endpoint_url
-        self.endpoint_id = endpoint_id
         session = requests.session()
 
         r = session.post(self.login_url, json={"username": username, "password": password})
@@ -36,11 +35,20 @@ class TantalusClient:
             raise TantalusException(e)
         return [{"name": x["name"], "id": x["id"]} for x in r.json()["products"]]
 
-    def register_order(self, product: TantalusProduct, amount: int):
+    def get_endpoints(self):
+        """Get all registered Tantalus endpoints."""
+        r = self._session.get(self.endpoints_url)
+        try:
+            r.raise_for_status()
+        except requests.HTTPError as e:
+            raise TantalusException(e)
+        return [{"name": x["name"], "id": x["id"]} for x in r.json()["endpoints"]]
+
+    def register_order(self, product: TantalusProduct, amount: int, endpoint_id: int):
         """Register order in Tantalus."""
         try:
             r = self._session.post(
-                self.sell_url, json={"product": product.tantalus_id, "endpoint": self.endpoint_id, "amount": amount}
+                self.sell_url, json={"product": product.tantalus_id, "endpoint": endpoint_id, "amount": amount}
             )
             r.raise_for_status()
         except requests.HTTPError as e:
@@ -65,6 +73,11 @@ class TantalusClient:
         return self.get_full_url("products")
 
     @property
+    def endpoints_url(self):
+        """Get endpoints URL."""
+        return self.get_full_url("endpoints")
+
+    @property
     def sell_url(self):
         """Get sell URL."""
         return self.get_full_url("sell")
@@ -72,12 +85,7 @@ class TantalusClient:
 
 def get_tantalus_client() -> TantalusClient:
     """Get the default Tantalus client (with the login credentials in the Django settings file)."""
-    return TantalusClient(
-        settings.TANTALUS_ENDPOINT_URL,
-        settings.TANTALUS_USERNAME,
-        settings.TANTALUS_PASSWORD,
-        settings.TANTALUS_ENDPOINT_ID,
-    )
+    return TantalusClient(settings.TANTALUS_ENDPOINT_URL, settings.TANTALUS_USERNAME, settings.TANTALUS_PASSWORD,)
 
 
 def sort_orders_by_product(orders):

@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from tantalus.forms import TantalusProductAdminForm
-from tantalus.models import TantalusProduct
+from tantalus.forms import TantalusProductAdminForm, TantalusOrderVenueAdminForm
+from tantalus.models import TantalusProduct, TantalusOrderVenue
 
 
 @admin.register(TantalusProduct)
@@ -13,3 +13,14 @@ class TantalusProductAdmin(admin.ModelAdmin):
         "tantalus_id",
     ]
     form = TantalusProductAdminForm
+
+
+@admin.register(TantalusOrderVenue)
+class TantalusOrderVenueAdmin(admin.ModelAdmin):
+    """Tantalus Order Venue Admin."""
+
+    list_display = [
+        "order_venue",
+        "endpoint_id",
+    ]
+    form = TantalusOrderVenueAdminForm

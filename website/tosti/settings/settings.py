@@ -179,4 +179,3 @@ SPOTIFY_CACHE_PATH = os.path.join(BASE_DIR, "cache")  # noqa
 TANTALUS_ENDPOINT_URL = "http://localhost:8080/poscl/"
 TANTALUS_USERNAME = "admin"
 TANTALUS_PASSWORD = "AdminAdmin"
-TANTALUS_ENDPOINT_ID = 1
