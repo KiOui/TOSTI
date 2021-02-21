@@ -3,7 +3,7 @@
 <link rel="stylesheet" href="{% static 'thaliedje/css/search.css' %}"/>
 <div id="player-search-container-{{ player.id }}">
     <input v-model="query" id="search" type="text" maxlength="100" placeholder="Search a track" class="container-fluid"/>
-    <div id="results" class="px-3 bg-light">
+    <div id="results" class="px-3 search-list">
         <div class="d-flex flex-column">
             <template v-if="tracks.length > 0 && query !== ''">
                 <template v-for="(track, index) in tracks">
