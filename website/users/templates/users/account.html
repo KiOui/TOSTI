@@ -11,16 +11,16 @@
         <p>The details of your account are displayed below</p>
         <ul class="nav nav-tabs" role="tablist">
             <li class="nav-item" style="padding-bottom: 0;">
-                <a class="nav-link active" id="profiles-tab" data-toggle="tab" href="#account-tab" role="tab"
-                   aria-selected="true">Account</a>
+                <a class="nav-link active" id="account-tab" href="{% url 'users:account' %}"
+                   >Personal details</a>
             </li>
             <li class="nav-item" style="padding-bottom: 0;">
-                <a class="nav-link" id="profiles-tab" data-toggle="tab" href="#order-history-tab" role="tab"
-                   aria-selected="false">Order history</a>
+                <a class="nav-link" id="order-history-tab" href="{% url 'orders:history' %}"
+                   >Order history</a>
             </li>
             <li class="nav-item" style="padding-bottom: 0;">
-                <a class="nav-link" id="profiles-tab" data-toggle="tab" href="#track-request-history-tab" role="tab"
-                   aria-selected="false">Track requests history</a>
+                <a class="nav-link" id="request-history-tab" href="{% url 'thaliedje:history' %}"
+                   >Track requests history</a>
             </li>
         </ul>
         <div class="tab-content mt-5">
@@ -35,17 +35,6 @@
                             <input type="submit" value="Save" class="btn btn-primary"/>
                         </form>
                     </div>
-                </div>
-            </div>
-            <div class="tab-pane mt-2" id="order-history-tab" role="tabpanel" aria-labelledby="order-history-tab">
-                <h2>Order history</h2>
-                <div class="d-flex flex-column justify-content-center">
-                </div>
-            </div>
-            <div class="tab-pane mt-2" id="track-request-history-tab" role="tabpanel"
-                 aria-labelledby="track-request-history-tab">
-                <h2>Track request history</h2>
-                <div class="d-flex flex-column justify-content-center">
                 </div>
             </div>
         </div>

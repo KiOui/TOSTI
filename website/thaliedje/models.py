@@ -17,7 +17,7 @@ class Player(models.Model):
     Thaliedje can be authorized to access multiple Spotify accounts via the Spotify API.
     The Spotify account model contains data of the authorized accounts. Each account can
     be added to a venue to provide a music player for that venue. This expects a Spotify
-    client (playback device) is playing in that venue. Communciation happens via the
+    client (playback device) is playing in that venue. Communication happens via the
     Spotipy library, hence authorization works via cache files. These objects are often
     referenced to as Spotify players.
     """

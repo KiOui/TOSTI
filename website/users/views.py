@@ -126,6 +126,7 @@ class AccountView(LoginRequiredMixin, TemplateView):
     """Account view."""
 
     template_name = "users/account.html"
+    paginate_by = 50
 
     def get(self, request, **kwargs):
         """

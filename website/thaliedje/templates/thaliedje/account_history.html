@@ -1,0 +1,58 @@
+{% extends 'tosti/base.html' %}
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'users/css/centered-container.css' %}"/>
+{% endblock %}
+
+{% block page %}
+    <div class="container-sm">
+        <h1>Account</h1>
+        <p>The details of your account are displayed below</p>
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item" style="padding-bottom: 0;">
+                <a class="nav-link" id="account-tab" href="{% url 'users:account' %}"
+                   >Personal details</a>
+            </li>
+            <li class="nav-item" style="padding-bottom: 0;">
+                <a class="nav-link" id="order-history-tab" href="{% url 'orders:history' %}"
+                   >Order history</a>
+            </li>
+            <li class="nav-item" style="padding-bottom: 0;">
+                <a class="nav-link active" id="request-history-tab" href="{% url 'thaliedje:history' %}"
+                   >Track requests history</a>
+            </li>
+        </ul>
+        <div class="tab-content mt-5">
+            <div class="tab-pane active mt-2" id="request-history-tab" role="tabpanel" aria-labelledby="request-history-tab">
+                <h2>Request history</h2>
+                <div class="d-flex flex-column justify-content-center">
+                    {% if tracks|length > 0 %}
+                        <div class="d-flex my-2">
+                            <div class="flex-grow-1" style="flex-basis: 0;">Track</div>
+                            <div class="flex-grow-1" style="flex-basis: 0;">Artists</div>
+                            <div class="flex-grow-1" style="flex-basis: 0;">Venue</div>
+                            <div class="flex-grow-1" style="flex-basis: 0;">Requested at</div>
+                        </div>
+                        <div class="border"></div>
+                        {% for track in tracks %}
+                            <div class="d-flex my-2">
+                                <div class="flex-grow-1" style="flex-basis: 0;">{{ track.track }}</div>
+                                <div class="flex-grow-1" style="flex-basis: 0;">
+                                    {% for artist in track.track.artists %}
+                                        {{ artist }}
+                                    {% endfor %}
+                                </div>
+                                <div class="flex-grow-1" style="flex-basis: 0;">{{ track.player.venue }}</div>
+                                <div class="flex-grow-1" style="flex-basis: 0;">{{ track.added }}</div>
+                            </div>
+                            <div class="border"></div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="alert alert-warning">You have not requested any songs yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
