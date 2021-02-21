@@ -6,19 +6,48 @@
 {% endblock %}
 
 {% block page %}
-    <div class="container-sm flex-container">
-        <div class="container-centered">
-            <h1>Account</h1>
-            <p>The details of your account are displayed below</p>
-            <form class="centered-form" method="POST">
-                {% csrf_token %}
-                {{ form }}
-                <input type="submit" value="Save" class="btn btn-primary"/>
-            </form>
+    <div class="container-sm">
+        <h1>Account</h1>
+        <p>The details of your account are displayed below</p>
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item" style="padding-bottom: 0;">
+                <a class="nav-link active" id="profiles-tab" data-toggle="tab" href="#account-tab" role="tab"
+                   aria-selected="true">Account</a>
+            </li>
+            <li class="nav-item" style="padding-bottom: 0;">
+                <a class="nav-link" id="profiles-tab" data-toggle="tab" href="#order-history-tab" role="tab"
+                   aria-selected="false">Order history</a>
+            </li>
+            <li class="nav-item" style="padding-bottom: 0;">
+                <a class="nav-link" id="profiles-tab" data-toggle="tab" href="#track-request-history-tab" role="tab"
+                   aria-selected="false">Track requests history</a>
+            </li>
+        </ul>
+        <div class="tab-content mt-5">
+            <div class="tab-pane active mt-2" id="account-tab" role="tabpanel"
+                 aria-labelledby="account-tab">
+                <div class="d-flex flex-row justify-content-center">
+                    <div style="max-width: 400px">
+                        <h2>Personal details</h2>
+                        <form class="centered-form" method="POST">
+                            {% csrf_token %}
+                            {{ form }}
+                            <input type="submit" value="Save" class="btn btn-primary"/>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane mt-2" id="order-history-tab" role="tabpanel" aria-labelledby="order-history-tab">
+                <h2>Order history</h2>
+                <div class="d-flex flex-column justify-content-center">
+                </div>
+            </div>
+            <div class="tab-pane mt-2" id="track-request-history-tab" role="tabpanel"
+                 aria-labelledby="track-request-history-tab">
+                <h2>Track request history</h2>
+                <div class="d-flex flex-column justify-content-center">
+                </div>
+            </div>
         </div>
     </div>
-{% endblock %}
-
-{% block js %}
-
 {% endblock %}
