@@ -1,7 +1,7 @@
 import json
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView
 from guardian.mixins import PermissionRequiredMixin
 
 from orders import services
@@ -291,12 +291,12 @@ class AdminExplainerView(TemplateView):
     template_name = "orders/explainer_admin.html"
 
 
-class AccountHistoryView(LoginRequiredMixin, TemplateView):
+class AccountHistoryView(LoginRequiredMixin, ListView):
     """Account History View."""
 
     template_name = "orders/account_history.html"
+    paginate_by = 50
 
-    def get(self, request, **kwargs):
-        """Render account history page with orders."""
-        orders = Order.objects.filter(user=request.user).order_by("-created")
-        return render(request, self.template_name, {"orders": orders})
+    def get_queryset(self):
+        """Get queryset."""
+        return Order.objects.filter(user=self.request.user).order_by("-created")

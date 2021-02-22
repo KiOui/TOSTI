@@ -1,6 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView
 
 from .models import Player, SpotifyQueueItem
 
@@ -41,12 +41,12 @@ class NowPlayingView(TemplateView):
         )
 
 
-class AccountHistoryView(LoginRequiredMixin, TemplateView):
+class AccountHistoryView(LoginRequiredMixin, ListView):
     """Account History View."""
 
     template_name = "thaliedje/account_history.html"
+    paginate_by = 50
 
-    def get(self, request, **kwargs):
-        """Render account history page with requested tracks."""
-        tracks = SpotifyQueueItem.objects.filter(requested_by=request.user).order_by("-added")
-        return render(request, self.template_name, {"tracks": tracks})
+    def get_queryset(self):
+        """Get queryset."""
+        return SpotifyQueueItem.objects.filter(requested_by=self.request.user).order_by("-added")
