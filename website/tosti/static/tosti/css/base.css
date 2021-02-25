@@ -158,9 +158,9 @@ a:hover {
 }
 
 .btn-off {
-    border: 1px solid var(--background-shade-light);
-    background-color: var(--background-shade-light);
-    color: var(--text-color);
+    border: 1px solid var(--button-disabled-background-color);
+    background-color: var(--button-disabled-background-color);
+    color: var(--button-contrast);
 }
 
 @media screen and (max-width: 767px) {
