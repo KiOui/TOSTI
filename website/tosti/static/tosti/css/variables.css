@@ -9,6 +9,7 @@
     --button-hover-background: #ffffff;
     --button-hover-contrast: #000000;
     --button-hover-border-color: #000000;
+    --button-disabled-background-color: #696969;
 
     --card-background: #ffffff;
     --card-background-shade: rgba(0, 0, 0, 0.03);
@@ -58,6 +59,7 @@
         --button-hover-background: #696969;
         --button-hover-contrast: #f7f7f7;
         --button-hover-border-color: #696969;
+        --button-disabled-background-color: #696969;
 
         --card-background: #696969;
         --card-background-shade: #404040;
