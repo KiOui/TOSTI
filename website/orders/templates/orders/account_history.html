@@ -1,69 +1,49 @@
-{% extends 'tosti/base.html' %}
+{% extends 'tosti/account_base.html' %}
 {% load static %}
 
 {% block styles %}
     <link rel="stylesheet" href="{% static 'users/css/centered-container.css' %}"/>
 {% endblock %}
 
-{% block page %}
-    <div class="container-sm">
-        <h1>Account</h1>
-        <p>The details of your account are displayed below</p>
-        <ul class="nav nav-tabs" role="tablist">
-            <li class="nav-item" style="padding-bottom: 0;">
-                <a class="nav-link" id="account-tab" href="{% url 'users:account' %}"
-                   >Personal details</a>
-            </li>
-            <li class="nav-item" style="padding-bottom: 0;">
-                <a class="nav-link active" id="order-history-tab" href="{% url 'orders:history' %}"
-                   >Order history</a>
-            </li>
-            <li class="nav-item" style="padding-bottom: 0;">
-                <a class="nav-link" id="request-history-tab" href="{% url 'thaliedje:history' %}"
-                   >Track requests history</a>
-            </li>
-        </ul>
-        <div class="tab-content mt-5">
-            <div class="tab-pane active mt-2" id="order-history-tab" role="tabpanel" aria-labelledby="order-history-tab">
-                <h2>Order history</h2>
-                <div class="d-flex flex-column justify-content-center">
-                    {% if page_obj|length > 0 %}
-                        <div class="d-flex my-2">
-                            <div class="flex-grow-1" style="flex-basis: 0;">Product</div>
-                            <div class="flex-grow-1" style="flex-basis: 0;">Shift</div>
-                            <div class="flex-grow-1" style="flex-basis: 0;">Ordered at</div>
-                        </div>
-                        <div class="border"></div>
-                        {% for order in page_obj %}
-                            <div class="d-flex my-2">
-                                <div class="flex-grow-1" style="flex-basis: 0;">{{ order.product }}</div>
-                                <div class="flex-grow-1" style="flex-basis: 0;">{{ order.shift }}</div>
-                                <div class="flex-grow-1" style="flex-basis: 0;">{{ order.created }}</div>
-                            </div>
-                            <div class="border"></div>
-                        {% endfor %}
-                    {% else %}
-                        <p class="alert alert-warning">You have not placed any orders yet.</p>
-                    {% endif %}
+{% block tab_content %}
+    <div class="tab-pane active mt-2" id="order-history-tab" role="tabpanel" aria-labelledby="order-history-tab">
+        <h2>Order history</h2>
+        <div class="d-flex flex-column justify-content-center">
+            {% if page_obj|length > 0 %}
+                <div class="d-flex my-2">
+                    <div class="flex-grow-1" style="flex-basis: 0;">Product</div>
+                    <div class="flex-grow-1" style="flex-basis: 0;">Shift</div>
+                    <div class="flex-grow-1" style="flex-basis: 0;">Ordered at</div>
                 </div>
-                <div class="container-fluid mt-3 text-center">
-                    <span class="step-links">
-                        {% if page_obj.has_previous %}
-                            <a href="{% url 'orders:history' %}?page=1">&laquo; first</a>
-                            <a href="{% url 'orders:history' %}?page={{ page_obj.previous_page_number }}">previous</a>
-                        {% endif %}
+                <div class="border"></div>
+                {% for order in page_obj %}
+                    <div class="d-flex my-2">
+                        <div class="flex-grow-1" style="flex-basis: 0;">{{ order.product }}</div>
+                        <div class="flex-grow-1" style="flex-basis: 0;">{{ order.shift }}</div>
+                        <div class="flex-grow-1" style="flex-basis: 0;">{{ order.created }}</div>
+                    </div>
+                    <div class="border"></div>
+                {% endfor %}
+            {% else %}
+                <p class="alert alert-warning">You have not placed any orders yet.</p>
+            {% endif %}
+        </div>
+        <div class="container-fluid mt-3 text-center">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="{% url 'orders:history' %}?page=1">&laquo; first</a>
+                    <a href="{% url 'orders:history' %}?page={{ page_obj.previous_page_number }}">previous</a>
+                {% endif %}
 
-                        <span class="current">
-                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-                        </span>
+                <span class="current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                </span>
 
-                        {% if page_obj.has_next %}
-                            <a href="{% url 'orders:history' %}?page={{ page_obj.next_page_number }}">next</a>
-                            <a href="{% url 'orders:history' %}?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
-                        {% endif %}
-                    </span>
-                </div>
-            </div>
+                {% if page_obj.has_next %}
+                    <a href="{% url 'orders:history' %}?page={{ page_obj.next_page_number }}">next</a>
+                    <a href="{% url 'orders:history' %}?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
+            </span>
         </div>
     </div>
 {% endblock %}

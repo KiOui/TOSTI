@@ -296,6 +296,7 @@ class AccountHistoryView(LoginRequiredMixin, ListView):
 
     template_name = "orders/account_history.html"
     paginate_by = 50
+    extra_context = {"active": "orders"}
 
     def get_queryset(self):
         """Get queryset."""

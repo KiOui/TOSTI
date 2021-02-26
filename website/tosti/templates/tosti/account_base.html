@@ -1,0 +1,26 @@
+{% extends 'tosti/base.html' %}
+{% load static %}
+
+{% block page %}
+    <div class="container-sm">
+        <h1>Account</h1>
+        <p>The details of your account are displayed below</p>
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item" style="padding-bottom: 0;">
+                <a class="nav-link {% if active == "users" %}active{% endif %}" id="account-tab" href="{% url 'users:account' %}"
+                   >Personal details</a>
+            </li>
+            <li class="nav-item" style="padding-bottom: 0;">
+                <a class="nav-link {% if active == "orders" %}active{% endif %}" id="order-history-tab" href="{% url 'orders:history' %}"
+                   >Order history</a>
+            </li>
+            <li class="nav-item" style="padding-bottom: 0;">
+                <a class="nav-link {% if active == "thaliedje" %}active{% endif %}" id="request-history-tab" href="{% url 'thaliedje:history' %}"
+                   >Track requests history</a>
+            </li>
+        </ul>
+        <div class="tab-content mt-5">
+            {% block tab_content %}{% endblock %}
+        </div>
+    </div>
+{% endblock %}
