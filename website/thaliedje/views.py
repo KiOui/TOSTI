@@ -1,6 +1,8 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
-from django.views.generic import TemplateView
-from .models import Player
+from django.views.generic import TemplateView, ListView
+
+from .models import Player, SpotifyQueueItem
 
 COOKIE_CLIENT_ID = "client_id"
 
@@ -37,3 +39,15 @@ class NowPlayingView(TemplateView):
                 "can_request": request.user in player.get_users_with_request_permissions(),
             },
         )
+
+
+class AccountHistoryView(LoginRequiredMixin, ListView):
+    """Account History View."""
+
+    template_name = "thaliedje/account_history.html"
+    paginate_by = 50
+    extra_context = {"active": "thaliedje"}
+
+    def get_queryset(self):
+        """Get queryset."""
+        return SpotifyQueueItem.objects.filter(requested_by=self.request.user).order_by("-added")

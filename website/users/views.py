@@ -144,7 +144,7 @@ class AccountView(LoginRequiredMixin, TemplateView):
                 "association": request.user.profile.association,
             }
         )
-        return render(request, self.template_name, {"form": form})
+        return render(request, self.template_name, {"form": form, "active": "users"})
 
     def post(self, request, **kwargs):
         """
@@ -158,4 +158,4 @@ class AccountView(LoginRequiredMixin, TemplateView):
         if form.is_valid():
             request.user.profile.association = form.cleaned_data.get("association")
             request.user.profile.save()
-        return render(request, self.template_name, {"form": form})
+        return render(request, self.template_name, {"form": form, "active": "users"})

@@ -11,4 +11,5 @@ register_converter(PlayerConverter, "player")
 urlpatterns = [
     path("", views.IndexView.as_view(), name="index"),
     path("player/<venue:venue>/", views.NowPlayingView.as_view(), name="now_playing"),
+    path("history/", views.AccountHistoryView.as_view(), name="history"),
 ]

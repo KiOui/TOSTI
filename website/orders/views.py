@@ -1,12 +1,13 @@
 import json
 
-from django.views.generic import TemplateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import TemplateView, ListView
 from guardian.mixins import PermissionRequiredMixin
 
 from orders import services
 from orders.exceptions import OrderException
 from django.shortcuts import render, redirect
-from .models import Product
+from .models import Product, Order
 from .forms import CreateShiftForm
 import urllib.parse
 
@@ -288,3 +289,15 @@ class AdminExplainerView(TemplateView):
     """Admin Explainer view."""
 
     template_name = "orders/explainer_admin.html"
+
+
+class AccountHistoryView(LoginRequiredMixin, ListView):
+    """Account History View."""
+
+    template_name = "orders/account_history.html"
+    paginate_by = 50
+    extra_context = {"active": "orders"}
+
+    def get_queryset(self):
+        """Get queryset."""
+        return Order.objects.filter(user=self.request.user).order_by("-created")
