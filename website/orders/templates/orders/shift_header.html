@@ -13,7 +13,21 @@
             No assignees
         </template>
     </p>
-    <p v-if="!shift.can_order" class="alert alert-danger"><i class="far fa-hand-paper"></i><br>This shift does not accept orders at this moment.</p>
+    <p v-if="shift.finalized" class="alert alert-danger"><i class="far fa-hand-paper"></i> This shift is closed.</p>
+    <p v-else-if="!shift.can_order" class="alert alert-danger"><i class="far fa-hand-paper"></i> This shift does not accept orders at this moment.</p>
+    <p v-else-if="!shift.is_active" class="alert alert-danger"><i class="far fa-hand-paper"></i> This shift is not active.</p>
+    {% if include_order_button %}
+        {% if not has_order_permissions %}
+            <p v-if="shift.finalized" class="alert alert-warning"><i class="fas fa-ban"></i> You don't have permission to place orders.</p>
+        {% else %}
+            <a v-if="!shift.finalized && shift.can_order && shift.is_active" href="{% url "orders:order" shift=shift %}">
+                <div class="btn-ml btn-on">
+                    <h4>Place your order</h4>
+                    <p class="btn-note">Click to order items</p>
+                </div>
+            </a>
+        {% endif %}
+    {% endif %}
 </div>
 
 <script>
