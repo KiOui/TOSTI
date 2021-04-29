@@ -180,17 +180,17 @@
 <span id="venues-admin-module"></span><h2>venues.admin module<a class="headerlink" href="#module-venues.admin" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="venues.admin.VenueAdmin">
-<em class="property">class </em><code class="sig-prename descclassname">venues.admin.</code><code class="sig-name descname">VenueAdmin</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">admin_site</span></em><span class="sig-paren">)</span><a class="headerlink" href="#venues.admin.VenueAdmin" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">venues.admin.</span></code><code class="sig-name descname"><span class="pre">VenueAdmin</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">admin_site</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#venues.admin.VenueAdmin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.admin.options.ModelAdmin</span></code></p>
 <p>Custom admin for venues.</p>
 <dl class="py method">
 <dt id="venues.admin.VenueAdmin.media">
-<em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#venues.admin.VenueAdmin.media" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">media</span></code><a class="headerlink" href="#venues.admin.VenueAdmin.media" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="venues.admin.VenueAdmin.search_fields">
-<code class="sig-name descname">search_fields</code><em class="property"> = ['name']</em><a class="headerlink" href="#venues.admin.VenueAdmin.search_fields" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">search_fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">['name']</span></em><a class="headerlink" href="#venues.admin.VenueAdmin.search_fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -200,12 +200,12 @@
 <span id="venues-apps-module"></span><h2>venues.apps module<a class="headerlink" href="#module-venues.apps" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="venues.apps.VenuesConfig">
-<em class="property">class </em><code class="sig-prename descclassname">venues.apps.</code><code class="sig-name descname">VenuesConfig</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">app_name</span></em>, <em class="sig-param"><span class="n">app_module</span></em><span class="sig-paren">)</span><a class="headerlink" href="#venues.apps.VenuesConfig" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">venues.apps.</span></code><code class="sig-name descname"><span class="pre">VenuesConfig</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_module</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#venues.apps.VenuesConfig" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.apps.config.AppConfig</span></code></p>
 <p>App config for venue app.</p>
 <dl class="py attribute">
 <dt id="venues.apps.VenuesConfig.name">
-<code class="sig-name descname">name</code><em class="property"> = 'venues'</em><a class="headerlink" href="#venues.apps.VenuesConfig.name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">name</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'venues'</span></em><a class="headerlink" href="#venues.apps.VenuesConfig.name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -215,50 +215,50 @@
 <span id="venues-models-module"></span><h2>venues.models module<a class="headerlink" href="#module-venues.models" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="venues.models.Venue">
-<em class="property">class </em><code class="sig-prename descclassname">venues.models.</code><code class="sig-name descname">Venue</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#venues.models.Venue" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">venues.models.</span></code><code class="sig-name descname"><span class="pre">Venue</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#venues.models.Venue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
 <p>Venue model class.</p>
 <dl class="py exception">
 <dt id="venues.models.Venue.DoesNotExist">
-<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#venues.models.Venue.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">DoesNotExist</span></code><a class="headerlink" href="#venues.models.Venue.DoesNotExist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
 </dd></dl>
 
 <dl class="py exception">
 <dt id="venues.models.Venue.MultipleObjectsReturned">
-<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#venues.models.Venue.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></code><a class="headerlink" href="#venues.models.Venue.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="venues.models.Venue.active">
-<code class="sig-name descname">active</code><a class="headerlink" href="#venues.models.Venue.active" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">active</span></code><a class="headerlink" href="#venues.models.Venue.active" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="venues.models.Venue.id">
-<code class="sig-name descname">id</code><a class="headerlink" href="#venues.models.Venue.id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">id</span></code><a class="headerlink" href="#venues.models.Venue.id" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="venues.models.Venue.name">
-<code class="sig-name descname">name</code><a class="headerlink" href="#venues.models.Venue.name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">name</span></code><a class="headerlink" href="#venues.models.Venue.name" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="venues.models.Venue.objects">
-<code class="sig-name descname">objects</code><em class="property"> = &lt;django.db.models.manager.Manager object&gt;</em><a class="headerlink" href="#venues.models.Venue.objects" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">objects</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#venues.models.Venue.objects" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="venues.models.Venue.ordervenue">
-<code class="sig-name descname">ordervenue</code><a class="headerlink" href="#venues.models.Venue.ordervenue" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">ordervenue</span></code><a class="headerlink" href="#venues.models.Venue.ordervenue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related object on the reverse side of a one-to-one
 relation.</p>
 <p>In the example:</p>
@@ -271,7 +271,7 @@ relation.</p>
 
 <dl class="py attribute">
 <dt id="venues.models.Venue.player">
-<code class="sig-name descname">player</code><a class="headerlink" href="#venues.models.Venue.player" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">player</span></code><a class="headerlink" href="#venues.models.Venue.player" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related object on the reverse side of a one-to-one
 relation.</p>
 <p>In the example:</p>

@@ -191,12 +191,12 @@ caching the Spotify OAuth2 tokens. When using the default settings, a <code clas
 <span id="thaliedje-admin-module"></span><h2>thaliedje.admin module<a class="headerlink" href="#module-thaliedje.admin" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="thaliedje.admin.PlayerAdmin">
-<em class="property">class </em><code class="sig-prename descclassname">thaliedje.admin.</code><code class="sig-name descname">PlayerAdmin</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">admin_site</span></em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.admin.PlayerAdmin" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">thaliedje.admin.</span></code><code class="sig-name descname"><span class="pre">PlayerAdmin</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">admin_site</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.admin.PlayerAdmin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">guardian.admin.GuardedModelAdmin</span></code></p>
 <p>Player admin for Players.</p>
 <dl class="py method">
 <dt id="thaliedje.admin.PlayerAdmin.add_view">
-<code class="sig-name descname">add_view</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="n">form_url</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">extra_context</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.admin.PlayerAdmin.add_view" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">add_view</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">form_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.admin.PlayerAdmin.add_view" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add view of the Spotify Account Admin.</p>
 <p>This function redirects to the authorize page
 :param request: the request
@@ -207,35 +207,35 @@ caching the Spotify OAuth2 tokens. When using the default settings, a <code clas
 
 <dl class="py attribute">
 <dt id="thaliedje.admin.PlayerAdmin.form">
-<code class="sig-name descname">form</code><a class="headerlink" href="#thaliedje.admin.PlayerAdmin.form" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">form</span></code><a class="headerlink" href="#thaliedje.admin.PlayerAdmin.form" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="#thaliedje.forms.PlayerAdminForm" title="thaliedje.forms.PlayerAdminForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">thaliedje.forms.PlayerAdminForm</span></code></a></p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="thaliedje.admin.PlayerAdmin.get_configured">
-<code class="sig-name descname">get_configured</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.admin.PlayerAdmin.get_configured" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_configured</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.admin.PlayerAdmin.get_configured" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get whether a Player  is configured.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="thaliedje.admin.PlayerAdmin.get_urls">
-<code class="sig-name descname">get_urls</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.admin.PlayerAdmin.get_urls" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_urls</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.admin.PlayerAdmin.get_urls" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get admin urls.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="thaliedje.admin.PlayerAdmin.list_display">
-<code class="sig-name descname">list_display</code><em class="property"> = ['display_name', 'playback_device_name', 'client_id', 'get_configured']</em><a class="headerlink" href="#thaliedje.admin.PlayerAdmin.list_display" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">list_display</span></code><em class="property"> <span class="pre">=</span> <span class="pre">['display_name',</span> <span class="pre">'playback_device_name',</span> <span class="pre">'client_id',</span> <span class="pre">'get_configured']</span></em><a class="headerlink" href="#thaliedje.admin.PlayerAdmin.list_display" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="thaliedje.admin.PlayerAdmin.media">
-<em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#thaliedje.admin.PlayerAdmin.media" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">media</span></code><a class="headerlink" href="#thaliedje.admin.PlayerAdmin.media" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="thaliedje.admin.PlayerAdmin.view_on_site">
-<code class="sig-name descname">view_on_site</code><em class="property"> = True</em><a class="headerlink" href="#thaliedje.admin.PlayerAdmin.view_on_site" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">view_on_site</span></code><em class="property"> <span class="pre">=</span> <span class="pre">True</span></em><a class="headerlink" href="#thaliedje.admin.PlayerAdmin.view_on_site" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -245,12 +245,12 @@ caching the Spotify OAuth2 tokens. When using the default settings, a <code clas
 <span id="thaliedje-apps-module"></span><h2>thaliedje.apps module<a class="headerlink" href="#module-thaliedje.apps" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="thaliedje.apps.ThaliedjeConfig">
-<em class="property">class </em><code class="sig-prename descclassname">thaliedje.apps.</code><code class="sig-name descname">ThaliedjeConfig</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">app_name</span></em>, <em class="sig-param"><span class="n">app_module</span></em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.apps.ThaliedjeConfig" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">thaliedje.apps.</span></code><code class="sig-name descname"><span class="pre">ThaliedjeConfig</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_module</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.apps.ThaliedjeConfig" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.apps.config.AppConfig</span></code></p>
 <p>The default app config for the Thaliedje app.</p>
 <dl class="py attribute">
 <dt id="thaliedje.apps.ThaliedjeConfig.name">
-<code class="sig-name descname">name</code><em class="property"> = 'thaliedje'</em><a class="headerlink" href="#thaliedje.apps.ThaliedjeConfig.name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">name</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'thaliedje'</span></em><a class="headerlink" href="#thaliedje.apps.ThaliedjeConfig.name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -260,22 +260,22 @@ caching the Spotify OAuth2 tokens. When using the default settings, a <code clas
 <span id="thaliedje-forms-module"></span><h2>thaliedje.forms module<a class="headerlink" href="#module-thaliedje.forms" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="thaliedje.forms.PlayerAdminForm">
-<em class="property">class </em><code class="sig-prename descclassname">thaliedje.forms.</code><code class="sig-name descname">PlayerAdminForm</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.forms.PlayerAdminForm" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">thaliedje.forms.</span></code><code class="sig-name descname"><span class="pre">PlayerAdminForm</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.forms.PlayerAdminForm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.forms.models.ModelForm</span></code></p>
 <p>Custom admin form to manage configuration settings of a Player.</p>
 <dl class="py class">
 <dt id="thaliedje.forms.PlayerAdminForm.Meta">
-<em class="property">class </em><code class="sig-name descname">Meta</code><a class="headerlink" href="#thaliedje.forms.PlayerAdminForm.Meta" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Meta</span></code><a class="headerlink" href="#thaliedje.forms.PlayerAdminForm.Meta" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Meta class.</p>
 <dl class="py attribute">
 <dt id="thaliedje.forms.PlayerAdminForm.Meta.exclude">
-<code class="sig-name descname">exclude</code><em class="property"> = ['playback_device_name']</em><a class="headerlink" href="#thaliedje.forms.PlayerAdminForm.Meta.exclude" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">exclude</span></code><em class="property"> <span class="pre">=</span> <span class="pre">['playback_device_name']</span></em><a class="headerlink" href="#thaliedje.forms.PlayerAdminForm.Meta.exclude" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="thaliedje.forms.PlayerAdminForm.Meta.model">
-<code class="sig-name descname">model</code><a class="headerlink" href="#thaliedje.forms.PlayerAdminForm.Meta.model" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">model</span></code><a class="headerlink" href="#thaliedje.forms.PlayerAdminForm.Meta.model" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="#thaliedje.models.Player" title="thaliedje.models.Player"><code class="xref py py-class docutils literal notranslate"><span class="pre">thaliedje.models.Player</span></code></a></p>
 </dd></dl>
 
@@ -283,12 +283,12 @@ caching the Spotify OAuth2 tokens. When using the default settings, a <code clas
 
 <dl class="py attribute">
 <dt id="thaliedje.forms.PlayerAdminForm.base_fields">
-<code class="sig-name descname">base_fields</code><em class="property"> = {'client_id': &lt;django.forms.fields.CharField object&gt;, 'client_secret': &lt;django.forms.fields.CharField object&gt;, 'display_name': &lt;django.forms.fields.CharField object&gt;, 'playback_device_id': &lt;django.forms.fields.ChoiceField object&gt;, 'redirect_uri': &lt;django.forms.fields.CharField object&gt;, 'venue': &lt;django.forms.models.ModelChoiceField object&gt;}</em><a class="headerlink" href="#thaliedje.forms.PlayerAdminForm.base_fields" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">base_fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'client_id':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'client_secret':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'display_name':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'playback_device_id':</span> <span class="pre">&lt;django.forms.fields.ChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'redirect_uri':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'venue':</span> <span class="pre">&lt;django.forms.models.ModelChoiceField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#thaliedje.forms.PlayerAdminForm.base_fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="thaliedje.forms.PlayerAdminForm.clean_playback_device_id">
-<code class="sig-name descname">clean_playback_device_id</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.forms.PlayerAdminForm.clean_playback_device_id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">clean_playback_device_id</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.forms.PlayerAdminForm.clean_playback_device_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>Clean playback device id.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -299,18 +299,18 @@ caching the Spotify OAuth2 tokens. When using the default settings, a <code clas
 
 <dl class="py attribute">
 <dt id="thaliedje.forms.PlayerAdminForm.declared_fields">
-<code class="sig-name descname">declared_fields</code><em class="property"> = {'playback_device_id': &lt;django.forms.fields.ChoiceField object&gt;}</em><a class="headerlink" href="#thaliedje.forms.PlayerAdminForm.declared_fields" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">declared_fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'playback_device_id':</span> <span class="pre">&lt;django.forms.fields.ChoiceField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#thaliedje.forms.PlayerAdminForm.declared_fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="thaliedje.forms.PlayerAdminForm.media">
-<em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#thaliedje.forms.PlayerAdminForm.media" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">media</span></code><a class="headerlink" href="#thaliedje.forms.PlayerAdminForm.media" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return all media required to render the widgets on this form.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="thaliedje.forms.PlayerAdminForm.save">
-<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">commit</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.forms.PlayerAdminForm.save" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">save</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">commit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.forms.PlayerAdminForm.save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save this form.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -326,22 +326,22 @@ caching the Spotify OAuth2 tokens. When using the default settings, a <code clas
 
 <dl class="py class">
 <dt id="thaliedje.forms.SpotifyTokenForm">
-<em class="property">class </em><code class="sig-prename descclassname">thaliedje.forms.</code><code class="sig-name descname">SpotifyTokenForm</code><span class="sig-paren">(</span><em class="sig-param">data=None</em>, <em class="sig-param">files=None</em>, <em class="sig-param">auto_id='id_%s'</em>, <em class="sig-param">prefix=None</em>, <em class="sig-param">initial=None</em>, <em class="sig-param">error_class=&lt;class 'django.forms.utils.ErrorList'&gt;</em>, <em class="sig-param">label_suffix=None</em>, <em class="sig-param">empty_permitted=False</em>, <em class="sig-param">field_order=None</em>, <em class="sig-param">use_required_attribute=None</em>, <em class="sig-param">renderer=None</em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.forms.SpotifyTokenForm" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">thaliedje.forms.</span></code><code class="sig-name descname"><span class="pre">SpotifyTokenForm</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">data=None</span></em>, <em class="sig-param"><span class="pre">files=None</span></em>, <em class="sig-param"><span class="pre">auto_id='id_%s'</span></em>, <em class="sig-param"><span class="pre">prefix=None</span></em>, <em class="sig-param"><span class="pre">initial=None</span></em>, <em class="sig-param"><span class="pre">error_class=&lt;class</span> <span class="pre">'django.forms.utils.ErrorList'&gt;</span></em>, <em class="sig-param"><span class="pre">label_suffix=None</span></em>, <em class="sig-param"><span class="pre">empty_permitted=False</span></em>, <em class="sig-param"><span class="pre">field_order=None</span></em>, <em class="sig-param"><span class="pre">use_required_attribute=None</span></em>, <em class="sig-param"><span class="pre">renderer=None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.forms.SpotifyTokenForm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.forms.forms.Form</span></code></p>
 <p>Admin Form for the Spotify API Client ID and Secret of a Player.</p>
 <dl class="py attribute">
 <dt id="thaliedje.forms.SpotifyTokenForm.base_fields">
-<code class="sig-name descname">base_fields</code><em class="property"> = {'client_id': &lt;django.forms.fields.CharField object&gt;, 'client_secret': &lt;django.forms.fields.CharField object&gt;}</em><a class="headerlink" href="#thaliedje.forms.SpotifyTokenForm.base_fields" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">base_fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'client_id':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'client_secret':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#thaliedje.forms.SpotifyTokenForm.base_fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="thaliedje.forms.SpotifyTokenForm.declared_fields">
-<code class="sig-name descname">declared_fields</code><em class="property"> = {'client_id': &lt;django.forms.fields.CharField object&gt;, 'client_secret': &lt;django.forms.fields.CharField object&gt;}</em><a class="headerlink" href="#thaliedje.forms.SpotifyTokenForm.declared_fields" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">declared_fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'client_id':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'client_secret':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#thaliedje.forms.SpotifyTokenForm.declared_fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="thaliedje.forms.SpotifyTokenForm.media">
-<em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#thaliedje.forms.SpotifyTokenForm.media" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">media</span></code><a class="headerlink" href="#thaliedje.forms.SpotifyTokenForm.media" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return all media required to render the widgets on this form.</p>
 </dd></dl>
 
@@ -352,7 +352,7 @@ caching the Spotify OAuth2 tokens. When using the default settings, a <code clas
 <span id="thaliedje-models-module"></span><h2>thaliedje.models module<a class="headerlink" href="#module-thaliedje.models" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="thaliedje.models.Player">
-<em class="property">class </em><code class="sig-prename descclassname">thaliedje.models.</code><code class="sig-name descname">Player</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.models.Player" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">thaliedje.models.</span></code><code class="sig-name descname"><span class="pre">Player</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.models.Player" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
 <p>Player model for Spotify players.</p>
 <p>Thaliedje can be authorized to access multiple Spotify accounts via the Spotify API.
@@ -363,24 +363,24 @@ Spotipy library, hence authorization works via cache files. These objects are of
 referenced to as Spotify players.</p>
 <dl class="py exception">
 <dt id="thaliedje.models.Player.DoesNotExist">
-<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#thaliedje.models.Player.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">DoesNotExist</span></code><a class="headerlink" href="#thaliedje.models.Player.DoesNotExist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
 </dd></dl>
 
 <dl class="py exception">
 <dt id="thaliedje.models.Player.MultipleObjectsReturned">
-<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#thaliedje.models.Player.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></code><a class="headerlink" href="#thaliedje.models.Player.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="thaliedje.models.Player.SCOPE">
-<code class="sig-name descname">SCOPE</code><em class="property"> = 'user-read-playback-state, user-modify-playback-state, user-read-currently-playing, streaming, app-remote-control'</em><a class="headerlink" href="#thaliedje.models.Player.SCOPE" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">SCOPE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'user-read-playback-state,</span> <span class="pre">user-modify-playback-state,</span> <span class="pre">user-read-currently-playing,</span> <span class="pre">streaming,</span> <span class="pre">app-remote-control'</span></em><a class="headerlink" href="#thaliedje.models.Player.SCOPE" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="thaliedje.models.Player.auth">
-<em class="property">property </em><code class="sig-name descname">auth</code><a class="headerlink" href="#thaliedje.models.Player.auth" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">auth</span></code><a class="headerlink" href="#thaliedje.models.Player.auth" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a spotipy SpotifyOAuth object from this database object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -391,7 +391,7 @@ referenced to as Spotify players.</p>
 
 <dl class="py method">
 <dt id="thaliedje.models.Player.cache_path">
-<em class="property">property </em><code class="sig-name descname">cache_path</code><a class="headerlink" href="#thaliedje.models.Player.cache_path" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">cache_path</span></code><a class="headerlink" href="#thaliedje.models.Player.cache_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the Spotipy cache file path for this auth object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -402,27 +402,27 @@ referenced to as Spotify players.</p>
 
 <dl class="py attribute">
 <dt id="thaliedje.models.Player.client_id">
-<code class="sig-name descname">client_id</code><a class="headerlink" href="#thaliedje.models.Player.client_id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">client_id</span></code><a class="headerlink" href="#thaliedje.models.Player.client_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="thaliedje.models.Player.client_secret">
-<code class="sig-name descname">client_secret</code><a class="headerlink" href="#thaliedje.models.Player.client_secret" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">client_secret</span></code><a class="headerlink" href="#thaliedje.models.Player.client_secret" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="thaliedje.models.Player.configured">
-<em class="property">property </em><code class="sig-name descname">configured</code><a class="headerlink" href="#thaliedje.models.Player.configured" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">configured</span></code><a class="headerlink" href="#thaliedje.models.Player.configured" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if this object is ready to play music (a playback device is set).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="thaliedje.models.Player.currently_playing">
-<em class="property">property </em><code class="sig-name descname">currently_playing</code><a class="headerlink" href="#thaliedje.models.Player.currently_playing" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">currently_playing</span></code><a class="headerlink" href="#thaliedje.models.Player.currently_playing" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get currently playing music information.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -437,20 +437,20 @@ is_playing: [True|False]</p>
 
 <dl class="py attribute">
 <dt id="thaliedje.models.Player.display_name">
-<code class="sig-name descname">display_name</code><a class="headerlink" href="#thaliedje.models.Player.display_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">display_name</span></code><a class="headerlink" href="#thaliedje.models.Player.display_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="thaliedje.models.Player.get_absolute_url">
-<code class="sig-name descname">get_absolute_url</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.models.Player.get_absolute_url" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_absolute_url</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.models.Player.get_absolute_url" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the front-end url for a Player.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="thaliedje.models.Player.get_display_name">
-<em class="property">property </em><code class="sig-name descname">get_display_name</code><a class="headerlink" href="#thaliedje.models.Player.get_display_name" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">get_display_name</span></code><a class="headerlink" href="#thaliedje.models.Player.get_display_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the display name of the user.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -461,51 +461,51 @@ object the first time, the query is executed.</p>
 
 <dl class="py method">
 <dt id="thaliedje.models.Player.get_player">
-<em class="property">static </em><code class="sig-name descname">get_player</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">venue</span></em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.models.Player.get_player" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">get_player</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">venue</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.models.Player.get_player" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a Player for a venue (if it exists).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="thaliedje.models.Player.get_users_with_control_permissions">
-<code class="sig-name descname">get_users_with_control_permissions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.models.Player.get_users_with_control_permissions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_users_with_control_permissions</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.models.Player.get_users_with_control_permissions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get users that have the permission to control this player.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="thaliedje.models.Player.get_users_with_request_permissions">
-<code class="sig-name descname">get_users_with_request_permissions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.models.Player.get_users_with_request_permissions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_users_with_request_permissions</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.models.Player.get_users_with_request_permissions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get users that have the permission to request songs for this player.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="thaliedje.models.Player.id">
-<code class="sig-name descname">id</code><a class="headerlink" href="#thaliedje.models.Player.id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">id</span></code><a class="headerlink" href="#thaliedje.models.Player.id" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="thaliedje.models.Player.objects">
-<code class="sig-name descname">objects</code><em class="property"> = &lt;django.db.models.manager.Manager object&gt;</em><a class="headerlink" href="#thaliedje.models.Player.objects" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">objects</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#thaliedje.models.Player.objects" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="thaliedje.models.Player.playback_device_id">
-<code class="sig-name descname">playback_device_id</code><a class="headerlink" href="#thaliedje.models.Player.playback_device_id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">playback_device_id</span></code><a class="headerlink" href="#thaliedje.models.Player.playback_device_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="thaliedje.models.Player.playback_device_name">
-<code class="sig-name descname">playback_device_name</code><a class="headerlink" href="#thaliedje.models.Player.playback_device_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">playback_device_name</span></code><a class="headerlink" href="#thaliedje.models.Player.playback_device_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="thaliedje.models.Player.queue">
-<code class="sig-name descname">queue</code><a class="headerlink" href="#thaliedje.models.Player.queue" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">queue</span></code><a class="headerlink" href="#thaliedje.models.Player.queue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related objects manager on the reverse side of a
 many-to-one relation.</p>
 <p>In the example:</p>
@@ -520,14 +520,14 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 
 <dl class="py attribute">
 <dt id="thaliedje.models.Player.redirect_uri">
-<code class="sig-name descname">redirect_uri</code><a class="headerlink" href="#thaliedje.models.Player.redirect_uri" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">redirect_uri</span></code><a class="headerlink" href="#thaliedje.models.Player.redirect_uri" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="thaliedje.models.Player.spotify">
-<em class="property">property </em><code class="sig-name descname">spotify</code><a class="headerlink" href="#thaliedje.models.Player.spotify" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">spotify</span></code><a class="headerlink" href="#thaliedje.models.Player.spotify" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a Spotify object with a SpotifyOAuth manager as authentication backend.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -538,7 +538,7 @@ object the first time, the query is executed.</p>
 
 <dl class="py attribute">
 <dt id="thaliedje.models.Player.venue">
-<code class="sig-name descname">venue</code><a class="headerlink" href="#thaliedje.models.Player.venue" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">venue</span></code><a class="headerlink" href="#thaliedje.models.Player.venue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related object on the forward side of a one-to-one relation.</p>
 <p>In the example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
@@ -550,57 +550,57 @@ object the first time, the query is executed.</p>
 
 <dl class="py attribute">
 <dt id="thaliedje.models.Player.venue_id">
-<code class="sig-name descname">venue_id</code><a class="headerlink" href="#thaliedje.models.Player.venue_id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">venue_id</span></code><a class="headerlink" href="#thaliedje.models.Player.venue_id" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="thaliedje.models.SpotifyArtist">
-<em class="property">class </em><code class="sig-prename descclassname">thaliedje.models.</code><code class="sig-name descname">SpotifyArtist</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.models.SpotifyArtist" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">thaliedje.models.</span></code><code class="sig-name descname"><span class="pre">SpotifyArtist</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.models.SpotifyArtist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
 <p>Spotify Artist model.</p>
 <dl class="py exception">
 <dt id="thaliedje.models.SpotifyArtist.DoesNotExist">
-<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#thaliedje.models.SpotifyArtist.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">DoesNotExist</span></code><a class="headerlink" href="#thaliedje.models.SpotifyArtist.DoesNotExist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
 </dd></dl>
 
 <dl class="py exception">
 <dt id="thaliedje.models.SpotifyArtist.MultipleObjectsReturned">
-<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#thaliedje.models.SpotifyArtist.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></code><a class="headerlink" href="#thaliedje.models.SpotifyArtist.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="thaliedje.models.SpotifyArtist.artist_id">
-<code class="sig-name descname">artist_id</code><a class="headerlink" href="#thaliedje.models.SpotifyArtist.artist_id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">artist_id</span></code><a class="headerlink" href="#thaliedje.models.SpotifyArtist.artist_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="thaliedje.models.SpotifyArtist.artist_name">
-<code class="sig-name descname">artist_name</code><a class="headerlink" href="#thaliedje.models.SpotifyArtist.artist_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">artist_name</span></code><a class="headerlink" href="#thaliedje.models.SpotifyArtist.artist_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="thaliedje.models.SpotifyArtist.id">
-<code class="sig-name descname">id</code><a class="headerlink" href="#thaliedje.models.SpotifyArtist.id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">id</span></code><a class="headerlink" href="#thaliedje.models.SpotifyArtist.id" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="thaliedje.models.SpotifyArtist.objects">
-<code class="sig-name descname">objects</code><em class="property"> = &lt;django.db.models.manager.Manager object&gt;</em><a class="headerlink" href="#thaliedje.models.SpotifyArtist.objects" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">objects</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#thaliedje.models.SpotifyArtist.objects" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="thaliedje.models.SpotifyArtist.spotifytrack_set">
-<code class="sig-name descname">spotifytrack_set</code><a class="headerlink" href="#thaliedje.models.SpotifyArtist.spotifytrack_set" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">spotifytrack_set</span></code><a class="headerlink" href="#thaliedje.models.SpotifyArtist.spotifytrack_set" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related objects manager on the forward and reverse sides of
 a many-to-many relation.</p>
 <p>In the example:</p>
@@ -618,55 +618,55 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 
 <dl class="py class">
 <dt id="thaliedje.models.SpotifyQueueItem">
-<em class="property">class </em><code class="sig-prename descclassname">thaliedje.models.</code><code class="sig-name descname">SpotifyQueueItem</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.models.SpotifyQueueItem" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">thaliedje.models.</span></code><code class="sig-name descname"><span class="pre">SpotifyQueueItem</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.models.SpotifyQueueItem" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
 <p>Spotify Queue Item model.</p>
 <p>SpotifyQueueItems are tracks that are added to the queue of the playback
 device for a Player, requested by a certain user.</p>
 <dl class="py exception">
 <dt id="thaliedje.models.SpotifyQueueItem.DoesNotExist">
-<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#thaliedje.models.SpotifyQueueItem.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">DoesNotExist</span></code><a class="headerlink" href="#thaliedje.models.SpotifyQueueItem.DoesNotExist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
 </dd></dl>
 
 <dl class="py exception">
 <dt id="thaliedje.models.SpotifyQueueItem.MultipleObjectsReturned">
-<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#thaliedje.models.SpotifyQueueItem.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></code><a class="headerlink" href="#thaliedje.models.SpotifyQueueItem.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="thaliedje.models.SpotifyQueueItem.added">
-<code class="sig-name descname">added</code><a class="headerlink" href="#thaliedje.models.SpotifyQueueItem.added" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">added</span></code><a class="headerlink" href="#thaliedje.models.SpotifyQueueItem.added" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="thaliedje.models.SpotifyQueueItem.get_next_by_added">
-<code class="sig-name descname">get_next_by_added</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django.db.models.fields.DateTimeField: added&gt;</em>, <em class="sig-param">is_next=True</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.models.SpotifyQueueItem.get_next_by_added" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_next_by_added</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">*</span></em>, <em class="sig-param"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">added&gt;</span></em>, <em class="sig-param"><span class="pre">is_next=True</span></em>, <em class="sig-param"><span class="pre">**kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.models.SpotifyQueueItem.get_next_by_added" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="thaliedje.models.SpotifyQueueItem.get_previous_by_added">
-<code class="sig-name descname">get_previous_by_added</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django.db.models.fields.DateTimeField: added&gt;</em>, <em class="sig-param">is_next=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.models.SpotifyQueueItem.get_previous_by_added" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_previous_by_added</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">*</span></em>, <em class="sig-param"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">added&gt;</span></em>, <em class="sig-param"><span class="pre">is_next=False</span></em>, <em class="sig-param"><span class="pre">**kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.models.SpotifyQueueItem.get_previous_by_added" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="thaliedje.models.SpotifyQueueItem.id">
-<code class="sig-name descname">id</code><a class="headerlink" href="#thaliedje.models.SpotifyQueueItem.id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">id</span></code><a class="headerlink" href="#thaliedje.models.SpotifyQueueItem.id" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="thaliedje.models.SpotifyQueueItem.objects">
-<code class="sig-name descname">objects</code><em class="property"> = &lt;django.db.models.manager.Manager object&gt;</em><a class="headerlink" href="#thaliedje.models.SpotifyQueueItem.objects" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">objects</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#thaliedje.models.SpotifyQueueItem.objects" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="thaliedje.models.SpotifyQueueItem.player">
-<code class="sig-name descname">player</code><a class="headerlink" href="#thaliedje.models.SpotifyQueueItem.player" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">player</span></code><a class="headerlink" href="#thaliedje.models.SpotifyQueueItem.player" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related object on the forward side of a many-to-one or
 one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 <p>In the example:</p>
@@ -679,12 +679,12 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 
 <dl class="py attribute">
 <dt id="thaliedje.models.SpotifyQueueItem.player_id">
-<code class="sig-name descname">player_id</code><a class="headerlink" href="#thaliedje.models.SpotifyQueueItem.player_id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">player_id</span></code><a class="headerlink" href="#thaliedje.models.SpotifyQueueItem.player_id" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="thaliedje.models.SpotifyQueueItem.requested_by">
-<code class="sig-name descname">requested_by</code><a class="headerlink" href="#thaliedje.models.SpotifyQueueItem.requested_by" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">requested_by</span></code><a class="headerlink" href="#thaliedje.models.SpotifyQueueItem.requested_by" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related object on the forward side of a many-to-one or
 one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 <p>In the example:</p>
@@ -697,12 +697,12 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 
 <dl class="py attribute">
 <dt id="thaliedje.models.SpotifyQueueItem.requested_by_id">
-<code class="sig-name descname">requested_by_id</code><a class="headerlink" href="#thaliedje.models.SpotifyQueueItem.requested_by_id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">requested_by_id</span></code><a class="headerlink" href="#thaliedje.models.SpotifyQueueItem.requested_by_id" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="thaliedje.models.SpotifyQueueItem.track">
-<code class="sig-name descname">track</code><a class="headerlink" href="#thaliedje.models.SpotifyQueueItem.track" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">track</span></code><a class="headerlink" href="#thaliedje.models.SpotifyQueueItem.track" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related object on the forward side of a many-to-one or
 one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 <p>In the example:</p>
@@ -715,43 +715,43 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 
 <dl class="py attribute">
 <dt id="thaliedje.models.SpotifyQueueItem.track_id">
-<code class="sig-name descname">track_id</code><a class="headerlink" href="#thaliedje.models.SpotifyQueueItem.track_id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">track_id</span></code><a class="headerlink" href="#thaliedje.models.SpotifyQueueItem.track_id" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="thaliedje.models.SpotifyTrack">
-<em class="property">class </em><code class="sig-prename descclassname">thaliedje.models.</code><code class="sig-name descname">SpotifyTrack</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.models.SpotifyTrack" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">thaliedje.models.</span></code><code class="sig-name descname"><span class="pre">SpotifyTrack</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.models.SpotifyTrack" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
 <p>Spotify Track model.</p>
 <dl class="py exception">
 <dt id="thaliedje.models.SpotifyTrack.DoesNotExist">
-<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#thaliedje.models.SpotifyTrack.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">DoesNotExist</span></code><a class="headerlink" href="#thaliedje.models.SpotifyTrack.DoesNotExist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
 </dd></dl>
 
 <dl class="py exception">
 <dt id="thaliedje.models.SpotifyTrack.MultipleObjectsReturned">
-<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#thaliedje.models.SpotifyTrack.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></code><a class="headerlink" href="#thaliedje.models.SpotifyTrack.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="thaliedje.models.SpotifyTrack.id">
-<code class="sig-name descname">id</code><a class="headerlink" href="#thaliedje.models.SpotifyTrack.id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">id</span></code><a class="headerlink" href="#thaliedje.models.SpotifyTrack.id" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="thaliedje.models.SpotifyTrack.objects">
-<code class="sig-name descname">objects</code><em class="property"> = &lt;django.db.models.manager.Manager object&gt;</em><a class="headerlink" href="#thaliedje.models.SpotifyTrack.objects" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">objects</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#thaliedje.models.SpotifyTrack.objects" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="thaliedje.models.SpotifyTrack.spotifyqueueitem_set">
-<code class="sig-name descname">spotifyqueueitem_set</code><a class="headerlink" href="#thaliedje.models.SpotifyTrack.spotifyqueueitem_set" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">spotifyqueueitem_set</span></code><a class="headerlink" href="#thaliedje.models.SpotifyTrack.spotifyqueueitem_set" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related objects manager on the reverse side of a
 many-to-one relation.</p>
 <p>In the example:</p>
@@ -766,7 +766,7 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 
 <dl class="py attribute">
 <dt id="thaliedje.models.SpotifyTrack.track_artists">
-<code class="sig-name descname">track_artists</code><a class="headerlink" href="#thaliedje.models.SpotifyTrack.track_artists" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">track_artists</span></code><a class="headerlink" href="#thaliedje.models.SpotifyTrack.track_artists" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related objects manager on the forward and reverse sides of
 a many-to-many relation.</p>
 <p>In the example:</p>
@@ -782,14 +782,14 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 
 <dl class="py attribute">
 <dt id="thaliedje.models.SpotifyTrack.track_id">
-<code class="sig-name descname">track_id</code><a class="headerlink" href="#thaliedje.models.SpotifyTrack.track_id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">track_id</span></code><a class="headerlink" href="#thaliedje.models.SpotifyTrack.track_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="thaliedje.models.SpotifyTrack.track_name">
-<code class="sig-name descname">track_name</code><a class="headerlink" href="#thaliedje.models.SpotifyTrack.track_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">track_name</span></code><a class="headerlink" href="#thaliedje.models.SpotifyTrack.track_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -807,36 +807,36 @@ object the first time, the query is executed.</p>
 <span id="thaliedje-views-module"></span><h2>thaliedje.views module<a class="headerlink" href="#module-thaliedje.views" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="thaliedje.views.IndexView">
-<em class="property">class </em><code class="sig-prename descclassname">thaliedje.views.</code><code class="sig-name descname">IndexView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.views.IndexView" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">thaliedje.views.</span></code><code class="sig-name descname"><span class="pre">IndexView</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.views.IndexView" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
 <p>Index view for thaliedje.</p>
 <dl class="py method">
 <dt id="thaliedje.views.IndexView.get">
-<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.views.IndexView.get" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.views.IndexView.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>GET an overview of all players.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="thaliedje.views.IndexView.template_name">
-<code class="sig-name descname">template_name</code><em class="property"> = 'thaliedje/index.html'</em><a class="headerlink" href="#thaliedje.views.IndexView.template_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">template_name</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'thaliedje/index.html'</span></em><a class="headerlink" href="#thaliedje.views.IndexView.template_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="thaliedje.views.NowPlayingView">
-<em class="property">class </em><code class="sig-prename descclassname">thaliedje.views.</code><code class="sig-name descname">NowPlayingView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.views.NowPlayingView" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">thaliedje.views.</span></code><code class="sig-name descname"><span class="pre">NowPlayingView</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.views.NowPlayingView" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
 <p>Now playing view with the player for a venue.</p>
 <dl class="py method">
 <dt id="thaliedje.views.NowPlayingView.get">
-<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.views.NowPlayingView.get" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.views.NowPlayingView.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>GET the player for a venue.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="thaliedje.views.NowPlayingView.template_name">
-<code class="sig-name descname">template_name</code><em class="property"> = 'thaliedje/now_playing.html'</em><a class="headerlink" href="#thaliedje.views.NowPlayingView.template_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">template_name</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'thaliedje/now_playing.html'</span></em><a class="headerlink" href="#thaliedje.views.NowPlayingView.template_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

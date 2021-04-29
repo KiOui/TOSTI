@@ -184,60 +184,60 @@
 <span id="orders-admin-module"></span><h2>orders.admin module<a class="headerlink" href="#module-orders.admin" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="orders.admin.OrderAdmin">
-<em class="property">class </em><code class="sig-prename descclassname">orders.admin.</code><code class="sig-name descname">OrderAdmin</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">admin_site</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.admin.OrderAdmin" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">orders.admin.</span></code><code class="sig-name descname"><span class="pre">OrderAdmin</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">admin_site</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.admin.OrderAdmin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">import_export.admin.ImportExportModelAdmin</span></code></p>
 <p>Custom admin for orders.</p>
 <dl class="py class">
 <dt id="orders.admin.OrderAdmin.Media">
-<em class="property">class </em><code class="sig-name descname">Media</code><a class="headerlink" href="#orders.admin.OrderAdmin.Media" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Media</span></code><a class="headerlink" href="#orders.admin.OrderAdmin.Media" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Necessary to use AutocompleteFilter.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.admin.OrderAdmin.actions">
-<code class="sig-name descname">actions</code><em class="property"> = ['set_ready', 'set_paid']</em><a class="headerlink" href="#orders.admin.OrderAdmin.actions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">actions</span></code><em class="property"> <span class="pre">=</span> <span class="pre">['set_ready',</span> <span class="pre">'set_paid']</span></em><a class="headerlink" href="#orders.admin.OrderAdmin.actions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.admin.OrderAdmin.date_hierarchy">
-<code class="sig-name descname">date_hierarchy</code><em class="property"> = 'created'</em><a class="headerlink" href="#orders.admin.OrderAdmin.date_hierarchy" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">date_hierarchy</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'created'</span></em><a class="headerlink" href="#orders.admin.OrderAdmin.date_hierarchy" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.admin.OrderAdmin.form">
-<code class="sig-name descname">form</code><a class="headerlink" href="#orders.admin.OrderAdmin.form" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">form</span></code><a class="headerlink" href="#orders.admin.OrderAdmin.form" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="#orders.admin.OrderAdminForm" title="orders.admin.OrderAdminForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">orders.admin.OrderAdminForm</span></code></a></p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.admin.OrderAdmin.list_display">
-<code class="sig-name descname">list_display</code><em class="property"> = ['user', 'created', 'get_venue', 'product', 'ready', 'paid']</em><a class="headerlink" href="#orders.admin.OrderAdmin.list_display" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">list_display</span></code><em class="property"> <span class="pre">=</span> <span class="pre">['user',</span> <span class="pre">'created',</span> <span class="pre">'get_venue',</span> <span class="pre">'product',</span> <span class="pre">'ready',</span> <span class="pre">'paid']</span></em><a class="headerlink" href="#orders.admin.OrderAdmin.list_display" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.admin.OrderAdmin.list_filter">
-<code class="sig-name descname">list_filter</code><em class="property"> = [&lt;class 'orders.admin.OrderAdminShiftFilter'&gt;, 'product', 'ready', 'paid', 'shift__venue']</em><a class="headerlink" href="#orders.admin.OrderAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">list_filter</span></code><em class="property"> <span class="pre">=</span> <span class="pre">[&lt;class</span> <span class="pre">'orders.admin.OrderAdminShiftFilter'&gt;,</span> <span class="pre">'product',</span> <span class="pre">'ready',</span> <span class="pre">'paid',</span> <span class="pre">'shift__venue']</span></em><a class="headerlink" href="#orders.admin.OrderAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="orders.admin.OrderAdmin.media">
-<em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#orders.admin.OrderAdmin.media" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">media</span></code><a class="headerlink" href="#orders.admin.OrderAdmin.media" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.admin.OrderAdmin.readonly_fields">
-<code class="sig-name descname">readonly_fields</code><em class="property"> = ['order_price', 'created', 'ready_at', 'paid_at']</em><a class="headerlink" href="#orders.admin.OrderAdmin.readonly_fields" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">readonly_fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">['order_price',</span> <span class="pre">'created',</span> <span class="pre">'ready_at',</span> <span class="pre">'paid_at']</span></em><a class="headerlink" href="#orders.admin.OrderAdmin.readonly_fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.admin.OrderAdmin.search_fields">
-<code class="sig-name descname">search_fields</code><em class="property"> = ['user', 'shift']</em><a class="headerlink" href="#orders.admin.OrderAdmin.search_fields" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">search_fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">['user',</span> <span class="pre">'shift']</span></em><a class="headerlink" href="#orders.admin.OrderAdmin.search_fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="orders.admin.OrderAdmin.set_paid">
-<code class="sig-name descname">set_paid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="n">queryset</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.admin.OrderAdmin.set_paid" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">set_paid</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queryset</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.admin.OrderAdmin.set_paid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set orders in a QuerySet as paid.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -254,7 +254,7 @@
 
 <dl class="py method">
 <dt id="orders.admin.OrderAdmin.set_ready">
-<code class="sig-name descname">set_ready</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="n">queryset</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.admin.OrderAdmin.set_ready" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">set_ready</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queryset</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.admin.OrderAdmin.set_ready" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set orders in a QuerySet as ready.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -273,22 +273,22 @@
 
 <dl class="py class">
 <dt id="orders.admin.OrderAdminForm">
-<em class="property">class </em><code class="sig-prename descclassname">orders.admin.</code><code class="sig-name descname">OrderAdminForm</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.admin.OrderAdminForm" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">orders.admin.</span></code><code class="sig-name descname"><span class="pre">OrderAdminForm</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.admin.OrderAdminForm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.forms.models.ModelForm</span></code></p>
 <p>Admin form to edit orders.</p>
 <dl class="py class">
 <dt id="orders.admin.OrderAdminForm.Meta">
-<em class="property">class </em><code class="sig-name descname">Meta</code><a class="headerlink" href="#orders.admin.OrderAdminForm.Meta" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Meta</span></code><a class="headerlink" href="#orders.admin.OrderAdminForm.Meta" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Meta class for OrderAdminForm.</p>
 <dl class="py attribute">
 <dt id="orders.admin.OrderAdminForm.Meta.exclude">
-<code class="sig-name descname">exclude</code><em class="property"> = []</em><a class="headerlink" href="#orders.admin.OrderAdminForm.Meta.exclude" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">exclude</span></code><em class="property"> <span class="pre">=</span> <span class="pre">[]</span></em><a class="headerlink" href="#orders.admin.OrderAdminForm.Meta.exclude" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.admin.OrderAdminForm.Meta.model">
-<code class="sig-name descname">model</code><a class="headerlink" href="#orders.admin.OrderAdminForm.Meta.model" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">model</span></code><a class="headerlink" href="#orders.admin.OrderAdminForm.Meta.model" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="#orders.models.Order" title="orders.models.Order"><code class="xref py py-class docutils literal notranslate"><span class="pre">orders.models.Order</span></code></a></p>
 </dd></dl>
 
@@ -296,17 +296,17 @@
 
 <dl class="py attribute">
 <dt id="orders.admin.OrderAdminForm.base_fields">
-<code class="sig-name descname">base_fields</code><em class="property"> = {'order_price': &lt;django.forms.fields.DecimalField object&gt;, 'paid': &lt;django.forms.fields.BooleanField object&gt;, 'paid_at': &lt;django.forms.fields.DateTimeField object&gt;, 'product': &lt;django.forms.models.ModelChoiceField object&gt;, 'ready': &lt;django.forms.fields.BooleanField object&gt;, 'ready_at': &lt;django.forms.fields.DateTimeField object&gt;, 'shift': &lt;django.forms.models.ModelChoiceField object&gt;, 'type': &lt;django.forms.fields.TypedChoiceField object&gt;, 'user': &lt;django.forms.models.ModelChoiceField object&gt;, 'user_association': &lt;django.forms.models.ModelChoiceField object&gt;}</em><a class="headerlink" href="#orders.admin.OrderAdminForm.base_fields" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">base_fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'order_price':</span> <span class="pre">&lt;django.forms.fields.DecimalField</span> <span class="pre">object&gt;,</span> <span class="pre">'paid':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;,</span> <span class="pre">'paid_at':</span> <span class="pre">&lt;django.forms.fields.DateTimeField</span> <span class="pre">object&gt;,</span> <span class="pre">'product':</span> <span class="pre">&lt;django.forms.models.ModelChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'ready':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;,</span> <span class="pre">'ready_at':</span> <span class="pre">&lt;django.forms.fields.DateTimeField</span> <span class="pre">object&gt;,</span> <span class="pre">'shift':</span> <span class="pre">&lt;django.forms.models.ModelChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'type':</span> <span class="pre">&lt;django.forms.fields.TypedChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'user':</span> <span class="pre">&lt;django.forms.models.ModelChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'user_association':</span> <span class="pre">&lt;django.forms.models.ModelChoiceField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#orders.admin.OrderAdminForm.base_fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.admin.OrderAdminForm.declared_fields">
-<code class="sig-name descname">declared_fields</code><em class="property"> = {}</em><a class="headerlink" href="#orders.admin.OrderAdminForm.declared_fields" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">declared_fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{}</span></em><a class="headerlink" href="#orders.admin.OrderAdminForm.declared_fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="orders.admin.OrderAdminForm.media">
-<em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#orders.admin.OrderAdminForm.media" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">media</span></code><a class="headerlink" href="#orders.admin.OrderAdminForm.media" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return all media required to render the widgets on this form.</p>
 </dd></dl>
 
@@ -314,97 +314,97 @@
 
 <dl class="py class">
 <dt id="orders.admin.OrderAdminShiftFilter">
-<em class="property">class </em><code class="sig-prename descclassname">orders.admin.</code><code class="sig-name descname">OrderAdminShiftFilter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="n">params</span></em>, <em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">model_admin</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.admin.OrderAdminShiftFilter" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">orders.admin.</span></code><code class="sig-name descname"><span class="pre">OrderAdminShiftFilter</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_admin</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.admin.OrderAdminShiftFilter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">admin_auto_filters.filters.AutocompleteFilter</span></code></p>
 <p>Filter class to filter Order objects on a certain shift.</p>
 <dl class="py attribute">
 <dt id="orders.admin.OrderAdminShiftFilter.field_name">
-<code class="sig-name descname">field_name</code><em class="property"> = 'shift'</em><a class="headerlink" href="#orders.admin.OrderAdminShiftFilter.field_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">field_name</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'shift'</span></em><a class="headerlink" href="#orders.admin.OrderAdminShiftFilter.field_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.admin.OrderAdminShiftFilter.title">
-<code class="sig-name descname">title</code><em class="property"> = 'Shift'</em><a class="headerlink" href="#orders.admin.OrderAdminShiftFilter.title" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">title</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'Shift'</span></em><a class="headerlink" href="#orders.admin.OrderAdminShiftFilter.title" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="orders.admin.OrderInline">
-<em class="property">class </em><code class="sig-prename descclassname">orders.admin.</code><code class="sig-name descname">OrderInline</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent_model</span></em>, <em class="sig-param"><span class="n">admin_site</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.admin.OrderInline" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">orders.admin.</span></code><code class="sig-name descname"><span class="pre">OrderInline</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">admin_site</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.admin.OrderInline" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.admin.options.TabularInline</span></code></p>
 <p>Inline form for Registration.</p>
 <dl class="py attribute">
 <dt id="orders.admin.OrderInline.extra">
-<code class="sig-name descname">extra</code><em class="property"> = 0</em><a class="headerlink" href="#orders.admin.OrderInline.extra" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">extra</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#orders.admin.OrderInline.extra" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="orders.admin.OrderInline.media">
-<em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#orders.admin.OrderInline.media" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">media</span></code><a class="headerlink" href="#orders.admin.OrderInline.media" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.admin.OrderInline.model">
-<code class="sig-name descname">model</code><a class="headerlink" href="#orders.admin.OrderInline.model" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">model</span></code><a class="headerlink" href="#orders.admin.OrderInline.model" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="#orders.models.Order" title="orders.models.Order"><code class="xref py py-class docutils literal notranslate"><span class="pre">orders.models.Order</span></code></a></p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.admin.OrderInline.readonly_fields">
-<code class="sig-name descname">readonly_fields</code><em class="property"> = ['user', 'product', 'order_price', 'created', 'paid_at', 'ready_at']</em><a class="headerlink" href="#orders.admin.OrderInline.readonly_fields" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">readonly_fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">['user',</span> <span class="pre">'product',</span> <span class="pre">'order_price',</span> <span class="pre">'created',</span> <span class="pre">'paid_at',</span> <span class="pre">'ready_at']</span></em><a class="headerlink" href="#orders.admin.OrderInline.readonly_fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="orders.admin.OrderVenueAdmin">
-<em class="property">class </em><code class="sig-prename descclassname">orders.admin.</code><code class="sig-name descname">OrderVenueAdmin</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">admin_site</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.admin.OrderVenueAdmin" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">orders.admin.</span></code><code class="sig-name descname"><span class="pre">OrderVenueAdmin</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">admin_site</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.admin.OrderVenueAdmin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">guardian.admin.GuardedModelAdmin</span></code></p>
 <p>Simple admin for OrderVenues.</p>
 <dl class="py method">
 <dt id="orders.admin.OrderVenueAdmin.media">
-<em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#orders.admin.OrderVenueAdmin.media" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">media</span></code><a class="headerlink" href="#orders.admin.OrderVenueAdmin.media" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="orders.admin.ProductAdmin">
-<em class="property">class </em><code class="sig-prename descclassname">orders.admin.</code><code class="sig-name descname">ProductAdmin</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">admin_site</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.admin.ProductAdmin" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">orders.admin.</span></code><code class="sig-name descname"><span class="pre">ProductAdmin</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">admin_site</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.admin.ProductAdmin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.admin.options.ModelAdmin</span></code></p>
 <p>Custom admin for products.</p>
 <dl class="py class">
 <dt id="orders.admin.ProductAdmin.Media">
-<em class="property">class </em><code class="sig-name descname">Media</code><a class="headerlink" href="#orders.admin.ProductAdmin.Media" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Media</span></code><a class="headerlink" href="#orders.admin.ProductAdmin.Media" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Necessary to use AutocompleteFilter.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.admin.ProductAdmin.actions">
-<code class="sig-name descname">actions</code><em class="property"> = ['make_available', 'make_unavailable']</em><a class="headerlink" href="#orders.admin.ProductAdmin.actions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">actions</span></code><em class="property"> <span class="pre">=</span> <span class="pre">['make_available',</span> <span class="pre">'make_unavailable']</span></em><a class="headerlink" href="#orders.admin.ProductAdmin.actions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="orders.admin.ProductAdmin.clean_barcode">
-<code class="sig-name descname">clean_barcode</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.admin.ProductAdmin.clean_barcode" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">clean_barcode</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.admin.ProductAdmin.clean_barcode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Clean barcode.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.admin.ProductAdmin.list_display">
-<code class="sig-name descname">list_display</code><em class="property"> = ['name', 'current_price', 'available']</em><a class="headerlink" href="#orders.admin.ProductAdmin.list_display" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">list_display</span></code><em class="property"> <span class="pre">=</span> <span class="pre">['name',</span> <span class="pre">'current_price',</span> <span class="pre">'available']</span></em><a class="headerlink" href="#orders.admin.ProductAdmin.list_display" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.admin.ProductAdmin.list_filter">
-<code class="sig-name descname">list_filter</code><em class="property"> = [&lt;class 'orders.admin.ProductAdminVenueFilter'&gt;, 'available']</em><a class="headerlink" href="#orders.admin.ProductAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">list_filter</span></code><em class="property"> <span class="pre">=</span> <span class="pre">[&lt;class</span> <span class="pre">'orders.admin.ProductAdminVenueFilter'&gt;,</span> <span class="pre">'available']</span></em><a class="headerlink" href="#orders.admin.ProductAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="orders.admin.ProductAdmin.make_available">
-<code class="sig-name descname">make_available</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="n">queryset</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.admin.ProductAdmin.make_available" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">make_available</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queryset</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.admin.ProductAdmin.make_available" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make a QuerySet of products available.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -421,7 +421,7 @@
 
 <dl class="py method">
 <dt id="orders.admin.ProductAdmin.make_unavailable">
-<code class="sig-name descname">make_unavailable</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="n">queryset</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.admin.ProductAdmin.make_unavailable" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">make_unavailable</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queryset</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.admin.ProductAdmin.make_unavailable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make a QuerySet of product unavailable.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -438,53 +438,53 @@
 
 <dl class="py method">
 <dt id="orders.admin.ProductAdmin.media">
-<em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#orders.admin.ProductAdmin.media" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">media</span></code><a class="headerlink" href="#orders.admin.ProductAdmin.media" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.admin.ProductAdmin.search_fields">
-<code class="sig-name descname">search_fields</code><em class="property"> = ['name', 'venue']</em><a class="headerlink" href="#orders.admin.ProductAdmin.search_fields" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">search_fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">['name',</span> <span class="pre">'venue']</span></em><a class="headerlink" href="#orders.admin.ProductAdmin.search_fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="orders.admin.ProductAdminVenueFilter">
-<em class="property">class </em><code class="sig-prename descclassname">orders.admin.</code><code class="sig-name descname">ProductAdminVenueFilter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="n">params</span></em>, <em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">model_admin</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.admin.ProductAdminVenueFilter" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">orders.admin.</span></code><code class="sig-name descname"><span class="pre">ProductAdminVenueFilter</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_admin</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.admin.ProductAdminVenueFilter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">admin_auto_filters.filters.AutocompleteFilter</span></code></p>
 <p>Filter class to filter product objects available at a certain venue.</p>
 <dl class="py attribute">
 <dt id="orders.admin.ProductAdminVenueFilter.field_name">
-<code class="sig-name descname">field_name</code><em class="property"> = 'available_at'</em><a class="headerlink" href="#orders.admin.ProductAdminVenueFilter.field_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">field_name</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'available_at'</span></em><a class="headerlink" href="#orders.admin.ProductAdminVenueFilter.field_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.admin.ProductAdminVenueFilter.title">
-<code class="sig-name descname">title</code><em class="property"> = 'Venue'</em><a class="headerlink" href="#orders.admin.ProductAdminVenueFilter.title" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">title</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'Venue'</span></em><a class="headerlink" href="#orders.admin.ProductAdminVenueFilter.title" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="orders.admin.ShiftAdmin">
-<em class="property">class </em><code class="sig-prename descclassname">orders.admin.</code><code class="sig-name descname">ShiftAdmin</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">admin_site</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.admin.ShiftAdmin" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">orders.admin.</span></code><code class="sig-name descname"><span class="pre">ShiftAdmin</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">admin_site</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.admin.ShiftAdmin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">guardian.admin.GuardedModelAdmin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">import_export.admin.ImportExportModelAdmin</span></code></p>
 <p>Custom admin for shifts.</p>
 <dl class="py class">
 <dt id="orders.admin.ShiftAdmin.Media">
-<em class="property">class </em><code class="sig-name descname">Media</code><a class="headerlink" href="#orders.admin.ShiftAdmin.Media" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Media</span></code><a class="headerlink" href="#orders.admin.ShiftAdmin.Media" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Necessary to use AutocompleteFilter.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.admin.ShiftAdmin.actions">
-<code class="sig-name descname">actions</code><em class="property"> = ['close_shift']</em><a class="headerlink" href="#orders.admin.ShiftAdmin.actions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">actions</span></code><em class="property"> <span class="pre">=</span> <span class="pre">['close_shift']</span></em><a class="headerlink" href="#orders.admin.ShiftAdmin.actions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="orders.admin.ShiftAdmin.close_shift">
-<code class="sig-name descname">close_shift</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="n">queryset</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.admin.ShiftAdmin.close_shift" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">close_shift</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queryset</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.admin.ShiftAdmin.close_shift" title="Permalink to this definition">¶</a></dt>
 <dd><p>Close a QuerySet of shifts.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -501,49 +501,49 @@
 
 <dl class="py attribute">
 <dt id="orders.admin.ShiftAdmin.date_hierarchy">
-<code class="sig-name descname">date_hierarchy</code><em class="property"> = 'start_date'</em><a class="headerlink" href="#orders.admin.ShiftAdmin.date_hierarchy" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">date_hierarchy</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'start_date'</span></em><a class="headerlink" href="#orders.admin.ShiftAdmin.date_hierarchy" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.admin.ShiftAdmin.form">
-<code class="sig-name descname">form</code><a class="headerlink" href="#orders.admin.ShiftAdmin.form" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">form</span></code><a class="headerlink" href="#orders.admin.ShiftAdmin.form" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="#orders.admin.ShiftAdminForm" title="orders.admin.ShiftAdminForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">orders.admin.ShiftAdminForm</span></code></a></p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="orders.admin.ShiftAdmin.get_is_active">
-<code class="sig-name descname">get_is_active</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.admin.ShiftAdmin.get_is_active" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_is_active</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.admin.ShiftAdmin.get_is_active" title="Permalink to this definition">¶</a></dt>
 <dd><p>Property for whether a shift is currently active.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.admin.ShiftAdmin.inlines">
-<code class="sig-name descname">inlines</code><em class="property"> = [&lt;class 'orders.admin.OrderInline'&gt;]</em><a class="headerlink" href="#orders.admin.ShiftAdmin.inlines" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">inlines</span></code><em class="property"> <span class="pre">=</span> <span class="pre">[&lt;class</span> <span class="pre">'orders.admin.OrderInline'&gt;]</span></em><a class="headerlink" href="#orders.admin.ShiftAdmin.inlines" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.admin.ShiftAdmin.list_display">
-<code class="sig-name descname">list_display</code><em class="property"> = ['date', 'start_time', 'end_time', 'venue', 'capacity', 'get_is_active', 'can_order']</em><a class="headerlink" href="#orders.admin.ShiftAdmin.list_display" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">list_display</span></code><em class="property"> <span class="pre">=</span> <span class="pre">['date',</span> <span class="pre">'start_time',</span> <span class="pre">'end_time',</span> <span class="pre">'venue',</span> <span class="pre">'capacity',</span> <span class="pre">'get_is_active',</span> <span class="pre">'can_order']</span></em><a class="headerlink" href="#orders.admin.ShiftAdmin.list_display" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.admin.ShiftAdmin.list_filter">
-<code class="sig-name descname">list_filter</code><em class="property"> = ['venue', 'can_order']</em><a class="headerlink" href="#orders.admin.ShiftAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">list_filter</span></code><em class="property"> <span class="pre">=</span> <span class="pre">['venue',</span> <span class="pre">'can_order']</span></em><a class="headerlink" href="#orders.admin.ShiftAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="orders.admin.ShiftAdmin.media">
-<em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#orders.admin.ShiftAdmin.media" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">media</span></code><a class="headerlink" href="#orders.admin.ShiftAdmin.media" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.admin.ShiftAdmin.search_fields">
-<code class="sig-name descname">search_fields</code><em class="property"> = ['start_date', 'venue__venue__name']</em><a class="headerlink" href="#orders.admin.ShiftAdmin.search_fields" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">search_fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">['start_date',</span> <span class="pre">'venue__venue__name']</span></em><a class="headerlink" href="#orders.admin.ShiftAdmin.search_fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="orders.admin.ShiftAdmin.view_on_site">
-<code class="sig-name descname">view_on_site</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.admin.ShiftAdmin.view_on_site" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">view_on_site</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.admin.ShiftAdmin.view_on_site" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the URL for the frontend view of this shift.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -559,22 +559,22 @@
 
 <dl class="py class">
 <dt id="orders.admin.ShiftAdminForm">
-<em class="property">class </em><code class="sig-prename descclassname">orders.admin.</code><code class="sig-name descname">ShiftAdminForm</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.admin.ShiftAdminForm" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">orders.admin.</span></code><code class="sig-name descname"><span class="pre">ShiftAdminForm</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.admin.ShiftAdminForm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.forms.models.ModelForm</span></code></p>
 <p>Admin form to edit shifts.</p>
 <dl class="py class">
 <dt id="orders.admin.ShiftAdminForm.Meta">
-<em class="property">class </em><code class="sig-name descname">Meta</code><a class="headerlink" href="#orders.admin.ShiftAdminForm.Meta" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Meta</span></code><a class="headerlink" href="#orders.admin.ShiftAdminForm.Meta" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Meta class for ShiftAdminForm.</p>
 <dl class="py attribute">
 <dt id="orders.admin.ShiftAdminForm.Meta.exclude">
-<code class="sig-name descname">exclude</code><em class="property"> = []</em><a class="headerlink" href="#orders.admin.ShiftAdminForm.Meta.exclude" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">exclude</span></code><em class="property"> <span class="pre">=</span> <span class="pre">[]</span></em><a class="headerlink" href="#orders.admin.ShiftAdminForm.Meta.exclude" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.admin.ShiftAdminForm.Meta.model">
-<code class="sig-name descname">model</code><a class="headerlink" href="#orders.admin.ShiftAdminForm.Meta.model" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">model</span></code><a class="headerlink" href="#orders.admin.ShiftAdminForm.Meta.model" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="#orders.models.Shift" title="orders.models.Shift"><code class="xref py py-class docutils literal notranslate"><span class="pre">orders.models.Shift</span></code></a></p>
 </dd></dl>
 
@@ -582,17 +582,17 @@
 
 <dl class="py attribute">
 <dt id="orders.admin.ShiftAdminForm.base_fields">
-<code class="sig-name descname">base_fields</code><em class="property"> = {'assignees': &lt;django.forms.models.ModelMultipleChoiceField object&gt;, 'can_order': &lt;django.forms.fields.BooleanField object&gt;, 'end_date': &lt;django.forms.fields.DateTimeField object&gt;, 'max_orders_per_user': &lt;django.forms.fields.IntegerField object&gt;, 'max_orders_total': &lt;django.forms.fields.IntegerField object&gt;, 'start_date': &lt;django.forms.fields.DateTimeField object&gt;, 'venue': &lt;django.forms.models.ModelChoiceField object&gt;}</em><a class="headerlink" href="#orders.admin.ShiftAdminForm.base_fields" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">base_fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'assignees':</span> <span class="pre">&lt;django.forms.models.ModelMultipleChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'can_order':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;,</span> <span class="pre">'end_date':</span> <span class="pre">&lt;django.forms.fields.DateTimeField</span> <span class="pre">object&gt;,</span> <span class="pre">'max_orders_per_user':</span> <span class="pre">&lt;django.forms.fields.IntegerField</span> <span class="pre">object&gt;,</span> <span class="pre">'max_orders_total':</span> <span class="pre">&lt;django.forms.fields.IntegerField</span> <span class="pre">object&gt;,</span> <span class="pre">'start_date':</span> <span class="pre">&lt;django.forms.fields.DateTimeField</span> <span class="pre">object&gt;,</span> <span class="pre">'venue':</span> <span class="pre">&lt;django.forms.models.ModelChoiceField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#orders.admin.ShiftAdminForm.base_fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.admin.ShiftAdminForm.declared_fields">
-<code class="sig-name descname">declared_fields</code><em class="property"> = {'assignees': &lt;django.forms.models.ModelMultipleChoiceField object&gt;}</em><a class="headerlink" href="#orders.admin.ShiftAdminForm.declared_fields" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">declared_fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'assignees':</span> <span class="pre">&lt;django.forms.models.ModelMultipleChoiceField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#orders.admin.ShiftAdminForm.declared_fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="orders.admin.ShiftAdminForm.media">
-<em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#orders.admin.ShiftAdminForm.media" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">media</span></code><a class="headerlink" href="#orders.admin.ShiftAdminForm.media" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return all media required to render the widgets on this form.</p>
 </dd></dl>
 
@@ -603,17 +603,17 @@
 <span id="orders-apps-module"></span><h2>orders.apps module<a class="headerlink" href="#module-orders.apps" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="orders.apps.OrdersConfig">
-<em class="property">class </em><code class="sig-prename descclassname">orders.apps.</code><code class="sig-name descname">OrdersConfig</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">app_name</span></em>, <em class="sig-param"><span class="n">app_module</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.apps.OrdersConfig" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">orders.apps.</span></code><code class="sig-name descname"><span class="pre">OrdersConfig</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_module</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.apps.OrdersConfig" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.apps.config.AppConfig</span></code></p>
 <p>AppConfig for order app.</p>
 <dl class="py attribute">
 <dt id="orders.apps.OrdersConfig.name">
-<code class="sig-name descname">name</code><em class="property"> = 'orders'</em><a class="headerlink" href="#orders.apps.OrdersConfig.name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">name</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'orders'</span></em><a class="headerlink" href="#orders.apps.OrdersConfig.name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="orders.apps.OrdersConfig.ready">
-<code class="sig-name descname">ready</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.apps.OrdersConfig.ready" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">ready</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.apps.OrdersConfig.ready" title="Permalink to this definition">¶</a></dt>
 <dd><p>Ready method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -629,22 +629,22 @@
 <span id="orders-forms-module"></span><h2>orders.forms module<a class="headerlink" href="#module-orders.forms" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="orders.forms.CreateShiftForm">
-<em class="property">class </em><code class="sig-prename descclassname">orders.forms.</code><code class="sig-name descname">CreateShiftForm</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">user</span></em>, <em class="sig-param"><span class="n">venue</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.forms.CreateShiftForm" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">orders.forms.</span></code><code class="sig-name descname"><span class="pre">CreateShiftForm</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">venue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.forms.CreateShiftForm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.forms.models.ModelForm</span></code></p>
 <p>Shift creation form.</p>
 <dl class="py class">
 <dt id="orders.forms.CreateShiftForm.Meta">
-<em class="property">class </em><code class="sig-name descname">Meta</code><a class="headerlink" href="#orders.forms.CreateShiftForm.Meta" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Meta</span></code><a class="headerlink" href="#orders.forms.CreateShiftForm.Meta" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Meta class.</p>
 <dl class="py attribute">
 <dt id="orders.forms.CreateShiftForm.Meta.fields">
-<code class="sig-name descname">fields</code><em class="property"> = ['venue', 'start_date', 'end_date']</em><a class="headerlink" href="#orders.forms.CreateShiftForm.Meta.fields" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">['venue',</span> <span class="pre">'start_date',</span> <span class="pre">'end_date']</span></em><a class="headerlink" href="#orders.forms.CreateShiftForm.Meta.fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.forms.CreateShiftForm.Meta.model">
-<code class="sig-name descname">model</code><a class="headerlink" href="#orders.forms.CreateShiftForm.Meta.model" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">model</span></code><a class="headerlink" href="#orders.forms.CreateShiftForm.Meta.model" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="#orders.models.Shift" title="orders.models.Shift"><code class="xref py py-class docutils literal notranslate"><span class="pre">orders.models.Shift</span></code></a></p>
 </dd></dl>
 
@@ -652,12 +652,12 @@
 
 <dl class="py attribute">
 <dt id="orders.forms.CreateShiftForm.base_fields">
-<code class="sig-name descname">base_fields</code><em class="property"> = {'end_date': &lt;django.forms.fields.DateTimeField object&gt;, 'start_date': &lt;django.forms.fields.DateTimeField object&gt;, 'venue': &lt;django.forms.models.ModelChoiceField object&gt;}</em><a class="headerlink" href="#orders.forms.CreateShiftForm.base_fields" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">base_fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'end_date':</span> <span class="pre">&lt;django.forms.fields.DateTimeField</span> <span class="pre">object&gt;,</span> <span class="pre">'start_date':</span> <span class="pre">&lt;django.forms.fields.DateTimeField</span> <span class="pre">object&gt;,</span> <span class="pre">'venue':</span> <span class="pre">&lt;django.forms.models.ModelChoiceField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#orders.forms.CreateShiftForm.base_fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="orders.forms.CreateShiftForm.clean">
-<code class="sig-name descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.forms.CreateShiftForm.clean" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">clean</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.forms.CreateShiftForm.clean" title="Permalink to this definition">¶</a></dt>
 <dd><p>Clean the CreateShiftForm.</p>
 <p>Makes sure that the dates in the form are not overlapping with other shifts.
 :return: cleaned data</p>
@@ -665,18 +665,18 @@
 
 <dl class="py method">
 <dt id="orders.forms.CreateShiftForm.clean_venue">
-<code class="sig-name descname">clean_venue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.forms.CreateShiftForm.clean_venue" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">clean_venue</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.forms.CreateShiftForm.clean_venue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check whether venue is has an accepted value.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.forms.CreateShiftForm.declared_fields">
-<code class="sig-name descname">declared_fields</code><em class="property"> = {}</em><a class="headerlink" href="#orders.forms.CreateShiftForm.declared_fields" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">declared_fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{}</span></em><a class="headerlink" href="#orders.forms.CreateShiftForm.declared_fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="orders.forms.CreateShiftForm.media">
-<em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#orders.forms.CreateShiftForm.media" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">media</span></code><a class="headerlink" href="#orders.forms.CreateShiftForm.media" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return all media required to render the widgets on this form.</p>
 </dd></dl>
 
@@ -687,7 +687,7 @@
 <span id="orders-models-module"></span><h2>orders.models module<a class="headerlink" href="#module-orders.models" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="orders.models.Order">
-<em class="property">class </em><code class="sig-prename descclassname">orders.models.</code><code class="sig-name descname">Order</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Order" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">orders.models.</span></code><code class="sig-name descname"><span class="pre">Order</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Order" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
 <p>A user that ordered a product.</p>
 <p>Orders only contain a single product. If a user orders multiple products
@@ -695,62 +695,62 @@
 Verifying the amount of allowed orders is done via Shifts.</p>
 <dl class="py exception">
 <dt id="orders.models.Order.DoesNotExist">
-<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#orders.models.Order.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">DoesNotExist</span></code><a class="headerlink" href="#orders.models.Order.DoesNotExist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
 </dd></dl>
 
 <dl class="py exception">
 <dt id="orders.models.Order.MultipleObjectsReturned">
-<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#orders.models.Order.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></code><a class="headerlink" href="#orders.models.Order.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.models.Order.TYPES">
-<code class="sig-name descname">TYPES</code><em class="property"> = ((0, 'Ordered'), (1, 'Scanned'))</em><a class="headerlink" href="#orders.models.Order.TYPES" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">TYPES</span></code><em class="property"> <span class="pre">=</span> <span class="pre">((0,</span> <span class="pre">'Ordered'),</span> <span class="pre">(1,</span> <span class="pre">'Scanned'))</span></em><a class="headerlink" href="#orders.models.Order.TYPES" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.models.Order.TYPE_ORDERED">
-<code class="sig-name descname">TYPE_ORDERED</code><em class="property"> = 0</em><a class="headerlink" href="#orders.models.Order.TYPE_ORDERED" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">TYPE_ORDERED</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#orders.models.Order.TYPE_ORDERED" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.models.Order.TYPE_SCANNED">
-<code class="sig-name descname">TYPE_SCANNED</code><em class="property"> = 1</em><a class="headerlink" href="#orders.models.Order.TYPE_SCANNED" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">TYPE_SCANNED</span></code><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#orders.models.Order.TYPE_SCANNED" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="orders.models.Order.clean">
-<code class="sig-name descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Order.clean" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">clean</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Order.clean" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check whether this order is valid and can be saved.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.models.Order.created">
-<code class="sig-name descname">created</code><a class="headerlink" href="#orders.models.Order.created" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">created</span></code><a class="headerlink" href="#orders.models.Order.created" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="orders.models.Order.get_next_by_created">
-<code class="sig-name descname">get_next_by_created</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django.db.models.fields.DateTimeField: created&gt;</em>, <em class="sig-param">is_next=True</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Order.get_next_by_created" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_next_by_created</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">*</span></em>, <em class="sig-param"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">created&gt;</span></em>, <em class="sig-param"><span class="pre">is_next=True</span></em>, <em class="sig-param"><span class="pre">**kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Order.get_next_by_created" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="orders.models.Order.get_previous_by_created">
-<code class="sig-name descname">get_previous_by_created</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django.db.models.fields.DateTimeField: created&gt;</em>, <em class="sig-param">is_next=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Order.get_previous_by_created" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_previous_by_created</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">*</span></em>, <em class="sig-param"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">created&gt;</span></em>, <em class="sig-param"><span class="pre">is_next=False</span></em>, <em class="sig-param"><span class="pre">**kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Order.get_previous_by_created" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="orders.models.Order.get_type_display">
-<code class="sig-name descname">get_type_display</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django.db.models.fields.PositiveIntegerField: type&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Order.get_type_display" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_type_display</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">*</span></em>, <em class="sig-param"><span class="pre">field=&lt;django.db.models.fields.PositiveIntegerField:</span> <span class="pre">type&gt;</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Order.get_type_display" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="orders.models.Order.get_venue">
-<em class="property">property </em><code class="sig-name descname">get_venue</code><a class="headerlink" href="#orders.models.Order.get_venue" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">get_venue</span></code><a class="headerlink" href="#orders.models.Order.get_venue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the venue of this Order.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -761,40 +761,40 @@ object the first time, the query is executed.</p>
 
 <dl class="py attribute">
 <dt id="orders.models.Order.id">
-<code class="sig-name descname">id</code><a class="headerlink" href="#orders.models.Order.id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">id</span></code><a class="headerlink" href="#orders.models.Order.id" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.models.Order.objects">
-<code class="sig-name descname">objects</code><em class="property"> = &lt;django.db.models.manager.Manager object&gt;</em><a class="headerlink" href="#orders.models.Order.objects" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">objects</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#orders.models.Order.objects" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.models.Order.order_price">
-<code class="sig-name descname">order_price</code><a class="headerlink" href="#orders.models.Order.order_price" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">order_price</span></code><a class="headerlink" href="#orders.models.Order.order_price" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.models.Order.paid">
-<code class="sig-name descname">paid</code><a class="headerlink" href="#orders.models.Order.paid" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">paid</span></code><a class="headerlink" href="#orders.models.Order.paid" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.models.Order.paid_at">
-<code class="sig-name descname">paid_at</code><a class="headerlink" href="#orders.models.Order.paid_at" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">paid_at</span></code><a class="headerlink" href="#orders.models.Order.paid_at" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.models.Order.product">
-<code class="sig-name descname">product</code><a class="headerlink" href="#orders.models.Order.product" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">product</span></code><a class="headerlink" href="#orders.models.Order.product" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related object on the forward side of a many-to-one or
 one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 <p>In the example:</p>
@@ -807,26 +807,26 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 
 <dl class="py attribute">
 <dt id="orders.models.Order.product_id">
-<code class="sig-name descname">product_id</code><a class="headerlink" href="#orders.models.Order.product_id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">product_id</span></code><a class="headerlink" href="#orders.models.Order.product_id" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.models.Order.ready">
-<code class="sig-name descname">ready</code><a class="headerlink" href="#orders.models.Order.ready" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">ready</span></code><a class="headerlink" href="#orders.models.Order.ready" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.models.Order.ready_at">
-<code class="sig-name descname">ready_at</code><a class="headerlink" href="#orders.models.Order.ready_at" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">ready_at</span></code><a class="headerlink" href="#orders.models.Order.ready_at" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="orders.models.Order.save">
-<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Order.save" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">save</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Order.save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save an object of the Order type.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -843,7 +843,7 @@ object the first time, the query is executed.</p>
 
 <dl class="py attribute">
 <dt id="orders.models.Order.shift">
-<code class="sig-name descname">shift</code><a class="headerlink" href="#orders.models.Order.shift" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">shift</span></code><a class="headerlink" href="#orders.models.Order.shift" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related object on the forward side of a many-to-one or
 one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 <p>In the example:</p>
@@ -856,12 +856,12 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 
 <dl class="py attribute">
 <dt id="orders.models.Order.shift_id">
-<code class="sig-name descname">shift_id</code><a class="headerlink" href="#orders.models.Order.shift_id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">shift_id</span></code><a class="headerlink" href="#orders.models.Order.shift_id" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="orders.models.Order.to_json">
-<code class="sig-name descname">to_json</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Order.to_json" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">to_json</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Order.to_json" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert this object to JSON.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -872,14 +872,14 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 
 <dl class="py attribute">
 <dt id="orders.models.Order.type">
-<code class="sig-name descname">type</code><a class="headerlink" href="#orders.models.Order.type" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">type</span></code><a class="headerlink" href="#orders.models.Order.type" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.models.Order.user">
-<code class="sig-name descname">user</code><a class="headerlink" href="#orders.models.Order.user" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">user</span></code><a class="headerlink" href="#orders.models.Order.user" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related object on the forward side of a many-to-one or
 one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 <p>In the example:</p>
@@ -892,7 +892,7 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 
 <dl class="py attribute">
 <dt id="orders.models.Order.user_association">
-<code class="sig-name descname">user_association</code><a class="headerlink" href="#orders.models.Order.user_association" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">user_association</span></code><a class="headerlink" href="#orders.models.Order.user_association" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related object on the forward side of a many-to-one or
 one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 <p>In the example:</p>
@@ -905,65 +905,65 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 
 <dl class="py attribute">
 <dt id="orders.models.Order.user_association_id">
-<code class="sig-name descname">user_association_id</code><a class="headerlink" href="#orders.models.Order.user_association_id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">user_association_id</span></code><a class="headerlink" href="#orders.models.Order.user_association_id" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.models.Order.user_id">
-<code class="sig-name descname">user_id</code><a class="headerlink" href="#orders.models.Order.user_id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">user_id</span></code><a class="headerlink" href="#orders.models.Order.user_id" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="orders.models.OrderVenue">
-<em class="property">class </em><code class="sig-prename descclassname">orders.models.</code><code class="sig-name descname">OrderVenue</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.OrderVenue" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">orders.models.</span></code><code class="sig-name descname"><span class="pre">OrderVenue</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.OrderVenue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
 <p>Venues where Shifts can be created.</p>
 <dl class="py exception">
 <dt id="orders.models.OrderVenue.DoesNotExist">
-<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#orders.models.OrderVenue.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">DoesNotExist</span></code><a class="headerlink" href="#orders.models.OrderVenue.DoesNotExist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
 </dd></dl>
 
 <dl class="py exception">
 <dt id="orders.models.OrderVenue.MultipleObjectsReturned">
-<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#orders.models.OrderVenue.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></code><a class="headerlink" href="#orders.models.OrderVenue.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="orders.models.OrderVenue.get_users_with_order_perms">
-<code class="sig-name descname">get_users_with_order_perms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.OrderVenue.get_users_with_order_perms" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_users_with_order_perms</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.OrderVenue.get_users_with_order_perms" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get users with permissions to manage shifts in this venue.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="orders.models.OrderVenue.get_users_with_order_perms_queryset">
-<code class="sig-name descname">get_users_with_order_perms_queryset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.OrderVenue.get_users_with_order_perms_queryset" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_users_with_order_perms_queryset</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.OrderVenue.get_users_with_order_perms_queryset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get users with permissions to manage shifts in this venue as queryset.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="orders.models.OrderVenue.get_users_with_shift_admin_perms">
-<code class="sig-name descname">get_users_with_shift_admin_perms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.OrderVenue.get_users_with_shift_admin_perms" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_users_with_shift_admin_perms</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.OrderVenue.get_users_with_shift_admin_perms" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get users with permissions to manage shifts in this venue.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="orders.models.OrderVenue.get_users_with_shift_admin_perms_queryset">
-<code class="sig-name descname">get_users_with_shift_admin_perms_queryset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.OrderVenue.get_users_with_shift_admin_perms_queryset" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_users_with_shift_admin_perms_queryset</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.OrderVenue.get_users_with_shift_admin_perms_queryset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get users with permissions to manage shifts in this venue as queryset.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.models.OrderVenue.objects">
-<code class="sig-name descname">objects</code><em class="property"> = &lt;django.db.models.manager.Manager object&gt;</em><a class="headerlink" href="#orders.models.OrderVenue.objects" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">objects</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#orders.models.OrderVenue.objects" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.models.OrderVenue.product_set">
-<code class="sig-name descname">product_set</code><a class="headerlink" href="#orders.models.OrderVenue.product_set" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">product_set</span></code><a class="headerlink" href="#orders.models.OrderVenue.product_set" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related objects manager on the forward and reverse sides of
 a many-to-many relation.</p>
 <p>In the example:</p>
@@ -979,7 +979,7 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 
 <dl class="py attribute">
 <dt id="orders.models.OrderVenue.shift_set">
-<code class="sig-name descname">shift_set</code><a class="headerlink" href="#orders.models.OrderVenue.shift_set" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">shift_set</span></code><a class="headerlink" href="#orders.models.OrderVenue.shift_set" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related objects manager on the reverse side of a
 many-to-one relation.</p>
 <p>In the example:</p>
@@ -994,7 +994,7 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 
 <dl class="py attribute">
 <dt id="orders.models.OrderVenue.venue">
-<code class="sig-name descname">venue</code><a class="headerlink" href="#orders.models.OrderVenue.venue" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">venue</span></code><a class="headerlink" href="#orders.models.OrderVenue.venue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related object on the forward side of a one-to-one relation.</p>
 <p>In the example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
@@ -1006,38 +1006,38 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 
 <dl class="py attribute">
 <dt id="orders.models.OrderVenue.venue_id">
-<code class="sig-name descname">venue_id</code><a class="headerlink" href="#orders.models.OrderVenue.venue_id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">venue_id</span></code><a class="headerlink" href="#orders.models.OrderVenue.venue_id" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="orders.models.Product">
-<em class="property">class </em><code class="sig-prename descclassname">orders.models.</code><code class="sig-name descname">Product</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Product" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">orders.models.</span></code><code class="sig-name descname"><span class="pre">Product</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Product" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
 <p>Products that can be ordered.</p>
 <dl class="py exception">
 <dt id="orders.models.Product.DoesNotExist">
-<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#orders.models.Product.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">DoesNotExist</span></code><a class="headerlink" href="#orders.models.Product.DoesNotExist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
 </dd></dl>
 
 <dl class="py exception">
 <dt id="orders.models.Product.MultipleObjectsReturned">
-<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#orders.models.Product.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></code><a class="headerlink" href="#orders.models.Product.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.models.Product.available">
-<code class="sig-name descname">available</code><a class="headerlink" href="#orders.models.Product.available" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">available</span></code><a class="headerlink" href="#orders.models.Product.available" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.models.Product.available_at">
-<code class="sig-name descname">available_at</code><a class="headerlink" href="#orders.models.Product.available_at" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">available_at</span></code><a class="headerlink" href="#orders.models.Product.available_at" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related objects manager on the forward and reverse sides of
 a many-to-many relation.</p>
 <p>In the example:</p>
@@ -1053,61 +1053,61 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 
 <dl class="py attribute">
 <dt id="orders.models.Product.barcode">
-<code class="sig-name descname">barcode</code><a class="headerlink" href="#orders.models.Product.barcode" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">barcode</span></code><a class="headerlink" href="#orders.models.Product.barcode" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.models.Product.current_price">
-<code class="sig-name descname">current_price</code><a class="headerlink" href="#orders.models.Product.current_price" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">current_price</span></code><a class="headerlink" href="#orders.models.Product.current_price" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.models.Product.icon">
-<code class="sig-name descname">icon</code><a class="headerlink" href="#orders.models.Product.icon" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">icon</span></code><a class="headerlink" href="#orders.models.Product.icon" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.models.Product.id">
-<code class="sig-name descname">id</code><a class="headerlink" href="#orders.models.Product.id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">id</span></code><a class="headerlink" href="#orders.models.Product.id" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.models.Product.ignore_shift_restrictions">
-<code class="sig-name descname">ignore_shift_restrictions</code><a class="headerlink" href="#orders.models.Product.ignore_shift_restrictions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">ignore_shift_restrictions</span></code><a class="headerlink" href="#orders.models.Product.ignore_shift_restrictions" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.models.Product.max_allowed_per_shift">
-<code class="sig-name descname">max_allowed_per_shift</code><a class="headerlink" href="#orders.models.Product.max_allowed_per_shift" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">max_allowed_per_shift</span></code><a class="headerlink" href="#orders.models.Product.max_allowed_per_shift" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.models.Product.name">
-<code class="sig-name descname">name</code><a class="headerlink" href="#orders.models.Product.name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">name</span></code><a class="headerlink" href="#orders.models.Product.name" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.models.Product.objects">
-<code class="sig-name descname">objects</code><em class="property"> = &lt;django.db.models.manager.Manager object&gt;</em><a class="headerlink" href="#orders.models.Product.objects" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">objects</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#orders.models.Product.objects" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.models.Product.order_set">
-<code class="sig-name descname">order_set</code><a class="headerlink" href="#orders.models.Product.order_set" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">order_set</span></code><a class="headerlink" href="#orders.models.Product.order_set" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related objects manager on the reverse side of a
 many-to-one relation.</p>
 <p>In the example:</p>
@@ -1122,14 +1122,14 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 
 <dl class="py attribute">
 <dt id="orders.models.Product.orderable">
-<code class="sig-name descname">orderable</code><a class="headerlink" href="#orders.models.Product.orderable" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">orderable</span></code><a class="headerlink" href="#orders.models.Product.orderable" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="orders.models.Product.to_json">
-<code class="sig-name descname">to_json</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Product.to_json" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">to_json</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Product.to_json" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert this object to JSON.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1140,7 +1140,7 @@ object the first time, the query is executed.</p>
 
 <dl class="py method">
 <dt id="orders.models.Product.user_can_order_amount">
-<code class="sig-name descname">user_can_order_amount</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user</span></em>, <em class="sig-param"><span class="n">shift</span></em>, <em class="sig-param"><span class="n">amount</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Product.user_can_order_amount" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">user_can_order_amount</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Product.user_can_order_amount" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test if a user can order the specified amount of this Product in a specific shift.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1159,7 +1159,7 @@ object the first time, the query is executed.</p>
 
 <dl class="py method">
 <dt id="orders.models.Product.user_max_order_amount">
-<code class="sig-name descname">user_max_order_amount</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user</span></em>, <em class="sig-param"><span class="n">shift</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Product.user_max_order_amount" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">user_max_order_amount</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Product.user_max_order_amount" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the maximum amount a user can still order for this product.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1178,39 +1178,39 @@ object the first time, the query is executed.</p>
 
 <dl class="py class">
 <dt id="orders.models.Shift">
-<em class="property">class </em><code class="sig-prename descclassname">orders.models.</code><code class="sig-name descname">Shift</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Shift" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">orders.models.</span></code><code class="sig-name descname"><span class="pre">Shift</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Shift" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
 <p>Shifts in which orders can be placed.</p>
 <dl class="py attribute">
 <dt id="orders.models.Shift.DATE_FORMAT">
-<code class="sig-name descname">DATE_FORMAT</code><em class="property"> = '%Y-%m-%d'</em><a class="headerlink" href="#orders.models.Shift.DATE_FORMAT" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">DATE_FORMAT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'%Y-%m-%d'</span></em><a class="headerlink" href="#orders.models.Shift.DATE_FORMAT" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py exception">
 <dt id="orders.models.Shift.DoesNotExist">
-<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#orders.models.Shift.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">DoesNotExist</span></code><a class="headerlink" href="#orders.models.Shift.DoesNotExist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.models.Shift.HUMAN_DATE_FORMAT">
-<code class="sig-name descname">HUMAN_DATE_FORMAT</code><em class="property"> = '%a. %-d %b. %Y'</em><a class="headerlink" href="#orders.models.Shift.HUMAN_DATE_FORMAT" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">HUMAN_DATE_FORMAT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'%a.</span> <span class="pre">%-d</span> <span class="pre">%b.</span> <span class="pre">%Y'</span></em><a class="headerlink" href="#orders.models.Shift.HUMAN_DATE_FORMAT" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py exception">
 <dt id="orders.models.Shift.MultipleObjectsReturned">
-<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#orders.models.Shift.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></code><a class="headerlink" href="#orders.models.Shift.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.models.Shift.TIME_FORMAT">
-<code class="sig-name descname">TIME_FORMAT</code><em class="property"> = '%H:%M'</em><a class="headerlink" href="#orders.models.Shift.TIME_FORMAT" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">TIME_FORMAT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'%H:%M'</span></em><a class="headerlink" href="#orders.models.Shift.TIME_FORMAT" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.models.Shift.assignees">
-<code class="sig-name descname">assignees</code><a class="headerlink" href="#orders.models.Shift.assignees" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">assignees</span></code><a class="headerlink" href="#orders.models.Shift.assignees" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related objects manager on the forward and reverse sides of
 a many-to-many relation.</p>
 <p>In the example:</p>
@@ -1226,14 +1226,14 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 
 <dl class="py attribute">
 <dt id="orders.models.Shift.can_order">
-<code class="sig-name descname">can_order</code><a class="headerlink" href="#orders.models.Shift.can_order" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">can_order</span></code><a class="headerlink" href="#orders.models.Shift.can_order" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="orders.models.Shift.capacity">
-<em class="property">property </em><code class="sig-name descname">capacity</code><a class="headerlink" href="#orders.models.Shift.capacity" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">capacity</span></code><a class="headerlink" href="#orders.models.Shift.capacity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the current capacity of a shift as a string.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1244,7 +1244,7 @@ object the first time, the query is executed.</p>
 
 <dl class="py method">
 <dt id="orders.models.Shift.date">
-<em class="property">property </em><code class="sig-name descname">date</code><a class="headerlink" href="#orders.models.Shift.date" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">date</span></code><a class="headerlink" href="#orders.models.Shift.date" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the date of this object in string format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1255,14 +1255,14 @@ object the first time, the query is executed.</p>
 
 <dl class="py attribute">
 <dt id="orders.models.Shift.end_date">
-<code class="sig-name descname">end_date</code><a class="headerlink" href="#orders.models.Shift.end_date" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">end_date</span></code><a class="headerlink" href="#orders.models.Shift.end_date" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="orders.models.Shift.end_time">
-<em class="property">property </em><code class="sig-name descname">end_time</code><a class="headerlink" href="#orders.models.Shift.end_time" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">end_time</span></code><a class="headerlink" href="#orders.models.Shift.end_time" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the end time of this object in string format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1273,7 +1273,7 @@ object the first time, the query is executed.</p>
 
 <dl class="py method">
 <dt id="orders.models.Shift.get_assignees">
-<code class="sig-name descname">get_assignees</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Shift.get_assignees" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_assignees</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Shift.get_assignees" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get assignees of this shift.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1284,46 +1284,46 @@ object the first time, the query is executed.</p>
 
 <dl class="py method">
 <dt id="orders.models.Shift.get_next_by_end_date">
-<code class="sig-name descname">get_next_by_end_date</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django.db.models.fields.DateTimeField: end_date&gt;</em>, <em class="sig-param">is_next=True</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Shift.get_next_by_end_date" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_next_by_end_date</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">*</span></em>, <em class="sig-param"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">end_date&gt;</span></em>, <em class="sig-param"><span class="pre">is_next=True</span></em>, <em class="sig-param"><span class="pre">**kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Shift.get_next_by_end_date" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="orders.models.Shift.get_next_by_start_date">
-<code class="sig-name descname">get_next_by_start_date</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django.db.models.fields.DateTimeField: start_date&gt;</em>, <em class="sig-param">is_next=True</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Shift.get_next_by_start_date" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_next_by_start_date</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">*</span></em>, <em class="sig-param"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">start_date&gt;</span></em>, <em class="sig-param"><span class="pre">is_next=True</span></em>, <em class="sig-param"><span class="pre">**kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Shift.get_next_by_start_date" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="orders.models.Shift.get_previous_by_end_date">
-<code class="sig-name descname">get_previous_by_end_date</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django.db.models.fields.DateTimeField: end_date&gt;</em>, <em class="sig-param">is_next=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Shift.get_previous_by_end_date" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_previous_by_end_date</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">*</span></em>, <em class="sig-param"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">end_date&gt;</span></em>, <em class="sig-param"><span class="pre">is_next=False</span></em>, <em class="sig-param"><span class="pre">**kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Shift.get_previous_by_end_date" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="orders.models.Shift.get_previous_by_start_date">
-<code class="sig-name descname">get_previous_by_start_date</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">field=&lt;django.db.models.fields.DateTimeField: start_date&gt;</em>, <em class="sig-param">is_next=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Shift.get_previous_by_start_date" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_previous_by_start_date</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">*</span></em>, <em class="sig-param"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">start_date&gt;</span></em>, <em class="sig-param"><span class="pre">is_next=False</span></em>, <em class="sig-param"><span class="pre">**kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Shift.get_previous_by_start_date" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="orders.models.Shift.get_users_with_change_perms">
-<code class="sig-name descname">get_users_with_change_perms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Shift.get_users_with_change_perms" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_users_with_change_perms</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Shift.get_users_with_change_perms" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get users that my change this shift.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="orders.models.Shift.human_readable_start_end_time">
-<em class="property">property </em><code class="sig-name descname">human_readable_start_end_time</code><a class="headerlink" href="#orders.models.Shift.human_readable_start_end_time" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">human_readable_start_end_time</span></code><a class="headerlink" href="#orders.models.Shift.human_readable_start_end_time" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the start and and time in a human readable format.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.models.Shift.id">
-<code class="sig-name descname">id</code><a class="headerlink" href="#orders.models.Shift.id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">id</span></code><a class="headerlink" href="#orders.models.Shift.id" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="orders.models.Shift.is_active">
-<em class="property">property </em><code class="sig-name descname">is_active</code><a class="headerlink" href="#orders.models.Shift.is_active" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">is_active</span></code><a class="headerlink" href="#orders.models.Shift.is_active" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if a shift is currently active.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1334,21 +1334,21 @@ object the first time, the query is executed.</p>
 
 <dl class="py attribute">
 <dt id="orders.models.Shift.max_orders_per_user">
-<code class="sig-name descname">max_orders_per_user</code><a class="headerlink" href="#orders.models.Shift.max_orders_per_user" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">max_orders_per_user</span></code><a class="headerlink" href="#orders.models.Shift.max_orders_per_user" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.models.Shift.max_orders_total">
-<code class="sig-name descname">max_orders_total</code><a class="headerlink" href="#orders.models.Shift.max_orders_total" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">max_orders_total</span></code><a class="headerlink" href="#orders.models.Shift.max_orders_total" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="orders.models.Shift.max_orders_total_string">
-<em class="property">property </em><code class="sig-name descname">max_orders_total_string</code><a class="headerlink" href="#orders.models.Shift.max_orders_total_string" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">max_orders_total_string</span></code><a class="headerlink" href="#orders.models.Shift.max_orders_total_string" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the maximum amount of orders in string format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1359,7 +1359,7 @@ object the first time, the query is executed.</p>
 
 <dl class="py method">
 <dt id="orders.models.Shift.number_of_orders">
-<em class="property">property </em><code class="sig-name descname">number_of_orders</code><a class="headerlink" href="#orders.models.Shift.number_of_orders" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">number_of_orders</span></code><a class="headerlink" href="#orders.models.Shift.number_of_orders" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the total number of orders in this shift.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1370,7 +1370,7 @@ object the first time, the query is executed.</p>
 
 <dl class="py method">
 <dt id="orders.models.Shift.number_of_restricted_orders">
-<em class="property">property </em><code class="sig-name descname">number_of_restricted_orders</code><a class="headerlink" href="#orders.models.Shift.number_of_restricted_orders" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">number_of_restricted_orders</span></code><a class="headerlink" href="#orders.models.Shift.number_of_restricted_orders" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the total number of restricted orders in this shift.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1381,12 +1381,12 @@ object the first time, the query is executed.</p>
 
 <dl class="py attribute">
 <dt id="orders.models.Shift.objects">
-<code class="sig-name descname">objects</code><em class="property"> = &lt;django.db.models.manager.Manager object&gt;</em><a class="headerlink" href="#orders.models.Shift.objects" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">objects</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#orders.models.Shift.objects" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.models.Shift.order_set">
-<code class="sig-name descname">order_set</code><a class="headerlink" href="#orders.models.Shift.order_set" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">order_set</span></code><a class="headerlink" href="#orders.models.Shift.order_set" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related objects manager on the reverse side of a
 many-to-one relation.</p>
 <p>In the example:</p>
@@ -1401,7 +1401,7 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 
 <dl class="py method">
 <dt id="orders.models.Shift.ordered_orders">
-<em class="property">property </em><code class="sig-name descname">ordered_orders</code><a class="headerlink" href="#orders.models.Shift.ordered_orders" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">ordered_orders</span></code><a class="headerlink" href="#orders.models.Shift.ordered_orders" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the orders with type Ordered of this shift.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1412,7 +1412,7 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 
 <dl class="py method">
 <dt id="orders.models.Shift.orders">
-<em class="property">property </em><code class="sig-name descname">orders</code><a class="headerlink" href="#orders.models.Shift.orders" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">orders</span></code><a class="headerlink" href="#orders.models.Shift.orders" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the orders of this shift.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1423,7 +1423,7 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 
 <dl class="py method">
 <dt id="orders.models.Shift.products_closed">
-<em class="property">property </em><code class="sig-name descname">products_closed</code><a class="headerlink" href="#orders.models.Shift.products_closed" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">products_closed</span></code><a class="headerlink" href="#orders.models.Shift.products_closed" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a list with all products and amounts that are ready.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1435,7 +1435,7 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 
 <dl class="py method">
 <dt id="orders.models.Shift.products_open">
-<em class="property">property </em><code class="sig-name descname">products_open</code><a class="headerlink" href="#orders.models.Shift.products_open" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">products_open</span></code><a class="headerlink" href="#orders.models.Shift.products_open" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a list with all products and amounts that are not ready.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1447,7 +1447,7 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 
 <dl class="py method">
 <dt id="orders.models.Shift.products_total">
-<em class="property">property </em><code class="sig-name descname">products_total</code><a class="headerlink" href="#orders.models.Shift.products_total" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">products_total</span></code><a class="headerlink" href="#orders.models.Shift.products_total" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a list with all products and amounts.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1458,7 +1458,7 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 
 <dl class="py method">
 <dt id="orders.models.Shift.save">
-<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Shift.save" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">save</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Shift.save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save an object of the Shift type.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1475,20 +1475,20 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 
 <dl class="py method">
 <dt id="orders.models.Shift.save_m2m">
-<code class="sig-name descname">save_m2m</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Shift.save_m2m" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">save_m2m</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Shift.save_m2m" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save assignees m2m.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.models.Shift.start_date">
-<code class="sig-name descname">start_date</code><a class="headerlink" href="#orders.models.Shift.start_date" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">start_date</span></code><a class="headerlink" href="#orders.models.Shift.start_date" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="orders.models.Shift.start_time">
-<em class="property">property </em><code class="sig-name descname">start_time</code><a class="headerlink" href="#orders.models.Shift.start_time" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">start_time</span></code><a class="headerlink" href="#orders.models.Shift.start_time" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the start time of this object in string format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1499,13 +1499,13 @@ object the first time, the query is executed.</p>
 
 <dl class="py method">
 <dt id="orders.models.Shift.update_can_order">
-<code class="sig-name descname">update_can_order</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Shift.update_can_order" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">update_can_order</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Shift.update_can_order" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update the can_order field from a shift when an order is placed.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="orders.models.Shift.user_can_order_amount">
-<code class="sig-name descname">user_can_order_amount</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user</span></em>, <em class="sig-param"><span class="n">amount</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Shift.user_can_order_amount" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">user_can_order_amount</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Shift.user_can_order_amount" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test if a user can order a specific amount of products.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1522,7 +1522,7 @@ object the first time, the query is executed.</p>
 
 <dl class="py method">
 <dt id="orders.models.Shift.user_max_order_amount">
-<code class="sig-name descname">user_max_order_amount</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Shift.user_max_order_amount" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">user_max_order_amount</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Shift.user_max_order_amount" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the maximum a user can still order in this shift.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1536,7 +1536,7 @@ object the first time, the query is executed.</p>
 
 <dl class="py attribute">
 <dt id="orders.models.Shift.venue">
-<code class="sig-name descname">venue</code><a class="headerlink" href="#orders.models.Shift.venue" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">venue</span></code><a class="headerlink" href="#orders.models.Shift.venue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related object on the forward side of a many-to-one or
 one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 <p>In the example:</p>
@@ -1549,26 +1549,26 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 
 <dl class="py attribute">
 <dt id="orders.models.Shift.venue_id">
-<code class="sig-name descname">venue_id</code><a class="headerlink" href="#orders.models.Shift.venue_id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">venue_id</span></code><a class="headerlink" href="#orders.models.Shift.venue_id" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
 <dt id="orders.models.active_venue_validator">
-<code class="sig-prename descclassname">orders.models.</code><code class="sig-name descname">active_venue_validator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.active_venue_validator" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">orders.models.</span></code><code class="sig-name descname"><span class="pre">active_venue_validator</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.active_venue_validator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Filter to only allow shifts for active venues.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="orders.models.available_product_filter">
-<code class="sig-prename descclassname">orders.models.</code><code class="sig-name descname">available_product_filter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.available_product_filter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">orders.models.</span></code><code class="sig-name descname"><span class="pre">available_product_filter</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.available_product_filter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Filter to only allow ordering available products.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="orders.models.get_default_end_time_shift">
-<code class="sig-prename descclassname">orders.models.</code><code class="sig-name descname">get_default_end_time_shift</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.get_default_end_time_shift" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">orders.models.</span></code><code class="sig-name descname"><span class="pre">get_default_end_time_shift</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.get_default_end_time_shift" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the default end time of a Shift object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1579,7 +1579,7 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 
 <dl class="py function">
 <dt id="orders.models.get_default_start_time_shift">
-<code class="sig-prename descclassname">orders.models.</code><code class="sig-name descname">get_default_start_time_shift</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.get_default_start_time_shift" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">orders.models.</span></code><code class="sig-name descname"><span class="pre">get_default_start_time_shift</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.get_default_start_time_shift" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the default start time of a Shift object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1590,7 +1590,7 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 
 <dl class="py function">
 <dt id="orders.models.validate_barcode">
-<code class="sig-prename descclassname">orders.models.</code><code class="sig-name descname">validate_barcode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.validate_barcode" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">orders.models.</span></code><code class="sig-name descname"><span class="pre">validate_barcode</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.validate_barcode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Validate a barcode.</p>
 <p>Checks if the barcode is all digits, of the required length and if the checksum is correct
 :param value: the value to validate
@@ -1602,49 +1602,49 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 <span id="orders-templatetags-module"></span><h2>orders.templatetags module<a class="headerlink" href="#module-orders.templatetags.order_now" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt id="orders.templatetags.order_now.render_order_now_button">
-<code class="sig-prename descclassname">orders.templatetags.order_now.</code><code class="sig-name descname">render_order_now_button</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">venue</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.templatetags.order_now.render_order_now_button" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">orders.templatetags.order_now.</span></code><code class="sig-name descname"><span class="pre">render_order_now_button</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">venue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.templatetags.order_now.render_order_now_button" title="Permalink to this definition">¶</a></dt>
 <dd><p>Render order now button.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="orders.templatetags.order_now.render_order_now_buttons_active_shifts">
-<code class="sig-prename descclassname">orders.templatetags.order_now.</code><code class="sig-name descname">render_order_now_buttons_active_shifts</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em>, <em class="sig-param"><span class="n">shifts</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.templatetags.order_now.render_order_now_buttons_active_shifts" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">orders.templatetags.order_now.</span></code><code class="sig-name descname"><span class="pre">render_order_now_buttons_active_shifts</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shifts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.templatetags.order_now.render_order_now_buttons_active_shifts" title="Permalink to this definition">¶</a></dt>
 <dd><p>Render order now buttons for all active shifts.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="orders.templatetags.order_now.render_order_now_buttons_can_order">
-<code class="sig-prename descclassname">orders.templatetags.order_now.</code><code class="sig-name descname">render_order_now_buttons_can_order</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.templatetags.order_now.render_order_now_buttons_can_order" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">orders.templatetags.order_now.</span></code><code class="sig-name descname"><span class="pre">render_order_now_buttons_can_order</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.templatetags.order_now.render_order_now_buttons_can_order" title="Permalink to this definition">¶</a></dt>
 <dd><p>Render order now buttons for all shifts accepting orders.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="orders.templatetags.order_now.render_order_now_buttons_venues">
-<code class="sig-prename descclassname">orders.templatetags.order_now.</code><code class="sig-name descname">render_order_now_buttons_venues</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.templatetags.order_now.render_order_now_buttons_venues" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">orders.templatetags.order_now.</span></code><code class="sig-name descname"><span class="pre">render_order_now_buttons_venues</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.templatetags.order_now.render_order_now_buttons_venues" title="Permalink to this definition">¶</a></dt>
 <dd><p>Render order now buttons for all active shifts.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="orders.templatetags.order_now.render_place_order_button">
-<code class="sig-prename descclassname">orders.templatetags.order_now.</code><code class="sig-name descname">render_place_order_button</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em>, <em class="sig-param"><span class="n">shift</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.templatetags.order_now.render_place_order_button" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">orders.templatetags.order_now.</span></code><code class="sig-name descname"><span class="pre">render_place_order_button</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.templatetags.order_now.render_place_order_button" title="Permalink to this definition">¶</a></dt>
 <dd><p>Render order now button.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="orders.templatetags.order_now.render_search_box">
-<code class="sig-prename descclassname">orders.templatetags.order_now.</code><code class="sig-name descname">render_search_box</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em>, <em class="sig-param"><span class="n">shift</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.templatetags.order_now.render_search_box" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">orders.templatetags.order_now.</span></code><code class="sig-name descname"><span class="pre">render_search_box</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.templatetags.order_now.render_search_box" title="Permalink to this definition">¶</a></dt>
 <dd><p>Render shift scanner for shift.</p>
 </dd></dl>
 
 <span class="target" id="module-orders.templatetags.start_shift"></span><dl class="py function">
 <dt id="orders.templatetags.start_shift.currently_active_shift_for_venue">
-<code class="sig-prename descclassname">orders.templatetags.start_shift.</code><code class="sig-name descname">currently_active_shift_for_venue</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">venue</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.templatetags.start_shift.currently_active_shift_for_venue" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">orders.templatetags.start_shift.</span></code><code class="sig-name descname"><span class="pre">currently_active_shift_for_venue</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">venue</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.templatetags.start_shift.currently_active_shift_for_venue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the currently active shift for a venue (if it exists).</p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="orders.templatetags.start_shift.render_start_shift_buttons">
-<code class="sig-prename descclassname">orders.templatetags.start_shift.</code><code class="sig-name descname">render_start_shift_buttons</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em>, <em class="sig-param"><span class="n">venues</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.templatetags.start_shift.render_start_shift_buttons" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">orders.templatetags.start_shift.</span></code><code class="sig-name descname"><span class="pre">render_start_shift_buttons</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">venues</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.templatetags.start_shift.render_start_shift_buttons" title="Permalink to this definition">¶</a></dt>
 <dd><p>Render start shift buttons.</p>
 </dd></dl>
 
@@ -1656,29 +1656,29 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 <span id="orders-views-module"></span><h2>orders.views module<a class="headerlink" href="#module-orders.views" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="orders.views.AdminExplainerView">
-<em class="property">class </em><code class="sig-prename descclassname">orders.views.</code><code class="sig-name descname">AdminExplainerView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.AdminExplainerView" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">orders.views.</span></code><code class="sig-name descname"><span class="pre">AdminExplainerView</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.AdminExplainerView" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
 <p>Admin Explainer view.</p>
 <dl class="py attribute">
 <dt id="orders.views.AdminExplainerView.template_name">
-<code class="sig-name descname">template_name</code><em class="property"> = 'orders/explainer_admin.html'</em><a class="headerlink" href="#orders.views.AdminExplainerView.template_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">template_name</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'orders/explainer_admin.html'</span></em><a class="headerlink" href="#orders.views.AdminExplainerView.template_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="orders.views.CreateShiftView">
-<em class="property">class </em><code class="sig-prename descclassname">orders.views.</code><code class="sig-name descname">CreateShiftView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.CreateShiftView" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">orders.views.</span></code><code class="sig-name descname"><span class="pre">CreateShiftView</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.CreateShiftView" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">guardian.mixins.PermissionRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
 <p>Create shift view.</p>
 <dl class="py attribute">
 <dt id="orders.views.CreateShiftView.accept_global_perms">
-<code class="sig-name descname">accept_global_perms</code><em class="property"> = True</em><a class="headerlink" href="#orders.views.CreateShiftView.accept_global_perms" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">accept_global_perms</span></code><em class="property"> <span class="pre">=</span> <span class="pre">True</span></em><a class="headerlink" href="#orders.views.CreateShiftView.accept_global_perms" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="orders.views.CreateShiftView.get">
-<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.CreateShiftView.get" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.CreateShiftView.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>GET request for CreateShiftView.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1695,18 +1695,18 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 
 <dl class="py method">
 <dt id="orders.views.CreateShiftView.get_object">
-<code class="sig-name descname">get_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.CreateShiftView.get_object" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_object</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.CreateShiftView.get_object" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the object for this view.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.views.CreateShiftView.permission_required">
-<code class="sig-name descname">permission_required</code><em class="property"> = 'orders.can_manage_shift_in_venue'</em><a class="headerlink" href="#orders.views.CreateShiftView.permission_required" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">permission_required</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'orders.can_manage_shift_in_venue'</span></em><a class="headerlink" href="#orders.views.CreateShiftView.permission_required" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="orders.views.CreateShiftView.post">
-<code class="sig-name descname">post</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.CreateShiftView.post" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">post</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.CreateShiftView.post" title="Permalink to this definition">¶</a></dt>
 <dd><p>POST request for CreateShiftView.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1724,41 +1724,41 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 
 <dl class="py attribute">
 <dt id="orders.views.CreateShiftView.return_403">
-<code class="sig-name descname">return_403</code><em class="property"> = True</em><a class="headerlink" href="#orders.views.CreateShiftView.return_403" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">return_403</span></code><em class="property"> <span class="pre">=</span> <span class="pre">True</span></em><a class="headerlink" href="#orders.views.CreateShiftView.return_403" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.views.CreateShiftView.template_name">
-<code class="sig-name descname">template_name</code><em class="property"> = 'orders/create_shift.html'</em><a class="headerlink" href="#orders.views.CreateShiftView.template_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">template_name</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'orders/create_shift.html'</span></em><a class="headerlink" href="#orders.views.CreateShiftView.template_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="orders.views.ExplainerView">
-<em class="property">class </em><code class="sig-prename descclassname">orders.views.</code><code class="sig-name descname">ExplainerView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ExplainerView" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">orders.views.</span></code><code class="sig-name descname"><span class="pre">ExplainerView</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ExplainerView" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
 <p>Explainer view.</p>
 <dl class="py attribute">
 <dt id="orders.views.ExplainerView.template_name">
-<code class="sig-name descname">template_name</code><em class="property"> = 'orders/explainer.html'</em><a class="headerlink" href="#orders.views.ExplainerView.template_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">template_name</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'orders/explainer.html'</span></em><a class="headerlink" href="#orders.views.ExplainerView.template_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="orders.views.JoinShiftView">
-<em class="property">class </em><code class="sig-prename descclassname">orders.views.</code><code class="sig-name descname">JoinShiftView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.JoinShiftView" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">orders.views.</span></code><code class="sig-name descname"><span class="pre">JoinShiftView</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.JoinShiftView" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">guardian.mixins.PermissionRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
 <p>Join shift view.</p>
 <dl class="py attribute">
 <dt id="orders.views.JoinShiftView.accept_global_perms">
-<code class="sig-name descname">accept_global_perms</code><em class="property"> = True</em><a class="headerlink" href="#orders.views.JoinShiftView.accept_global_perms" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">accept_global_perms</span></code><em class="property"> <span class="pre">=</span> <span class="pre">True</span></em><a class="headerlink" href="#orders.views.JoinShiftView.accept_global_perms" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="orders.views.JoinShiftView.get">
-<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.JoinShiftView.get" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.JoinShiftView.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>GET request for JoinShiftView.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1775,24 +1775,24 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 
 <dl class="py method">
 <dt id="orders.views.JoinShiftView.get_object">
-<code class="sig-name descname">get_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.JoinShiftView.get_object" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_object</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.JoinShiftView.get_object" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the object for this view.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="orders.views.JoinShiftView.get_permission_object">
-<code class="sig-name descname">get_permission_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.JoinShiftView.get_permission_object" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_permission_object</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.JoinShiftView.get_permission_object" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the object to check permissions for.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.views.JoinShiftView.permission_required">
-<code class="sig-name descname">permission_required</code><em class="property"> = 'orders.can_manage_shift_in_venue'</em><a class="headerlink" href="#orders.views.JoinShiftView.permission_required" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">permission_required</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'orders.can_manage_shift_in_venue'</span></em><a class="headerlink" href="#orders.views.JoinShiftView.permission_required" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="orders.views.JoinShiftView.post">
-<code class="sig-name descname">post</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.JoinShiftView.post" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">post</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.JoinShiftView.post" title="Permalink to this definition">¶</a></dt>
 <dd><p>POST request for JoinShiftView.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1810,29 +1810,29 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 
 <dl class="py attribute">
 <dt id="orders.views.JoinShiftView.return_403">
-<code class="sig-name descname">return_403</code><em class="property"> = True</em><a class="headerlink" href="#orders.views.JoinShiftView.return_403" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">return_403</span></code><em class="property"> <span class="pre">=</span> <span class="pre">True</span></em><a class="headerlink" href="#orders.views.JoinShiftView.return_403" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.views.JoinShiftView.template_name">
-<code class="sig-name descname">template_name</code><em class="property"> = 'orders/join_shift.html'</em><a class="headerlink" href="#orders.views.JoinShiftView.template_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">template_name</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'orders/join_shift.html'</span></em><a class="headerlink" href="#orders.views.JoinShiftView.template_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="orders.views.PlaceOrderView">
-<em class="property">class </em><code class="sig-prename descclassname">orders.views.</code><code class="sig-name descname">PlaceOrderView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.PlaceOrderView" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">orders.views.</span></code><code class="sig-name descname"><span class="pre">PlaceOrderView</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.PlaceOrderView" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">guardian.mixins.PermissionRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
 <p>Order view.</p>
 <dl class="py attribute">
 <dt id="orders.views.PlaceOrderView.accept_global_perms">
-<code class="sig-name descname">accept_global_perms</code><em class="property"> = True</em><a class="headerlink" href="#orders.views.PlaceOrderView.accept_global_perms" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">accept_global_perms</span></code><em class="property"> <span class="pre">=</span> <span class="pre">True</span></em><a class="headerlink" href="#orders.views.PlaceOrderView.accept_global_perms" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="orders.views.PlaceOrderView.add_orders">
-<em class="property">static </em><code class="sig-name descname">add_orders</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">order_list</span></em>, <em class="sig-param"><span class="n">shift</span></em>, <em class="sig-param"><span class="n">user</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.PlaceOrderView.add_orders" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">add_orders</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.PlaceOrderView.add_orders" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add all orders in a list.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1850,7 +1850,7 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 
 <dl class="py method">
 <dt id="orders.views.PlaceOrderView.get">
-<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.PlaceOrderView.get" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.PlaceOrderView.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>GET request for PlaceOrderView.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1868,24 +1868,24 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 
 <dl class="py method">
 <dt id="orders.views.PlaceOrderView.get_object">
-<code class="sig-name descname">get_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.PlaceOrderView.get_object" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_object</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.PlaceOrderView.get_object" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the object for this view.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="orders.views.PlaceOrderView.get_permission_object">
-<code class="sig-name descname">get_permission_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.PlaceOrderView.get_permission_object" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_permission_object</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.PlaceOrderView.get_permission_object" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the object to check permissions for.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.views.PlaceOrderView.permission_required">
-<code class="sig-name descname">permission_required</code><em class="property"> = 'orders.can_order_in_venue'</em><a class="headerlink" href="#orders.views.PlaceOrderView.permission_required" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">permission_required</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'orders.can_order_in_venue'</span></em><a class="headerlink" href="#orders.views.PlaceOrderView.permission_required" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="orders.views.PlaceOrderView.post">
-<code class="sig-name descname">post</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.PlaceOrderView.post" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">post</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.PlaceOrderView.post" title="Permalink to this definition">¶</a></dt>
 <dd><p>POST request for PlaceOrderView.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1902,29 +1902,29 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 
 <dl class="py attribute">
 <dt id="orders.views.PlaceOrderView.return_403">
-<code class="sig-name descname">return_403</code><em class="property"> = True</em><a class="headerlink" href="#orders.views.PlaceOrderView.return_403" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">return_403</span></code><em class="property"> <span class="pre">=</span> <span class="pre">True</span></em><a class="headerlink" href="#orders.views.PlaceOrderView.return_403" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.views.PlaceOrderView.template_name">
-<code class="sig-name descname">template_name</code><em class="property"> = 'orders/place_order.html'</em><a class="headerlink" href="#orders.views.PlaceOrderView.template_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">template_name</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'orders/place_order.html'</span></em><a class="headerlink" href="#orders.views.PlaceOrderView.template_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="orders.views.ShiftAdminView">
-<em class="property">class </em><code class="sig-prename descclassname">orders.views.</code><code class="sig-name descname">ShiftAdminView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ShiftAdminView" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">orders.views.</span></code><code class="sig-name descname"><span class="pre">ShiftAdminView</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ShiftAdminView" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">guardian.mixins.PermissionRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
 <p>Admin view for starting shifts.</p>
 <dl class="py attribute">
 <dt id="orders.views.ShiftAdminView.accept_global_perms">
-<code class="sig-name descname">accept_global_perms</code><em class="property"> = True</em><a class="headerlink" href="#orders.views.ShiftAdminView.accept_global_perms" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">accept_global_perms</span></code><em class="property"> <span class="pre">=</span> <span class="pre">True</span></em><a class="headerlink" href="#orders.views.ShiftAdminView.accept_global_perms" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="orders.views.ShiftAdminView.get">
-<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ShiftAdminView.get" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ShiftAdminView.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>GET request for ShiftAdminView.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1941,46 +1941,46 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 
 <dl class="py method">
 <dt id="orders.views.ShiftAdminView.get_object">
-<code class="sig-name descname">get_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ShiftAdminView.get_object" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_object</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ShiftAdminView.get_object" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the object for this view.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="orders.views.ShiftAdminView.get_permission_object">
-<code class="sig-name descname">get_permission_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ShiftAdminView.get_permission_object" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_permission_object</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ShiftAdminView.get_permission_object" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the object to check permissions for.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.views.ShiftAdminView.permission_required">
-<code class="sig-name descname">permission_required</code><em class="property"> = 'orders.can_manage_shift_in_venue'</em><a class="headerlink" href="#orders.views.ShiftAdminView.permission_required" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">permission_required</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'orders.can_manage_shift_in_venue'</span></em><a class="headerlink" href="#orders.views.ShiftAdminView.permission_required" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.views.ShiftAdminView.return_403">
-<code class="sig-name descname">return_403</code><em class="property"> = True</em><a class="headerlink" href="#orders.views.ShiftAdminView.return_403" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">return_403</span></code><em class="property"> <span class="pre">=</span> <span class="pre">True</span></em><a class="headerlink" href="#orders.views.ShiftAdminView.return_403" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.views.ShiftAdminView.template_name">
-<code class="sig-name descname">template_name</code><em class="property"> = 'orders/shift_admin.html'</em><a class="headerlink" href="#orders.views.ShiftAdminView.template_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">template_name</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'orders/shift_admin.html'</span></em><a class="headerlink" href="#orders.views.ShiftAdminView.template_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="orders.views.ShiftOverviewView">
-<em class="property">class </em><code class="sig-prename descclassname">orders.views.</code><code class="sig-name descname">ShiftOverviewView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ShiftOverviewView" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">orders.views.</span></code><code class="sig-name descname"><span class="pre">ShiftOverviewView</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ShiftOverviewView" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">guardian.mixins.PermissionRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
 <p>Shift overview page.</p>
 <dl class="py attribute">
 <dt id="orders.views.ShiftOverviewView.accept_global_perms">
-<code class="sig-name descname">accept_global_perms</code><em class="property"> = True</em><a class="headerlink" href="#orders.views.ShiftOverviewView.accept_global_perms" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">accept_global_perms</span></code><em class="property"> <span class="pre">=</span> <span class="pre">True</span></em><a class="headerlink" href="#orders.views.ShiftOverviewView.accept_global_perms" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="orders.views.ShiftOverviewView.get">
-<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ShiftOverviewView.get" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ShiftOverviewView.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>GET request of shift overview page.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1997,29 +1997,29 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 
 <dl class="py method">
 <dt id="orders.views.ShiftOverviewView.get_object">
-<code class="sig-name descname">get_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ShiftOverviewView.get_object" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_object</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ShiftOverviewView.get_object" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the object for this view.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="orders.views.ShiftOverviewView.get_permission_object">
-<code class="sig-name descname">get_permission_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ShiftOverviewView.get_permission_object" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_permission_object</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.ShiftOverviewView.get_permission_object" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the object to check permissions for.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.views.ShiftOverviewView.permission_required">
-<code class="sig-name descname">permission_required</code><em class="property"> = 'orders.can_order_in_venue'</em><a class="headerlink" href="#orders.views.ShiftOverviewView.permission_required" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">permission_required</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'orders.can_order_in_venue'</span></em><a class="headerlink" href="#orders.views.ShiftOverviewView.permission_required" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.views.ShiftOverviewView.return_403">
-<code class="sig-name descname">return_403</code><em class="property"> = True</em><a class="headerlink" href="#orders.views.ShiftOverviewView.return_403" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">return_403</span></code><em class="property"> <span class="pre">=</span> <span class="pre">True</span></em><a class="headerlink" href="#orders.views.ShiftOverviewView.return_403" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.views.ShiftOverviewView.template_name">
-<code class="sig-name descname">template_name</code><em class="property"> = 'orders/shift_overview.html'</em><a class="headerlink" href="#orders.views.ShiftOverviewView.template_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">template_name</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'orders/shift_overview.html'</span></em><a class="headerlink" href="#orders.views.ShiftOverviewView.template_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

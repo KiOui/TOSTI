@@ -196,75 +196,75 @@ certain <cite>auth.Group</cite>’s.</p>
 <span id="users-admin-module"></span><h2>users.admin module<a class="headerlink" href="#module-users.admin" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="users.admin.GroupAdmin">
-<em class="property">class </em><code class="sig-prename descclassname">users.admin.</code><code class="sig-name descname">GroupAdmin</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">admin_site</span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.admin.GroupAdmin" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">users.admin.</span></code><code class="sig-name descname"><span class="pre">GroupAdmin</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">admin_site</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.admin.GroupAdmin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.auth.admin.GroupAdmin</span></code></p>
 <p>Custom admin for Groups.</p>
 <dl class="py class">
 <dt id="users.admin.GroupAdmin.Meta">
-<em class="property">class </em><code class="sig-name descname">Meta</code><a class="headerlink" href="#users.admin.GroupAdmin.Meta" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Meta</span></code><a class="headerlink" href="#users.admin.GroupAdmin.Meta" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Meta class for the GroupAdmin.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="users.admin.GroupAdmin.form">
-<code class="sig-name descname">form</code><a class="headerlink" href="#users.admin.GroupAdmin.form" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">form</span></code><a class="headerlink" href="#users.admin.GroupAdmin.form" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="#users.admin.GroupAdminForm" title="users.admin.GroupAdminForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">users.admin.GroupAdminForm</span></code></a></p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="users.admin.GroupAdmin.get_autojoin">
-<code class="sig-name descname">get_autojoin</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.admin.GroupAdmin.get_autojoin" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_autojoin</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.admin.GroupAdmin.get_autojoin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get whether group is an auto_join group.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="users.admin.GroupAdmin.get_count_members">
-<code class="sig-name descname">get_count_members</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.admin.GroupAdmin.get_count_members" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_count_members</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.admin.GroupAdmin.get_count_members" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get number of members in a group.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="users.admin.GroupAdmin.get_members">
-<code class="sig-name descname">get_members</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.admin.GroupAdmin.get_members" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_members</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.admin.GroupAdmin.get_members" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the members of a group.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="users.admin.GroupAdmin.inlines">
-<code class="sig-name descname">inlines</code><em class="property"> = [&lt;class 'users.admin.GroupSettingsInline'&gt;]</em><a class="headerlink" href="#users.admin.GroupAdmin.inlines" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">inlines</span></code><em class="property"> <span class="pre">=</span> <span class="pre">[&lt;class</span> <span class="pre">'users.admin.GroupSettingsInline'&gt;]</span></em><a class="headerlink" href="#users.admin.GroupAdmin.inlines" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="users.admin.GroupAdmin.list_display">
-<code class="sig-name descname">list_display</code><em class="property"> = ['name', 'get_count_members', 'get_members', 'get_autojoin']</em><a class="headerlink" href="#users.admin.GroupAdmin.list_display" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">list_display</span></code><em class="property"> <span class="pre">=</span> <span class="pre">['name',</span> <span class="pre">'get_count_members',</span> <span class="pre">'get_members',</span> <span class="pre">'get_autojoin']</span></em><a class="headerlink" href="#users.admin.GroupAdmin.list_display" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="users.admin.GroupAdmin.media">
-<em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#users.admin.GroupAdmin.media" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">media</span></code><a class="headerlink" href="#users.admin.GroupAdmin.media" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="users.admin.GroupAdminForm">
-<em class="property">class </em><code class="sig-prename descclassname">users.admin.</code><code class="sig-name descname">GroupAdminForm</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.admin.GroupAdminForm" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">users.admin.</span></code><code class="sig-name descname"><span class="pre">GroupAdminForm</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.admin.GroupAdminForm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.forms.models.ModelForm</span></code></p>
 <p>Custom AdminForm for Groups.</p>
 <dl class="py class">
 <dt id="users.admin.GroupAdminForm.Meta">
-<em class="property">class </em><code class="sig-name descname">Meta</code><a class="headerlink" href="#users.admin.GroupAdminForm.Meta" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Meta</span></code><a class="headerlink" href="#users.admin.GroupAdminForm.Meta" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Meta class for the GroupAdminForm.</p>
 <dl class="py attribute">
 <dt id="users.admin.GroupAdminForm.Meta.exclude">
-<code class="sig-name descname">exclude</code><em class="property"> = []</em><a class="headerlink" href="#users.admin.GroupAdminForm.Meta.exclude" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">exclude</span></code><em class="property"> <span class="pre">=</span> <span class="pre">[]</span></em><a class="headerlink" href="#users.admin.GroupAdminForm.Meta.exclude" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="users.admin.GroupAdminForm.Meta.model">
-<code class="sig-name descname">model</code><a class="headerlink" href="#users.admin.GroupAdminForm.Meta.model" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">model</span></code><a class="headerlink" href="#users.admin.GroupAdminForm.Meta.model" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.auth.models.Group</span></code></p>
 </dd></dl>
 
@@ -272,29 +272,29 @@ certain <cite>auth.Group</cite>’s.</p>
 
 <dl class="py attribute">
 <dt id="users.admin.GroupAdminForm.base_fields">
-<code class="sig-name descname">base_fields</code><em class="property"> = {'name': &lt;django.forms.fields.CharField object&gt;, 'permissions': &lt;django.forms.models.ModelMultipleChoiceField object&gt;, 'users': &lt;django.forms.models.ModelMultipleChoiceField object&gt;}</em><a class="headerlink" href="#users.admin.GroupAdminForm.base_fields" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">base_fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'name':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'permissions':</span> <span class="pre">&lt;django.forms.models.ModelMultipleChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'users':</span> <span class="pre">&lt;django.forms.models.ModelMultipleChoiceField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#users.admin.GroupAdminForm.base_fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="users.admin.GroupAdminForm.declared_fields">
-<code class="sig-name descname">declared_fields</code><em class="property"> = {'permissions': &lt;django.forms.models.ModelMultipleChoiceField object&gt;, 'users': &lt;django.forms.models.ModelMultipleChoiceField object&gt;}</em><a class="headerlink" href="#users.admin.GroupAdminForm.declared_fields" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">declared_fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'permissions':</span> <span class="pre">&lt;django.forms.models.ModelMultipleChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'users':</span> <span class="pre">&lt;django.forms.models.ModelMultipleChoiceField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#users.admin.GroupAdminForm.declared_fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="users.admin.GroupAdminForm.media">
-<em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#users.admin.GroupAdminForm.media" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">media</span></code><a class="headerlink" href="#users.admin.GroupAdminForm.media" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return all media required to render the widgets on this form.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="users.admin.GroupAdminForm.save">
-<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.admin.GroupAdminForm.save" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">save</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.admin.GroupAdminForm.save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save form.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="users.admin.GroupAdminForm.save_m2m">
-<code class="sig-name descname">save_m2m</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#users.admin.GroupAdminForm.save_m2m" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">save_m2m</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#users.admin.GroupAdminForm.save_m2m" title="Permalink to this definition">¶</a></dt>
 <dd><p>On save, add selected users to the group.</p>
 </dd></dl>
 
@@ -302,27 +302,27 @@ certain <cite>auth.Group</cite>’s.</p>
 
 <dl class="py class">
 <dt id="users.admin.GroupSettingsInline">
-<em class="property">class </em><code class="sig-prename descclassname">users.admin.</code><code class="sig-name descname">GroupSettingsInline</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent_model</span></em>, <em class="sig-param"><span class="n">admin_site</span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.admin.GroupSettingsInline" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">users.admin.</span></code><code class="sig-name descname"><span class="pre">GroupSettingsInline</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">admin_site</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.admin.GroupSettingsInline" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.admin.options.StackedInline</span></code></p>
 <p>Inline for GroupSettings.</p>
 <dl class="py attribute">
 <dt id="users.admin.GroupSettingsInline.extra">
-<code class="sig-name descname">extra</code><em class="property"> = 1</em><a class="headerlink" href="#users.admin.GroupSettingsInline.extra" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">extra</span></code><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#users.admin.GroupSettingsInline.extra" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="users.admin.GroupSettingsInline.fields">
-<code class="sig-name descname">fields</code><em class="property"> = ['is_auto_join_group', 'gets_staff_permissions']</em><a class="headerlink" href="#users.admin.GroupSettingsInline.fields" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">['is_auto_join_group',</span> <span class="pre">'gets_staff_permissions']</span></em><a class="headerlink" href="#users.admin.GroupSettingsInline.fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="users.admin.GroupSettingsInline.media">
-<em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#users.admin.GroupSettingsInline.media" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">media</span></code><a class="headerlink" href="#users.admin.GroupSettingsInline.media" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="users.admin.GroupSettingsInline.model">
-<code class="sig-name descname">model</code><a class="headerlink" href="#users.admin.GroupSettingsInline.model" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">model</span></code><a class="headerlink" href="#users.admin.GroupSettingsInline.model" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="#users.models.GroupSettings" title="users.models.GroupSettings"><code class="xref py py-class docutils literal notranslate"><span class="pre">users.models.GroupSettings</span></code></a></p>
 </dd></dl>
 
@@ -330,106 +330,106 @@ certain <cite>auth.Group</cite>’s.</p>
 
 <dl class="py class">
 <dt id="users.admin.ProfileInline">
-<em class="property">class </em><code class="sig-prename descclassname">users.admin.</code><code class="sig-name descname">ProfileInline</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent_model</span></em>, <em class="sig-param"><span class="n">admin_site</span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.admin.ProfileInline" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">users.admin.</span></code><code class="sig-name descname"><span class="pre">ProfileInline</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">admin_site</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.admin.ProfileInline" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.admin.options.StackedInline</span></code></p>
 <p>Profile inline.</p>
 <dl class="py attribute">
 <dt id="users.admin.ProfileInline.can_delete">
-<code class="sig-name descname">can_delete</code><em class="property"> = False</em><a class="headerlink" href="#users.admin.ProfileInline.can_delete" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">can_delete</span></code><em class="property"> <span class="pre">=</span> <span class="pre">False</span></em><a class="headerlink" href="#users.admin.ProfileInline.can_delete" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="users.admin.ProfileInline.media">
-<em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#users.admin.ProfileInline.media" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">media</span></code><a class="headerlink" href="#users.admin.ProfileInline.media" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="users.admin.ProfileInline.model">
-<code class="sig-name descname">model</code><a class="headerlink" href="#users.admin.ProfileInline.model" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">model</span></code><a class="headerlink" href="#users.admin.ProfileInline.model" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="#users.models.Profile" title="users.models.Profile"><code class="xref py py-class docutils literal notranslate"><span class="pre">users.models.Profile</span></code></a></p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="users.admin.ProfileInline.verbose_name_plural">
-<code class="sig-name descname">verbose_name_plural</code><em class="property"> = 'Profiles'</em><a class="headerlink" href="#users.admin.ProfileInline.verbose_name_plural" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">verbose_name_plural</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'Profiles'</span></em><a class="headerlink" href="#users.admin.ProfileInline.verbose_name_plural" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="users.admin.UserAdmin">
-<em class="property">class </em><code class="sig-prename descclassname">users.admin.</code><code class="sig-name descname">UserAdmin</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">admin_site</span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.admin.UserAdmin" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">users.admin.</span></code><code class="sig-name descname"><span class="pre">UserAdmin</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">admin_site</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.admin.UserAdmin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.auth.admin.UserAdmin</span></code></p>
 <p>User admin model for the User object.</p>
 <dl class="py class">
 <dt id="users.admin.UserAdmin.Meta">
-<em class="property">class </em><code class="sig-name descname">Meta</code><a class="headerlink" href="#users.admin.UserAdmin.Meta" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Meta</span></code><a class="headerlink" href="#users.admin.UserAdmin.Meta" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Meta class for the UserAdmin model.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="users.admin.UserAdmin.fieldsets">
-<code class="sig-name descname">fieldsets</code><em class="property"> = (('User', {'fields': ('username', 'first_name', 'last_name', 'email')}), ('Details', {'fields': ('date_joined', 'last_login', 'is_staff', 'is_active', 'is_superuser', 'groups', 'user_permissions')}))</em><a class="headerlink" href="#users.admin.UserAdmin.fieldsets" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">fieldsets</span></code><em class="property"> <span class="pre">=</span> <span class="pre">(('User',</span> <span class="pre">{'fields':</span> <span class="pre">('username',</span> <span class="pre">'first_name',</span> <span class="pre">'last_name',</span> <span class="pre">'email')}),</span> <span class="pre">('Details',</span> <span class="pre">{'fields':</span> <span class="pre">('date_joined',</span> <span class="pre">'last_login',</span> <span class="pre">'is_staff',</span> <span class="pre">'is_active',</span> <span class="pre">'is_superuser',</span> <span class="pre">'groups',</span> <span class="pre">'user_permissions')}))</span></em><a class="headerlink" href="#users.admin.UserAdmin.fieldsets" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="users.admin.UserAdmin.form">
-<code class="sig-name descname">form</code><a class="headerlink" href="#users.admin.UserAdmin.form" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">form</span></code><a class="headerlink" href="#users.admin.UserAdmin.form" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="#users.admin.UserAdminForm" title="users.admin.UserAdminForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">users.admin.UserAdminForm</span></code></a></p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="users.admin.UserAdmin.inlines">
-<code class="sig-name descname">inlines</code><em class="property"> = (&lt;class 'users.admin.ProfileInline'&gt;,)</em><a class="headerlink" href="#users.admin.UserAdmin.inlines" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">inlines</span></code><em class="property"> <span class="pre">=</span> <span class="pre">(&lt;class</span> <span class="pre">'users.admin.ProfileInline'&gt;,)</span></em><a class="headerlink" href="#users.admin.UserAdmin.inlines" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="users.admin.UserAdmin.list_display">
-<code class="sig-name descname">list_display</code><em class="property"> = ['username', 'get_full_name', 'date_joined', 'last_login', 'is_active', 'is_staff', 'is_superuser']</em><a class="headerlink" href="#users.admin.UserAdmin.list_display" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">list_display</span></code><em class="property"> <span class="pre">=</span> <span class="pre">['username',</span> <span class="pre">'get_full_name',</span> <span class="pre">'date_joined',</span> <span class="pre">'last_login',</span> <span class="pre">'is_active',</span> <span class="pre">'is_staff',</span> <span class="pre">'is_superuser']</span></em><a class="headerlink" href="#users.admin.UserAdmin.list_display" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="users.admin.UserAdmin.list_filter">
-<code class="sig-name descname">list_filter</code><em class="property"> = ['is_active', 'is_staff', 'is_superuser', 'is_staff']</em><a class="headerlink" href="#users.admin.UserAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">list_filter</span></code><em class="property"> <span class="pre">=</span> <span class="pre">['is_active',</span> <span class="pre">'is_staff',</span> <span class="pre">'is_superuser',</span> <span class="pre">'is_staff']</span></em><a class="headerlink" href="#users.admin.UserAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="users.admin.UserAdmin.media">
-<em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#users.admin.UserAdmin.media" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">media</span></code><a class="headerlink" href="#users.admin.UserAdmin.media" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="users.admin.UserAdmin.model">
-<code class="sig-name descname">model</code><a class="headerlink" href="#users.admin.UserAdmin.model" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">model</span></code><a class="headerlink" href="#users.admin.UserAdmin.model" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.auth.models.User</span></code></p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="users.admin.UserAdmin.search_fields">
-<code class="sig-name descname">search_fields</code><em class="property"> = ['username']</em><a class="headerlink" href="#users.admin.UserAdmin.search_fields" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">search_fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">['username']</span></em><a class="headerlink" href="#users.admin.UserAdmin.search_fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="users.admin.UserAdminForm">
-<em class="property">class </em><code class="sig-prename descclassname">users.admin.</code><code class="sig-name descname">UserAdminForm</code><span class="sig-paren">(</span><em class="sig-param">data=None</em>, <em class="sig-param">files=None</em>, <em class="sig-param">auto_id='id_%s'</em>, <em class="sig-param">prefix=None</em>, <em class="sig-param">initial=None</em>, <em class="sig-param">error_class=&lt;class 'django.forms.utils.ErrorList'&gt;</em>, <em class="sig-param">label_suffix=None</em>, <em class="sig-param">empty_permitted=False</em>, <em class="sig-param">instance=None</em>, <em class="sig-param">use_required_attribute=None</em>, <em class="sig-param">renderer=None</em><span class="sig-paren">)</span><a class="headerlink" href="#users.admin.UserAdminForm" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">users.admin.</span></code><code class="sig-name descname"><span class="pre">UserAdminForm</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">data=None</span></em>, <em class="sig-param"><span class="pre">files=None</span></em>, <em class="sig-param"><span class="pre">auto_id='id_%s'</span></em>, <em class="sig-param"><span class="pre">prefix=None</span></em>, <em class="sig-param"><span class="pre">initial=None</span></em>, <em class="sig-param"><span class="pre">error_class=&lt;class</span> <span class="pre">'django.forms.utils.ErrorList'&gt;</span></em>, <em class="sig-param"><span class="pre">label_suffix=None</span></em>, <em class="sig-param"><span class="pre">empty_permitted=False</span></em>, <em class="sig-param"><span class="pre">instance=None</span></em>, <em class="sig-param"><span class="pre">use_required_attribute=None</span></em>, <em class="sig-param"><span class="pre">renderer=None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.admin.UserAdminForm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.forms.models.ModelForm</span></code></p>
 <p>Custom AdminForm for Users.</p>
 <dl class="py class">
 <dt id="users.admin.UserAdminForm.Meta">
-<em class="property">class </em><code class="sig-name descname">Meta</code><a class="headerlink" href="#users.admin.UserAdminForm.Meta" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Meta</span></code><a class="headerlink" href="#users.admin.UserAdminForm.Meta" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Meta class for the UserAdminForm.</p>
 <dl class="py attribute">
 <dt id="users.admin.UserAdminForm.Meta.exclude">
-<code class="sig-name descname">exclude</code><em class="property"> = []</em><a class="headerlink" href="#users.admin.UserAdminForm.Meta.exclude" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">exclude</span></code><em class="property"> <span class="pre">=</span> <span class="pre">[]</span></em><a class="headerlink" href="#users.admin.UserAdminForm.Meta.exclude" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="users.admin.UserAdminForm.Meta.model">
-<code class="sig-name descname">model</code><a class="headerlink" href="#users.admin.UserAdminForm.Meta.model" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">model</span></code><a class="headerlink" href="#users.admin.UserAdminForm.Meta.model" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.auth.models.User</span></code></p>
 </dd></dl>
 
@@ -437,17 +437,17 @@ certain <cite>auth.Group</cite>’s.</p>
 
 <dl class="py attribute">
 <dt id="users.admin.UserAdminForm.base_fields">
-<code class="sig-name descname">base_fields</code><em class="property"> = {'date_joined': &lt;django.forms.fields.DateTimeField object&gt;, 'email': &lt;django.forms.fields.EmailField object&gt;, 'first_name': &lt;django.forms.fields.CharField object&gt;, 'groups': &lt;django.forms.models.ModelMultipleChoiceField object&gt;, 'is_active': &lt;django.forms.fields.BooleanField object&gt;, 'is_staff': &lt;django.forms.fields.BooleanField object&gt;, 'is_superuser': &lt;django.forms.fields.BooleanField object&gt;, 'last_login': &lt;django.forms.fields.DateTimeField object&gt;, 'last_name': &lt;django.forms.fields.CharField object&gt;, 'password': &lt;django.forms.fields.CharField object&gt;, 'user_permissions': &lt;django.forms.models.ModelMultipleChoiceField object&gt;, 'username': &lt;django.forms.fields.CharField object&gt;}</em><a class="headerlink" href="#users.admin.UserAdminForm.base_fields" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">base_fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'date_joined':</span> <span class="pre">&lt;django.forms.fields.DateTimeField</span> <span class="pre">object&gt;,</span> <span class="pre">'email':</span> <span class="pre">&lt;django.forms.fields.EmailField</span> <span class="pre">object&gt;,</span> <span class="pre">'first_name':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'groups':</span> <span class="pre">&lt;django.forms.models.ModelMultipleChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'is_active':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;,</span> <span class="pre">'is_staff':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;,</span> <span class="pre">'is_superuser':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;,</span> <span class="pre">'last_login':</span> <span class="pre">&lt;django.forms.fields.DateTimeField</span> <span class="pre">object&gt;,</span> <span class="pre">'last_name':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'password':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'user_permissions':</span> <span class="pre">&lt;django.forms.models.ModelMultipleChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'username':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#users.admin.UserAdminForm.base_fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="users.admin.UserAdminForm.declared_fields">
-<code class="sig-name descname">declared_fields</code><em class="property"> = {'groups': &lt;django.forms.models.ModelMultipleChoiceField object&gt;, 'user_permissions': &lt;django.forms.models.ModelMultipleChoiceField object&gt;}</em><a class="headerlink" href="#users.admin.UserAdminForm.declared_fields" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">declared_fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'groups':</span> <span class="pre">&lt;django.forms.models.ModelMultipleChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'user_permissions':</span> <span class="pre">&lt;django.forms.models.ModelMultipleChoiceField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#users.admin.UserAdminForm.declared_fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="users.admin.UserAdminForm.media">
-<em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#users.admin.UserAdminForm.media" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">media</span></code><a class="headerlink" href="#users.admin.UserAdminForm.media" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return all media required to render the widgets on this form.</p>
 </dd></dl>
 
@@ -458,17 +458,17 @@ certain <cite>auth.Group</cite>’s.</p>
 <span id="users-apps-module"></span><h2>users.apps module<a class="headerlink" href="#module-users.apps" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="users.apps.UsersConfig">
-<em class="property">class </em><code class="sig-prename descclassname">users.apps.</code><code class="sig-name descname">UsersConfig</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">app_name</span></em>, <em class="sig-param"><span class="n">app_module</span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.apps.UsersConfig" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">users.apps.</span></code><code class="sig-name descname"><span class="pre">UsersConfig</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_module</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.apps.UsersConfig" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.apps.config.AppConfig</span></code></p>
 <p>AppConfig.</p>
 <dl class="py attribute">
 <dt id="users.apps.UsersConfig.name">
-<code class="sig-name descname">name</code><em class="property"> = 'users'</em><a class="headerlink" href="#users.apps.UsersConfig.name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">name</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'users'</span></em><a class="headerlink" href="#users.apps.UsersConfig.name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="users.apps.UsersConfig.ready">
-<code class="sig-name descname">ready</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#users.apps.UsersConfig.ready" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">ready</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#users.apps.UsersConfig.ready" title="Permalink to this definition">¶</a></dt>
 <dd><p>Ready method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -484,22 +484,22 @@ certain <cite>auth.Group</cite>’s.</p>
 <span id="users-forms-module"></span><h2>users.forms module<a class="headerlink" href="#module-users.forms" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="users.forms.AccountForm">
-<em class="property">class </em><code class="sig-prename descclassname">users.forms.</code><code class="sig-name descname">AccountForm</code><span class="sig-paren">(</span><em class="sig-param">data=None</em>, <em class="sig-param">files=None</em>, <em class="sig-param">auto_id='id_%s'</em>, <em class="sig-param">prefix=None</em>, <em class="sig-param">initial=None</em>, <em class="sig-param">error_class=&lt;class 'django.forms.utils.ErrorList'&gt;</em>, <em class="sig-param">label_suffix=None</em>, <em class="sig-param">empty_permitted=False</em>, <em class="sig-param">field_order=None</em>, <em class="sig-param">use_required_attribute=None</em>, <em class="sig-param">renderer=None</em><span class="sig-paren">)</span><a class="headerlink" href="#users.forms.AccountForm" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">users.forms.</span></code><code class="sig-name descname"><span class="pre">AccountForm</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">data=None</span></em>, <em class="sig-param"><span class="pre">files=None</span></em>, <em class="sig-param"><span class="pre">auto_id='id_%s'</span></em>, <em class="sig-param"><span class="pre">prefix=None</span></em>, <em class="sig-param"><span class="pre">initial=None</span></em>, <em class="sig-param"><span class="pre">error_class=&lt;class</span> <span class="pre">'django.forms.utils.ErrorList'&gt;</span></em>, <em class="sig-param"><span class="pre">label_suffix=None</span></em>, <em class="sig-param"><span class="pre">empty_permitted=False</span></em>, <em class="sig-param"><span class="pre">field_order=None</span></em>, <em class="sig-param"><span class="pre">use_required_attribute=None</span></em>, <em class="sig-param"><span class="pre">renderer=None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.forms.AccountForm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.forms.forms.Form</span></code></p>
 <p>Form for showing account details.</p>
 <dl class="py attribute">
 <dt id="users.forms.AccountForm.base_fields">
-<code class="sig-name descname">base_fields</code><em class="property"> = {'association': &lt;django.forms.models.ModelChoiceField object&gt;, 'email': &lt;django.forms.fields.EmailField object&gt;, 'first_name': &lt;django.forms.fields.CharField object&gt;, 'last_name': &lt;django.forms.fields.CharField object&gt;, 'username': &lt;django.forms.fields.CharField object&gt;}</em><a class="headerlink" href="#users.forms.AccountForm.base_fields" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">base_fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'association':</span> <span class="pre">&lt;django.forms.models.ModelChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'email':</span> <span class="pre">&lt;django.forms.fields.EmailField</span> <span class="pre">object&gt;,</span> <span class="pre">'first_name':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'last_name':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'username':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#users.forms.AccountForm.base_fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="users.forms.AccountForm.declared_fields">
-<code class="sig-name descname">declared_fields</code><em class="property"> = {'association': &lt;django.forms.models.ModelChoiceField object&gt;, 'email': &lt;django.forms.fields.EmailField object&gt;, 'first_name': &lt;django.forms.fields.CharField object&gt;, 'last_name': &lt;django.forms.fields.CharField object&gt;, 'username': &lt;django.forms.fields.CharField object&gt;}</em><a class="headerlink" href="#users.forms.AccountForm.declared_fields" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">declared_fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'association':</span> <span class="pre">&lt;django.forms.models.ModelChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'email':</span> <span class="pre">&lt;django.forms.fields.EmailField</span> <span class="pre">object&gt;,</span> <span class="pre">'first_name':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'last_name':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'username':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#users.forms.AccountForm.declared_fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="users.forms.AccountForm.media">
-<em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#users.forms.AccountForm.media" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">media</span></code><a class="headerlink" href="#users.forms.AccountForm.media" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return all media required to render the widgets on this form.</p>
 </dd></dl>
 
@@ -507,17 +507,17 @@ certain <cite>auth.Group</cite>’s.</p>
 
 <dl class="py class">
 <dt id="users.forms.LoginForm">
-<em class="property">class </em><code class="sig-prename descclassname">users.forms.</code><code class="sig-name descname">LoginForm</code><span class="sig-paren">(</span><em class="sig-param">data=None</em>, <em class="sig-param">files=None</em>, <em class="sig-param">auto_id='id_%s'</em>, <em class="sig-param">prefix=None</em>, <em class="sig-param">initial=None</em>, <em class="sig-param">error_class=&lt;class 'django.forms.utils.ErrorList'&gt;</em>, <em class="sig-param">label_suffix=None</em>, <em class="sig-param">empty_permitted=False</em>, <em class="sig-param">field_order=None</em>, <em class="sig-param">use_required_attribute=None</em>, <em class="sig-param">renderer=None</em><span class="sig-paren">)</span><a class="headerlink" href="#users.forms.LoginForm" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">users.forms.</span></code><code class="sig-name descname"><span class="pre">LoginForm</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">data=None</span></em>, <em class="sig-param"><span class="pre">files=None</span></em>, <em class="sig-param"><span class="pre">auto_id='id_%s'</span></em>, <em class="sig-param"><span class="pre">prefix=None</span></em>, <em class="sig-param"><span class="pre">initial=None</span></em>, <em class="sig-param"><span class="pre">error_class=&lt;class</span> <span class="pre">'django.forms.utils.ErrorList'&gt;</span></em>, <em class="sig-param"><span class="pre">label_suffix=None</span></em>, <em class="sig-param"><span class="pre">empty_permitted=False</span></em>, <em class="sig-param"><span class="pre">field_order=None</span></em>, <em class="sig-param"><span class="pre">use_required_attribute=None</span></em>, <em class="sig-param"><span class="pre">renderer=None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.forms.LoginForm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.forms.forms.Form</span></code></p>
 <p>Form for running a profile.</p>
 <dl class="py attribute">
 <dt id="users.forms.LoginForm.base_fields">
-<code class="sig-name descname">base_fields</code><em class="property"> = {'remember': &lt;django.forms.fields.BooleanField object&gt;, 'username': &lt;django.forms.fields.CharField object&gt;}</em><a class="headerlink" href="#users.forms.LoginForm.base_fields" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">base_fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'remember':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;,</span> <span class="pre">'username':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#users.forms.LoginForm.base_fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="users.forms.LoginForm.clean_username">
-<code class="sig-name descname">clean_username</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#users.forms.LoginForm.clean_username" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">clean_username</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#users.forms.LoginForm.clean_username" title="Permalink to this definition">¶</a></dt>
 <dd><p>Clean the username field in this form.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -528,12 +528,12 @@ certain <cite>auth.Group</cite>’s.</p>
 
 <dl class="py attribute">
 <dt id="users.forms.LoginForm.declared_fields">
-<code class="sig-name descname">declared_fields</code><em class="property"> = {'remember': &lt;django.forms.fields.BooleanField object&gt;, 'username': &lt;django.forms.fields.CharField object&gt;}</em><a class="headerlink" href="#users.forms.LoginForm.declared_fields" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">declared_fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'remember':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;,</span> <span class="pre">'username':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#users.forms.LoginForm.declared_fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="users.forms.LoginForm.media">
-<em class="property">property </em><code class="sig-name descname">media</code><a class="headerlink" href="#users.forms.LoginForm.media" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">media</span></code><a class="headerlink" href="#users.forms.LoginForm.media" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return all media required to render the widgets on this form.</p>
 </dd></dl>
 
@@ -544,31 +544,31 @@ certain <cite>auth.Group</cite>’s.</p>
 <span id="users-models-module"></span><h2>users.models module<a class="headerlink" href="#module-users.models" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="users.models.GroupSettings">
-<em class="property">class </em><code class="sig-prename descclassname">users.models.</code><code class="sig-name descname">GroupSettings</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.models.GroupSettings" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">users.models.</span></code><code class="sig-name descname"><span class="pre">GroupSettings</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.models.GroupSettings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
 <p>Extra settings for a Django Group.</p>
 <dl class="py exception">
 <dt id="users.models.GroupSettings.DoesNotExist">
-<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#users.models.GroupSettings.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">DoesNotExist</span></code><a class="headerlink" href="#users.models.GroupSettings.DoesNotExist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
 </dd></dl>
 
 <dl class="py exception">
 <dt id="users.models.GroupSettings.MultipleObjectsReturned">
-<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#users.models.GroupSettings.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></code><a class="headerlink" href="#users.models.GroupSettings.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="users.models.GroupSettings.gets_staff_permissions">
-<code class="sig-name descname">gets_staff_permissions</code><a class="headerlink" href="#users.models.GroupSettings.gets_staff_permissions" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">gets_staff_permissions</span></code><a class="headerlink" href="#users.models.GroupSettings.gets_staff_permissions" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="users.models.GroupSettings.group">
-<code class="sig-name descname">group</code><a class="headerlink" href="#users.models.GroupSettings.group" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">group</span></code><a class="headerlink" href="#users.models.GroupSettings.group" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related object on the forward side of a one-to-one relation.</p>
 <p>In the example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
@@ -580,43 +580,43 @@ object the first time, the query is executed.</p>
 
 <dl class="py attribute">
 <dt id="users.models.GroupSettings.group_id">
-<code class="sig-name descname">group_id</code><a class="headerlink" href="#users.models.GroupSettings.group_id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">group_id</span></code><a class="headerlink" href="#users.models.GroupSettings.group_id" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="users.models.GroupSettings.is_auto_join_group">
-<code class="sig-name descname">is_auto_join_group</code><a class="headerlink" href="#users.models.GroupSettings.is_auto_join_group" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">is_auto_join_group</span></code><a class="headerlink" href="#users.models.GroupSettings.is_auto_join_group" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="users.models.GroupSettings.objects">
-<code class="sig-name descname">objects</code><em class="property"> = &lt;django.db.models.manager.Manager object&gt;</em><a class="headerlink" href="#users.models.GroupSettings.objects" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">objects</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#users.models.GroupSettings.objects" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="users.models.Profile">
-<em class="property">class </em><code class="sig-prename descclassname">users.models.</code><code class="sig-name descname">Profile</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.models.Profile" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">users.models.</span></code><code class="sig-name descname"><span class="pre">Profile</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.models.Profile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
 <p>Profile model.</p>
 <dl class="py exception">
 <dt id="users.models.Profile.DoesNotExist">
-<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#users.models.Profile.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">DoesNotExist</span></code><a class="headerlink" href="#users.models.Profile.DoesNotExist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
 </dd></dl>
 
 <dl class="py exception">
 <dt id="users.models.Profile.MultipleObjectsReturned">
-<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#users.models.Profile.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></code><a class="headerlink" href="#users.models.Profile.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="users.models.Profile.association">
-<code class="sig-name descname">association</code><a class="headerlink" href="#users.models.Profile.association" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">association</span></code><a class="headerlink" href="#users.models.Profile.association" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related object on the forward side of a many-to-one or
 one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 <p>In the example:</p>
@@ -629,24 +629,24 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 
 <dl class="py attribute">
 <dt id="users.models.Profile.association_id">
-<code class="sig-name descname">association_id</code><a class="headerlink" href="#users.models.Profile.association_id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">association_id</span></code><a class="headerlink" href="#users.models.Profile.association_id" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="users.models.Profile.id">
-<code class="sig-name descname">id</code><a class="headerlink" href="#users.models.Profile.id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">id</span></code><a class="headerlink" href="#users.models.Profile.id" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="users.models.Profile.objects">
-<code class="sig-name descname">objects</code><em class="property"> = &lt;django.db.models.manager.Manager object&gt;</em><a class="headerlink" href="#users.models.Profile.objects" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">objects</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#users.models.Profile.objects" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="users.models.Profile.user">
-<code class="sig-name descname">user</code><a class="headerlink" href="#users.models.Profile.user" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">user</span></code><a class="headerlink" href="#users.models.Profile.user" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related object on the forward side of a one-to-one relation.</p>
 <p>In the example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
@@ -658,41 +658,41 @@ object the first time, the query is executed.</p>
 
 <dl class="py attribute">
 <dt id="users.models.Profile.user_id">
-<code class="sig-name descname">user_id</code><a class="headerlink" href="#users.models.Profile.user_id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">user_id</span></code><a class="headerlink" href="#users.models.Profile.user_id" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="users.models.User">
-<em class="property">class </em><code class="sig-prename descclassname">users.models.</code><code class="sig-name descname">User</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.models.User" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">users.models.</span></code><code class="sig-name descname"><span class="pre">User</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.models.User" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.auth.models.User</span></code></p>
 <p>User object.</p>
 <dl class="py exception">
 <dt id="users.models.User.DoesNotExist">
-<em class="property">exception </em><code class="sig-name descname">DoesNotExist</code><a class="headerlink" href="#users.models.User.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">DoesNotExist</span></code><a class="headerlink" href="#users.models.User.DoesNotExist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.auth.models.User.DoesNotExist</span></code></p>
 </dd></dl>
 
 <dl class="py exception">
 <dt id="users.models.User.MultipleObjectsReturned">
-<em class="property">exception </em><code class="sig-name descname">MultipleObjectsReturned</code><a class="headerlink" href="#users.models.User.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></code><a class="headerlink" href="#users.models.User.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.auth.models.User.MultipleObjectsReturned</span></code></p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="users.models.User.REQUIRED_FIELDS">
-<code class="sig-name descname">REQUIRED_FIELDS</code><em class="property"> = []</em><a class="headerlink" href="#users.models.User.REQUIRED_FIELDS" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">REQUIRED_FIELDS</span></code><em class="property"> <span class="pre">=</span> <span class="pre">[]</span></em><a class="headerlink" href="#users.models.User.REQUIRED_FIELDS" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="users.models.User.USERNAME_FIELD">
-<code class="sig-name descname">USERNAME_FIELD</code><em class="property"> = 'username'</em><a class="headerlink" href="#users.models.User.USERNAME_FIELD" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">USERNAME_FIELD</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'username'</span></em><a class="headerlink" href="#users.models.User.USERNAME_FIELD" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="users.models.User.get_short_name">
-<code class="sig-name descname">get_short_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#users.models.User.get_short_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_short_name</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#users.models.User.get_short_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the short name of a User object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -703,12 +703,12 @@ object the first time, the query is executed.</p>
 
 <dl class="py attribute">
 <dt id="users.models.User.objects">
-<code class="sig-name descname">objects</code><em class="property"> = &lt;users.models.UserManager object&gt;</em><a class="headerlink" href="#users.models.User.objects" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">objects</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;users.models.UserManager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#users.models.User.objects" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="users.models.User.shift_set">
-<code class="sig-name descname">shift_set</code><a class="headerlink" href="#users.models.User.shift_set" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">shift_set</span></code><a class="headerlink" href="#users.models.User.shift_set" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related objects manager on the forward and reverse sides of
 a many-to-many relation.</p>
 <p>In the example:</p>
@@ -726,12 +726,12 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 
 <dl class="py class">
 <dt id="users.models.UserManager">
-<em class="property">class </em><code class="sig-prename descclassname">users.models.</code><code class="sig-name descname">UserManager</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.models.UserManager" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">users.models.</span></code><code class="sig-name descname"><span class="pre">UserManager</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.models.UserManager" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.auth.base_user.BaseUserManager</span></code></p>
 <p>User manager object.</p>
 <dl class="py method">
 <dt id="users.models.UserManager.create_superuser">
-<code class="sig-name descname">create_superuser</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">username</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.models.UserManager.create_superuser" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">create_superuser</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.models.UserManager.create_superuser" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a superuser.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -748,7 +748,7 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 
 <dl class="py method">
 <dt id="users.models.UserManager.create_user">
-<code class="sig-name descname">create_user</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">username</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.models.UserManager.create_user" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">create_user</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.models.UserManager.create_user" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a user given a username.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -773,12 +773,12 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 <span id="users-views-module"></span><h2>users.views module<a class="headerlink" href="#module-users.views" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="users.views.AccountView">
-<em class="property">class </em><code class="sig-prename descclassname">users.views.</code><code class="sig-name descname">AccountView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.views.AccountView" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">users.views.</span></code><code class="sig-name descname"><span class="pre">AccountView</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.views.AccountView" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.auth.mixins.LoginRequiredMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
 <p>Account view.</p>
 <dl class="py method">
 <dt id="users.views.AccountView.get">
-<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.views.AccountView.get" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.views.AccountView.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>GET request for the account view.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -795,7 +795,7 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 
 <dl class="py method">
 <dt id="users.views.AccountView.post">
-<code class="sig-name descname">post</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.views.AccountView.post" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">post</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.views.AccountView.post" title="Permalink to this definition">¶</a></dt>
 <dd><p>POST request for the account view.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -812,19 +812,19 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 
 <dl class="py attribute">
 <dt id="users.views.AccountView.template_name">
-<code class="sig-name descname">template_name</code><em class="property"> = 'users/account.html'</em><a class="headerlink" href="#users.views.AccountView.template_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">template_name</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'users/account.html'</span></em><a class="headerlink" href="#users.views.AccountView.template_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="users.views.LoginView">
-<em class="property">class </em><code class="sig-prename descclassname">users.views.</code><code class="sig-name descname">LoginView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.views.LoginView" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">users.views.</span></code><code class="sig-name descname"><span class="pre">LoginView</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.views.LoginView" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
 <p>Login view.</p>
 <dl class="py method">
 <dt id="users.views.LoginView.get">
-<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.views.LoginView.get" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.views.LoginView.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>GET request for the login view.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -841,7 +841,7 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 
 <dl class="py method">
 <dt id="users.views.LoginView.post">
-<code class="sig-name descname">post</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.views.LoginView.post" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">post</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.views.LoginView.post" title="Permalink to this definition">¶</a></dt>
 <dd><p>POST request for the login view.</p>
 <p>Redirects a user to the OpenID verification server.
 :param request: the request
@@ -852,24 +852,24 @@ otherwise</p>
 
 <dl class="py attribute">
 <dt id="users.views.LoginView.remember_cookie">
-<code class="sig-name descname">remember_cookie</code><em class="property"> = '_remembered_username'</em><a class="headerlink" href="#users.views.LoginView.remember_cookie" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">remember_cookie</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'_remembered_username'</span></em><a class="headerlink" href="#users.views.LoginView.remember_cookie" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="users.views.LoginView.template_name">
-<code class="sig-name descname">template_name</code><em class="property"> = 'users/login.html'</em><a class="headerlink" href="#users.views.LoginView.template_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">template_name</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'users/login.html'</span></em><a class="headerlink" href="#users.views.LoginView.template_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="users.views.LogoutView">
-<em class="property">class </em><code class="sig-prename descclassname">users.views.</code><code class="sig-name descname">LogoutView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.views.LogoutView" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">users.views.</span></code><code class="sig-name descname"><span class="pre">LogoutView</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.views.LogoutView" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
 <p>Logout view.</p>
 <dl class="py method">
 <dt id="users.views.LogoutView.get">
-<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.views.LogoutView.get" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.views.LogoutView.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>GET request for the logout view.</p>
 <p>This view logs out a user
 :param request: the request
@@ -880,19 +880,19 @@ set, returns a render of the logout page otherwise</p>
 
 <dl class="py attribute">
 <dt id="users.views.LogoutView.template_name">
-<code class="sig-name descname">template_name</code><em class="property"> = 'users/logout.html'</em><a class="headerlink" href="#users.views.LogoutView.template_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">template_name</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'users/logout.html'</span></em><a class="headerlink" href="#users.views.LogoutView.template_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="users.views.VerifyView">
-<em class="property">class </em><code class="sig-prename descclassname">users.views.</code><code class="sig-name descname">VerifyView</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.views.VerifyView" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">users.views.</span></code><code class="sig-name descname"><span class="pre">VerifyView</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.views.VerifyView" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
 <p>Verify view.</p>
 <dl class="py method">
 <dt id="users.views.VerifyView.get">
-<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.views.VerifyView.get" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#users.views.VerifyView.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>GET request for verify view.</p>
 <p>This view will verify if the given signature is valid against the OpenID server endpoint.
 :param request: the request
@@ -903,7 +903,7 @@ page otherwise</p>
 
 <dl class="py attribute">
 <dt id="users.views.VerifyView.template_name">
-<code class="sig-name descname">template_name</code><em class="property"> = 'users/verify.html'</em><a class="headerlink" href="#users.views.VerifyView.template_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">template_name</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'users/verify.html'</span></em><a class="headerlink" href="#users.views.VerifyView.template_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
