@@ -35,10 +35,9 @@ class SpofityAuthorizeView(PermissionRequiredMixin, TemplateView):
         }
 
         if player is not None:
-            render_data["form"] = SpotifyTokenForm(initial={
-                "client_id": player.client_id,
-                "client_secret": player.client_secret,
-            })
+            render_data["form"] = SpotifyTokenForm(
+                initial={"client_id": player.client_id, "client_secret": player.client_secret,}  # noqa
+            )
         else:
             render_data["form"] = SpotifyTokenForm()
         return render(request, self.template_name, render_data)

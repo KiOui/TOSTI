@@ -51,7 +51,11 @@ class PlayerAdmin(GuardedModelAdmin):
         urls = super().get_urls()
         custom_urls = [
             path("authorize/", self.admin_site.admin_view(SpofityAuthorizeView.as_view()), name="authorize",),
-            path("authorize/<spotify:spotify>", self.admin_site.admin_view(SpofityAuthorizeView.as_view()), name="reauthorize",),
+            path(
+                "authorize/<spotify:spotify>",
+                self.admin_site.admin_view(SpofityAuthorizeView.as_view()),
+                name="reauthorize",
+            ),
             path("token/", SpotifyTokenView.as_view(), name="add_token"),
             path(
                 "auth-succeeded/<spotify:spotify>",
