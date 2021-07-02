@@ -1,8 +1,21 @@
 {% extends 'admin/base_site.html' %}
+{% load i18n admin_urls static %}
+
+{% if not is_popup %}
+    {% block breadcrumbs %}
+        <div class="breadcrumbs">
+            <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+            &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+            &rsaquo; {% if has_view_permission %}<a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>{% else %}{{ opts.verbose_name_plural|capfirst }}{% endif %}
+            {% if original %}&rsaquo; <a href="{% url opts|admin_urlname:'change' original.id %}">{{ original|truncatewords:"18" }}</a>{% endif %}
+            &rsaquo; {{ view_name }}
+        </div>
+    {% endblock %}
+{% endif %}
 
 {% block content %}
     <h1>Spotify Authorization</h1>
-    <p>Authorization finished successfully! You have now added authorization for the account <strong>{{ username }}</strong>.</p>
-    <p>Now make sure to complete configuration by selecting a playback device and optionally a venue in <a href="{% url "admin:thaliedje_player_change" spotify.id %}">here</a>.</p>
+    <p>Authorization finished successfully! You have now added authorization for the account <strong>{{ original.get_display_name }}</strong>.</p>
+    <p>Now make sure to complete configuration by selecting a playback device and optionally a venue in <a href="{% url "admin:thaliedje_player_change" original.id %}">here</a>.</p>
     <p>Also, don't forget to grant the correct permissions to users and groups for this player!</p>
 {% endblock %}

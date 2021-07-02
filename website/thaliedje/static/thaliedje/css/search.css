@@ -6,3 +6,7 @@
 .height-fixed {
     height: 40px;
 }
+
+.search-list {
+    background-color: var(--background-shade-light);
+}
