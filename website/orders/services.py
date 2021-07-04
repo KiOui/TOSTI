@@ -8,6 +8,7 @@ from django.utils import timezone
 
 from orders.exceptions import OrderException
 from orders.models import Order, Product, Shift
+import orders.views
 from users.models import User
 
 
@@ -219,3 +220,11 @@ class Cart:
     def to_json(self):
         """Convert this object to JSON."""
         return json.dumps(self.get_item_list_ids())
+
+
+def filter_user_page(user_page_list: list):
+    """Add Ordered items tab on accounts page."""
+    user_page_list.append(
+        {"name": "Ordered items", "slug": "ordered_items", "renderer": orders.views.render_ordered_items_tab,}  # noqa
+    )
+    return user_page_list

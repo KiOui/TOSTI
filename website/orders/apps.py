@@ -13,3 +13,7 @@ class OrdersConfig(AppConfig):
         :return: None
         """
         from orders import signals  # noqa
+        from .services import filter_user_page
+        from tosti.filter import function_filter
+
+        function_filter.add_filter("tabs_user_page", filter_user_page)

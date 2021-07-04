@@ -1,7 +1,10 @@
 from django.contrib.auth import login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.views.generic import TemplateView
+
+from tosti.filter import function_filter
 from .forms import LoginForm, AccountForm
 from .services import get_openid_verifier, update_staff_status
 
@@ -144,7 +147,11 @@ class AccountView(LoginRequiredMixin, TemplateView):
                 "association": request.user.profile.association,
             }
         )
-        return render(request, self.template_name, {"form": form, "active": "users"})
+        active = request.GET.get("active", "users")
+        tabs = function_filter.do_filter("tabs_user_page", [])
+        for tab in tabs:
+            tab["rendered"] = tab["renderer"](request, tab, reverse("users:account"))
+        return render(request, self.template_name, {"form": form, "active": active, "tabs": tabs})
 
     def post(self, request, **kwargs):
         """

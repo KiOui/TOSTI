@@ -201,6 +201,11 @@ class SpotifyTrack(models.Model):
     track_name = models.CharField(max_length=1024, blank=False, null=False)
     track_artists = models.ManyToManyField(SpotifyArtist)
 
+    @property
+    def artists(self):
+        """Get queryset of track_artists."""
+        return self.track_artists.all()
+
     def __str__(self):
         """
         Convert this object to string.
