@@ -28,7 +28,7 @@ from .views import (
     WelcomeView,
     handler403 as custom_handler403,
     handler404 as custom_handler404,
-    handler500 as custom_handler500,
+    handler500 as custom_handler500, DocumentationView,
 )
 
 handler403 = custom_handler403
@@ -41,6 +41,7 @@ urlpatterns = [
     path("oauth/", include("oauth2_provider.urls", namespace="oauth2_provider")),
     path("welcome", WelcomeView.as_view(), name="welcome"),
     path("privacy/", PrivacyView.as_view(), name="privacy"),
+    path("documentation/", DocumentationView.as_view(), name="documentation"),
     path("users/", include(("users.urls", "users"), namespace="users"),),
     path("shifts/", include(("orders.urls", "orders"), namespace="orders"),),
     path("thaliedje/", include(("thaliedje.urls", "thaliedje"), namespace="thaliedje"),),
