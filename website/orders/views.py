@@ -1,9 +1,8 @@
 import json
 
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.template.loader import render_to_string
-from django.views.generic import TemplateView, ListView
+from django.views.generic import TemplateView
 from guardian.mixins import PermissionRequiredMixin
 
 from orders import services
