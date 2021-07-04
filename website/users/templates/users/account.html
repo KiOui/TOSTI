@@ -11,36 +11,33 @@
         <p>The details of your account are displayed below</p>
         <ul class="nav nav-tabs" role="tablist">
             <li class="nav-item" style="padding-bottom: 0;">
-                <a class="nav-link {% if active == "users" %}active{% endif %}" id="account-tab" data-toggle="tab" href="#account-content"
-                   type="button" role="tab" aria-controls="account-content" aria-selected="{% if active == "users" %}true{% else %}false{% endif %}">Personal details</a>
+                <a class="nav-link {% if active == "users" %}active{% endif %}" id="account-tab" href="{% url 'users:account' %}"
+                    >Personal details</a>
             </li>
             {% for tab in tabs %}
                 <li class="nav-item" style="padding-bottom: 0;"  role="presentation">
-                    <a class="nav-link {% if active == tab.slug %}active{% endif %}" id="{{ tab.slug }}-tab" data-toggle="tab" href="#{{ tab.slug }}-content"
-                        type="button" role="tab" aria-controls="{{ tab.slug }}-content" aria-selected="{% if active == tab.slug %}true{% else %}false{% endif %}">
-                        {{ tab.name }}
-                    </a>
+                    <a class="nav-link {% if active == tab.slug %}active{% endif %}" id="{{ tab.slug }}-tab" href="{% url 'users:account' %}?active={{ tab.slug }}"
+                        >{{ tab.name }}</a>
                 </li>
             {% endfor %}
         </ul>
-        <div class="tab-content mt-5">
-            <div class="tab-pane mt-2{% if active == "users" %} show active{% endif %}" id="account-content" role="tabpanel" aria-labelledby="account-tab">
-                <div class="d-flex flex-row justify-content-center">
-                    <div style="max-width: 400px">
-                        <h2>Personal details</h2>
-                        <form class="centered-form" method="POST">
-                            {% csrf_token %}
-                            {{ form }}
-                            <input type="submit" value="Save" class="btn btn-primary"/>
-                        </form>
+        <div class="tab-content mt-5 mb-5">
+            <div class="tab-pane show active">
+                {% if rendered_tab is None %}
+                    <div class="d-flex flex-row justify-content-center">
+                        <div style="max-width: 400px">
+                            <h2>Personal details</h2>
+                            <form class="centered-form" method="POST">
+                                {% csrf_token %}
+                                {{ form }}
+                                <input type="submit" value="Save" class="btn btn-primary"/>
+                            </form>
+                        </div>
                     </div>
-                </div>
+                {% else %}
+                     {{ rendered_tab }}
+                {% endif %}
             </div>
-            {% for tab in tabs %}
-                <div class="tab-pane mt-2{% if active == tab.slug %} show active{% endif %}" id="{{ tab.slug }}-content" role="tabpanel" aria-labelledby="{{ tab.slug }}-tab">
-                    {{ tab.rendered }}
-                </div>
-            {% endfor %}
         </div>
     </div>
 {% endblock %}

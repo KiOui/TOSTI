@@ -149,9 +149,13 @@ class AccountView(LoginRequiredMixin, TemplateView):
         )
         active = request.GET.get("active", "users")
         tabs = function_filter.do_filter("tabs_user_page", [])
+        rendered_tab = None
         for tab in tabs:
-            tab["rendered"] = tab["renderer"](request, tab, reverse("users:account"))
-        return render(request, self.template_name, {"form": form, "active": active, "tabs": tabs})
+            if active == tab["slug"]:
+                rendered_tab = tab["renderer"](request, tab, reverse("users:account"))
+        return render(
+            request, self.template_name, {"form": form, "active": active, "tabs": tabs, "rendered_tab": rendered_tab}
+        )
 
     def post(self, request, **kwargs):
         """
@@ -162,7 +166,10 @@ class AccountView(LoginRequiredMixin, TemplateView):
         :return: a render of the account view
         """
         form = AccountForm(request.POST)
+        tabs = function_filter.do_filter("tabs_user_page", [])
         if form.is_valid():
             request.user.profile.association = form.cleaned_data.get("association")
             request.user.profile.save()
-        return render(request, self.template_name, {"form": form, "active": "users"})
+        return render(
+            request, self.template_name, {"form": form, "active": "users", "tabs": tabs, "rendered_tab": None}
+        )
