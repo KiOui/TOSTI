@@ -15,5 +15,4 @@ urlpatterns = [
     path("<shift:shift>/admin/", views.ShiftAdminView.as_view(), name="shift_admin"),
     path("<shift:shift>/overview/", views.ShiftOverviewView.as_view(), name="shift_overview"),
     path("<shift:shift>/join/", views.JoinShiftView.as_view(), name="shift_join"),
-    path("history/", views.AccountHistoryView.as_view(), name="history"),
 ]

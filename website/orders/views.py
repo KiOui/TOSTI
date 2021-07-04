@@ -293,18 +293,6 @@ class AdminExplainerView(TemplateView):
     template_name = "orders/explainer_admin.html"
 
 
-class AccountHistoryView(LoginRequiredMixin, ListView):
-    """Account History View."""
-
-    template_name = "orders/account_history.html"
-    paginate_by = 50
-    extra_context = {"active": "orders"}
-
-    def get_queryset(self):
-        """Get queryset."""
-        return Order.objects.filter(user=self.request.user).order_by("-created")
-
-
 def render_ordered_items_tab(request, item, current_page_url):
     """Render the ordered items tab on the user page."""
     ordered_items = Order.objects.filter(user=request.user).order_by("-created")
