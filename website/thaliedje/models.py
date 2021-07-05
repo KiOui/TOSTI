@@ -1,4 +1,5 @@
 import os
+from json import JSONDecodeError
 
 from django.db import models
 from django.conf import settings
@@ -71,7 +72,10 @@ class Player(models.Model):
         if not self.configured:
             raise RuntimeError("This Spotify account is not configured yet.")
 
-        currently_playing = self.spotify.currently_playing()
+        try:
+            currently_playing = self.spotify.currently_playing()
+        except JSONDecodeError:
+            currently_playing = None
 
         if currently_playing is None:
             return False
