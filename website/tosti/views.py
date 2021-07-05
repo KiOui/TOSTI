@@ -30,6 +30,12 @@ class WelcomeView(TemplateView):
     template_name = "tosti/welcome.html"
 
 
+class DocumentationView(TemplateView):
+    """Documentation page."""
+
+    template_name = "tosti/documentation.html"
+
+
 def handler403(request, exception):
     """
     Handle a 403 (permission denied) exception.
