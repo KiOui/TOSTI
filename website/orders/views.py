@@ -1,12 +1,14 @@
 import json
 
+from django.core.paginator import Paginator
+from django.template.loader import render_to_string
 from django.views.generic import TemplateView
 from guardian.mixins import PermissionRequiredMixin
 
 from orders import services
 from orders.exceptions import OrderException
 from django.shortcuts import render, redirect
-from .models import Product
+from .models import Product, Order
 from .forms import CreateShiftForm
 import urllib.parse
 
@@ -288,3 +290,14 @@ class AdminExplainerView(TemplateView):
     """Admin Explainer view."""
 
     template_name = "orders/explainer_admin.html"
+
+
+def render_ordered_items_tab(request, item, current_page_url):
+    """Render the ordered items tab on the user page."""
+    ordered_items = Order.objects.filter(user=request.user).order_by("-created")
+    page = request.GET.get("page", 1) if (item["slug"] == request.GET.get("active", False)) else 1
+    paginator = Paginator(ordered_items, per_page=50)
+    return render_to_string(
+        "orders/account_history.html",
+        context={"page_obj": paginator.get_page(page), "current_page_url": current_page_url, "item": item},
+    )
