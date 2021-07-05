@@ -13,7 +13,14 @@ class OrdersConfig(AppConfig):
         :return: None
         """
         from orders import signals  # noqa
-        from .services import filter_user_page
-        from tosti.filter import function_filter
+        from users.views import AccountView
+        from orders.views import render_ordered_items_tab
 
-        function_filter.add_filter("tabs_user_page", filter_user_page)
+        def filter_user_page(user_page_list: list):
+            """Add Ordered items tab on accounts page."""
+            user_page_list.append(
+                {"name": "Ordered items", "slug": "ordered_items", "renderer": render_ordered_items_tab,}  # noqa
+            )
+            return user_page_list
+
+        AccountView.user_data_tabs.add_filter(filter_user_page)

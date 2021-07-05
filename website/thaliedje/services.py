@@ -10,7 +10,6 @@ from thaliedje.models import (
     SpotifyTrack,
     SpotifyQueueItem,
 )
-from thaliedje.views import render_account_history_tab
 
 
 def create_track_database_information(track_info):
@@ -189,11 +188,3 @@ def execute_data_minimisation(dry_run=False):
         if not dry_run:
             request.save()
     return users
-
-
-def filter_user_page(user_page_list: list):
-    """Add requested songs as a tab to users page."""
-    user_page_list.append(
-        {"name": "Requested songs", "slug": "requested_songs", "renderer": render_account_history_tab,}  # noqa
-    )
-    return user_page_list
