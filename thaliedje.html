@@ -253,6 +253,12 @@ caching the Spotify OAuth2 tokens. When using the default settings, a <code clas
 <code class="sig-name descname"><span class="pre">name</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'thaliedje'</span></em><a class="headerlink" href="#thaliedje.apps.ThaliedjeConfig.name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py method">
+<dt id="thaliedje.apps.ThaliedjeConfig.ready">
+<code class="sig-name descname"><span class="pre">ready</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.apps.ThaliedjeConfig.ready" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ready method.</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -358,7 +364,7 @@ caching the Spotify OAuth2 tokens. When using the default settings, a <code clas
 <p>Thaliedje can be authorized to access multiple Spotify accounts via the Spotify API.
 The Spotify account model contains data of the authorized accounts. Each account can
 be added to a venue to provide a music player for that venue. This expects a Spotify
-client (playback device) is playing in that venue. Communciation happens via the
+client (playback device) is playing in that venue. Communication happens via the
 Spotipy library, hence authorization works via cache files. These objects are often
 referenced to as Spotify players.</p>
 <dl class="py exception">
@@ -737,6 +743,12 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
 </dd></dl>
 
+<dl class="py method">
+<dt id="thaliedje.models.SpotifyTrack.artists">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">artists</span></code><a class="headerlink" href="#thaliedje.models.SpotifyTrack.artists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get queryset of track_artists.</p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt id="thaliedje.models.SpotifyTrack.id">
 <code class="sig-name descname"><span class="pre">id</span></code><a class="headerlink" href="#thaliedje.models.SpotifyTrack.id" title="Permalink to this definition">¶</a></dt>
@@ -839,6 +851,12 @@ object the first time, the query is executed.</p>
 <code class="sig-name descname"><span class="pre">template_name</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'thaliedje/now_playing.html'</span></em><a class="headerlink" href="#thaliedje.views.NowPlayingView.template_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+</dd></dl>
+
+<dl class="py function">
+<dt id="thaliedje.views.render_account_history_tab">
+<code class="sig-prename descclassname"><span class="pre">thaliedje.views.</span></code><code class="sig-name descname"><span class="pre">render_account_history_tab</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_page_url</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#thaliedje.views.render_account_history_tab" title="Permalink to this definition">¶</a></dt>
+<dd><p>Render the account history tab on the user page.</p>
 </dd></dl>
 
 </div>
