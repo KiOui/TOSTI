@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.generic import TemplateView
 
-from tosti.filter import function_filter
+from tosti.filter import Filter
 from .forms import LoginForm, AccountForm
 from .services import get_openid_verifier, update_staff_status
 
@@ -130,6 +130,8 @@ class AccountView(LoginRequiredMixin, TemplateView):
 
     template_name = "users/account.html"
 
+    user_data_tabs = Filter()
+
     def get(self, request, **kwargs):
         """
         GET request for the account view.
@@ -148,7 +150,7 @@ class AccountView(LoginRequiredMixin, TemplateView):
             }
         )
         active = request.GET.get("active", "users")
-        tabs = function_filter.do_filter("tabs_user_page", [])
+        tabs = self.user_data_tabs.do_filter([])
         rendered_tab = None
         for tab in tabs:
             if active == tab["slug"]:
@@ -166,7 +168,7 @@ class AccountView(LoginRequiredMixin, TemplateView):
         :return: a render of the account view
         """
         form = AccountForm(request.POST)
-        tabs = function_filter.do_filter("tabs_user_page", [])
+        tabs = self.user_data_tabs.do_filter([])
         if form.is_valid():
             request.user.profile.association = form.cleaned_data.get("association")
             request.user.profile.save()

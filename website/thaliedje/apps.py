@@ -8,7 +8,14 @@ class ThaliedjeConfig(AppConfig):
 
     def ready(self):
         """Ready method."""
-        from .services import filter_user_page
-        from tosti.filter import function_filter
+        from users.views import AccountView
+        from thaliedje.views import render_account_history_tab
 
-        function_filter.add_filter("tabs_user_page", filter_user_page)
+        def filter_user_page(user_page_list: list):
+            """Add requested songs as a tab to users page."""
+            user_page_list.append(
+                {"name": "Requested songs", "slug": "requested_songs", "renderer": render_account_history_tab,}  # noqa
+            )
+            return user_page_list
+
+        AccountView.user_data_tabs.add_filter(filter_user_page)
