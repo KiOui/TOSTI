@@ -92,6 +92,10 @@ OAUTH2_PROVIDER = {
     "SCOPES": {
         "read": "Authenticated read access to the website",
         "write": "Authenticated write access to the website",
+        "orders:order": "Place orders on your behalf",
+        "orders:manage": "Manage orders on your behalf",
+        "thaliedje:request": "Request songs on your behalf",
+        "thaliedje:manage": "Manage music players on your behalf",
     },
 }
 
