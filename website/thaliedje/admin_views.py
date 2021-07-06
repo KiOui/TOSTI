@@ -1,3 +1,4 @@
+from django.contrib.admin import site
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -14,10 +15,32 @@ class SpofityAuthorizeView(PermissionRequiredMixin, TemplateView):
     permission_required = "thaliedje.add_player"
     template_name = "thaliedje/admin/authorize.html"
 
+    instance_type = Player
+    view_name = "Authorize Spotify Account"
+
     def get(self, request, **kwargs):
         """Get the form to add a new authorized Spotify Account."""
-        form = SpotifyTokenForm()
-        return render(request, self.template_name, {"form": form})
+        player = kwargs.get("spotify", None)
+        render_data = {
+            "view_name": self.view_name,
+            "opts": self.instance_type._meta,
+            "has_view_permission": site.has_permission(request),
+            "site_header": site.site_header,
+            "site_url": site.site_url,
+            "app_label": self.instance_type._meta.app_label,
+            "original": player,
+            "is_popup": False,
+            "is_nav_sidebar_enabled": site.enable_nav_sidebar,
+            "available_apps": site.get_app_list(request),
+        }
+
+        if player is not None:
+            render_data["form"] = SpotifyTokenForm(
+                initial={"client_id": player.client_id, "client_secret": player.client_secret,}  # noqa
+            )
+        else:
+            render_data["form"] = SpotifyTokenForm()
+        return render(request, self.template_name, render_data)
 
     def post(self, request, **kwargs):
         """
@@ -36,7 +59,21 @@ class SpofityAuthorizeView(PermissionRequiredMixin, TemplateView):
             spotify_oauth = redirect(spotify_auth_code.auth.get_authorize_url())
             spotify_oauth.set_cookie(COOKIE_CLIENT_ID, spotify_auth_code.client_id)
             return spotify_oauth
-        return render(request, self.template_name, {"form": form})
+        player = kwargs.get("spotify", None)
+        render_data = {
+            "view_name": self.view_name,
+            "opts": self.instance_type._meta,
+            "has_view_permission": site.has_permission(request),
+            "site_header": site.site_header,
+            "site_url": site.site_url,
+            "app_label": self.instance_type._meta.app_label,
+            "original": player,
+            "is_popup": False,
+            "is_nav_sidebar_enabled": site.enable_nav_sidebar,
+            "available_apps": site.get_app_list(request),
+            "form": form,
+        }
+        return render(request, self.template_name, render_data)
 
 
 class SpotifyTokenView(PermissionRequiredMixin, TemplateView):
@@ -68,7 +105,7 @@ class SpotifyTokenView(PermissionRequiredMixin, TemplateView):
             return render(
                 request,
                 self.template_name,
-                {"error": "No Spotify code found, make sure you are reaching this" "page via a Spotify redirect."},
+                {"error": "No Spotify code found, make sure you are reaching this page via a Spotify redirect."},
             )
 
 
@@ -78,7 +115,22 @@ class SpotifyAuthorizeSucceededView(PermissionRequiredMixin, TemplateView):
     permission_required = "thaliedje.add_player"
     template_name = "thaliedje/admin/authorize_succeeded.html"
 
+    instance_type = Player
+    view_name = "Authorization succeeded"
+
     def get(self, request, **kwargs):
         """GET the view."""
         spotify = kwargs.get("spotify")
-        return render(request, self.template_name, {"username": spotify.get_display_name, "spotify": spotify},)
+        render_data = {
+            "view_name": self.view_name,
+            "opts": self.instance_type._meta,
+            "has_view_permission": site.has_permission(request),
+            "site_header": site.site_header,
+            "site_url": site.site_url,
+            "app_label": self.instance_type._meta.app_label,
+            "original": spotify,
+            "is_popup": False,
+            "is_nav_sidebar_enabled": site.enable_nav_sidebar,
+            "available_apps": site.get_app_list(request),
+        }
+        return render(request, self.template_name, render_data)

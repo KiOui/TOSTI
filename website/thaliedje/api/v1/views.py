@@ -170,8 +170,11 @@ class PlayerPlayAPIView(APIView):
         player = kwargs.get("player")
         try:
             services.player_start(player)
-        except spotipy.SpotifyException:
-            return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        except spotipy.SpotifyException as e:
+            if e.http_status == 403:
+                return Response(status=status.HTTP_403_FORBIDDEN)
+            else:
+                return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
         return Response(status=status.HTTP_200_OK)
 
 
@@ -196,8 +199,11 @@ class PlayerPauseAPIView(APIView):
         player = kwargs.get("player")
         try:
             services.player_pause(player)
-        except spotipy.SpotifyException:
-            return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        except spotipy.SpotifyException as e:
+            if e.http_status == 403:
+                return Response(status=status.HTTP_403_FORBIDDEN)
+            else:
+                return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
         return Response(status=status.HTTP_200_OK)
 
 
@@ -222,8 +228,11 @@ class PlayerNextAPIView(APIView):
         player = kwargs.get("player")
         try:
             services.player_next(player)
-        except spotipy.SpotifyException:
-            return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        except spotipy.SpotifyException as e:
+            if e.http_status == 403:
+                return Response(status=status.HTTP_403_FORBIDDEN)
+            else:
+                return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
         return Response(status=status.HTTP_200_OK)
 
 
@@ -248,6 +257,9 @@ class PlayerPreviousAPIView(APIView):
         player = kwargs.get("player")
         try:
             services.player_previous(player)
-        except spotipy.SpotifyException:
-            return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        except spotipy.SpotifyException as e:
+            if e.http_status == 403:
+                return Response(status=status.HTTP_403_FORBIDDEN)
+            else:
+                return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
         return Response(status=status.HTTP_200_OK)

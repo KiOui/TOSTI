@@ -1,6 +1,9 @@
+from django.core.paginator import Paginator
 from django.shortcuts import render
+from django.template.loader import render_to_string
 from django.views.generic import TemplateView
-from .models import Player
+
+from .models import Player, SpotifyQueueItem
 
 COOKIE_CLIENT_ID = "client_id"
 
@@ -37,3 +40,14 @@ class NowPlayingView(TemplateView):
                 "can_request": request.user in player.get_users_with_request_permissions(),
             },
         )
+
+
+def render_account_history_tab(request, item, current_page_url):
+    """Render the account history tab on the user page."""
+    song_requests = SpotifyQueueItem.objects.filter(requested_by=request.user).order_by("-added")
+    page = request.GET.get("page", 1) if (item["slug"] == request.GET.get("active", False)) else 1
+    paginator = Paginator(song_requests, per_page=50)
+    return render_to_string(
+        "thaliedje/account_history.html",
+        context={"page_obj": paginator.get_page(page), "current_page_url": current_page_url, "item": item},
+    )

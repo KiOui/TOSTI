@@ -1,0 +1,40 @@
+{% load static %}
+
+<h2>Order history</h2>
+<div class="d-flex flex-column justify-content-center">
+    {% if page_obj|length > 0 %}
+        <div class="d-flex my-2">
+            <div class="flex-grow-1" style="flex-basis: 0;">Product</div>
+            <div class="flex-grow-1" style="flex-basis: 0;">Shift</div>
+            <div class="flex-grow-1" style="flex-basis: 0;">Ordered at</div>
+        </div>
+        <div class="border"></div>
+        {% for order in page_obj %}
+            <div class="d-flex my-2">
+                <div class="flex-grow-1" style="flex-basis: 0;">{{ order.product }}</div>
+                <div class="flex-grow-1" style="flex-basis: 0;">{{ order.shift }}</div>
+                <div class="flex-grow-1" style="flex-basis: 0;">{{ order.created }}</div>
+            </div>
+            <div class="border"></div>
+        {% endfor %}
+    {% else %}
+        <p class="alert alert-warning">You have not placed any orders yet.</p>
+    {% endif %}
+</div>
+<div class="container-fluid mt-3 text-center">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="{{ current_page_url }}?page=1&active={{ item.slug }}">&laquo; first</a>
+            <a href="{{ current_page_url }}?page={{ page_obj.previous_page_number }}&active={{ item.slug }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="{{ current_page_url }}?page={{ page_obj.next_page_number }}&active={{ item.slug }}">next</a>
+            <a href="{{ current_page_url }}?page={{ page_obj.paginator.num_pages }}&active={{ item.slug }}">last &raquo;</a>
+        {% endif %}
+    </span>
+</div>
