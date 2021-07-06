@@ -1,7 +1,9 @@
 import requests
+import logging
 from django.conf import settings
 
-from tantalus.models import TantalusProduct
+from orders.models import Shift, Order
+from tantalus.models import TantalusProduct, TantalusOrderVenue
 
 
 class TantalusException(Exception):
@@ -97,3 +99,50 @@ def sort_orders_by_product(orders):
         else:
             sorted_orders[order.product] = [order]
     return sorted_orders
+
+
+def synchronize_to_tantalus(shift: Shift):
+    """
+    Synchronize all Orders of a Shift to a Tantalus endpoint.
+
+    When finished successfully, this method will create an instance of TantalusShiftSynchronization connected to the
+    synchronized Shift
+    :param shift: the Shift to synchronize all Orders of
+    :type shift: Shift
+    :return: True if synchronization succeeded
+    """
+    try:
+        venue = TantalusOrderVenue.objects.get(order_venue=shift.venue)
+    except TantalusOrderVenue.DoesNotExist:
+        logging.warning(
+            "No Tantalus endpoint for {} exists, if you want to automatically synchronize to Tantalus,"
+            " please add a TantalusOrderVenue for it.".format(shift.venue)
+        )
+        return False
+
+    try:
+        tantalus_client = get_tantalus_client()
+    except TantalusException as e:
+        logging.error(
+            "Synchronization for Shift {} failed due to an Exception while initializing the Tantalus Client. The "
+            "following Exception occurred: {}".format(shift, e)
+        )
+        return False
+
+    orders = Order.objects.filter(shift=shift)
+    for product, order_list in sort_orders_by_product(orders).items():
+        try:
+            tantalus_product = TantalusProduct.objects.get(product=product)
+            tantalus_client.register_order(tantalus_product, len(order_list), venue.endpoint_id)
+        except TantalusProduct.DoesNotExist:
+            logging.warning(
+                "Skipping Tantalus synchronization for Shift {} and Product {} as the Product is not connected"
+                "to any TantalusProduct.".format(shift, product)
+            )
+        except TantalusException as e:
+            logging.error(
+                "Synchronization for Shift {} and Product {} failed with the following Exception: {}".format(
+                    shift, product, e
+                )
+            )
+    return True

@@ -1,6 +1,6 @@
 from django.db import models
 
-from orders.models import Product, OrderVenue
+from orders.models import Product, OrderVenue, Shift
 
 
 class TantalusProduct(models.Model):
@@ -23,3 +23,9 @@ class TantalusOrderVenue(models.Model):
     def __str__(self):
         """Convert to string."""
         return "Tantalus Venue for {} with id {}".format(self.order_venue, self.endpoint_id)
+
+
+class TantalusShiftSynchronization(models.Model):
+    """Model for indicating whether TOSTI Shifts have been synchronized with Tantalus."""
+
+    shift = models.OneToOneField(Shift, on_delete=models.CASCADE, blank=False, null=False)
