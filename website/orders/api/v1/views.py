@@ -79,7 +79,7 @@ class CartOrderAPIView(APIView):
         try:
             add_user_orders(cart.get_item_list(), shift, request.user)
         except OrderException as e:
-            return Response(status=status.HTTP_403_FORBIDDEN, data={"detail": e.__str__()})
+            raise PermissionDenied(detail=e.__str__())
         return Response(status=status.HTTP_200_OK)
 
 
@@ -140,7 +140,7 @@ class OrderListCreateAPIView(ListCreateAPIView):
         try:
             return super(OrderListCreateAPIView, self).create(request, *args, **kwargs)
         except OrderException as e:
-            return Response(status=status.HTTP_403_FORBIDDEN, data={"detail": e.__str__()})
+            raise PermissionDenied(detail=e.__str__())
 
 
 class OrderRetrieveDestroyAPIView(RetrieveDestroyAPIView):
@@ -296,7 +296,7 @@ class ShiftAddTimeAPIView(APIView):
             increase_shift_time(shift, time_minutes)
             return Response(status=status.HTTP_200_OK, data=ShiftSerializer(shift, context={"request": request}).data)
         except DjangoValidationError as e:
-            return Response(status=status.HTTP_403_FORBIDDEN, data={"detail": e.__str__()})
+            raise PermissionDenied(detail=e.__str__())
 
 
 class ShiftAddCapacityAPIView(APIView):
@@ -333,7 +333,7 @@ class ShiftAddCapacityAPIView(APIView):
             increase_shift_capacity(shift, capacity)
             return Response(status=status.HTTP_200_OK, data=ShiftSerializer(shift, context={"request": request}).data)
         except DjangoValidationError as e:
-            return Response(status=status.HTTP_403_FORBIDDEN, data={"detail": e.__str__()})
+            raise PermissionDenied(detail=e.__str__())
 
 
 class ShiftFinalizeAPIView(APIView):
@@ -367,7 +367,7 @@ class ShiftFinalizeAPIView(APIView):
             shift.finalized = True
             shift.save()
         except DjangoValidationError as e:
-            return Response(status=status.HTTP_403_FORBIDDEN, data={"detail": ", ".join(e.messages)})
+            raise PermissionDenied(detail=", ".join(e.messages))
         return Response(status=status.HTTP_200_OK, data=ShiftSerializer(shift, context={"request": request}).data)
 
 
