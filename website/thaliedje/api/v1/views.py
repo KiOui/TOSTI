@@ -1,5 +1,5 @@
 import spotipy
-from oauth2_provider.contrib.rest_framework import TokenHasScope
+from oauth2_provider.contrib.rest_framework import IsAuthenticatedOrTokenHasScope
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import ListAPIView, RetrieveAPIView
@@ -25,7 +25,7 @@ class PlayerListAPIView(ListAPIView):
 
     serializer_class = PlayerSerializer
     queryset = Player.objects.all()
-    permission_classes = [TokenHasScope]
+    permission_classes = [IsAuthenticatedOrTokenHasScope]
     scopes_required = ["read"]
 
 
@@ -40,7 +40,7 @@ class PlayerRetrieveAPIView(RetrieveAPIView):
 
     serializer_class = PlayerSerializer
     queryset = Player.objects.all()
-    permission_classes = [TokenHasScope]
+    permission_classes = [IsAuthenticatedOrTokenHasScope]
     scopes_required = ["read"]
 
 
@@ -57,7 +57,7 @@ class PlayerQueueListAPIView(ListAPIView):
     serializer_class = QueueItemSerializer
     queryset = SpotifyQueueItem.objects.all()
     pagination_class = StandardResultsSetPagination
-    permission_classes = [TokenHasScope]
+    permission_classes = [IsAuthenticatedOrTokenHasScope]
     scopes_required = ["read"]
 
 
@@ -95,7 +95,7 @@ class PlayerTrackSearchAPIView(APIView):
         },
     )
     permission_required = "thaliedje.can_request"
-    permission_classes = [HasPermissionOnObject, TokenHasScope]
+    permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
     scopes_required = ["thaliedje:request"]
 
     def get_permission_object(self):
@@ -132,7 +132,7 @@ class PlayerTrackAddAPIView(APIView):
         request_schema={"type": "object", "properties": {"id": {"type": "string", "example": "string"}}}
     )
     permission_required = "thaliedje.can_request"
-    permission_classes = [HasPermissionOnObject, TokenHasScope]
+    permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
     scopes_required = ["thaliedje:request"]
 
     def get_permission_object(self):
@@ -163,7 +163,7 @@ class PlayerPlayAPIView(APIView):
     """Player Play API View."""
 
     permission_required = "thaliedje.can_control"
-    permission_classes = [HasPermissionOnObject, TokenHasScope]
+    permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
     scopes_required = ["thaliedje:manage"]
 
     def get_permission_object(self):
@@ -190,7 +190,7 @@ class PlayerPauseAPIView(APIView):
     """Player Pause API View."""
 
     permission_required = "thaliedje.can_control"
-    permission_classes = [HasPermissionOnObject, TokenHasScope]
+    permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
     scopes_required = ["thaliedje:manage"]
 
     def get_permission_object(self):
@@ -217,7 +217,7 @@ class PlayerNextAPIView(APIView):
     """Player Next API View."""
 
     permission_required = "thaliedje.can_control"
-    permission_classes = [HasPermissionOnObject, TokenHasScope]
+    permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
     scopes_required = ["thaliedje:manage"]
 
     def get_permission_object(self):
@@ -244,7 +244,7 @@ class PlayerPreviousAPIView(APIView):
     """Player Previous API View."""
 
     permission_required = "thaliedje.can_control"
-    permission_classes = [HasPermissionOnObject, TokenHasScope]
+    permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
     scopes_required = ["thaliedje:manage"]
 
     def get_permission_object(self):
