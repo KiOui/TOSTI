@@ -20,6 +20,8 @@ class PlayerListAPIView(ListAPIView):
 
     Permissions required: None
 
+    Scopes required: `read`
+
     Use this endpoint to get a list of all installed Spotify Players.
     """
 
@@ -35,6 +37,8 @@ class PlayerRetrieveAPIView(RetrieveAPIView):
 
     Permissions required: None
 
+    Scopes required: `read`
+
     Use this endpoint to get the details of an installed Spotify Players.
     """
 
@@ -49,6 +53,8 @@ class PlayerQueueListAPIView(ListAPIView):
     Player Queue List API View.
 
     Permissions required: None
+
+    Scopes required: `read`
 
     Use this endpoint to get a list of tracks that are in the queue of the Spotify Player. Tracks are sorted on the
     time that they were added, the track that was added last will appear first in the list.
@@ -108,6 +114,8 @@ class PlayerTrackSearchAPIView(APIView):
 
         Permission required: thaliedje.can_request
 
+        Scopes required: `thaliedje:request`
+
         Use this endpoint to search for a Spotify Track. Tracks can be searched via their Spotify id.
         """
         player = kwargs.get("player")
@@ -145,6 +153,8 @@ class PlayerTrackAddAPIView(APIView):
 
         Permission required: thaliedje.can_request
 
+        Scopes required: `thaliedje:request`
+
         Use this endpoint to add a spotify track to the queue.
         """
         player = kwargs.get("player")
@@ -176,6 +186,8 @@ class PlayerPlayAPIView(APIView):
 
         Permission required: thaliedje.can_control
 
+        Scopes required: `thaliedje:manage`
+
         Start playback on a Player.
         """
         player = kwargs.get("player")
@@ -202,6 +214,8 @@ class PlayerPauseAPIView(APIView):
         Player Pause API View.
 
         Permission required: thaliedje.can_control
+
+        Scopes required: `thaliedje:manage`
 
         Start playback on a Player.
         """
@@ -230,6 +244,8 @@ class PlayerNextAPIView(APIView):
 
         Permission required: thaliedje.can_control
 
+        Scopes required: `thaliedje:manage`
+
         Start playback on a Player.
         """
         player = kwargs.get("player")
@@ -256,6 +272,8 @@ class PlayerPreviousAPIView(APIView):
         Player Previous API View.
 
         Permission required: thaliedje.can_control
+
+        Scopes required: `thaliedje:manage`
 
         Start playback on a Player.
         """

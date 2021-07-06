@@ -31,6 +31,8 @@ class CartOrderAPIView(APIView):
 
     Permission required: orders.can_order_in_venue
 
+    Scopes required: `orders:order`
+
     Use this API endpoint to order a list of Products in one go. The list of Products should be set as an array of
     Product id's in the "cart" POST parameter.
     """
@@ -90,6 +92,8 @@ class OrderListCreateAPIView(ListCreateAPIView):
 
     Permission required: None
 
+    Scopes required: `orders:order`
+
     Use this API view to list all Orders within a Shift. Order objects can also be created individually using a POST
     to this API view.
     """
@@ -143,6 +147,8 @@ class OrderRetrieveDestroyAPIView(RetrieveDestroyAPIView):
     Order Retrieve Destroy API View.
 
     Permission required: orders.can_order_in_venue
+
+    Scopes required: `orders:order`
     """
 
     serializer_class = OrderSerializer
@@ -203,6 +209,8 @@ class ShiftListCreateAPIView(ListCreateAPIView):
 
         Permission required: orders.can_manage_shift_in_venue
 
+        Scopes required: `orders:manage`
+
         API endpoint for creating a Shift.
         """
         venue = request.data.get("venue")
@@ -217,6 +225,8 @@ class ShiftRetrieveUpdateAPIView(RetrieveUpdateAPIView):
     Shift Retrieve Update API View.
 
     Permission required: orders.can_manage_shift_in_venue (for the update method)
+
+    Scopes required: `orders:manage`
     """
 
     serializer_class = ShiftSerializer
@@ -229,6 +239,8 @@ class ShiftRetrieveUpdateAPIView(RetrieveUpdateAPIView):
         Update a Shift.
 
         Permission required: orders.can_manage_shift_in_venue and user must be in shift assignees
+
+        Scopes required: `orders:manage`
 
         API endpoint for updating a Shift.
         :param request: the request
@@ -252,6 +264,8 @@ class ProductListAPIView(ListAPIView):
     Product list API View.
 
     Permission required: None
+
+    Scopes required: `read`
     """
 
     serializer_class = ProductSerializer
@@ -323,6 +337,8 @@ class ShiftAddCapacityAPIView(APIView):
 
         Permission required: orders.can_manage_shift_in_venue and user must be in shift assignees
 
+        Scopes required: `orders:manage`
+
         API endpoint for adding capacity to a Shift.
         Optionally a "capacity" PATCH parameter can be set indicating how many capacity should be added.
         """
@@ -358,6 +374,8 @@ class ProductSearchAPIView(APIView):
         Product Search API View.
 
         Permission required: orders.can_manage_shift_in_venue and user must be in shift assignees
+
+        Scopes required: `orders:manage`
 
         API endpoint for searching products.
         A "query" GET parameter should be specified indicating the product or barcode search query.
@@ -404,6 +422,8 @@ class ShiftScannerAPIView(APIView):
 
         Permission required: orders.can_manage_shift_in_venue and user must be in shift assignees
 
+        Scopes required: `orders:manage`
+
         API endpoint for adding a scanned order to a Shift.
         A "barcode" POST parameter should be specified indicating the barcode of the product to add.
         """
@@ -442,6 +462,8 @@ class OrderTogglePaidAPIView(APIView):
         Order Toggle Paid API view.
 
         Permission required: orders.can_manage_shift_in_venue and user must be in shift assignees
+
+        Scopes required: `orders:manage`
 
         This toggles the paid option on an Order. Will return the Order object afterwards. If the Order does not exist
         within the Shift a 404 will be returned.
@@ -483,6 +505,8 @@ class OrderToggleReadyAPIView(APIView):
 
         Permission required: orders.can_manage_shift_in_venue and user must be in shift assignees
 
+        Scopes required: `orders:manage`
+
         This toggles the ready option on an Order. Will return the Order object afterwards. If the Order does not exist
         within the Shift a 404 will be returned.
         """
@@ -517,6 +541,8 @@ class JoinShiftAPIView(APIView):
         Join Shift as baker view.
 
         Permission required: orders.can_manage_shift_in_venue
+
+        Scopes required: `orders:manage`
 
         This adds the requesting User to the Shift assignees.
         """
