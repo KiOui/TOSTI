@@ -660,6 +660,18 @@ class Order(models.Model):
         """
         return f"{self.product} for {self.user} ({self.shift})"
 
+    def clean(self):
+        """
+        Clean this Order.
+
+        Check if the Shift is already finalized.
+        :return:
+        :rtype:
+        """
+        super().clean()
+        if self.shift.finalized:
+            raise ValidationError("Order can't be changed as Shift is already finalized")
+
     def save(self, *args, **kwargs):
         """
         Save an object of the Order type.
