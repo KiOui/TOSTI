@@ -17,7 +17,10 @@ class HasPermissionOnObject(BasePermission):
 
 
 class IsAuthenticatedOrTokenHasScopeForMethod(BasePermission):
+    """Permission to check if user is authenticated or they have an OAuth2 token with scope for the specific method."""
+
     def has_permission(self, request, view):
+        """Check if a user has the permission."""
         is_authenticated = IsAuthenticated().has_permission(request, view)
         oauth2authenticated = False
         if is_authenticated:
