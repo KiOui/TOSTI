@@ -5,6 +5,7 @@ from django.views.generic import TemplateView
 
 
 def get_swagger_client_id():
+    """Get the client_id for a Swagger OAuth2 application."""
     swagger_oauth_client, _ = oauth2_provider.models.Application.objects.get_or_create(
         name="Swagger",
         client_type=oauth2_provider.models.Application.CLIENT_PUBLIC,
