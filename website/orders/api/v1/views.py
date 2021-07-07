@@ -303,6 +303,8 @@ class ShiftAddTimeAPIView(APIView):
 
         Permission required: orders.can_manage_shift_in_venue and user must be in shift assignees
 
+        Scopes required: `orders:manage`
+
         API endpoint for adding an amount of minutes to the end of a Shift.
         Optionally a "minutes" PATCH parameter can be set indicating with how many minutes the time should be extended.
         """
