@@ -22,7 +22,7 @@ from orders.models import Order, Shift, Product
 from orders.services import Cart, place_orders, increase_shift_time, increase_shift_capacity
 from tosti import settings
 from tosti.api.openapi import CustomAutoSchema
-from tosti.api.permissions import HasPermissionOnObject
+from tosti.api.permissions import HasPermissionOnObject, IsAuthenticatedOrTokenHasScopeForMethod
 
 
 class CartOrderAPIView(APIView):
@@ -30,8 +30,6 @@ class CartOrderAPIView(APIView):
     Cart Order API View.
 
     Permission required: orders.can_order_in_venue
-
-    Scopes required: `orders:order`
 
     Use this API endpoint to order a list of Products in one go. The list of Products should be set as an array of
     Product id's in the "cart" POST parameter.
@@ -42,7 +40,7 @@ class CartOrderAPIView(APIView):
     )
     permission_required = "orders.can_order_in_venue"
     permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
-    scopes_required = ["orders:order"]
+    required_scopes = ["orders:order"]
 
     def get_permission_object(self):
         """Get the object to check permissions for."""
@@ -92,16 +90,17 @@ class OrderListCreateAPIView(ListCreateAPIView):
 
     Permission required: None
 
-    Scopes required: `orders:order`
-
     Use this API view to list all Orders within a Shift. Order objects can also be created individually using a POST
     to this API view.
     """
 
     serializer_class = OrderSerializer
     permission_required = "orders.can_order_in_venue"
-    permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
-    scopes_required = ["orders:order"]
+    permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScopeForMethod]
+    required_scopes_for_method = {
+        "GET": ["orders:order"],
+        "POST": ["orders:manage"],
+    }
     queryset = Order.objects.all()
 
     def get_queryset(self):
@@ -147,14 +146,16 @@ class OrderRetrieveDestroyAPIView(RetrieveDestroyAPIView):
     Order Retrieve Destroy API View.
 
     Permission required: orders.can_order_in_venue
-
-    Scopes required: `orders:order`
     """
 
     serializer_class = OrderSerializer
     permission_required = "orders.can_order_in_venue"
-    permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
-    scopes_required = ["orders:order"]
+    permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScopeForMethod]
+    required_scopes_for_method = {
+        "GET": ["orders:order"],
+        "DELETE": ["orders:manage"],
+    }
+
     queryset = Order.objects.all()
 
     def destroy(self, request, *args, **kwargs):
@@ -186,8 +187,11 @@ class ShiftListCreateAPIView(ListCreateAPIView):
 
     serializer_class = ShiftSerializer
     queryset = Shift.objects.all()
-    permission_classes = [IsAuthenticatedOrTokenHasScope]
-    scopes_required = ["orders:manage"]
+    permission_classes = [IsAuthenticatedOrTokenHasScopeForMethod]
+    required_scopes_for_method = {
+        "GET": ["orders:order"],
+        "POST": ["orders:manage"],
+    }
 
     def get_queryset(self):
         """Get the queryset."""
@@ -209,8 +213,6 @@ class ShiftListCreateAPIView(ListCreateAPIView):
 
         Permission required: orders.can_manage_shift_in_venue
 
-        Scopes required: `orders:manage`
-
         API endpoint for creating a Shift.
         """
         venue = request.data.get("venue")
@@ -225,22 +227,22 @@ class ShiftRetrieveUpdateAPIView(RetrieveUpdateAPIView):
     Shift Retrieve Update API View.
 
     Permission required: orders.can_manage_shift_in_venue (for the update method)
-
-    Scopes required: `orders:manage`
     """
 
     serializer_class = ShiftSerializer
     queryset = Shift.objects.all()
-    permission_classes = [IsAuthenticatedOrTokenHasScope]
-    scopes_required = ["orders:manage"]
+    permission_classes = [IsAuthenticatedOrTokenHasScopeForMethod]
+    required_scopes_for_method = {
+        "GET": ["orders:order"],
+        "PUT": ["orders:manage"],
+        "PATCH": ["orders:manage"],
+    }
 
     def update(self, request, *args, **kwargs):
         """
         Update a Shift.
 
         Permission required: orders.can_manage_shift_in_venue and user must be in shift assignees
-
-        Scopes required: `orders:manage`
 
         API endpoint for updating a Shift.
         :param request: the request
@@ -264,14 +266,12 @@ class ProductListAPIView(ListAPIView):
     Product list API View.
 
     Permission required: None
-
-    Scopes required: `read`
     """
 
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
     permission_classes = [IsAuthenticatedOrTokenHasScope]
-    scopes_required = ["read"]
+    required_scopes = ["read"]
 
     def get_queryset(self):
         """Get the queryset."""
@@ -286,7 +286,7 @@ class ShiftAddTimeAPIView(APIView):
     )
     permission_required = "orders.can_manage_shift_in_venue"
     permission_classes = [HasPermissionOnObject, IsOnBakersList, IsAuthenticatedOrTokenHasScope]
-    scopes_required = ["orders:manage"]
+    required_scopes = ["orders:manage"]
 
     def get_shift(self):
         """Get Shift."""
@@ -320,7 +320,7 @@ class ShiftAddCapacityAPIView(APIView):
     )
     permission_required = "orders.can_manage_shift_in_venue"
     permission_classes = [HasPermissionOnObject, IsOnBakersList, IsAuthenticatedOrTokenHasScope]
-    scopes_required = ["orders:manage"]
+    required_scopes = ["orders:manage"]
 
     def get_shift(self):
         """Get Shift."""
@@ -336,8 +336,6 @@ class ShiftAddCapacityAPIView(APIView):
         Shift Add Capacity API View.
 
         Permission required: orders.can_manage_shift_in_venue and user must be in shift assignees
-
-        Scopes required: `orders:manage`
 
         API endpoint for adding capacity to a Shift.
         Optionally a "capacity" PATCH parameter can be set indicating how many capacity should be added.
@@ -358,7 +356,7 @@ class ProductSearchAPIView(APIView):
     )
     permission_required = "orders.can_manage_shift_in_venue"
     permission_classes = [HasPermissionOnObject, IsOnBakersList, IsAuthenticatedOrTokenHasScope]
-    scopes_required = ["orders:manage"]
+    required_scopes = ["orders:manage"]
 
     def get_shift(self):
         """Get Shift."""
@@ -374,8 +372,6 @@ class ProductSearchAPIView(APIView):
         Product Search API View.
 
         Permission required: orders.can_manage_shift_in_venue and user must be in shift assignees
-
-        Scopes required: `orders:manage`
 
         API endpoint for searching products.
         A "query" GET parameter should be specified indicating the product or barcode search query.
@@ -405,7 +401,7 @@ class ShiftScannerAPIView(APIView):
     )
     permission_required = "orders.can_manage_shift_in_venue"
     permission_classes = [HasPermissionOnObject, IsOnBakersList, IsAuthenticatedOrTokenHasScope]
-    scopes_required = ["orders:manage"]
+    required_scopes = ["orders:manage"]
 
     def get_shift(self):
         """Get Shift."""
@@ -421,8 +417,6 @@ class ShiftScannerAPIView(APIView):
         Shift Scanner API View.
 
         Permission required: orders.can_manage_shift_in_venue and user must be in shift assignees
-
-        Scopes required: `orders:manage`
 
         API endpoint for adding a scanned order to a Shift.
         A "barcode" POST parameter should be specified indicating the barcode of the product to add.
@@ -446,7 +440,7 @@ class OrderTogglePaidAPIView(APIView):
     schema = CustomAutoSchema(response_schema={"$ref": "#/components/schemas/Order"})
     permission_required = "orders.can_manage_shift_in_venue"
     permission_classes = [HasPermissionOnObject, IsOnBakersList, IsAuthenticatedOrTokenHasScope]
-    scopes_required = ["orders:manage"]
+    required_scopes = ["orders:manage"]
 
     def get_shift(self):
         """Get Shift."""
@@ -462,8 +456,6 @@ class OrderTogglePaidAPIView(APIView):
         Order Toggle Paid API view.
 
         Permission required: orders.can_manage_shift_in_venue and user must be in shift assignees
-
-        Scopes required: `orders:manage`
 
         This toggles the paid option on an Order. Will return the Order object afterwards. If the Order does not exist
         within the Shift a 404 will be returned.
@@ -488,7 +480,7 @@ class OrderToggleReadyAPIView(APIView):
     schema = CustomAutoSchema(response_schema={"$ref": "#/components/schemas/Order"})
     permission_required = "orders.can_manage_shift_in_venue"
     permission_classes = [HasPermissionOnObject, IsOnBakersList, IsAuthenticatedOrTokenHasScope]
-    scopes_required = ["orders:manage"]
+    required_scopes = ["orders:manage"]
 
     def get_shift(self):
         """Get Shift."""
@@ -504,8 +496,6 @@ class OrderToggleReadyAPIView(APIView):
         Order Toggle Ready API view.
 
         Permission required: orders.can_manage_shift_in_venue and user must be in shift assignees
-
-        Scopes required: `orders:manage`
 
         This toggles the ready option on an Order. Will return the Order object afterwards. If the Order does not exist
         within the Shift a 404 will be returned.
@@ -529,7 +519,7 @@ class JoinShiftAPIView(APIView):
     schema = CustomAutoSchema(response_schema={"$ref": "#/components/schemas/Shift"})
     permission_required = "orders.can_manage_shift_in_venue"
     permission_classes = [HasPermissionOnObject, IsOnBakersList, IsAuthenticatedOrTokenHasScope]
-    scopes_required = ["orders:manage"]
+    required_scopes = ["orders:manage"]
 
     def get_permission_object(self):
         """Get the object to check permissions for."""
@@ -541,8 +531,6 @@ class JoinShiftAPIView(APIView):
         Join Shift as baker view.
 
         Permission required: orders.can_manage_shift_in_venue
-
-        Scopes required: `orders:manage`
 
         This adds the requesting User to the Shift assignees.
         """

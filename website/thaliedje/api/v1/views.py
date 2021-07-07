@@ -20,15 +20,13 @@ class PlayerListAPIView(ListAPIView):
 
     Permissions required: None
 
-    Scopes required: `read`
-
     Use this endpoint to get a list of all installed Spotify Players.
     """
 
     serializer_class = PlayerSerializer
     queryset = Player.objects.all()
     permission_classes = [IsAuthenticatedOrTokenHasScope]
-    scopes_required = ["read"]
+    required_scopes = ["read"]
 
 
 class PlayerRetrieveAPIView(RetrieveAPIView):
@@ -37,15 +35,13 @@ class PlayerRetrieveAPIView(RetrieveAPIView):
 
     Permissions required: None
 
-    Scopes required: `read`
-
     Use this endpoint to get the details of an installed Spotify Players.
     """
 
     serializer_class = PlayerSerializer
     queryset = Player.objects.all()
     permission_classes = [IsAuthenticatedOrTokenHasScope]
-    scopes_required = ["read"]
+    required_scopes = ["read"]
 
 
 class PlayerQueueListAPIView(ListAPIView):
@@ -53,8 +49,6 @@ class PlayerQueueListAPIView(ListAPIView):
     Player Queue List API View.
 
     Permissions required: None
-
-    Scopes required: `read`
 
     Use this endpoint to get a list of tracks that are in the queue of the Spotify Player. Tracks are sorted on the
     time that they were added, the track that was added last will appear first in the list.
@@ -64,7 +58,7 @@ class PlayerQueueListAPIView(ListAPIView):
     queryset = SpotifyQueueItem.objects.all()
     pagination_class = StandardResultsSetPagination
     permission_classes = [IsAuthenticatedOrTokenHasScope]
-    scopes_required = ["read"]
+    required_scopes = ["read"]
 
 
 def get_queryset(self):
@@ -102,7 +96,7 @@ class PlayerTrackSearchAPIView(APIView):
     )
     permission_required = "thaliedje.can_request"
     permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
-    scopes_required = ["thaliedje:request"]
+    required_scopes = ["thaliedje:request"]
 
     def get_permission_object(self):
         """Get the object to check permissions for."""
@@ -113,8 +107,6 @@ class PlayerTrackSearchAPIView(APIView):
         Search for a Spotify track.
 
         Permission required: thaliedje.can_request
-
-        Scopes required: `thaliedje:request`
 
         Use this endpoint to search for a Spotify Track. Tracks can be searched via their Spotify id.
         """
@@ -141,7 +133,7 @@ class PlayerTrackAddAPIView(APIView):
     )
     permission_required = "thaliedje.can_request"
     permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
-    scopes_required = ["thaliedje:request"]
+    required_scopes = ["thaliedje:request"]
 
     def get_permission_object(self):
         """Get the object to check permissions for."""
@@ -152,8 +144,6 @@ class PlayerTrackAddAPIView(APIView):
         Add a Spotify Track to the queue.
 
         Permission required: thaliedje.can_request
-
-        Scopes required: `thaliedje:request`
 
         Use this endpoint to add a spotify track to the queue.
         """
@@ -174,7 +164,7 @@ class PlayerPlayAPIView(APIView):
 
     permission_required = "thaliedje.can_control"
     permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
-    scopes_required = ["thaliedje:manage"]
+    required_scopes = ["thaliedje:manage"]
 
     def get_permission_object(self):
         """Get the object to check permissions for."""
@@ -185,8 +175,6 @@ class PlayerPlayAPIView(APIView):
         Player Play API View.
 
         Permission required: thaliedje.can_control
-
-        Scopes required: `thaliedje:manage`
 
         Start playback on a Player.
         """
@@ -203,7 +191,7 @@ class PlayerPauseAPIView(APIView):
 
     permission_required = "thaliedje.can_control"
     permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
-    scopes_required = ["thaliedje:manage"]
+    required_scopes = ["thaliedje:manage"]
 
     def get_permission_object(self):
         """Get the object to check permissions for."""
@@ -214,8 +202,6 @@ class PlayerPauseAPIView(APIView):
         Player Pause API View.
 
         Permission required: thaliedje.can_control
-
-        Scopes required: `thaliedje:manage`
 
         Start playback on a Player.
         """
@@ -232,7 +218,7 @@ class PlayerNextAPIView(APIView):
 
     permission_required = "thaliedje.can_control"
     permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
-    scopes_required = ["thaliedje:manage"]
+    required_scopes = ["thaliedje:manage"]
 
     def get_permission_object(self):
         """Get the object to check permissions for."""
@@ -243,8 +229,6 @@ class PlayerNextAPIView(APIView):
         Player Play API View.
 
         Permission required: thaliedje.can_control
-
-        Scopes required: `thaliedje:manage`
 
         Start playback on a Player.
         """
@@ -261,7 +245,7 @@ class PlayerPreviousAPIView(APIView):
 
     permission_required = "thaliedje.can_control"
     permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
-    scopes_required = ["thaliedje:manage"]
+    required_scopes = ["thaliedje:manage"]
 
     def get_permission_object(self):
         """Get the object to check permissions for."""
@@ -272,8 +256,6 @@ class PlayerPreviousAPIView(APIView):
         Player Previous API View.
 
         Permission required: thaliedje.can_control
-
-        Scopes required: `thaliedje:manage`
 
         Start playback on a Player.
         """
