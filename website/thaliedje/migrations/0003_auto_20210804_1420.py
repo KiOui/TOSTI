@@ -13,6 +13,7 @@ def set_fields_to_non_null(apps, schema_editor):
             player.playback_device_id = ""
         if player.playback_device_name is None:
             player.playback_device_name = ""
+        player.save()
 
 
 class Migration(migrations.Migration):
@@ -52,12 +53,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='spotifyqueueitem',
             name='requested_by',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='users.user'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='queue_items', to='users.user'),
         ),
         migrations.AlterField(
             model_name='spotifyqueueitem',
             name='track',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='thaliedje.spotifytrack'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='queue_items', to='thaliedje.spotifytrack'),
         ),
         migrations.AlterField(
             model_name='spotifytrack',
