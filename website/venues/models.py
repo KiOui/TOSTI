@@ -7,6 +7,11 @@ class Venue(models.Model):
     name = models.CharField(max_length=50, unique=True)
     active = models.BooleanField(default=True)
 
+    class Meta:
+        """Meta class."""
+
+        ordering = ["-active", "name"]
+
     def __str__(self):
         """
         Convert this object to string.
@@ -14,8 +19,3 @@ class Venue(models.Model):
         :return: the name of this Venue
         """
         return self.name
-
-    class Meta:
-        """Meta class."""
-
-        ordering = ["-active", "name"]

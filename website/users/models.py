@@ -56,6 +56,11 @@ class User(BaseUser):
 
     REQUIRED_FIELDS = []
 
+    class Meta:
+        """Meta class for Users."""
+
+        proxy = True
+
     def __str__(self):
         """
         Convert user to string.
@@ -80,17 +85,14 @@ class User(BaseUser):
         """
         return self.first_name if self.first_name else self.username
 
-    class Meta:
-        """Meta class for Users."""
-
-        proxy = True
-
 
 class Profile(models.Model):
     """Profile model."""
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    association = models.ForeignKey(Association, null=True, blank=True, on_delete=models.SET_NULL)
+    association = models.ForeignKey(
+        Association, related_name="profiles", null=True, blank=True, on_delete=models.SET_NULL
+    )
 
     def __str__(self):
         """Convert this object to string."""
@@ -113,11 +115,11 @@ class GroupSettings(models.Model):
         ),
     )
 
-    def __str__(self):
-        """Representation by group."""
-        return str(self.group)
-
     class Meta:
         """Meta class for GroupSettings."""
 
         ordering = ["group__name"]
+
+    def __str__(self):
+        """Representation by group."""
+        return str(self.group)

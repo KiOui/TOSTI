@@ -47,6 +47,32 @@ class Player(models.Model):
     redirect_uri = models.CharField(max_length=512)
     venue = models.OneToOneField(Venue, on_delete=models.SET_NULL, null=True, blank=True)
 
+    class Meta:
+        """Meta class."""
+
+        verbose_name = "Player"
+        verbose_name_plural = "Players"
+
+        permissions = [
+            ("can_control", "Can control music players"),
+            ("can_request", "Can request songs"),
+        ]
+
+    def __str__(self):
+        """
+        Convert this object to string.
+
+        :return: the display name if it is not None, the client id otherwise
+        """
+        if self.display_name is not None:
+            return self.display_name
+        else:
+            return self.client_id
+
+    def get_absolute_url(self):
+        """Get the front-end url for a Player."""
+        return reverse("thaliedje:now_playing", args=[self.venue])
+
     @staticmethod
     def get_player(venue):
         """Get a Player for a venue (if it exists)."""
@@ -138,10 +164,6 @@ class Player(models.Model):
             self.save()
         return self.display_name
 
-    def get_absolute_url(self):
-        """Get the front-end url for a Player."""
-        return reverse("thaliedje:now_playing", args=[self.venue])
-
     def get_users_with_request_permissions(self):
         """Get users that have the permission to request songs for this player."""
         users = []
@@ -161,28 +183,6 @@ class Player(models.Model):
             ):
                 users.append(user)
         return users
-
-    def __str__(self):
-        """
-        Convert this object to string.
-
-        :return: the display name if it is not None, the client id otherwise
-        """
-        if self.display_name is not None:
-            return self.display_name
-        else:
-            return self.client_id
-
-    class Meta:
-        """Meta class."""
-
-        verbose_name = "Player"
-        verbose_name_plural = "Players"
-
-        permissions = [
-            ("can_control", "Can control music players"),
-            ("can_request", "Can request songs"),
-        ]
 
 
 class SpotifyArtist(models.Model):
@@ -207,11 +207,6 @@ class SpotifyTrack(models.Model):
     track_name = models.CharField(max_length=256)
     track_artists = models.ManyToManyField(SpotifyArtist)
 
-    @property
-    def artists(self):
-        """Get queryset of track_artists."""
-        return self.track_artists.all()
-
     def __str__(self):
         """
         Convert this object to string.
@@ -219,6 +214,11 @@ class SpotifyTrack(models.Model):
         :return: the track name of this object
         """
         return self.track_name
+
+    @property
+    def artists(self):
+        """Get queryset of track_artists."""
+        return self.track_artists.all()
 
 
 class SpotifyQueueItem(models.Model):
@@ -229,10 +229,14 @@ class SpotifyQueueItem(models.Model):
     device for a Player, requested by a certain user.
     """
 
-    track = models.ForeignKey(SpotifyTrack, on_delete=models.SET_NULL, null=True, blank=True)
+    track = models.ForeignKey(
+        SpotifyTrack, related_name="queue_items", on_delete=models.SET_NULL, null=True, blank=True
+    )
     player = models.ForeignKey(Player, related_name="queue", on_delete=models.CASCADE)
     added = models.DateTimeField(auto_now_add=True)
-    requested_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, blank=True)
+    requested_by = models.ForeignKey(
+        User, related_name="queue_items", null=True, on_delete=models.SET_NULL, blank=True
+    )
 
     class Meta:
         """Meta class."""

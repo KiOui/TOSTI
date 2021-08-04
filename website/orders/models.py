@@ -76,6 +76,16 @@ class OrderVenue(models.Model):
         primary_key=True,
     )
 
+    class Meta:
+        """Meta class for OrderVenue."""
+
+        ordering = ["venue__name"]
+
+        permissions = [
+            ("can_order_in_venue", "Can order products during shifts in this venue"),
+            ("can_manage_shift_in_venue", "Can manage shifts in this venue"),
+        ]
+
     def __str__(self):
         """Representation by venue."""
         return str(self.venue)
@@ -119,16 +129,6 @@ class OrderVenue(models.Model):
             ):
                 users_ids.append(user.pk)
         return User.objects.filter(pk__in=users_ids)
-
-    class Meta:
-        """Meta class for OrderVenue."""
-
-        ordering = ["venue__name"]
-
-        permissions = [
-            ("can_order_in_venue", "Can order products during shifts in this venue"),
-            ("can_manage_shift_in_venue", "Can manage shifts in this venue"),
-        ]
 
 
 class Product(models.Model):
@@ -176,6 +176,19 @@ class Product(models.Model):
         validators=[validate_barcode],
     )
 
+    class Meta:
+        """Meta class."""
+
+        ordering = ["-available", "name"]
+
+    def __str__(self):
+        """
+        Convert a Product object to string.
+
+        :return: the name of the Product object
+        """
+        return self.name
+
     def to_json(self):
         """
         Convert this object to JSON.
@@ -191,14 +204,6 @@ class Product(models.Model):
             "id": self.pk,
             "ignore_shift_restriction": self.ignore_shift_restrictions,
         }
-
-    def __str__(self):
-        """
-        Convert a Product object to string.
-
-        :return: the name of the Product object
-        """
-        return self.name
 
     def user_can_order_amount(self, user, shift, amount=1):
         """
@@ -231,11 +236,6 @@ class Product(models.Model):
         else:
             return None
 
-    class Meta:
-        """Meta class."""
-
-        ordering = ["-available", "name"]
-
 
 def active_venue_validator(value):
     """Filter to only allow shifts for active venues."""
@@ -252,7 +252,9 @@ class Shift(models.Model):
     TIME_FORMAT = "%H:%M"
     HUMAN_DATE_FORMAT = "%a. %-d %b. %Y"
 
-    venue = models.ForeignKey(OrderVenue, on_delete=models.PROTECT, validators=[active_venue_validator])
+    venue = models.ForeignKey(
+        OrderVenue, related_name="shifts", on_delete=models.PROTECT, validators=[active_venue_validator]
+    )
 
     start_date = models.DateTimeField(default=get_default_start_time_shift)
     end_date = models.DateTimeField(default=get_default_end_time_shift)
@@ -284,6 +286,52 @@ class Shift(models.Model):
     )
 
     assignees = models.ManyToManyField(User)
+
+    class Meta:
+        """Meta class."""
+
+        ordering = ["start_date", "end_date"]
+
+    def __str__(self):
+        """
+        Convert this object to string.
+
+        :return: this object in string format
+        """
+        return f"{self.venue} {self.date}"
+
+    def save(self, *args, **kwargs):
+        """
+        Save an object of the Shift type.
+
+        :param args: arguments
+        :param kwargs: keyword arguments
+        :return: None, raises a ValueError on error
+        """
+        if self.end_date <= self.start_date:
+            raise ValueError("End date cannot be before start date.")
+
+        overlapping_start = (
+            Shift.objects.filter(
+                start_date__gte=self.start_date,
+                start_date__lte=self.end_date,
+                venue=self.venue,
+            )
+            .exclude(pk=self.pk)
+            .count()
+        )
+        overlapping_end = (
+            Shift.objects.filter(
+                end_date__gte=self.start_date,
+                end_date__lte=self.end_date,
+                venue=self.venue,
+            )
+            .exclude(pk=self.pk)
+            .count()
+        )
+        if overlapping_start > 0 or overlapping_end > 0:
+            raise ValueError("Overlapping shifts for the same venue are not allowed.")
+        super(Shift, self).save(*args, **kwargs)
 
     @property
     def orders(self):
@@ -471,47 +519,6 @@ class Shift(models.Model):
                 users.append(user)
         return users
 
-    def __str__(self):
-        """
-        Convert this object to string.
-
-        :return: this object in string format
-        """
-        return f"{self.venue} {self.date}"
-
-    def save(self, *args, **kwargs):
-        """
-        Save an object of the Shift type.
-
-        :param args: arguments
-        :param kwargs: keyword arguments
-        :return: None, raises a ValueError on error
-        """
-        if self.end_date <= self.start_date:
-            raise ValueError("End date cannot be before start date.")
-
-        overlapping_start = (
-            Shift.objects.filter(
-                start_date__gte=self.start_date,
-                start_date__lte=self.end_date,
-                venue=self.venue,
-            )
-            .exclude(pk=self.pk)
-            .count()
-        )
-        overlapping_end = (
-            Shift.objects.filter(
-                end_date__gte=self.start_date,
-                end_date__lte=self.end_date,
-                venue=self.venue,
-            )
-            .exclude(pk=self.pk)
-            .count()
-        )
-        if overlapping_start > 0 or overlapping_end > 0:
-            raise ValueError("Overlapping shifts for the same venue are not allowed.")
-        super(Shift, self).save(*args, **kwargs)
-
     def save_m2m(self):
         """Save assignees m2m."""
         for assignee in self.assignees.all():
@@ -557,11 +564,6 @@ class Shift(models.Model):
             self.can_order = False
             self.save()
 
-    class Meta:
-        """Meta class."""
-
-        ordering = ["start_date", "end_date"]
-
 
 def available_product_filter(value):
     """Filter to only allow ordering available products."""
@@ -588,10 +590,14 @@ class Order(models.Model):
 
     created = models.DateTimeField(auto_now_add=True)
 
-    user = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT)
-    user_association = models.ForeignKey(Association, blank=True, null=True, on_delete=models.SET_NULL)
-    shift = models.ForeignKey(Shift, on_delete=models.PROTECT)
-    product = models.ForeignKey(Product, on_delete=models.PROTECT, validators=[available_product_filter])
+    user = models.ForeignKey(User, related_name="orders", blank=True, null=True, on_delete=models.PROTECT)
+    user_association = models.ForeignKey(
+        Association, related_name="orders", blank=True, null=True, on_delete=models.SET_NULL
+    )
+    shift = models.ForeignKey(Shift, related_name="orders", on_delete=models.PROTECT)
+    product = models.ForeignKey(
+        Product, related_name="orders", on_delete=models.PROTECT, validators=[available_product_filter]
+    )
 
     order_price = models.DecimalField(max_digits=6, decimal_places=2)
 
@@ -602,6 +608,32 @@ class Order(models.Model):
     paid_at = models.DateTimeField(null=True, blank=True)
 
     type = models.PositiveIntegerField(choices=TYPES, default=0)
+
+    class Meta:
+        """Meta class."""
+
+        ordering = ["created"]
+
+    def __str__(self):
+        """
+        Convert this object to string.
+
+        :return: string format of this object
+        """
+        return f"{self.product} for {self.user} ({self.shift})"
+
+    def save(self, *args, **kwargs):
+        """
+        Save an object of the Order type.
+
+        :param args: arguments
+        :param kwargs: keyword arguments
+        :return: an instance of the Order object if the saving succeeded, raises a ValueError on error
+        """
+        if not self.order_price:
+            self.order_price = self.product.current_price
+
+        super(Order, self).save(*args, **kwargs)
 
     def to_json(self):
         """
@@ -617,14 +649,6 @@ class Order(models.Model):
             "paid": self.paid,
             "ready": self.ready,
         }
-
-    def __str__(self):
-        """
-        Convert this object to string.
-
-        :return: string format of this object
-        """
-        return f"{self.product} for {self.user} ({self.shift})"
 
     def clean(self):
         """Check whether this order is valid and can be saved."""
@@ -672,19 +696,6 @@ class Order(models.Model):
         if errors:
             raise ValidationError(errors)
 
-    def save(self, *args, **kwargs):
-        """
-        Save an object of the Order type.
-
-        :param args: arguments
-        :param kwargs: keyword arguments
-        :return: an instance of the Order object if the saving succeeded, raises a ValueError on error
-        """
-        if not self.order_price:
-            self.order_price = self.product.current_price
-
-        super(Order, self).save(*args, **kwargs)
-
     @property
     def get_venue(self):
         """
@@ -693,8 +704,3 @@ class Order(models.Model):
         :return: the venue associated to this Order
         """
         return self.shift.venue
-
-    class Meta:
-        """Meta class."""
-
-        ordering = ["created"]
