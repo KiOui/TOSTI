@@ -70,7 +70,11 @@ def get_default_end_time_shift():
 class OrderVenue(models.Model):
     """Venues where Shifts can be created."""
 
-    venue = models.OneToOneField(Venue, on_delete=models.CASCADE, primary_key=True,)
+    venue = models.OneToOneField(
+        Venue,
+        on_delete=models.CASCADE,
+        primary_key=True,
+    )
 
     def __str__(self):
         """Representation by venue."""
@@ -130,15 +134,14 @@ class OrderVenue(models.Model):
 class Product(models.Model):
     """Products that can be ordered."""
 
-    name = models.CharField(max_length=50, unique=True, null=False, blank=False)
+    name = models.CharField(max_length=50, unique=True)
     icon = models.CharField(
         max_length=20,
-        unique=False,
-        null=True,
+        default="",
         blank=True,
-        help_text="Font-awesome icon name that is used for quick display of the product type.",
+        help_text=("Font-awesome icon name that is used for quick display of the product type."),
     )
-    available = models.BooleanField(default=True, null=False)
+    available = models.BooleanField(default=True)
     available_at = models.ManyToManyField(OrderVenue)
 
     current_price = models.DecimalField(
@@ -146,12 +149,12 @@ class Product(models.Model):
     )
 
     orderable = models.BooleanField(
-        default=True, null=False, help_text="Whether or not this product should appear on the order page."
+        default=True,
+        help_text="Whether or not this product should appear on the order page.",
     )
     ignore_shift_restrictions = models.BooleanField(
         default=False,
-        null=False,
-        help_text="Whether or not this product should ignore the maximum orders per shift restriction.",
+        help_text=("Whether or not this product should ignore the maximum orders per shift" " restriction."),
     )
 
     max_allowed_per_shift = models.PositiveSmallIntegerField(
@@ -249,20 +252,18 @@ class Shift(models.Model):
     TIME_FORMAT = "%H:%M"
     HUMAN_DATE_FORMAT = "%a. %-d %b. %Y"
 
-    venue = models.ForeignKey(
-        OrderVenue, blank=False, null=False, on_delete=models.PROTECT, validators=[active_venue_validator],
-    )
+    venue = models.ForeignKey(OrderVenue, on_delete=models.PROTECT, validators=[active_venue_validator])
 
-    start_date = models.DateTimeField(blank=False, null=False, default=get_default_start_time_shift,)
-    end_date = models.DateTimeField(blank=False, null=False, default=get_default_end_time_shift,)
+    start_date = models.DateTimeField(default=get_default_start_time_shift)
+    end_date = models.DateTimeField(default=get_default_end_time_shift)
 
     can_order = models.BooleanField(
         verbose_name="Orders allowed",
         default=False,
-        blank=False,
-        null=False,
-        help_text="If checked, people can order within the given time frame. If not checked, ordering will not be "
-        "possible, even in the given time frame.",
+        help_text=(
+            "If checked, people can order within the given time frame. If not checked,"
+            " ordering will not be possible, even in the given time frame."
+        ),
     )
 
     max_orders_per_user = models.PositiveSmallIntegerField(
@@ -490,12 +491,20 @@ class Shift(models.Model):
             raise ValueError("End date cannot be before start date.")
 
         overlapping_start = (
-            Shift.objects.filter(start_date__gte=self.start_date, start_date__lte=self.end_date, venue=self.venue,)
+            Shift.objects.filter(
+                start_date__gte=self.start_date,
+                start_date__lte=self.end_date,
+                venue=self.venue,
+            )
             .exclude(pk=self.pk)
             .count()
         )
         overlapping_end = (
-            Shift.objects.filter(end_date__gte=self.start_date, end_date__lte=self.end_date, venue=self.venue,)
+            Shift.objects.filter(
+                end_date__gte=self.start_date,
+                end_date__lte=self.end_date,
+                venue=self.venue,
+            )
             .exclude(pk=self.pk)
             .count()
         )
@@ -581,20 +590,18 @@ class Order(models.Model):
 
     user = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT)
     user_association = models.ForeignKey(Association, blank=True, null=True, on_delete=models.SET_NULL)
-    shift = models.ForeignKey(Shift, blank=False, null=False, on_delete=models.PROTECT)
-    product = models.ForeignKey(
-        Product, blank=False, null=False, on_delete=models.PROTECT, validators=[available_product_filter],
-    )
+    shift = models.ForeignKey(Shift, on_delete=models.PROTECT)
+    product = models.ForeignKey(Product, on_delete=models.PROTECT, validators=[available_product_filter])
 
     order_price = models.DecimalField(max_digits=6, decimal_places=2)
 
-    ready = models.BooleanField(default=False, null=False)
+    ready = models.BooleanField(default=False)
     ready_at = models.DateTimeField(null=True, blank=True)
 
-    paid = models.BooleanField(default=False, null=False)
+    paid = models.BooleanField(default=False)
     paid_at = models.DateTimeField(null=True, blank=True)
 
-    type = models.PositiveIntegerField(choices=TYPES, default=0, null=False, blank=False)
+    type = models.PositiveIntegerField(choices=TYPES, default=0)
 
     def to_json(self):
         """

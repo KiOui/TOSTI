@@ -14,7 +14,11 @@ class ThaliedjeConfig(AppConfig):
         def filter_user_page(user_page_list: list):
             """Add requested songs as a tab to users page."""
             user_page_list.append(
-                {"name": "Requested songs", "slug": "requested_songs", "renderer": render_account_history_tab,}  # noqa
+                {
+                    "name": "Requested songs",
+                    "slug": "requested_songs",
+                    "renderer": render_account_history_tab,
+                }  # noqa
             )
             return user_page_list
 

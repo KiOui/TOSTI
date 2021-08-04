@@ -30,19 +30,21 @@ class Player(models.Model):
         "streaming, app-remote-control"
     )  # The required Spotify API permissions
 
-    display_name = models.CharField(max_length=256, null=True, blank=True)
-    playback_device_id = models.CharField(max_length=256, null=True, blank=True)
+    display_name = models.CharField(max_length=256, default="", blank=True)
+    playback_device_id = models.CharField(max_length=256, default="", blank=True)
     playback_device_name = models.CharField(
         max_length=256,
-        null=True,
+        default="",
         blank=True,
-        help_text="When configuring this Spotify account for the first time, "
-        "make sure to have the Spotify accounnt active on at least one "
-        "playback device to complete configuration.",
+        help_text=(
+            "When configuring this Spotify account for the first time, make sure to have"
+            " the Spotify accounnt active on at least one playback device to complete"
+            " configuration."
+        ),
     )
-    client_id = models.CharField(max_length=256, null=False, blank=False, unique=True)
-    client_secret = models.CharField(max_length=256, null=False, blank=False)
-    redirect_uri = models.CharField(max_length=512, null=False, blank=False)
+    client_id = models.CharField(max_length=256, unique=True)
+    client_secret = models.CharField(max_length=256)
+    redirect_uri = models.CharField(max_length=512)
     venue = models.OneToOneField(Venue, on_delete=models.SET_NULL, null=True, blank=True)
 
     @staticmethod
@@ -186,8 +188,8 @@ class Player(models.Model):
 class SpotifyArtist(models.Model):
     """Spotify Artist model."""
 
-    artist_name = models.CharField(max_length=2048, blank=False, null=False, unique=True)
-    artist_id = models.CharField(max_length=2048, blank=False, null=False)
+    artist_name = models.CharField(max_length=512, unique=True)
+    artist_id = models.CharField(max_length=512)
 
     def __str__(self):
         """
@@ -201,8 +203,8 @@ class SpotifyArtist(models.Model):
 class SpotifyTrack(models.Model):
     """Spotify Track model."""
 
-    track_id = models.CharField(max_length=256, blank=False, null=False, unique=True)
-    track_name = models.CharField(max_length=1024, blank=False, null=False)
+    track_id = models.CharField(max_length=256, unique=True)
+    track_name = models.CharField(max_length=256)
     track_artists = models.ManyToManyField(SpotifyArtist)
 
     @property
@@ -227,10 +229,10 @@ class SpotifyQueueItem(models.Model):
     device for a Player, requested by a certain user.
     """
 
-    track = models.ForeignKey(SpotifyTrack, on_delete=models.SET_NULL, null=True)
-    player = models.ForeignKey(Player, related_name="queue", null=False, on_delete=models.CASCADE)
+    track = models.ForeignKey(SpotifyTrack, on_delete=models.SET_NULL, null=True, blank=True)
+    player = models.ForeignKey(Player, related_name="queue", on_delete=models.CASCADE)
     added = models.DateTimeField(auto_now_add=True)
-    requested_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    requested_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, blank=True)
 
     class Meta:
         """Meta class."""

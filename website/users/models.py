@@ -102,14 +102,15 @@ class GroupSettings(models.Model):
 
     group = models.OneToOneField(BaseGroup, on_delete=CASCADE, primary_key=True)
     is_auto_join_group = models.BooleanField(
-        null=False, blank=False, default=False, help_text="If enabled, new users will automatically join this group."
+        default=False, help_text="If enabled, new users will automatically join this group."
     )
     gets_staff_permissions = models.BooleanField(
-        null=False,
-        blank=False,
         default=False,
-        help_text="If enabled, all members added to this group will automatically get staff status after their next "
-        "login. This staff status will not be automatically revoked, though, if the user leaves the group.",
+        help_text=(
+            "If enabled, all members added to this group will automatically get staff"
+            " status after their next login. This staff status will not be automatically"
+            " revoked, though, if the user leaves the group."
+        ),
     )
 
     def __str__(self):

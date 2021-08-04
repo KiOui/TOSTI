@@ -19,7 +19,11 @@ class OrdersConfig(AppConfig):
         def filter_user_page(user_page_list: list):
             """Add Ordered items tab on accounts page."""
             user_page_list.append(
-                {"name": "Ordered items", "slug": "ordered_items", "renderer": render_ordered_items_tab,}  # noqa
+                {
+                    "name": "Ordered items",
+                    "slug": "ordered_items",
+                    "renderer": render_ordered_items_tab,
+                }  # noqa
             )
             return user_page_list
 

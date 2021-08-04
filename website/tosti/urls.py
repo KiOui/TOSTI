@@ -43,8 +43,17 @@ urlpatterns = [
     path("welcome", WelcomeView.as_view(), name="welcome"),
     path("privacy/", PrivacyView.as_view(), name="privacy"),
     path("documentation/", DocumentationView.as_view(), name="documentation"),
-    path("users/", include(("users.urls", "users"), namespace="users"),),
-    path("shifts/", include(("orders.urls", "orders"), namespace="orders"),),
-    path("thaliedje/", include(("thaliedje.urls", "thaliedje"), namespace="thaliedje"),),
+    path(
+        "users/",
+        include(("users.urls", "users"), namespace="users"),
+    ),
+    path(
+        "shifts/",
+        include(("orders.urls", "orders"), namespace="orders"),
+    ),
+    path(
+        "thaliedje/",
+        include(("thaliedje.urls", "thaliedje"), namespace="thaliedje"),
+    ),
     path("api/", include("tosti.api.urls")),
 ]

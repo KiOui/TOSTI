@@ -50,7 +50,11 @@ class PlayerAdmin(GuardedModelAdmin):
         register_converter(PlayerConverter, "spotify")
         urls = super().get_urls()
         custom_urls = [
-            path("authorize/", self.admin_site.admin_view(SpofityAuthorizeView.as_view()), name="authorize",),
+            path(
+                "authorize/",
+                self.admin_site.admin_view(SpofityAuthorizeView.as_view()),
+                name="authorize",
+            ),
             path(
                 "authorize/<spotify:spotify>",
                 self.admin_site.admin_view(SpofityAuthorizeView.as_view()),

@@ -27,8 +27,9 @@ uritemplate = "^3.0.1"
 
 [tool.poetry.dev-dependencies]
 pydocstyle = "^5.0.2"
-black = "^19.10b0"
+black = "^21.7b0"
 flake8 = "^3.7.9"
+django-doctor = "^2.5.0"
 
 [tool.black]
 line-length = 119
