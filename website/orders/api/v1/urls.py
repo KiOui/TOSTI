@@ -25,7 +25,9 @@ urlpatterns = [
     path("shifts/<int:pk>", ShiftRetrieveUpdateAPIView.as_view(), name="shift_retrieveupdate"),
     path("shifts/<shift:shift>/orders", OrderListCreateAPIView.as_view(), name="orders_listcreate"),
     path(
-        "shifts/<shift:shift>/orders/<int:pk>", OrderRetrieveDestroyAPIView.as_view(), name="orders_retrievedestroy",
+        "shifts/<shift:shift>/orders/<int:pk>",
+        OrderRetrieveDestroyAPIView.as_view(),
+        name="orders_retrievedestroy",
     ),
     path("shifts/<shift:shift>/orders/<order:order>/paid", OrderTogglePaidAPIView.as_view(), name="order_toggle_paid"),
     path(

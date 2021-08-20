@@ -107,7 +107,7 @@ def add_order(product, shift, order_type, user=None, paid=False, ready=False, fo
 
 def has_already_ordered_in_shift(user: User, shift: Shift):
     """Check if a user has already ordered in a shift."""
-    return Order.objects.filter(user=user, shift=shift).count() > 0
+    return Order.objects.filter(user=user, shift=shift).exists()
 
 
 def add_user_to_assignees_of_shift(user, shift: Shift):

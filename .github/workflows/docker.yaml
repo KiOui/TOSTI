@@ -7,7 +7,7 @@ on:
       - master
 
 env:
-  DOCKER_IMAGE: docker.pkg.github.com/kioui/tosti/tosti:latest
+  DOCKER_IMAGE: "docker.pkg.github.com/kioui/tosti/tosti-production:latest"
 
 jobs:
   build-docker:
@@ -17,20 +17,11 @@ jobs:
       - name: "Checkout the repository"
         uses: "actions/checkout@v1"
 
-      - name: "Set up QEMU"
-        uses: "docker/setup-qemu-action@v1"
-
-      - name: "Set up Docker Buildx"
-        id: buildx
-        uses: "docker/setup-buildx-action@v1"
-
       - name: "Login to GitHub Packages"
         run: "echo \"${{ secrets.GITHUB_TOKEN }}\" | docker login https://docker.pkg.github.com --username ${{ github.repository_owner }} --password-stdin"
 
       - name: "Build Docker image"
-        run: |
-            docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 --build-arg commit_hash=\"${{ github.sha }}\" --tag "${DOCKER_IMAGE}" .
-            docker buildx build --load -t "${DOCKER_IMAGE}" .
+        run: "docker build --build-arg commit_hash=\"${{ github.sha }}\" --tag \"${DOCKER_IMAGE}\" ."
 
-      - name: "Tag and Publish Docker image"
-        run: docker push "${DOCKER_IMAGE}"
+      - name: "Push Docker image"
+        run: "docker push ${DOCKER_IMAGE}"

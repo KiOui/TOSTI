@@ -23,10 +23,14 @@ class UserAdminForm(forms.ModelForm):
     """Custom AdminForm for Users."""
 
     user_permissions = forms.ModelMultipleChoiceField(
-        Permission.objects.all(), required=False, widget=FilteredSelectMultiple("permissions", False),
+        Permission.objects.all(),
+        required=False,
+        widget=FilteredSelectMultiple("permissions", False),
     )
     groups = forms.ModelMultipleChoiceField(
-        Group.objects.all(), required=False, widget=FilteredSelectMultiple("groups", False),
+        Group.objects.all(),
+        required=False,
+        widget=FilteredSelectMultiple("groups", False),
     )
 
     class Meta:
@@ -86,10 +90,14 @@ class GroupAdminForm(forms.ModelForm):
     """Custom AdminForm for Groups."""
 
     permissions = forms.ModelMultipleChoiceField(
-        Permission.objects.all(), required=False, widget=FilteredSelectMultiple("permissions", False),
+        Permission.objects.all(),
+        required=False,
+        widget=FilteredSelectMultiple("permissions", False),
     )
     users = forms.ModelMultipleChoiceField(
-        queryset=User.objects.all(), required=False, widget=FilteredSelectMultiple("users", False),
+        queryset=User.objects.all(),
+        required=False,
+        widget=FilteredSelectMultiple("users", False),
     )
 
     def __init__(self, *args, **kwargs):

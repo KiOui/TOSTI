@@ -36,7 +36,10 @@ class SpofityAuthorizeView(PermissionRequiredMixin, TemplateView):
 
         if player is not None:
             render_data["form"] = SpotifyTokenForm(
-                initial={"client_id": player.client_id, "client_secret": player.client_secret,}  # noqa
+                initial={
+                    "client_id": player.client_id,
+                    "client_secret": player.client_secret,
+                }  # noqa
             )
         else:
             render_data["form"] = SpotifyTokenForm()
@@ -97,7 +100,9 @@ class SpotifyTokenView(PermissionRequiredMixin, TemplateView):
                 response = redirect("admin:authorization_succeeded", spotify=spotify_auth_code)
             else:
                 response = render(
-                    request, self.template_name, {"error": "Access token retrieval failed, please try again."},
+                    request,
+                    self.template_name,
+                    {"error": "Access token retrieval failed, please try again."},
                 )
             response.delete_cookie(COOKIE_CLIENT_ID)
             return response

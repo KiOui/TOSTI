@@ -253,12 +253,20 @@ class PlaceOrderView(PermissionRequiredMixin, TemplateView):
         shift = kwargs.get("shift")
         cookie = request.COOKIES.get("cart_{}".format(shift.pk), None)
         if cookie is None:
-            return render(request, self.template_name, {"shift": shift, "error": "No orders submitted"},)
+            return render(
+                request,
+                self.template_name,
+                {"shift": shift, "error": "No orders submitted"},
+            )
         cookie = urllib.parse.unquote(cookie)
         try:
             cookie = json.loads(cookie)
         except json.JSONDecodeError:
-            page = render(request, self.template_name, {"shift": shift, "error": "Error decoding cookie"},)
+            page = render(
+                request,
+                self.template_name,
+                {"shift": shift, "error": "Error decoding cookie"},
+            )
             page.delete_cookie("cart_{}".format(shift.pk))
             return page
 

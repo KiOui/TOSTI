@@ -10,7 +10,7 @@
                 <div class="information-row">
                     <p class="item-counter"><% index + 1 %>.</p>
                     <p class="item-name"><% order.product.name %> (€<% (Math.round(order.order_price * 100) / 100).toFixed(2) %>)</p>
-                    <i v-if="order.product.icon !== null" :class="`fas fa-${order.product.icon} item-icon`"></i>
+                    <i v-if="order.product.icon !== ''" :class="`fas fa-${order.product.icon} item-icon`"></i>
                     <div class="flex-divider"></div>
                     <i v-if="order.user !== null && {{ user.id }} === order.user.id" class="fas fa-user user-icon"></i>
                     <p v-if="order.user !== null" class="item-username"><% order.user.username %></p>
