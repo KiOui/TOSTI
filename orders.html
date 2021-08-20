@@ -978,8 +978,8 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="orders.models.OrderVenue.shift_set">
-<code class="sig-name descname"><span class="pre">shift_set</span></code><a class="headerlink" href="#orders.models.OrderVenue.shift_set" title="Permalink to this definition">¶</a></dt>
+<dt id="orders.models.OrderVenue.shifts">
+<code class="sig-name descname"><span class="pre">shifts</span></code><a class="headerlink" href="#orders.models.OrderVenue.shifts" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related objects manager on the reverse side of a
 many-to-one relation.</p>
 <p>In the example:</p>
@@ -1106,8 +1106,15 @@ object the first time, the query is executed.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="orders.models.Product.order_set">
-<code class="sig-name descname"><span class="pre">order_set</span></code><a class="headerlink" href="#orders.models.Product.order_set" title="Permalink to this definition">¶</a></dt>
+<dt id="orders.models.Product.orderable">
+<code class="sig-name descname"><span class="pre">orderable</span></code><a class="headerlink" href="#orders.models.Product.orderable" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="orders.models.Product.orders">
+<code class="sig-name descname"><span class="pre">orders</span></code><a class="headerlink" href="#orders.models.Product.orders" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related objects manager on the reverse side of a
 many-to-one relation.</p>
 <p>In the example:</p>
@@ -1118,13 +1125,6 @@ many-to-one relation.</p>
 <p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
 <p>Most of the implementation is delegated to a dynamically defined manager
 class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="orders.models.Product.orderable">
-<code class="sig-name descname"><span class="pre">orderable</span></code><a class="headerlink" href="#orders.models.Product.orderable" title="Permalink to this definition">¶</a></dt>
-<dd><p>A wrapper for a deferred-loading field. When the value is read from this
-object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1384,21 +1384,6 @@ object the first time, the query is executed.</p>
 <code class="sig-name descname"><span class="pre">objects</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#orders.models.Shift.objects" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt id="orders.models.Shift.order_set">
-<code class="sig-name descname"><span class="pre">order_set</span></code><a class="headerlink" href="#orders.models.Shift.order_set" title="Permalink to this definition">¶</a></dt>
-<dd><p>Accessor to the related objects manager on the reverse side of a
-many-to-one relation.</p>
-<p>In the example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
-    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
-<p>Most of the implementation is delegated to a dynamically defined manager
-class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
-</dd></dl>
-
 <dl class="py method">
 <dt id="orders.models.Shift.ordered_orders">
 <em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">ordered_orders</span></code><a class="headerlink" href="#orders.models.Shift.ordered_orders" title="Permalink to this definition">¶</a></dt>
@@ -1410,15 +1395,19 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="py attribute">
 <dt id="orders.models.Shift.orders">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">orders</span></code><a class="headerlink" href="#orders.models.Shift.orders" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the orders of this shift.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>a chain object with all the orders of this shift.</p>
-</dd>
-</dl>
+<code class="sig-name descname"><span class="pre">orders</span></code><a class="headerlink" href="#orders.models.Shift.orders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
 </dd></dl>
 
 <dl class="py method">
