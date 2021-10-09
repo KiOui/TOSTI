@@ -20,7 +20,7 @@ def render_start_shift_buttons(context, venues=None):
 
 
 @register.filter
-def currently_active_shift_for_venue(venue):
+def currently_active_shift_for_venue(venue: OrderVenue):
     """Get the currently active shift for a venue (if it exists)."""
     timezone = pytz.timezone(settings.TIME_ZONE)
     today = timezone.localize(datetime.now())

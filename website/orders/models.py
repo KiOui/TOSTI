@@ -90,6 +90,11 @@ class OrderVenue(models.Model):
         """Representation by venue."""
         return str(self.venue)
 
+    @property
+    def shift_set(self):
+        """Get a set of all shifts from this Venue."""
+        return Shift.objects.filter(venue=self)
+
     def get_users_with_shift_admin_perms(self):
         """Get users with permissions to manage shifts in this venue."""
         users = []

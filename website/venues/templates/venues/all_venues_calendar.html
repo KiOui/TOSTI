@@ -1,0 +1,55 @@
+{% load static %}
+
+<div class="calendar-wrapper">
+    <div id="calendar-all"></div>
+</div>
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/main.min.css' rel='stylesheet' />
+<link href='{% static 'venues/css/calendar.css' %}' rel='stylesheet' />
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/main.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        let calendarEl = document.getElementById('calendar-all');
+        fetch('{% url 'v1:reservations_list' %}?days=90').then((response) => response.json()).then((data) => {
+            let calendar = new FullCalendar.Calendar(calendarEl, {
+                themeSystem: 'bootstrap',
+                headerToolbar: {
+                    left: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
+                    center: 'title',
+                    right: 'prev,next today'
+                },
+                initialView: 'timeGridWeek',
+                weekNumbers: true,
+                weekends: true,
+                firstDay: 1,
+                slotLabelFormat: {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false,
+                },
+                slotDuration: '00:30:00',
+                eventTimeFormat: {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false,
+                },
+                slotEventOverlap: false,
+                height: 800,
+                timeZone: 'local',
+                allDaySlot: false,
+                nowIndicator: true,
+                editable: false,
+                droppable: false,
+                displayEventEnd: true,
+                events: data.map((reservation) => {return {'start': reservation.start_time, 'end': reservation.end_time,
+                    'title': reservation.name ?
+                        `${reservation.name} - ${reservation.venue.name} (reserved by ${reservation.user.username})` :
+                        `${reservation.venue.name} (reserved by ${reservation.user.username})`, 'backgroundColor': `${reservation.venue.color_in_calendar}`}})
+            });
+
+            calendar.render();
+        }).catch((exception) => {
+            alert("An error occurred while getting calendar data for {{ venue.name }}. Please reload this page.");
+        });
+    });
+</script>

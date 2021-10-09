@@ -1,0 +1,12 @@
+{% extends 'tosti/base.html' %}
+{% load static calendar %}
+
+{% block page %}
+    <div class="container mt-5 mb-5 text-center">
+        <h1 class="tosti-title">TOSTI</h1>
+        <h6>Tartarus Order System for Take-away Items</h6>
+    </div>
+    <div class="container">
+        {% render_calendar %}
+    </div>
+{% endblock %}

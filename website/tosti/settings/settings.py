@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "thaliedje",
     "orders",
     "associations",
+    "borrel",
     "oauth2_provider",
     "corsheaders",
 ]
