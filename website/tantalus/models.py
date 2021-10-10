@@ -6,8 +6,8 @@ from orders.models import Product, OrderVenue, Shift
 class TantalusProduct(models.Model):
     """Model for connecting TOSTI Products to Tantalus Products."""
 
-    product = models.OneToOneField(Product, on_delete=models.CASCADE, blank=False, null=False)
-    tantalus_id = models.PositiveIntegerField(blank=False, null=False)
+    product = models.OneToOneField(Product, on_delete=models.CASCADE)
+    tantalus_id = models.PositiveIntegerField()
 
     def __str__(self):
         """Convert to string."""
@@ -17,8 +17,8 @@ class TantalusProduct(models.Model):
 class TantalusOrderVenue(models.Model):
     """Model for connecting OrderVenue's to Tantalus Endpoints."""
 
-    order_venue = models.OneToOneField(OrderVenue, on_delete=models.CASCADE, blank=False, null=False)
-    endpoint_id = models.PositiveIntegerField(blank=False, null=False)
+    order_venue = models.OneToOneField(OrderVenue, on_delete=models.CASCADE)
+    endpoint_id = models.PositiveIntegerField()
 
     def __str__(self):
         """Convert to string."""
@@ -28,4 +28,4 @@ class TantalusOrderVenue(models.Model):
 class TantalusShiftSynchronization(models.Model):
     """Model for indicating whether TOSTI Shifts have been synchronized with Tantalus."""
 
-    shift = models.OneToOneField(Shift, on_delete=models.CASCADE, blank=False, null=False)
+    shift = models.OneToOneField(Shift, on_delete=models.CASCADE)

@@ -271,8 +271,6 @@ class Shift(models.Model):
     finalized = models.BooleanField(
         verbose_name="Shift Finalized",
         default=False,
-        blank=False,
-        null=False,
         help_text="If checked, shift is finalized and no alterations on the shift can be made anymore.",
     )
 
