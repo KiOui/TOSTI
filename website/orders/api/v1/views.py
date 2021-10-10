@@ -527,7 +527,8 @@ class OrderToggleReadyAPIView(APIView):
             order.ready = not order.ready
             order.save()
             return Response(
-                status=status.HTTP_200_OK, data=OrderSerializer(order, many=False, context={"request": request}).data,
+                status=status.HTTP_200_OK,
+                data=OrderSerializer(order, many=False, context={"request": request}).data,
             )
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)

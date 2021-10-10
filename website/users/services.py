@@ -99,7 +99,11 @@ class OpenIDVerifier:
         """
         if "openid.identity" in self.query_parameters.keys():
             openid_identity = self.query_parameters["openid.identity"]
-            return re.sub("{}$".format(self.postfix), "", re.sub("^{}".format(self.prefix), "", openid_identity),)
+            return re.sub(
+                "{}$".format(self.postfix),
+                "",
+                re.sub("^{}".format(self.prefix), "", openid_identity),
+            )
         return False
 
     def extract_full_name(self):

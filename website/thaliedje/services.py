@@ -104,7 +104,9 @@ def request_song(user, player, spotify_track_id):
         player.spotify.add_to_queue(spotify_track_id, device_id=player.playback_device_id)
         track = create_track_database_information(track_info)
         SpotifyQueueItem.objects.create(
-            track=track, player=player, requested_by=user,
+            track=track,
+            player=player,
+            requested_by=user,
         )
     except SpotifyException as e:
         logging.error(e)

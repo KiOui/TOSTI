@@ -87,7 +87,11 @@ class TantalusClient:
 
 def get_tantalus_client() -> TantalusClient:
     """Get the default Tantalus client (with the login credentials in the Django settings file)."""
-    return TantalusClient(settings.TANTALUS_ENDPOINT_URL, settings.TANTALUS_USERNAME, settings.TANTALUS_PASSWORD,)
+    return TantalusClient(
+        settings.TANTALUS_ENDPOINT_URL,
+        settings.TANTALUS_USERNAME,
+        settings.TANTALUS_PASSWORD,
+    )
 
 
 def sort_orders_by_product(orders):

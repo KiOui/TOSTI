@@ -162,7 +162,11 @@ def add_user_order(product: Product, shift: Shift, user: User) -> Order:
         raise OrderException("User can not order {} {} for this shift".format(product, 1))
 
     return Order.objects.create(
-        product=product, shift=shift, type=Order.TYPE_ORDERED, user=user, user_association=user.profile.association,
+        product=product,
+        shift=shift,
+        type=Order.TYPE_ORDERED,
+        user=user,
+        user_association=user.profile.association,
     )
 
 

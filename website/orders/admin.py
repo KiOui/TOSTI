@@ -53,7 +53,8 @@ class ProductAdmin(admin.ModelAdmin):
         :return: the request
         """
         messages.success(
-            request, f"{queryset.filter(available=False).update(available=True)} products were marked as available",
+            request,
+            f"{queryset.filter(available=False).update(available=True)} products were marked as available",
         )
         return request
 
@@ -68,7 +69,8 @@ class ProductAdmin(admin.ModelAdmin):
         :return: the request
         """
         messages.success(
-            request, f"{queryset.filter(available=True).update(available=False)} products were marked as unavailable",
+            request,
+            f"{queryset.filter(available=True).update(available=False)} products were marked as unavailable",
         )
         return request
 
@@ -117,7 +119,9 @@ class ShiftAdminForm(forms.ModelForm):
             self.fields["assignees"].initial = User.objects.filter(shift=self.instance)
 
     assignees = forms.ModelMultipleChoiceField(
-        queryset=None, required=False, widget=widgets.FilteredSelectMultiple("Assignees", False),
+        queryset=None,
+        required=False,
+        widget=widgets.FilteredSelectMultiple("Assignees", False),
     )
 
 
@@ -163,7 +167,8 @@ class ShiftAdmin(GuardedModelAdmin, ImportExportModelAdmin):
         :return: the request
         """
         messages.success(
-            request, f"{queryset.filter(can_order=True).update(can_order=False)} shifts were closed",
+            request,
+            f"{queryset.filter(can_order=True).update(can_order=False)} shifts were closed",
         )
         return request
 
@@ -248,7 +253,8 @@ class OrderAdmin(ImportExportModelAdmin):
         :return: the request
         """
         messages.success(
-            request, f"{queryset.filter(ready=False).update(ready=True)} orders were marked as ready",
+            request,
+            f"{queryset.filter(ready=False).update(ready=True)} orders were marked as ready",
         )
         return request
 
@@ -263,7 +269,8 @@ class OrderAdmin(ImportExportModelAdmin):
         :return: the request
         """
         messages.success(
-            request, f"{queryset.filter(paid=False).update(paid=True)} orders were marked as paid",
+            request,
+            f"{queryset.filter(paid=False).update(paid=True)} orders were marked as paid",
         )
         return request
 

@@ -32,7 +32,10 @@ class PlayerAdminForm(forms.ModelForm):
                     x for (x, _) in choices
                 ]:
                     choices.append(
-                        (instance.playback_device_id, "{} (currently offline)".format(instance.playback_device_name),)
+                        (
+                            instance.playback_device_id,
+                            "{} (currently offline)".format(instance.playback_device_name),
+                        )
                     )
                     self.fields[
                         "playback_device_id"

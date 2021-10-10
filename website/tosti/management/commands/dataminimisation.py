@@ -13,7 +13,11 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         """Arguments for the command."""
         parser.add_argument(
-            "--dry-run", action="store_true", dest="dry-run", default=False, help="Dry run instead of saving data",
+            "--dry-run",
+            action="store_true",
+            dest="dry-run",
+            default=False,
+            help="Dry run instead of saving data",
         )
 
     def handle(self, *args, **options):

@@ -210,7 +210,11 @@ class PlaceOrderView(PermissionRequiredMixin, TemplateView):
         """
         shift = kwargs.get("shift")
 
-        return render(request, self.template_name, {"shift": shift},)
+        return render(
+            request,
+            self.template_name,
+            {"shift": shift},
+        )
 
     def get_permission_object(self):
         """Get the object to check permissions for."""

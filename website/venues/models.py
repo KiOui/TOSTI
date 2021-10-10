@@ -4,8 +4,13 @@ from django.db import models
 class Venue(models.Model):
     """Venue model class."""
 
-    name = models.CharField(max_length=50, unique=True, blank=False, null=False)
-    active = models.BooleanField(default=True, null=False)
+    name = models.CharField(max_length=50, unique=True)
+    active = models.BooleanField(default=True)
+
+    class Meta:
+        """Meta class."""
+
+        ordering = ["-active", "name"]
 
     def __str__(self):
         """
@@ -14,8 +19,3 @@ class Venue(models.Model):
         :return: the name of this Venue
         """
         return self.name
-
-    class Meta:
-        """Meta class."""
-
-        ordering = ["-active", "name"]
