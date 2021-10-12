@@ -159,7 +159,7 @@ class Product(models.Model):
     )
     ignore_shift_restrictions = models.BooleanField(
         default=False,
-        help_text=("Whether or not this product should ignore the maximum orders per shift" " restriction."),
+        help_text="Whether or not this product should ignore the maximum orders per shift" " restriction.",
     )
 
     max_allowed_per_shift = models.PositiveSmallIntegerField(
@@ -220,9 +220,9 @@ class Product(models.Model):
         :return: True if the already ordered amount of this Product plus the amount specified in the amount parameter
         is lower than the max_allowed_per_shift variable, False otherwise
         """
-        user_order_amount_product = Order.objects.filter(user=user, shift=shift, product=self).count()
-        if self.max_allowed_per_shift is not None and user_order_amount_product + amount > self.max_allowed_per_shift:
-            return False
+        if self.max_allowed_per_shift is not None:
+            user_order_amount_product = Order.objects.filter(user=user, shift=shift, product=self).count()
+            return user_order_amount_product + amount <= self.max_allowed_per_shift
         return True
 
     def user_max_order_amount(self, user, shift):
@@ -234,8 +234,8 @@ class Product(models.Model):
         :return: None if the user can order unlimited of the product, the maximum allowed to still order otherwise
         """
         if self.max_allowed_per_shift is not None:
-            if user.is_anonymous:
-                return 0
+            if not user.is_authenticated:
+                return 0  # Non logged-in users can never order items
             user_order_amount_product = Order.objects.filter(user=user, shift=shift, product=self).count()
             return max(0, self.max_allowed_per_shift - user_order_amount_product)
         else:
@@ -273,6 +273,12 @@ class Shift(models.Model):
         ),
     )
 
+    finalized = models.BooleanField(
+        verbose_name="Shift Finalized",
+        default=False,
+        help_text="If checked, shift is finalized and no alterations on the shift can be made anymore.",
+    )
+
     max_orders_per_user = models.PositiveSmallIntegerField(
         verbose_name="Max. number of orders per user",
         default=2,
@@ -306,37 +312,18 @@ class Shift(models.Model):
         return f"{self.venue} {self.date}"
 
     def save(self, *args, **kwargs):
-        """
-        Save an object of the Shift type.
+        """Save a Shift."""
+        self._clean()
+        try:
+            old_instance = Shift.objects.get(id=self.id)
+        except Shift.DoesNotExist:
+            old_instance = None
 
-        :param args: arguments
-        :param kwargs: keyword arguments
-        :return: None, raises a ValueError on error
-        """
-        if self.end_date <= self.start_date:
-            raise ValueError("End date cannot be before start date.")
+        if old_instance is not None and not old_instance.finalized and self.finalized:
+            # Shift was not finalized yet but will be made finalized now
+            self._make_finalized()
 
-        overlapping_start = (
-            Shift.objects.filter(
-                start_date__gte=self.start_date,
-                start_date__lte=self.end_date,
-                venue=self.venue,
-            )
-            .exclude(pk=self.pk)
-            .count()
-        )
-        overlapping_end = (
-            Shift.objects.filter(
-                end_date__gte=self.start_date,
-                end_date__lte=self.end_date,
-                venue=self.venue,
-            )
-            .exclude(pk=self.pk)
-            .count()
-        )
-        if overlapping_start > 0 or overlapping_end > 0:
-            raise ValueError("Overlapping shifts for the same venue are not allowed.")
-        super(Shift, self).save(*args, **kwargs)
+        return super(Shift, self).save(*args, **kwargs)
 
     @property
     def orders(self):
@@ -414,15 +401,6 @@ class Shift(models.Model):
         :return: the total number of orders in this shift
         """
         return Order.objects.filter(shift=self).count()
-
-    @property
-    def number_of_restricted_orders(self):
-        """
-        Get the total number of restricted orders in this shift.
-
-        :return: the total number of restricted orders in this shift
-        """
-        return Order.objects.filter(shift=self, product__ignore_shift_restrictions=False).count()
 
     @property
     def max_orders_total_string(self):
@@ -524,6 +502,73 @@ class Shift(models.Model):
                 users.append(user)
         return users
 
+    def _make_finalized(self):
+        """Make this Shift ready to be finalized."""
+        timezone = pytz.timezone(settings.TIME_ZONE)
+        self.end_date = timezone.localize(datetime.now())
+        self.can_order = False
+
+    @property
+    def shift_done(self):
+        """
+        Check if all Orders of this Shift are ready and paid.
+
+        :return: True if all Orders (with the Order type) of this Shift are ready and paid, False otherwise
+        :rtype: boolean
+        """
+        return False not in [x.done for x in self.orders if x.type != Order.TYPE_SCANNED]
+
+    def _clean(self):
+        """
+        Check the configuration of a Shift on clean or save.
+
+        :return: None, raises a ValidationError on error
+        """
+        try:
+            old_instance = Shift.objects.get(id=self.id)
+        except Shift.DoesNotExist:
+            old_instance = None
+
+        if old_instance is not None and old_instance.finalized and not self.finalized:
+            # Shift was already finalized so can't be un-finalized
+            raise ValidationError({"finalized": "A finalized shift can not be un-finalized."})
+        elif old_instance is not None and old_instance.finalized and self.finalized:
+            # Shift was already finalized and is still finalized but something else changed
+            raise ValidationError("A finalized shift can not be changed")
+        elif old_instance is not None and not old_instance.finalized and self.finalized:
+            # Shift was not finalized yet but will be made finalized now
+            if not self.shift_done:
+                raise ValidationError({"finalized": "Shift can't be finalized if not all Orders are paid and ready"})
+
+        if self.end_date <= self.start_date:
+            raise ValidationError({"end_date": "End date cannot be before start date."})
+
+        overlapping_start = (
+            Shift.objects.filter(
+                start_date__gte=self.start_date,
+                start_date__lte=self.end_date,
+                venue=self.venue,
+            )
+            .exclude(pk=self.pk)
+            .count()
+        )
+        overlapping_end = (
+            Shift.objects.filter(
+                end_date__gte=self.start_date,
+                end_date__lte=self.end_date,
+                venue=self.venue,
+            )
+            .exclude(pk=self.pk)
+            .count()
+        )
+        if overlapping_start > 0 or overlapping_end > 0:
+            raise ValidationError("Overlapping shifts for the same venue are not allowed.")
+
+    def clean(self):
+        """Clean a Shift."""
+        self._clean()
+        return super(Shift, self).clean()
+
     def save_m2m(self):
         """Save assignees m2m."""
         for assignee in self.assignees.all():
@@ -538,11 +583,11 @@ class Shift(models.Model):
         :param amount: the amount that the user wants to order
         :return: True if the user is allowed to order amount of products, False otherwise
         """
-        user_order_amount = Order.objects.filter(
-            user=user, shift=self, product__ignore_shift_restrictions=False
-        ).count()
-        if self.max_orders_per_user is not None and user_order_amount + amount > self.max_orders_per_user:
-            return False
+        if self.max_orders_per_user is not None:
+            user_order_amount = Order.objects.filter(
+                user=user, shift=self, product__ignore_shift_restrictions=False
+            ).count()
+            return user_order_amount + amount <= self.max_orders_per_user
 
         return True
 
@@ -554,20 +599,14 @@ class Shift(models.Model):
         :return: the maximum of orders a user can still place in this shift, None if there is no maximum specified
         """
         if self.max_orders_per_user is not None:
-            if user.is_anonymous:
-                return 0
+            if not user.is_authenticated:
+                return 0  # Non logged-in users can never order items
             user_order_amount = Order.objects.filter(
                 user=user, shift=self, product__ignore_shift_restrictions=False
             ).count()
             return max(0, self.max_orders_per_user - user_order_amount)
         else:
             return None
-
-    def update_can_order(self):
-        """Update the can_order field from a shift when an order is placed."""
-        if self.order_set.count() >= self.max_orders_total:
-            self.can_order = False
-            self.save()
 
 
 def available_product_filter(value):
@@ -656,50 +695,14 @@ class Order(models.Model):
         }
 
     def clean(self):
-        """Check whether this order is valid and can be saved."""
+        """
+        Clean this Order.
+
+        Check if the Shift is already finalized.
+        """
         super().clean()
-        errors = {}
-        timezone = pytz.timezone(settings.TIME_ZONE)
-        localized_time = timezone.localize(datetime.now())
-        if not self.created and not self.shift.can_order:
-            errors.update({"shift": "You can't order for this shift"})
-
-        if not self.created and not (self.shift.start_date < localized_time < self.shift.end_date):
-            errors.update({"shift": "You can't order for this shift because of time restrictions"})
-
-        if (
-            self.shift.max_orders_per_user is not None
-            and Order.objects.filter(shift=self.shift, user=self.pk, product__ignore_shift_restrictions=False)
-            .exclude(pk=self.pk)
-            .count()
-            >= self.shift.max_orders_per_user
-        ):
-            errors.update(
-                {
-                    "shift": f"You are not allowed to order more than {self.shift.max_orders_per_user} "
-                    f"products in this shift."
-                }
-            )
-        if (
-            self.product.max_allowed_per_shift is not None
-            and not self.product.ignore_shift_restrictions
-            and Order.objects.filter(product=self.product, user=self.pk).exclude(pk=self.pk).count()
-            >= self.product.max_allowed_per_shift
-        ):
-            errors.update(
-                {
-                    "product": f"You are not allowed to order more than {self.product.max_allowed_per_shift} "
-                    f"products of this kind in this shift."
-                }
-            )
-
-        if self.type == self.TYPE_ORDERED and (self.user is None or self.user == ""):
-            errors.update(
-                {"user": "A user must be specified if the order type is {}".format(self.TYPES[self.TYPE_ORDERED][1])}
-            )
-
-        if errors:
-            raise ValidationError(errors)
+        if self.shift.finalized:
+            raise ValidationError("Order can't be changed as Shift is already finalized")
 
     @property
     def get_venue(self):
@@ -709,3 +712,13 @@ class Order(models.Model):
         :return: the venue associated to this Order
         """
         return self.shift.venue
+
+    @property
+    def done(self):
+        """
+        Check if an Order is done.
+
+        :return: True if this Order is paid and ready, False otherwise
+        :rtype: boolean
+        """
+        return self.paid and self.ready
