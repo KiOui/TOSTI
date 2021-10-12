@@ -34,7 +34,7 @@ class OrderVenueConverter(SlugConverter):
 
     def to_python(self, value):
         """
-        Cast integer to OrderVenue.
+        Cast slug to OrderVenue.
 
         :param value: the slug of the Venue
         :return: a OrderVenue or ValueError
