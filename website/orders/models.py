@@ -6,6 +6,7 @@ import pytz
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models import Q
 from guardian.shortcuts import get_objects_for_user
 
 from associations.models import Association
@@ -258,7 +259,7 @@ class Shift(models.Model):
     HUMAN_DATE_FORMAT = "%a. %-d %b. %Y"
 
     venue = models.ForeignKey(
-        OrderVenue, related_name="shifts", on_delete=models.PROTECT, validators=[active_venue_validator]
+        OrderVenue, related_name="shift", on_delete=models.PROTECT, validators=[active_venue_validator]
     )
 
     start_date = models.DateTimeField(default=get_default_start_time_shift)
@@ -326,9 +327,9 @@ class Shift(models.Model):
         return super(Shift, self).save(*args, **kwargs)
 
     @property
-    def orders(self):
+    def orders_sorted_staff_first(self):
         """
-        Get the orders of this shift.
+        Get the orders of this shift with the staff orders first.
 
         :return: a chain object with all the orders of this shift.
         """
@@ -339,7 +340,7 @@ class Shift(models.Model):
         return list(ordered_orders)
 
     @property
-    def ordered_orders(self):
+    def orders_ordered_type_only(self):
         """
         Get the orders with type Ordered of this shift.
 
@@ -516,7 +517,7 @@ class Shift(models.Model):
         :return: True if all Orders (with the Order type) of this Shift are ready and paid, False otherwise
         :rtype: boolean
         """
-        return False not in [x.done for x in self.orders if x.type != Order.TYPE_SCANNED]
+        return False not in [x.done for x in self.orders_sorted_staff_first if x.type != Order.TYPE_SCANNED]
 
     def _clean(self):
         """

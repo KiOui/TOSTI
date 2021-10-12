@@ -3,7 +3,19 @@ let update_timer = null;
 let update_list = [];
 
 function show_error_from_api(data) {
-    toastr.error(data.detail);
+    if  (data) {
+        if (data.responseJSON) {
+            if (data.responseJSON.detail) {
+                toastr.error(data.responseJSON.detail);
+                return;
+            }
+        }
+        if (data.status && data.statusText) {
+            toastr.error(`An error occurred! ${data.statusText} (status code ${data.status}).`);
+            return;
+        }
+    }
+    toasr.error("An unknown exception occurred");
 }
 
 function create_element(tag_name, class_list, text) {
@@ -92,7 +104,7 @@ function post_and_callback_with_error(data_url, data, callback, callback_error/*
                 args.unshift(data);
                 callback.apply(this, args);
             }, error: function(data) {
-                args.unshift(data.responseJSON);
+                args.unshift(data);
                 callback_error.apply(this, args);
             }});
         }
@@ -108,7 +120,7 @@ function patch(data_url, data, callback, callback_error/*, args */) {
                 args.unshift(data);
                 callback.apply(this, args);
             }, error: function(data) {
-                args.unshift(data.responseJSON);
+                args.unshift(data);
                 callback_error.apply(this, args);
             }});
         }
