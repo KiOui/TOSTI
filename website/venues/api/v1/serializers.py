@@ -11,7 +11,7 @@ class VenueSerializer(serializers.ModelSerializer):
         """Meta class."""
 
         model = models.Venue
-        fields = ["pk", "name", "color_in_calendar"]
+        fields = ["pk", "name", "color_in_calendar", "can_be_reserved"]
 
 
 class ReservationSerializer(serializers.ModelSerializer):
@@ -24,4 +24,4 @@ class ReservationSerializer(serializers.ModelSerializer):
         """Meta class."""
 
         model = models.Reservation
-        fields = ["pk", "name", "user", "start_time", "end_time", "venue"]
+        fields = ["pk", "name", "user", "association", "start_time", "end_time", "venue", "comment"]

@@ -14,6 +14,7 @@ class VenueAdmin(admin.ModelAdmin):
 class ReservationAdmin(admin.ModelAdmin):
     """Custom admin for reservations."""
 
-    list_display = ["name", "venue", "start_time", "end_time", "user"]
+    list_display = ["title", "venue", "start_time", "end_time", "user"]
     list_filter = ["venue", "user"]
-    search_fields = ["name"]
+    search_fields = ["title"]
+    date_hierarchy = "start_time"

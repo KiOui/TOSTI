@@ -3,9 +3,15 @@
 <div class="calendar-wrapper">
     <div id="calendar-all"></div>
 </div>
-<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/main.min.css' rel='stylesheet' />
-<link href='{% static 'venues/css/calendar.css' %}' rel='stylesheet' />
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/main.min.js"></script>
+
+{% block styles %}
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/main.min.css' rel='stylesheet' />
+    <link href='{% static 'venues/css/calendar.css' %}' rel='stylesheet' />
+{% endblock %}
+
+{% block js %}
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/main.min.js"></script>
+{% endblock %}
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -42,11 +48,10 @@
                 droppable: false,
                 displayEventEnd: true,
                 events: data.map((reservation) => {return {'start': reservation.start_time, 'end': reservation.end_time,
-                    'title': reservation.name ?
-                        `${reservation.name} - ${reservation.venue.name} (reserved by ${reservation.user.username})` :
-                        `${reservation.venue.name} (reserved by ${reservation.user.username})`, 'backgroundColor': `${reservation.venue.color_in_calendar}`}})
+                    'title': (reservation.name ?
+                        `${reservation.name} - ${reservation.venue.name}` :
+                        `${reservation.venue.name}`) + (reservation.association ? `(reserved by ${reservation.association})` : ""), 'backgroundColor': `${reservation.venue.color_in_calendar}`}})
             });
-
             calendar.render();
         }).catch((exception) => {
             alert("An error occurred while getting calendar data for {{ venue.name }}. Please reload this page.");

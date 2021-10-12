@@ -6,7 +6,6 @@ import pytz
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models import Q
 from guardian.shortcuts import get_objects_for_user
 
 from associations.models import Association
@@ -90,11 +89,6 @@ class OrderVenue(models.Model):
     def __str__(self):
         """Representation by venue."""
         return str(self.venue)
-
-    @property
-    def shift_set(self):
-        """Get a set of all shifts from this Venue."""
-        return Shift.objects.filter(venue=self)
 
     def get_users_with_shift_admin_perms(self):
         """Get users with permissions to manage shifts in this venue."""
@@ -259,7 +253,7 @@ class Shift(models.Model):
     HUMAN_DATE_FORMAT = "%a. %-d %b. %Y"
 
     venue = models.ForeignKey(
-        OrderVenue, related_name="shift", on_delete=models.PROTECT, validators=[active_venue_validator]
+        OrderVenue, related_name="shifts", on_delete=models.PROTECT, validators=[active_venue_validator]
     )
 
     start_date = models.DateTimeField(default=get_default_start_time_shift)

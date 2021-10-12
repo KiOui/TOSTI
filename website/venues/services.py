@@ -1,5 +1,3 @@
-import pytz
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 
@@ -10,11 +8,6 @@ User = get_user_model()
 
 def add_reservation(user: User, venue: Venue, start_time, end_time):
     """Add a reservation with a start and end time."""
-    timezone = pytz.timezone(settings.TIME_ZONE)
-
-    start_time = start_time.astimezone(timezone)
-    end_time = end_time.astimezone(timezone)
-
     if (
         Reservation.objects.filter(venue=venue)
         .filter(
@@ -25,5 +18,9 @@ def add_reservation(user: User, venue: Venue, start_time, end_time):
         .exists()
     ):
         raise ValueError("Can not create an overlapping reservation for the same venue.")
-
-    return Reservation.objects.create(user=user, venue=venue, start_time=start_time, end_time=end_time)
+    if user.profile.association is not None:
+        return Reservation.objects.create(
+            user=user, association=user.profile.association, venue=venue, start_time=start_time, end_time=end_time
+        )
+    else:
+        return Reservation.objects.create(user=user, venue=venue, start_time=start_time, end_time=end_time)
