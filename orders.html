@@ -582,7 +582,7 @@
 
 <dl class="py attribute">
 <dt id="orders.admin.ShiftAdminForm.base_fields">
-<code class="sig-name descname"><span class="pre">base_fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'assignees':</span> <span class="pre">&lt;django.forms.models.ModelMultipleChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'can_order':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;,</span> <span class="pre">'end_date':</span> <span class="pre">&lt;django.forms.fields.DateTimeField</span> <span class="pre">object&gt;,</span> <span class="pre">'max_orders_per_user':</span> <span class="pre">&lt;django.forms.fields.IntegerField</span> <span class="pre">object&gt;,</span> <span class="pre">'max_orders_total':</span> <span class="pre">&lt;django.forms.fields.IntegerField</span> <span class="pre">object&gt;,</span> <span class="pre">'start_date':</span> <span class="pre">&lt;django.forms.fields.DateTimeField</span> <span class="pre">object&gt;,</span> <span class="pre">'venue':</span> <span class="pre">&lt;django.forms.models.ModelChoiceField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#orders.admin.ShiftAdminForm.base_fields" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">base_fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'assignees':</span> <span class="pre">&lt;django.forms.models.ModelMultipleChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'can_order':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;,</span> <span class="pre">'end_date':</span> <span class="pre">&lt;django.forms.fields.DateTimeField</span> <span class="pre">object&gt;,</span> <span class="pre">'finalized':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;,</span> <span class="pre">'max_orders_per_user':</span> <span class="pre">&lt;django.forms.fields.IntegerField</span> <span class="pre">object&gt;,</span> <span class="pre">'max_orders_total':</span> <span class="pre">&lt;django.forms.fields.IntegerField</span> <span class="pre">object&gt;,</span> <span class="pre">'start_date':</span> <span class="pre">&lt;django.forms.fields.DateTimeField</span> <span class="pre">object&gt;,</span> <span class="pre">'venue':</span> <span class="pre">&lt;django.forms.models.ModelChoiceField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#orders.admin.ShiftAdminForm.base_fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -605,7 +605,7 @@
 <dt id="orders.apps.OrdersConfig">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">orders.apps.</span></code><code class="sig-name descname"><span class="pre">OrdersConfig</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_module</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.apps.OrdersConfig" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.apps.config.AppConfig</span></code></p>
-<p>AppConfig for order app.</p>
+<p>AppConfig for orders app.</p>
 <dl class="py attribute">
 <dt id="orders.apps.OrdersConfig.name">
 <code class="sig-name descname"><span class="pre">name</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'orders'</span></em><a class="headerlink" href="#orders.apps.OrdersConfig.name" title="Permalink to this definition">¶</a></dt>
@@ -654,14 +654,6 @@
 <dt id="orders.forms.CreateShiftForm.base_fields">
 <code class="sig-name descname"><span class="pre">base_fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'end_date':</span> <span class="pre">&lt;django.forms.fields.DateTimeField</span> <span class="pre">object&gt;,</span> <span class="pre">'start_date':</span> <span class="pre">&lt;django.forms.fields.DateTimeField</span> <span class="pre">object&gt;,</span> <span class="pre">'venue':</span> <span class="pre">&lt;django.forms.models.ModelChoiceField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#orders.forms.CreateShiftForm.base_fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt id="orders.forms.CreateShiftForm.clean">
-<code class="sig-name descname"><span class="pre">clean</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.forms.CreateShiftForm.clean" title="Permalink to this definition">¶</a></dt>
-<dd><p>Clean the CreateShiftForm.</p>
-<p>Makes sure that the dates in the form are not overlapping with other shifts.
-:return: cleaned data</p>
-</dd></dl>
 
 <dl class="py method">
 <dt id="orders.forms.CreateShiftForm.clean_venue">
@@ -723,7 +715,8 @@ Verifying the amount of allowed orders is done via Shifts.</p>
 <dl class="py method">
 <dt id="orders.models.Order.clean">
 <code class="sig-name descname"><span class="pre">clean</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Order.clean" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check whether this order is valid and can be saved.</p>
+<dd><p>Clean this Order.</p>
+<p>Check if the Shift is already finalized.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -731,6 +724,20 @@ Verifying the amount of allowed orders is done via Shifts.</p>
 <code class="sig-name descname"><span class="pre">created</span></code><a class="headerlink" href="#orders.models.Order.created" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="orders.models.Order.done">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">done</span></code><a class="headerlink" href="#orders.models.Order.done" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if an Order is done.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if this Order is paid and ready, False otherwise</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>boolean</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -993,6 +1000,19 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 </dd></dl>
 
 <dl class="py attribute">
+<dt id="orders.models.OrderVenue.tantalusordervenue">
+<code class="sig-name descname"><span class="pre">tantalusordervenue</span></code><a class="headerlink" href="#orders.models.OrderVenue.tantalusordervenue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the reverse side of a one-to-one
+relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">place</span> <span class="o">=</span> <span class="n">OneToOneField</span><span class="p">(</span><span class="n">Place</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;restaurant&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Place.restaurant</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseOneToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
 <dt id="orders.models.OrderVenue.venue">
 <code class="sig-name descname"><span class="pre">venue</span></code><a class="headerlink" href="#orders.models.OrderVenue.venue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Accessor to the related object on the forward side of a one-to-one relation.</p>
@@ -1127,6 +1147,19 @@ many-to-one relation.</p>
 class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt id="orders.models.Product.tantalusproduct">
+<code class="sig-name descname"><span class="pre">tantalusproduct</span></code><a class="headerlink" href="#orders.models.Product.tantalusproduct" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the reverse side of a one-to-one
+relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">place</span> <span class="o">=</span> <span class="n">OneToOneField</span><span class="p">(</span><span class="n">Place</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;restaurant&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Place.restaurant</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseOneToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt id="orders.models.Product.to_json">
 <code class="sig-name descname"><span class="pre">to_json</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Product.to_json" title="Permalink to this definition">¶</a></dt>
@@ -1243,6 +1276,12 @@ object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="orders.models.Shift.clean">
+<code class="sig-name descname"><span class="pre">clean</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Shift.clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clean a Shift.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="orders.models.Shift.date">
 <em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">date</span></code><a class="headerlink" href="#orders.models.Shift.date" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the date of this object in string format.</p>
@@ -1269,6 +1308,13 @@ object the first time, the query is executed.</p>
 <dd class="field-odd"><p>the end time of this object in string format</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="orders.models.Shift.finalized">
+<code class="sig-name descname"><span class="pre">finalized</span></code><a class="headerlink" href="#orders.models.Shift.finalized" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1368,17 +1414,6 @@ object the first time, the query is executed.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="orders.models.Shift.number_of_restricted_orders">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">number_of_restricted_orders</span></code><a class="headerlink" href="#orders.models.Shift.number_of_restricted_orders" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the total number of restricted orders in this shift.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the total number of restricted orders in this shift</p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py attribute">
 <dt id="orders.models.Shift.objects">
 <code class="sig-name descname"><span class="pre">objects</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#orders.models.Shift.objects" title="Permalink to this definition">¶</a></dt>
@@ -1448,24 +1483,27 @@ class built by <code class="docutils literal notranslate"><span class="pre">crea
 <dl class="py method">
 <dt id="orders.models.Shift.save">
 <code class="sig-name descname"><span class="pre">save</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Shift.save" title="Permalink to this definition">¶</a></dt>
-<dd><p>Save an object of the Shift type.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>args</strong> – arguments</p></li>
-<li><p><strong>kwargs</strong> – keyword arguments</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None, raises a ValueError on error</p>
-</dd>
-</dl>
+<dd><p>Save a Shift.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="orders.models.Shift.save_m2m">
 <code class="sig-name descname"><span class="pre">save_m2m</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Shift.save_m2m" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save assignees m2m.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="orders.models.Shift.shift_done">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">shift_done</span></code><a class="headerlink" href="#orders.models.Shift.shift_done" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if all Orders of this Shift are ready and paid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if all Orders (with the Order type) of this Shift are ready and paid, False otherwise</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>boolean</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
@@ -1486,10 +1524,17 @@ object the first time, the query is executed.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="orders.models.Shift.update_can_order">
-<code class="sig-name descname"><span class="pre">update_can_order</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#orders.models.Shift.update_can_order" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update the can_order field from a shift when an order is placed.</p>
+<dl class="py attribute">
+<dt id="orders.models.Shift.tantalusshiftsynchronization">
+<code class="sig-name descname"><span class="pre">tantalusshiftsynchronization</span></code><a class="headerlink" href="#orders.models.Shift.tantalusshiftsynchronization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the reverse side of a one-to-one
+relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Restaurant</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">place</span> <span class="o">=</span> <span class="n">OneToOneField</span><span class="p">(</span><span class="n">Place</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;restaurant&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Place.restaurant</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseOneToOneDescriptor</span></code> instance.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1617,12 +1662,6 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 <dt id="orders.templatetags.order_now.render_place_order_button">
 <code class="sig-prename descclassname"><span class="pre">orders.templatetags.order_now.</span></code><code class="sig-name descname"><span class="pre">render_place_order_button</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.templatetags.order_now.render_place_order_button" title="Permalink to this definition">¶</a></dt>
 <dd><p>Render order now button.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="orders.templatetags.order_now.render_search_box">
-<code class="sig-prename descclassname"><span class="pre">orders.templatetags.order_now.</span></code><code class="sig-name descname"><span class="pre">render_search_box</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.templatetags.order_now.render_search_box" title="Permalink to this definition">¶</a></dt>
-<dd><p>Render shift scanner for shift.</p>
 </dd></dl>
 
 <span class="target" id="module-orders.templatetags.start_shift"></span><dl class="py function">
@@ -1820,24 +1859,6 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="orders.views.PlaceOrderView.add_orders">
-<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">add_orders</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.PlaceOrderView.add_orders" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add all orders in a list.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>order_list</strong> – a list of product ids</p></li>
-<li><p><strong>shift</strong> – the shift to add the orders to</p></li>
-<li><p><strong>user</strong> – the user for which the orders are</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>True if the addition succeeded, a string with an error message otherwise</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt id="orders.views.PlaceOrderView.get">
 <code class="sig-name descname"><span class="pre">get</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.PlaceOrderView.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>GET request for PlaceOrderView.</p>
@@ -1871,23 +1892,6 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 <dt id="orders.views.PlaceOrderView.permission_required">
 <code class="sig-name descname"><span class="pre">permission_required</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'orders.can_order_in_venue'</span></em><a class="headerlink" href="#orders.views.PlaceOrderView.permission_required" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt id="orders.views.PlaceOrderView.post">
-<code class="sig-name descname"><span class="pre">post</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.views.PlaceOrderView.post" title="Permalink to this definition">¶</a></dt>
-<dd><p>POST request for PlaceOrderView.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>request</strong> – the request</p></li>
-<li><p><strong>kwargs</strong> – keyword arguments</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>creates new orders that are specified in a cart_[shift_number] cookie or returns an error message</p>
-</dd>
-</dl>
-</dd></dl>
 
 <dl class="py attribute">
 <dt id="orders.views.PlaceOrderView.return_403">

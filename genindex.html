@@ -211,8 +211,6 @@
 </li>
       <li><a href="orders.html#orders.models.active_venue_validator">active_venue_validator() (in module orders.models)</a>
 </li>
-      <li><a href="orders.html#orders.views.PlaceOrderView.add_orders">add_orders() (orders.views.PlaceOrderView static method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="thaliedje.html#thaliedje.admin.PlayerAdmin.add_view">add_view() (thaliedje.admin.PlayerAdmin method)</a>
@@ -283,10 +281,10 @@
 </li>
       <li><a href="orders.html#orders.models.Shift.capacity">capacity() (orders.models.Shift property)</a>
 </li>
-      <li><a href="orders.html#orders.forms.CreateShiftForm.clean">clean() (orders.forms.CreateShiftForm method)</a>
+      <li><a href="orders.html#orders.models.Order.clean">clean() (orders.models.Order method)</a>
 
       <ul>
-        <li><a href="orders.html#orders.models.Order.clean">(orders.models.Order method)</a>
+        <li><a href="orders.html#orders.models.Shift.clean">(orders.models.Shift method)</a>
 </li>
       </ul></li>
       <li><a href="orders.html#orders.admin.ProductAdmin.clean_barcode">clean_barcode() (orders.admin.ProductAdmin method)</a>
@@ -367,6 +365,8 @@
 </li>
       <li><a href="tosti.html#tosti.views.DocumentationView">DocumentationView (class in tosti.views)</a>
 </li>
+      <li><a href="orders.html#orders.models.Order.done">done() (orders.models.Order property)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -421,6 +421,8 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="orders.html#orders.models.Shift.finalized">finalized (orders.models.Shift attribute)</a>
+</li>
       <li><a href="orders.html#orders.admin.OrderAdmin.form">form (orders.admin.OrderAdmin attribute)</a>
 
       <ul>
@@ -866,8 +868,6 @@
 </li>
       <li><a href="orders.html#orders.models.Shift.number_of_orders">number_of_orders() (orders.models.Shift property)</a>
 </li>
-      <li><a href="orders.html#orders.models.Shift.number_of_restricted_orders">number_of_restricted_orders() (orders.models.Shift property)</a>
-</li>
   </ul></td>
 </tr></table>
 
@@ -1060,8 +1060,6 @@
       <ul>
         <li><a href="orders.html#orders.views.JoinShiftView.post">(orders.views.JoinShiftView method)</a>
 </li>
-        <li><a href="orders.html#orders.views.PlaceOrderView.post">(orders.views.PlaceOrderView method)</a>
-</li>
         <li><a href="users.html#users.views.AccountView.post">(users.views.AccountView method)</a>
 </li>
         <li><a href="users.html#users.views.LoginView.post">(users.views.LoginView method)</a>
@@ -1151,15 +1149,13 @@
 </li>
       <li><a href="orders.html#orders.templatetags.order_now.render_order_now_buttons_can_order">render_order_now_buttons_can_order() (in module orders.templatetags.order_now)</a>
 </li>
-      <li><a href="orders.html#orders.templatetags.order_now.render_order_now_buttons_venues">render_order_now_buttons_venues() (in module orders.templatetags.order_now)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="orders.html#orders.templatetags.order_now.render_order_now_buttons_venues">render_order_now_buttons_venues() (in module orders.templatetags.order_now)</a>
+</li>
       <li><a href="orders.html#orders.views.render_ordered_items_tab">render_ordered_items_tab() (in module orders.views)</a>
 </li>
       <li><a href="orders.html#orders.templatetags.order_now.render_place_order_button">render_place_order_button() (in module orders.templatetags.order_now)</a>
-</li>
-      <li><a href="orders.html#orders.templatetags.order_now.render_search_box">render_search_box() (in module orders.templatetags.order_now)</a>
 </li>
       <li><a href="orders.html#orders.templatetags.start_shift.render_start_shift_buttons">render_start_shift_buttons() (in module orders.templatetags.start_shift)</a>
 </li>
@@ -1233,6 +1229,8 @@
 </li>
       <li><a href="orders.html#orders.models.Shift.MultipleObjectsReturned">Shift.MultipleObjectsReturned</a>
 </li>
+      <li><a href="orders.html#orders.models.Shift.shift_done">shift_done() (orders.models.Shift property)</a>
+</li>
       <li><a href="orders.html#orders.models.Order.shift_id">shift_id (orders.models.Order attribute)</a>
 </li>
       <li><a href="users.html#users.models.User.shift_set">shift_set (users.models.User attribute)</a>
@@ -1287,6 +1285,12 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="orders.html#orders.models.OrderVenue.tantalusordervenue">tantalusordervenue (orders.models.OrderVenue attribute)</a>
+</li>
+      <li><a href="orders.html#orders.models.Product.tantalusproduct">tantalusproduct (orders.models.Product attribute)</a>
+</li>
+      <li><a href="orders.html#orders.models.Shift.tantalusshiftsynchronization">tantalusshiftsynchronization (orders.models.Shift attribute)</a>
+</li>
       <li><a href="orders.html#orders.views.AdminExplainerView.template_name">template_name (orders.views.AdminExplainerView attribute)</a>
 
       <ul>
@@ -1358,6 +1362,8 @@
         <li><a href="thaliedje.html#module-thaliedje.models">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     thaliedje.urls
 
@@ -1365,8 +1371,6 @@
         <li><a href="thaliedje.html#module-thaliedje.urls">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     thaliedje.views
 
@@ -1451,8 +1455,6 @@
 <h2 id="U">U</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="orders.html#orders.models.Shift.update_can_order">update_can_order() (orders.models.Shift method)</a>
-</li>
       <li><a href="users.html#users.models.User">User (class in users.models)</a>
 </li>
       <li><a href="orders.html#orders.models.Order.user">user (orders.models.Order attribute)</a>
