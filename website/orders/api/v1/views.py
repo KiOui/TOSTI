@@ -369,7 +369,8 @@ class ShiftFinalizeAPIView(APIView):
 
     schema = CustomAutoSchema(response_schema={"$ref": "#/components/schemas/Shift"})
     permission_required = "orders.can_manage_shift_in_venue"
-    permission_classes = [HasPermissionOnObject, IsOnBakersList]
+    permission_classes = [HasPermissionOnObject, IsOnBakersList, IsAuthenticatedOrTokenHasScope]
+    required_scopes = ["orders:manage"]
 
     def get_shift(self):
         """Get Shift."""

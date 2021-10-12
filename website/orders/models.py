@@ -694,8 +694,6 @@ class Order(models.Model):
         Clean this Order.
 
         Check if the Shift is already finalized.
-        :return:
-        :rtype:
         """
         super().clean()
         if self.shift.finalized:
