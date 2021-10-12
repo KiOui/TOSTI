@@ -2,6 +2,10 @@
 let update_timer = null;
 let update_list = [];
 
+function show_error_from_api(data) {
+    toastr.error(data.detail);
+}
+
 function create_element(tag_name, class_list, text) {
     let element = document.createElement(tag_name);
     for (let i = 0; i < class_list.length; i++) {
@@ -95,7 +99,7 @@ function post_and_callback_with_error(data_url, data, callback, callback_error/*
     )
 }
 
-function patch(data_url, data, callback/*, args */) {
+function patch(data_url, data, callback, callback_error/*, args */) {
     let args = Array.prototype.slice.call(arguments, 3);
     jQuery(function($) {
         let headers = {"X-CSRFToken": get_csrf_token()};
@@ -103,9 +107,10 @@ function patch(data_url, data, callback/*, args */) {
             function(data) {
                 args.unshift(data);
                 callback.apply(this, args);
-            }}).fail(function() {
-                console.error("Error")
-            });
+            }, error: function(data) {
+                args.unshift(data.responseJSON);
+                callback_error.apply(this, args);
+            }});
         }
     )
 }

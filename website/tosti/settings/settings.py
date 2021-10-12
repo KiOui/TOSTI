@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "users",
     "venues",
     "thaliedje",
+    "tantalus",
     "orders",
     "associations",
     "oauth2_provider",
@@ -180,3 +181,8 @@ OPENID_USERNAME_PREFIX = "http://openid.science.ru.nl/"
 OPENID_USERNAME_POSTFIX = "/"
 
 SPOTIFY_CACHE_PATH = os.path.join(BASE_DIR, "cache")  # noqa
+
+# Tantalus settings
+TANTALUS_ENDPOINT_URL = "http://localhost:8080/poscl/"
+TANTALUS_USERNAME = "admin"
+TANTALUS_PASSWORD = "AdminAdmin"
