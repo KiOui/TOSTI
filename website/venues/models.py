@@ -11,7 +11,7 @@ class Venue(models.Model):
     """Venue model class."""
 
     name = models.CharField(max_length=50, unique=True)
-    slug = models.SlugField(unique=True, max_length=100, auto_created=True)
+    slug = models.SlugField(unique=True, max_length=100)
     active = models.BooleanField(default=True)
     color_in_calendar = models.CharField(
         max_length=50, help_text="Color of reservations shown in calendar.", null=True, blank=True
