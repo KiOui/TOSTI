@@ -37,17 +37,6 @@ class OpenAPISchemaGenerator(SchemaGenerator):
         return schema
 
 
-class OAuthAutoSchema(AutoSchema):
-    """OAuth Schema."""
-
-    def get_operation(self, path, method):
-        """Get operation."""
-        operation = super().get_operation(path, method)
-        if self.view and hasattr(self.view, "required_scopes"):
-            operation["security"] = {"oauth2": self.view.required_scopes}
-        return operation
-
-
 class CustomAutoSchema(AutoSchema):
     """
     Custom Auto Schema.
@@ -84,6 +73,12 @@ class CustomAutoSchema(AutoSchema):
         op = super().get_operation(path, method)
         for manual_field in self.manual_operations:
             op["parameters"].append(manual_field)
+
+        if self.view and hasattr(self.view, "required_scopes"):
+            op["security"] = {"oauth2": self.view.required_scopes}
+        elif self.view and hasattr(self.view, "required_scopes_for_method"):
+            op["security"] = {"oauth2": self.view.required_scopes_for_method[method]}
+
         return op
 
     def get_request_body(self, path, method):

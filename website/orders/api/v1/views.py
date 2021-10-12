@@ -2,6 +2,7 @@ import datetime
 
 import pytz
 from django.db.models import Q
+from oauth2_provider.contrib.rest_framework import IsAuthenticatedOrTokenHasScope
 from rest_framework import status
 from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework.exceptions import PermissionDenied, ParseError, ValidationError as RestValidationError
@@ -22,7 +23,7 @@ from orders.models import Order, Shift, Product
 from orders.services import Cart, increase_shift_time, increase_shift_capacity, add_user_orders
 from tosti import settings
 from tosti.api.openapi import CustomAutoSchema
-from tosti.api.permissions import HasPermissionOnObject
+from tosti.api.permissions import HasPermissionOnObject, IsAuthenticatedOrTokenHasScopeForMethod
 
 
 class CartOrderAPIView(APIView):
@@ -39,7 +40,8 @@ class CartOrderAPIView(APIView):
         request_schema={"type": "object", "properties": {"cart": {"type": "array", "example": "[1,2,3]"}}}
     )
     permission_required = "orders.can_order_in_venue"
-    permission_classes = [HasPermissionOnObject]
+    permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
+    required_scopes = ["orders:order"]
 
     def get_permission_object(self):
         """Get the object to check permissions for."""
@@ -95,7 +97,11 @@ class OrderListCreateAPIView(ListCreateAPIView):
 
     serializer_class = OrderSerializer
     permission_required = "orders.can_order_in_venue"
-    permission_classes = [HasPermissionOnObject]
+    permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScopeForMethod]
+    required_scopes_for_method = {
+        "GET": ["orders:order"],
+        "POST": ["orders:manage"],
+    }
     queryset = Order.objects.all()
 
     def get_queryset(self):
@@ -152,7 +158,12 @@ class OrderRetrieveDestroyAPIView(RetrieveDestroyAPIView):
 
     serializer_class = OrderSerializer
     permission_required = "orders.can_order_in_venue"
-    permission_classes = [HasPermissionOnObject]
+    permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScopeForMethod]
+    required_scopes_for_method = {
+        "GET": ["orders:order"],
+        "DELETE": ["orders:manage"],
+    }
+
     queryset = Order.objects.all()
 
     def destroy(self, request, *args, **kwargs):
@@ -184,6 +195,11 @@ class ShiftListCreateAPIView(ListCreateAPIView):
 
     serializer_class = ShiftSerializer
     queryset = Shift.objects.all()
+    permission_classes = [IsAuthenticatedOrTokenHasScopeForMethod]
+    required_scopes_for_method = {
+        "GET": ["orders:order"],
+        "POST": ["orders:manage"],
+    }
 
     def get_queryset(self):
         """Get the queryset."""
@@ -223,6 +239,12 @@ class ShiftRetrieveUpdateAPIView(RetrieveUpdateAPIView):
 
     serializer_class = ShiftSerializer
     queryset = Shift.objects.all()
+    permission_classes = [IsAuthenticatedOrTokenHasScopeForMethod]
+    required_scopes_for_method = {
+        "GET": ["orders:order"],
+        "PUT": ["orders:manage"],
+        "PATCH": ["orders:manage"],
+    }
 
     def update(self, request, *args, **kwargs):
         """
@@ -256,6 +278,8 @@ class ProductListAPIView(ListAPIView):
 
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
+    permission_classes = [IsAuthenticatedOrTokenHasScope]
+    required_scopes = ["read"]
 
     def get_queryset(self):
         """Get the queryset."""
@@ -270,7 +294,8 @@ class ShiftAddTimeAPIView(APIView):
         response_schema={"$ref": "#/components/schemas/Shift"},
     )
     permission_required = "orders.can_manage_shift_in_venue"
-    permission_classes = [HasPermissionOnObject, IsOnBakersList]
+    permission_classes = [HasPermissionOnObject, IsOnBakersList, IsAuthenticatedOrTokenHasScope]
+    required_scopes = ["orders:manage"]
 
     def get_shift(self):
         """Get Shift."""
@@ -286,6 +311,8 @@ class ShiftAddTimeAPIView(APIView):
         Shift Add Time API View.
 
         Permission required: orders.can_manage_shift_in_venue and user must be in shift assignees
+
+        Scopes required: `orders:manage`
 
         API endpoint for adding an amount of minutes to the end of a Shift.
         Optionally a "minutes" PATCH parameter can be set indicating with how many minutes the time should be extended.
@@ -307,7 +334,8 @@ class ShiftAddCapacityAPIView(APIView):
         response_schema={"$ref": "#/components/schemas/Shift"},
     )
     permission_required = "orders.can_manage_shift_in_venue"
-    permission_classes = [HasPermissionOnObject, IsOnBakersList]
+    permission_classes = [HasPermissionOnObject, IsOnBakersList, IsAuthenticatedOrTokenHasScope]
+    required_scopes = ["orders:manage"]
 
     def get_shift(self):
         """Get Shift."""
@@ -380,7 +408,8 @@ class ProductSearchAPIView(APIView):
         response_schema={"type": "array", "items": {"$ref": "#/components/schemas/Product"}},
     )
     permission_required = "orders.can_manage_shift_in_venue"
-    permission_classes = [HasPermissionOnObject, IsOnBakersList]
+    permission_classes = [HasPermissionOnObject, IsOnBakersList, IsAuthenticatedOrTokenHasScope]
+    required_scopes = ["orders:manage"]
 
     def get_shift(self):
         """Get Shift."""
@@ -424,7 +453,8 @@ class ShiftScannerAPIView(APIView):
         response_schema={"$ref": "#/components/schemas/Order"},
     )
     permission_required = "orders.can_manage_shift_in_venue"
-    permission_classes = [HasPermissionOnObject, IsOnBakersList]
+    permission_classes = [HasPermissionOnObject, IsOnBakersList, IsAuthenticatedOrTokenHasScope]
+    required_scopes = ["orders:manage"]
 
     def get_shift(self):
         """Get Shift."""
@@ -462,7 +492,8 @@ class OrderTogglePaidAPIView(APIView):
     serializer_class = OrderSerializer
     schema = CustomAutoSchema(response_schema={"$ref": "#/components/schemas/Order"})
     permission_required = "orders.can_manage_shift_in_venue"
-    permission_classes = [HasPermissionOnObject, IsOnBakersList]
+    permission_classes = [HasPermissionOnObject, IsOnBakersList, IsAuthenticatedOrTokenHasScope]
+    required_scopes = ["orders:manage"]
 
     def get_shift(self):
         """Get Shift."""
@@ -501,7 +532,8 @@ class OrderToggleReadyAPIView(APIView):
     serializer_class = OrderSerializer
     schema = CustomAutoSchema(response_schema={"$ref": "#/components/schemas/Order"})
     permission_required = "orders.can_manage_shift_in_venue"
-    permission_classes = [HasPermissionOnObject, IsOnBakersList]
+    permission_classes = [HasPermissionOnObject, IsOnBakersList, IsAuthenticatedOrTokenHasScope]
+    required_scopes = ["orders:manage"]
 
     def get_shift(self):
         """Get Shift."""
@@ -540,7 +572,8 @@ class JoinShiftAPIView(APIView):
     serializer_class = ShiftSerializer
     schema = CustomAutoSchema(response_schema={"$ref": "#/components/schemas/Shift"})
     permission_required = "orders.can_manage_shift_in_venue"
-    permission_classes = [HasPermissionOnObject]
+    permission_classes = [HasPermissionOnObject, IsOnBakersList, IsAuthenticatedOrTokenHasScope]
+    required_scopes = ["orders:manage"]
 
     def get_permission_object(self):
         """Get the object to check permissions for."""
