@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.db import models
 
 from associations.models import Association
@@ -10,6 +11,7 @@ class Venue(models.Model):
     """Venue model class."""
 
     name = models.CharField(max_length=50, unique=True)
+    slug = models.SlugField(unique=True, max_length=100, auto_created=True)
     active = models.BooleanField(default=True)
     color_in_calendar = models.CharField(
         max_length=50, help_text="Color of reservations shown in calendar.", null=True, blank=True
@@ -44,11 +46,10 @@ class Reservation(models.Model):
     comment = models.TextField(null=True, blank=True)
 
     def clean(self):
-        """Save model."""
-        if self.end_time <= self.start_time:
-            raise ValueError("End date cannot be before start date.")
-
+        """Clean model."""
         super(Reservation, self).clean()
+        if self.end_time is not None and self.start_time is not None and self.end_time <= self.start_time:
+            raise ValidationError({"end_time": "End date cannot be before start date."})
 
     def __str__(self):
         """Convert this object to string."""

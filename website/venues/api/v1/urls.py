@@ -5,9 +5,9 @@ from venues.api.v1.views import (
     ReservationListAPIView,
     VenueReservationListAPIView,
 )
-from venues.converters import VenueConverter
+from venues.converters import VenuePkConverter
 
-register_converter(VenueConverter, "venue")
+register_converter(VenuePkConverter, "venue")
 
 urlpatterns = [
     path("", VenueListAPIView.as_view(), name="venue_list"),

@@ -1,5 +1,5 @@
 {% extends 'tosti/base.html' %}
-{% load static venue_cards calendar %}
+{% load static venue_cards %}
 
 {% block page %}
     <div class="container mt-5 mb-5 text-center">
@@ -10,8 +10,5 @@
         <div class="card-deck justify-content-center">
             {% render_venue_cards_venues %}
         </div>
-    </div>
-    <div class="container">
-        {% render_calendar %}
     </div>
 {% endblock %}

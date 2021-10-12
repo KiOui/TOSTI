@@ -9,6 +9,7 @@ urlpatterns = [
     path("", include("orders.api.v1.urls")),
     path("thaliedje/", include("thaliedje.api.v1.urls")),
     path("venues/", include("venues.api.v1.urls")),
+    path("associations/", include("associations.api.v1.urls")),
     path(
         "schema",
         get_schema_view(

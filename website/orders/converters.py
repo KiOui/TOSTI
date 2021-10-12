@@ -1,5 +1,6 @@
-from django.urls.converters import IntConverter
+from django.urls.converters import IntConverter, SlugConverter
 
+from venues.models import Venue
 from .models import Shift, Order, OrderVenue
 
 
@@ -28,29 +29,29 @@ class ShiftConverter(IntConverter):
         return str(obj.pk)
 
 
-class VenueConverter(IntConverter):
-    """Converter for Venue model."""
+class OrderVenueConverter(SlugConverter):
+    """Converter for OrderVenue model."""
 
     def to_python(self, value):
         """
-        Cast integer to Venue.
+        Cast integer to OrderVenue.
 
-        :param value: the public key of the Venue
-        :return: a Venue or ValueError
+        :param value: the slug of the Venue
+        :return: a OrderVenue or ValueError
         """
         try:
-            return OrderVenue.objects.get(pk=int(value))
+            return OrderVenue.objects.get(venue=Venue.objects.get(slug=value))
         except OrderVenue.DoesNotExist:
             raise ValueError
 
     def to_url(self, obj):
         """
-        Cast an object of Venue to a string.
+        Cast an object of OrderVenue to a string.
 
-        :param obj: the Venue object
-        :return: the public key of the Venue object in string format
+        :param obj: the OrderVenue object
+        :return: the slug of the OrderVenue object
         """
-        return str(obj.pk)
+        return obj.venue.slug
 
 
 class OrderConverter(IntConverter):

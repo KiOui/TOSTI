@@ -511,7 +511,7 @@ class Shift(models.Model):
         :return: True if all Orders (with the Order type) of this Shift are ready and paid, False otherwise
         :rtype: boolean
         """
-        return False not in [x.done for x in self.orders_sorted_staff_first if x.type != Order.TYPE_SCANNED]
+        return False not in [x.done for x in self.orders.exclude(type=Order.TYPE_SCANNED)]
 
     def _clean(self):
         """

@@ -1,10 +1,10 @@
 from django.urls import path, register_converter
 
 from orders import views
-from .converters import ShiftConverter, VenueConverter, OrderConverter
+from .converters import ShiftConverter, OrderVenueConverter, OrderConverter
 
 register_converter(ShiftConverter, "shift")
-register_converter(VenueConverter, "venue")
+register_converter(OrderVenueConverter, "venue")
 register_converter(OrderConverter, "order")
 
 urlpatterns = [
