@@ -4,6 +4,7 @@
     "pk": 1,
     "fields": {
         "name": "Noordkantine",
+        "slug": "noordkantine",
         "active": true
     }
 },
@@ -12,6 +13,7 @@
     "pk": 2,
     "fields": {
         "name": "Zuidkantine",
+        "slug": "zuidkantine",
         "active": true
     }
 },

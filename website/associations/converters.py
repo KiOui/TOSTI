@@ -10,7 +10,7 @@ class AssociationConverter(IntConverter):
         """
         Cast integer to Association.
 
-        :param value: the public key of the Association
+        :param value: the primary key of the Association
         :return: a Association or ValueError
         """
         try:
@@ -23,6 +23,6 @@ class AssociationConverter(IntConverter):
         Cast an object of Association to a string.
 
         :param obj: the Association object
-        :return: the public key of the Association object in string format
+        :return: the primary key of the Association object in string format
         """
         return str(obj.pk)
