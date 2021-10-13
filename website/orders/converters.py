@@ -40,7 +40,7 @@ class OrderVenueConverter(SlugConverter):
         :return: a OrderVenue or ValueError
         """
         try:
-            return OrderVenue.objects.get(venue=Venue.objects.get(slug=value))
+            return OrderVenue.objects.get(venue__slug=value)
         except OrderVenue.DoesNotExist:
             raise ValueError
 
