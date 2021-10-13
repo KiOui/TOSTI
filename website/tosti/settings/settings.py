@@ -41,9 +41,10 @@ INSTALLED_APPS = [
     'rest_framework',
     "users",
     "venues",
+    "associations",
     "thaliedje",
     "orders",
-    "associations",
+    "tantalus",
     "oauth2_provider",
     "corsheaders",
 ]
@@ -79,6 +80,7 @@ REST_FRAMEWORK = {
     ),
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.URLPathVersioning",
+    'DEFAULT_SCHEMA_CLASS': 'tosti.api.openapi.CustomAutoSchema',
 }
 
 
@@ -92,6 +94,10 @@ OAUTH2_PROVIDER = {
     "SCOPES": {
         "read": "Authenticated read access to the website",
         "write": "Authenticated write access to the website",
+        "orders:order": "Place orders on your behalf",
+        "orders:manage": "Manage orders on your behalf",
+        "thaliedje:request": "Request songs on your behalf",
+        "thaliedje:manage": "Manage music players on your behalf",
     },
 }
 
@@ -175,3 +181,8 @@ OPENID_USERNAME_PREFIX = "http://openid.science.ru.nl/"
 OPENID_USERNAME_POSTFIX = "/"
 
 SPOTIFY_CACHE_PATH = os.path.join(BASE_DIR, "cache")  # noqa
+
+# Tantalus settings
+TANTALUS_ENDPOINT_URL = "http://localhost:8080/poscl/"
+TANTALUS_USERNAME = "admin"
+TANTALUS_PASSWORD = "AdminAdmin"

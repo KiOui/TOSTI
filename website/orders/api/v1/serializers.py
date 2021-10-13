@@ -3,7 +3,7 @@ from rest_framework import serializers
 from orders import models
 from orders.exceptions import OrderException
 from orders.models import Order, Product
-from orders.services import add_order
+from orders.services import add_user_order, add_scanned_order
 from users.api.v1.serializers import UserRelatedField, UserSerializer
 
 
@@ -67,16 +67,10 @@ class OrderSerializer(serializers.ModelSerializer):
         :return: an Order if the Order could be successfully added, a ValidationError otherwise
         """
         try:
-            return add_order(
-                validated_data["product_id"],
-                validated_data["shift"],
-                validated_data["type"],
-                user=None if validated_data["type"] == Order.TYPE_SCANNED else validated_data["user"],
-                paid=validated_data["type"] == Order.TYPE_SCANNED,
-                ready=validated_data["type"] == Order.TYPE_SCANNED,
-                force=False,
-                dry=False,
-            )
+            if validated_data["type"] == Order.TYPE_ORDERED:
+                return add_user_order(validated_data["product_id"], validated_data["shift"], validated_data["user"])
+            else:
+                return add_scanned_order(validated_data["product_id"], validated_data["shift"])
         except OrderException as e:
             raise serializers.ValidationError({"detail": e.__str__()})
 
@@ -109,7 +103,7 @@ class ShiftSerializer(serializers.ModelSerializer):
 
     def get_amount_of_orders(self, instance):
         """Get the amount of orders in the shift."""
-        return instance.number_of_orders
+        return instance.orders.filter(type=Order.TYPE_ORDERED).count()
 
     def get_max_user_orders(self, instance):
         """Get the max orders a user can still place in the shift."""
@@ -147,10 +141,12 @@ class ShiftSerializer(serializers.ModelSerializer):
             "start_date",
             "end_date",
             "can_order",
+            "is_active",
+            "finalized",
             "amount_of_orders",
             "max_orders_per_user",
             "max_orders_total",
             "max_user_orders",
             "assignees",
         ]
-        read_only_fields = ["id", "amount_of_orders", "max_user_orders"]
+        read_only_fields = ["id", "is_active", "finalized", "amount_of_orders", "max_user_orders"]

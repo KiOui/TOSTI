@@ -1,16 +1,12 @@
-import json
-
 from django.core.paginator import Paginator
 from django.template.loader import render_to_string
 from django.views.generic import TemplateView
 from guardian.mixins import PermissionRequiredMixin
 
 from orders import services
-from orders.exceptions import OrderException
 from django.shortcuts import render, redirect
-from .models import Product, Order
+from .models import Order
 from .forms import CreateShiftForm
-import urllib.parse
 
 
 class ShiftOverviewView(PermissionRequiredMixin, TemplateView):
@@ -203,28 +199,6 @@ class PlaceOrderView(PermissionRequiredMixin, TemplateView):
     return_403 = True
     accept_global_perms = True
 
-    @staticmethod
-    def add_orders(order_list, shift, user):
-        """
-        Add all orders in a list.
-
-        :param order_list: a list of product ids
-        :param shift: the shift to add the orders to
-        :param user: the user for which the orders are
-        :return: True if the addition succeeded, a string with an error message otherwise
-        """
-        product_list = []
-        for product_id in order_list:
-            try:
-                product_list.append(Product.objects.get(pk=product_id, available=True, orderable=True))
-            except (Product.DoesNotExist, ValueError):
-                return "That product does not exist"
-        try:
-            services.place_orders(product_list, user, shift)
-        except OrderException as err:
-            return str(err)
-        return True
-
     def get(self, request, **kwargs):
         """
         GET request for PlaceOrderView.
@@ -239,44 +213,8 @@ class PlaceOrderView(PermissionRequiredMixin, TemplateView):
         return render(
             request,
             self.template_name,
-            {"shift": shift, "already_ordered": services.has_already_ordered_in_shift(request.user, shift)},
+            {"shift": shift},
         )
-
-    def post(self, request, **kwargs):
-        """
-        POST request for PlaceOrderView.
-
-        :param request: the request
-        :param kwargs: keyword arguments
-        :return: creates new orders that are specified in a cart_[shift_number] cookie or returns an error message
-        """
-        shift = kwargs.get("shift")
-        cookie = request.COOKIES.get("cart_{}".format(shift.pk), None)
-        if cookie is None:
-            return render(
-                request,
-                self.template_name,
-                {"shift": shift, "error": "No orders submitted"},
-            )
-        cookie = urllib.parse.unquote(cookie)
-        try:
-            cookie = json.loads(cookie)
-        except json.JSONDecodeError:
-            page = render(
-                request,
-                self.template_name,
-                {"shift": shift, "error": "Error decoding cookie"},
-            )
-            page.delete_cookie("cart_{}".format(shift.pk))
-            return page
-
-        error_msg = self.add_orders(cookie, shift, request.user)
-        if isinstance(error_msg, str):
-            return render(request, self.template_name, {"shift": shift, "error": error_msg})
-        else:
-            response = redirect("orders:shift_overview", shift=shift)
-            response.delete_cookie("cart_{}".format(shift.pk))
-            return response
 
     def get_permission_object(self):
         """Get the object to check permissions for."""

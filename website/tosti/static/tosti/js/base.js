@@ -2,6 +2,22 @@
 let update_timer = null;
 let update_list = [];
 
+function show_error_from_api(data) {
+    if  (data) {
+        if (data.responseJSON) {
+            if (data.responseJSON.detail) {
+                toastr.error(data.responseJSON.detail);
+                return;
+            }
+        }
+        if (data.status && data.statusText) {
+            toastr.error(`An error occurred! ${data.statusText} (status code ${data.status}).`);
+            return;
+        }
+    }
+    toasr.error("An unknown exception occurred");
+}
+
 function create_element(tag_name, class_list, text) {
     let element = document.createElement(tag_name);
     for (let i = 0; i < class_list.length; i++) {
@@ -88,14 +104,14 @@ function post_and_callback_with_error(data_url, data, callback, callback_error/*
                 args.unshift(data);
                 callback.apply(this, args);
             }, error: function(data) {
-                args.unshift(data.responseJSON);
+                args.unshift(data);
                 callback_error.apply(this, args);
             }});
         }
     )
 }
 
-function patch(data_url, data, callback/*, args */) {
+function patch(data_url, data, callback, callback_error/*, args */) {
     let args = Array.prototype.slice.call(arguments, 3);
     jQuery(function($) {
         let headers = {"X-CSRFToken": get_csrf_token()};
@@ -103,9 +119,10 @@ function patch(data_url, data, callback/*, args */) {
             function(data) {
                 args.unshift(data);
                 callback.apply(this, args);
-            }}).fail(function() {
-                console.error("Error")
-            });
+            }, error: function(data) {
+                args.unshift(data);
+                callback_error.apply(this, args);
+            }});
         }
     )
 }

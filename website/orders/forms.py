@@ -30,31 +30,6 @@ class CreateShiftForm(forms.ModelForm):
         if now >= get_default_end_time_shift() or now <= get_default_start_time_shift() - timedelta(minutes=30):
             self.fields["end_date"].initial = start_time + timedelta(hours=1)
 
-    def clean(self):
-        """
-        Clean the CreateShiftForm.
-
-        Makes sure that the dates in the form are not overlapping with other shifts.
-        :return: cleaned data
-        """
-        cleaned_data = super(CreateShiftForm, self).clean()
-        start_date = cleaned_data.get("start_date")
-        end_date = cleaned_data.get("end_date")
-        venue = cleaned_data.get("venue")
-        overlapping_start = Shift.objects.filter(
-            start_date__gte=start_date,
-            start_date__lte=end_date,
-            venue=venue,
-        ).count()
-        overlapping_end = Shift.objects.filter(
-            end_date__gte=start_date,
-            end_date__lte=end_date,
-            venue=venue,
-        ).count()
-        if overlapping_start > 0 or overlapping_end > 0:
-            raise forms.ValidationError("Overlapping shifts for the same venue are not allowed.")
-        return cleaned_data
-
     def clean_venue(self):
         """Check whether venue is has an accepted value."""
         venue = self.cleaned_data["venue"]

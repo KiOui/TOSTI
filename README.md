@@ -72,15 +72,15 @@ Additionally, the following variables can be set in settings to change the behav
 - `OPENID_USERNAME_PREFIX`: a prefix to prepend to the username users enter when starting authentication
 - `OPENID_USERNAME_POSTFIX`: a postfix to append to the username users enter when starting authentication
 
-### Marietje
+### Thaliedje
 
-This module is used to connect a Spotify player to venues. A SpotifyAccount object can be configured and connected to a venue. This enables users of TOSTI to control and listen to music from Spotify. The main features of the Marietje module are:
+This module is used to connect a Spotify player to venues. A SpotifyAccount object can be configured and connected to a venue. This enables users of TOSTI to control and listen to music from Spotify. The main features of the Thaliedje module are:
 
 - Connecting a Spotify account to TOSTI
 - Showing the currently playing song
 - Controlling the queue and controls for play/pausing the song and skipping/reverting a track
 
-The Marietje module makes use of the [Spotify API](https://developer.spotify.com) via the [spotipy library](https://spotipy.readthedocs.io/en/2.12.0/). There are three stages in configuring Marietje for playback controls:
+The Thaliedje module makes use of the [Spotify API](https://developer.spotify.com) via the [spotipy library](https://spotipy.readthedocs.io/en/2.12.0/). There are three stages in configuring Thaliedje for playback controls:
 
 1. Adding a Spotify account to TOSTI
 
@@ -90,13 +90,23 @@ Note that the spotipy library makes use of its own caching system to cache the S
 
 2. Configuring a Spotify account
 
-A Spotify account can be configured after setting it up. Two things need to be changed before a venue is shown with a music player on the Marietje overview page:
+A Spotify account can be configured after setting it up. Two things need to be changed before a venue is shown with a music player on the Thaliedje overview page:
 
 - Set a venue
 - Set a playback device
 
-Setting a venue is easy, just select the venue from the dropdown list and it will be connected to the Spotify account you are configuring. Setting a playback device is a little more difficult as now is the time where you need to start up a Spotify client on a computer system connected to the internet. Note that after setting a playback device, the device must stay on and the Spotify client must remain open, otherwise the pages corresponding to the Spotify account will throw a server error (500) as the playback device can not be found. If the playback device is not displayed within the list, refresh the configuration page and try again. After setting a playback device and venue, a spotify player is shown at `/Marietje/index`.
+Setting a venue is easy, just select the venue from the dropdown list and it will be connected to the Spotify account you are configuring. Setting a playback device is a little more difficult as now is the time where you need to start up a Spotify client on a computer system connected to the internet. Note that after setting a playback device, the device must stay on and the Spotify client must remain open, otherwise the pages corresponding to the Spotify account will throw a server error (500) as the playback device can not be found. If the playback device is not displayed within the list, refresh the configuration page and try again. After setting a playback device and venue, a spotify player is shown at `/thaliedje/index`.
 
 3. Using the playback functions
 
-If everything went well, a Spotify player is displayed on the `/Marietje/index` page. Administrators are able to play/pause and skip or revert songs, normal users are not. If you open the Spotify player, a search view is displayed and the recent items added to the queue. The search view can be used to search tracks on Spotify. The queue displays only tracks added via Marietje, as there is currently no way to request the queue from a Spotify playback device.
+If everything went well, a Spotify player is displayed on the `/thaliedje/index` page. Administrators are able to play/pause and skip or revert songs, normal users are not. If you open the Spotify player, a search view is displayed and the recent items added to the queue. The search view can be used to search tracks on Spotify. The queue displays only tracks added via Thaliedje, as there is currently no way to request the queue from a Spotify playback device.
+
+### Tantalus
+
+The `tantalus` module is used to synchronize Orders to a [Tantalus](https://github.com/thijsmie/tantalus) instance. The following (Docker environment) settings must be set in order for synchronization to work:
+
+- `TANTALUS_ENDPOINT_URL`: the endpoint of the Tantalus client, usually ending with `/poscl/`
+- `TANTALUS_USERNAME`: the username of the account that is used to log into Tantalus
+- `TANTALUS_PASSWORD`: the password of the account that is used to log into Tantalus
+
+Order registration will happen once a `Shift` is made finalized for all `Product` objects with a registered `TantalusProduct` object and if the `OrderVenue` of the `Shift` has a registered `TantalusOrderVenue`  (and thus Tantalus endpoint).
