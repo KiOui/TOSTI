@@ -1419,17 +1419,6 @@ object the first time, the query is executed.</p>
 <code class="sig-name descname"><span class="pre">objects</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#orders.models.Shift.objects" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="orders.models.Shift.ordered_orders">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">ordered_orders</span></code><a class="headerlink" href="#orders.models.Shift.ordered_orders" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the orders with type Ordered of this shift.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>a chain object with the ordered orders of this shift.</p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py attribute">
 <dt id="orders.models.Shift.orders">
 <code class="sig-name descname"><span class="pre">orders</span></code><a class="headerlink" href="#orders.models.Shift.orders" title="Permalink to this definition">¶</a></dt>
@@ -1443,6 +1432,28 @@ many-to-one relation.</p>
 <p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
 <p>Most of the implementation is delegated to a dynamically defined manager
 class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="orders.models.Shift.orders_ordered_type_only">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">orders_ordered_type_only</span></code><a class="headerlink" href="#orders.models.Shift.orders_ordered_type_only" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the orders with type Ordered of this shift.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a chain object with the ordered orders of this shift.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="orders.models.Shift.orders_sorted_staff_first">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">orders_sorted_staff_first</span></code><a class="headerlink" href="#orders.models.Shift.orders_sorted_staff_first" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the orders of this shift with the staff orders first.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a chain object with all the orders of this shift.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1666,7 +1677,7 @@ one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
 
 <span class="target" id="module-orders.templatetags.start_shift"></span><dl class="py function">
 <dt id="orders.templatetags.start_shift.currently_active_shift_for_venue">
-<code class="sig-prename descclassname"><span class="pre">orders.templatetags.start_shift.</span></code><code class="sig-name descname"><span class="pre">currently_active_shift_for_venue</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">venue</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.templatetags.start_shift.currently_active_shift_for_venue" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">orders.templatetags.start_shift.</span></code><code class="sig-name descname"><span class="pre">currently_active_shift_for_venue</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">venue</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#orders.models.OrderVenue" title="orders.models.OrderVenue"><span class="pre">orders.models.OrderVenue</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#orders.templatetags.start_shift.currently_active_shift_for_venue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the currently active shift for a venue (if it exists).</p>
 </dd></dl>
 

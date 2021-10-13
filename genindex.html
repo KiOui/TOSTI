@@ -211,10 +211,10 @@
 </li>
       <li><a href="orders.html#orders.models.active_venue_validator">active_venue_validator() (in module orders.models)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="thaliedje.html#thaliedje.admin.PlayerAdmin.add_view">add_view() (thaliedje.admin.PlayerAdmin method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="thaliedje.html#thaliedje.models.SpotifyQueueItem.added">added (thaliedje.models.SpotifyQueueItem attribute)</a>
 </li>
       <li><a href="orders.html#orders.views.AdminExplainerView">AdminExplainerView (class in orders.views)</a>
@@ -228,9 +228,17 @@
       <li><a href="orders.html#orders.models.Shift.assignees">assignees (orders.models.Shift attribute)</a>
 </li>
       <li><a href="users.html#users.models.Profile.association">association (users.models.Profile attribute)</a>
+
+      <ul>
+        <li><a href="venues.html#venues.models.Reservation.association">(venues.models.Reservation attribute)</a>
 </li>
+      </ul></li>
       <li><a href="users.html#users.models.Profile.association_id">association_id (users.models.Profile attribute)</a>
+
+      <ul>
+        <li><a href="venues.html#venues.models.Reservation.association_id">(venues.models.Reservation attribute)</a>
 </li>
+      </ul></li>
       <li><a href="thaliedje.html#thaliedje.models.Player.auth">auth() (thaliedje.models.Player property)</a>
 </li>
       <li><a href="orders.html#orders.models.Product.available">available (orders.models.Product attribute)</a>
@@ -266,6 +274,8 @@
 </li>
         <li><a href="users.html#users.forms.LoginForm.base_fields">(users.forms.LoginForm attribute)</a>
 </li>
+        <li><a href="venues.html#venues.admin.ReservationAdminForm.base_fields">(venues.admin.ReservationAdminForm attribute)</a>
+</li>
       </ul></li>
   </ul></td>
 </tr></table>
@@ -274,6 +284,8 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="thaliedje.html#thaliedje.models.Player.cache_path">cache_path() (thaliedje.models.Player property)</a>
+</li>
+      <li><a href="venues.html#venues.models.Venue.can_be_reserved">can_be_reserved (venues.models.Venue attribute)</a>
 </li>
       <li><a href="users.html#users.admin.ProfileInline.can_delete">can_delete (users.admin.ProfileInline attribute)</a>
 </li>
@@ -285,6 +297,8 @@
 
       <ul>
         <li><a href="orders.html#orders.models.Shift.clean">(orders.models.Shift method)</a>
+</li>
+        <li><a href="venues.html#venues.models.Reservation.clean">(venues.models.Reservation method)</a>
 </li>
       </ul></li>
       <li><a href="orders.html#orders.admin.ProductAdmin.clean_barcode">clean_barcode() (orders.admin.ProductAdmin method)</a>
@@ -302,6 +316,10 @@
       <li><a href="thaliedje.html#thaliedje.models.Player.client_secret">client_secret (thaliedje.models.Player attribute)</a>
 </li>
       <li><a href="orders.html#orders.admin.ShiftAdmin.close_shift">close_shift() (orders.admin.ShiftAdmin method)</a>
+</li>
+      <li><a href="venues.html#venues.models.Venue.color_in_calendar">color_in_calendar (venues.models.Venue attribute)</a>
+</li>
+      <li><a href="venues.html#venues.models.Reservation.comment">comment (venues.models.Reservation attribute)</a>
 </li>
       <li><a href="thaliedje.html#thaliedje.models.Player.configured">configured() (thaliedje.models.Player property)</a>
 </li>
@@ -338,6 +356,8 @@
       <ul>
         <li><a href="orders.html#orders.admin.ShiftAdmin.date_hierarchy">(orders.admin.ShiftAdmin attribute)</a>
 </li>
+        <li><a href="venues.html#venues.admin.ReservationAdmin.date_hierarchy">(venues.admin.ReservationAdmin attribute)</a>
+</li>
       </ul></li>
       <li><a href="orders.html#orders.admin.OrderAdminForm.declared_fields">declared_fields (orders.admin.OrderAdminForm attribute)</a>
 
@@ -358,6 +378,8 @@
 </li>
         <li><a href="users.html#users.forms.LoginForm.declared_fields">(users.forms.LoginForm attribute)</a>
 </li>
+        <li><a href="venues.html#venues.admin.ReservationAdminForm.declared_fields">(venues.admin.ReservationAdminForm attribute)</a>
+</li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -375,6 +397,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="orders.html#orders.models.Shift.end_date">end_date (orders.models.Shift attribute)</a>
 </li>
+      <li><a href="venues.html#venues.models.Reservation.end_time">end_time (venues.models.Reservation attribute)</a>
+</li>
       <li><a href="orders.html#orders.models.Shift.end_time">end_time() (orders.models.Shift property)</a>
 </li>
       <li><a href="orders.html#orders.admin.OrderAdminForm.Meta.exclude">exclude (orders.admin.OrderAdminForm.Meta attribute)</a>
@@ -387,6 +411,8 @@
         <li><a href="users.html#users.admin.GroupAdminForm.Meta.exclude">(users.admin.GroupAdminForm.Meta attribute)</a>
 </li>
         <li><a href="users.html#users.admin.UserAdminForm.Meta.exclude">(users.admin.UserAdminForm.Meta attribute)</a>
+</li>
+        <li><a href="venues.html#venues.admin.ReservationAdminForm.Meta.exclude">(venues.admin.ReservationAdminForm.Meta attribute)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -409,6 +435,8 @@
 
       <ul>
         <li><a href="orders.html#orders.admin.ProductAdminVenueFilter.field_name">(orders.admin.ProductAdminVenueFilter attribute)</a>
+</li>
+        <li><a href="venues.html#venues.admin.ReservationAdminUserFilter.field_name">(venues.admin.ReservationAdminUserFilter attribute)</a>
 </li>
       </ul></li>
       <li><a href="orders.html#orders.forms.CreateShiftForm.Meta.fields">fields (orders.forms.CreateShiftForm.Meta attribute)</a>
@@ -433,6 +461,8 @@
         <li><a href="users.html#users.admin.GroupAdmin.form">(users.admin.GroupAdmin attribute)</a>
 </li>
         <li><a href="users.html#users.admin.UserAdmin.form">(users.admin.UserAdmin attribute)</a>
+</li>
+        <li><a href="venues.html#venues.admin.ReservationAdmin.form">(venues.admin.ReservationAdmin attribute)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -493,7 +523,11 @@
 </li>
       <li><a href="orders.html#orders.models.Shift.get_next_by_end_date">get_next_by_end_date() (orders.models.Shift method)</a>
 </li>
+      <li><a href="venues.html#venues.models.Reservation.get_next_by_end_time">get_next_by_end_time() (venues.models.Reservation method)</a>
+</li>
       <li><a href="orders.html#orders.models.Shift.get_next_by_start_date">get_next_by_start_date() (orders.models.Shift method)</a>
+</li>
+      <li><a href="venues.html#venues.models.Reservation.get_next_by_start_time">get_next_by_start_time() (venues.models.Reservation method)</a>
 </li>
       <li><a href="orders.html#orders.views.CreateShiftView.get_object">get_object() (orders.views.CreateShiftView method)</a>
 
@@ -527,7 +561,11 @@
 </li>
       <li><a href="orders.html#orders.models.Shift.get_previous_by_end_date">get_previous_by_end_date() (orders.models.Shift method)</a>
 </li>
+      <li><a href="venues.html#venues.models.Reservation.get_previous_by_end_time">get_previous_by_end_time() (venues.models.Reservation method)</a>
+</li>
       <li><a href="orders.html#orders.models.Shift.get_previous_by_start_date">get_previous_by_start_date() (orders.models.Shift method)</a>
+</li>
+      <li><a href="venues.html#venues.models.Reservation.get_previous_by_start_time">get_previous_by_start_time() (venues.models.Reservation method)</a>
 </li>
       <li><a href="users.html#users.models.User.get_short_name">get_short_name() (users.models.User method)</a>
 </li>
@@ -616,6 +654,8 @@
 </li>
         <li><a href="users.html#users.models.Profile.id">(users.models.Profile attribute)</a>
 </li>
+        <li><a href="venues.html#venues.models.Reservation.id">(venues.models.Reservation attribute)</a>
+</li>
         <li><a href="venues.html#venues.models.Venue.id">(venues.models.Venue attribute)</a>
 </li>
       </ul></li>
@@ -668,6 +708,10 @@
 </li>
         <li><a href="users.html#users.admin.UserAdmin.list_display">(users.admin.UserAdmin attribute)</a>
 </li>
+        <li><a href="venues.html#venues.admin.ReservationAdmin.list_display">(venues.admin.ReservationAdmin attribute)</a>
+</li>
+        <li><a href="venues.html#venues.admin.VenueAdmin.list_display">(venues.admin.VenueAdmin attribute)</a>
+</li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -679,6 +723,8 @@
         <li><a href="orders.html#orders.admin.ShiftAdmin.list_filter">(orders.admin.ShiftAdmin attribute)</a>
 </li>
         <li><a href="users.html#users.admin.UserAdmin.list_filter">(users.admin.UserAdmin attribute)</a>
+</li>
+        <li><a href="venues.html#venues.admin.ReservationAdmin.list_filter">(venues.admin.ReservationAdmin attribute)</a>
 </li>
       </ul></li>
       <li><a href="users.html#users.forms.LoginForm">LoginForm (class in users.forms)</a>
@@ -744,6 +790,10 @@
 </li>
         <li><a href="users.html#users.forms.LoginForm.media">(users.forms.LoginForm property)</a>
 </li>
+        <li><a href="venues.html#venues.admin.ReservationAdmin.media">(venues.admin.ReservationAdmin property)</a>
+</li>
+        <li><a href="venues.html#venues.admin.ReservationAdminForm.media">(venues.admin.ReservationAdminForm property)</a>
+</li>
         <li><a href="venues.html#venues.admin.VenueAdmin.media">(venues.admin.VenueAdmin property)</a>
 </li>
       </ul></li>
@@ -767,6 +817,8 @@
         <li><a href="users.html#users.admin.UserAdmin.model">(users.admin.UserAdmin attribute)</a>
 </li>
         <li><a href="users.html#users.admin.UserAdminForm.Meta.model">(users.admin.UserAdminForm.Meta attribute)</a>
+</li>
+        <li><a href="venues.html#venues.admin.ReservationAdminForm.Meta.model">(venues.admin.ReservationAdminForm.Meta attribute)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -897,6 +949,8 @@
 </li>
         <li><a href="users.html#users.models.User.objects">(users.models.User attribute)</a>
 </li>
+        <li><a href="venues.html#venues.models.Reservation.objects">(venues.models.Reservation attribute)</a>
+</li>
         <li><a href="venues.html#venues.models.Venue.objects">(venues.models.Venue attribute)</a>
 </li>
       </ul></li>
@@ -919,8 +973,6 @@
       <li><a href="orders.html#orders.admin.OrderAdminForm.Meta">OrderAdminForm.Meta (class in orders.admin)</a>
 </li>
       <li><a href="orders.html#orders.admin.OrderAdminShiftFilter">OrderAdminShiftFilter (class in orders.admin)</a>
-</li>
-      <li><a href="orders.html#orders.models.Shift.ordered_orders">ordered_orders() (orders.models.Shift property)</a>
 </li>
       <li><a href="orders.html#orders.admin.OrderInline">OrderInline (class in orders.admin)</a>
 </li>
@@ -995,6 +1047,10 @@
         <li><a href="orders.html#module-orders.views">module</a>
 </li>
       </ul></li>
+      <li><a href="orders.html#orders.models.Shift.orders_ordered_type_only">orders_ordered_type_only() (orders.models.Shift property)</a>
+</li>
+      <li><a href="orders.html#orders.models.Shift.orders_sorted_staff_first">orders_sorted_staff_first() (orders.models.Shift property)</a>
+</li>
       <li><a href="orders.html#orders.apps.OrdersConfig">OrdersConfig (class in orders.apps)</a>
 </li>
       <li><a href="orders.html#orders.models.OrderVenue">OrderVenue (class in orders.models)</a>
@@ -1067,6 +1123,8 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="venues.html#venues.admin.VenueAdmin.prepopulated_fields">prepopulated_fields (venues.admin.VenueAdmin attribute)</a>
+</li>
       <li><a href="tosti.html#tosti.views.PrivacyView">PrivacyView (class in tosti.views)</a>
 </li>
       <li><a href="orders.html#orders.models.Product">Product (class in orders.models)</a>
@@ -1149,8 +1207,6 @@
 </li>
       <li><a href="orders.html#orders.templatetags.order_now.render_order_now_buttons_can_order">render_order_now_buttons_can_order() (in module orders.templatetags.order_now)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="orders.html#orders.templatetags.order_now.render_order_now_buttons_venues">render_order_now_buttons_venues() (in module orders.templatetags.order_now)</a>
 </li>
       <li><a href="orders.html#orders.views.render_ordered_items_tab">render_ordered_items_tab() (in module orders.views)</a>
@@ -1161,6 +1217,8 @@
 </li>
       <li><a href="tosti.html#tosti.templatetags.venue_cards.render_venue_card">render_venue_card() (in module tosti.templatetags.venue_cards)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="tosti.html#tosti.templatetags.venue_cards.render_venue_cards_venues">render_venue_cards_venues() (in module tosti.templatetags.venue_cards)</a>
 </li>
       <li><a href="thaliedje.html#thaliedje.models.SpotifyQueueItem.requested_by">requested_by (thaliedje.models.SpotifyQueueItem attribute)</a>
@@ -1168,6 +1226,24 @@
       <li><a href="thaliedje.html#thaliedje.models.SpotifyQueueItem.requested_by_id">requested_by_id (thaliedje.models.SpotifyQueueItem attribute)</a>
 </li>
       <li><a href="users.html#users.models.User.REQUIRED_FIELDS">REQUIRED_FIELDS (users.models.User attribute)</a>
+</li>
+      <li><a href="venues.html#venues.models.Reservation">Reservation (class in venues.models)</a>
+</li>
+      <li><a href="venues.html#venues.models.Reservation.DoesNotExist">Reservation.DoesNotExist</a>
+</li>
+      <li><a href="venues.html#venues.models.Reservation.MultipleObjectsReturned">Reservation.MultipleObjectsReturned</a>
+</li>
+      <li><a href="venues.html#venues.admin.ReservationAdmin">ReservationAdmin (class in venues.admin)</a>
+</li>
+      <li><a href="venues.html#venues.admin.ReservationAdmin.Media">ReservationAdmin.Media (class in venues.admin)</a>
+</li>
+      <li><a href="venues.html#venues.admin.ReservationAdminForm">ReservationAdminForm (class in venues.admin)</a>
+</li>
+      <li><a href="venues.html#venues.admin.ReservationAdminForm.Meta">ReservationAdminForm.Meta (class in venues.admin)</a>
+</li>
+      <li><a href="venues.html#venues.admin.ReservationAdminUserFilter">ReservationAdminUserFilter (class in venues.admin)</a>
+</li>
+      <li><a href="venues.html#venues.models.Venue.reservations">reservations (venues.models.Venue attribute)</a>
 </li>
       <li><a href="orders.html#orders.views.CreateShiftView.return_403">return_403 (orders.views.CreateShiftView attribute)</a>
 
@@ -1214,6 +1290,8 @@
 </li>
         <li><a href="users.html#users.admin.UserAdmin.search_fields">(users.admin.UserAdmin attribute)</a>
 </li>
+        <li><a href="venues.html#venues.admin.ReservationAdmin.search_fields">(venues.admin.ReservationAdmin attribute)</a>
+</li>
         <li><a href="venues.html#venues.admin.VenueAdmin.search_fields">(venues.admin.VenueAdmin attribute)</a>
 </li>
       </ul></li>
@@ -1251,6 +1329,8 @@
 </li>
       <li><a href="orders.html#orders.models.OrderVenue.shifts">shifts (orders.models.OrderVenue attribute)</a>
 </li>
+      <li><a href="venues.html#venues.models.Venue.slug">slug (venues.models.Venue attribute)</a>
+</li>
       <li><a href="thaliedje.html#thaliedje.models.Player.spotify">spotify() (thaliedje.models.Player property)</a>
 </li>
       <li><a href="thaliedje.html#thaliedje.models.SpotifyArtist">SpotifyArtist (class in thaliedje.models)</a>
@@ -1276,6 +1356,8 @@
       <li><a href="thaliedje.html#thaliedje.models.SpotifyArtist.spotifytrack_set">spotifytrack_set (thaliedje.models.SpotifyArtist attribute)</a>
 </li>
       <li><a href="orders.html#orders.models.Shift.start_date">start_date (orders.models.Shift attribute)</a>
+</li>
+      <li><a href="venues.html#venues.models.Reservation.start_time">start_time (venues.models.Reservation attribute)</a>
 </li>
       <li><a href="orders.html#orders.models.Shift.start_time">start_time() (orders.models.Shift property)</a>
 </li>
@@ -1325,6 +1407,8 @@
         <li><a href="users.html#users.views.LogoutView.template_name">(users.views.LogoutView attribute)</a>
 </li>
         <li><a href="users.html#users.views.VerifyView.template_name">(users.views.VerifyView attribute)</a>
+</li>
+        <li><a href="venues.html#venues.views.VenueCalendarView.template_name">(venues.views.VenueCalendarView attribute)</a>
 </li>
       </ul></li>
       <li>
@@ -1386,6 +1470,10 @@
 
       <ul>
         <li><a href="orders.html#orders.admin.ProductAdminVenueFilter.title">(orders.admin.ProductAdminVenueFilter attribute)</a>
+</li>
+        <li><a href="venues.html#venues.admin.ReservationAdminUserFilter.title">(venues.admin.ReservationAdminUserFilter attribute)</a>
+</li>
+        <li><a href="venues.html#venues.models.Reservation.title">(venues.models.Reservation attribute)</a>
 </li>
       </ul></li>
       <li><a href="orders.html#orders.models.Order.to_json">to_json() (orders.models.Order method)</a>
@@ -1462,6 +1550,8 @@
       <ul>
         <li><a href="users.html#users.models.Profile.user">(users.models.Profile attribute)</a>
 </li>
+        <li><a href="venues.html#venues.models.Reservation.user">(venues.models.Reservation attribute)</a>
+</li>
       </ul></li>
       <li><a href="users.html#users.models.User.DoesNotExist">User.DoesNotExist</a>
 </li>
@@ -1484,6 +1574,8 @@
       <ul>
         <li><a href="users.html#users.models.Profile.user_id">(users.models.Profile attribute)</a>
 </li>
+        <li><a href="venues.html#venues.models.Reservation.user_id">(venues.models.Reservation attribute)</a>
+</li>
       </ul></li>
       <li><a href="orders.html#orders.models.Product.user_max_order_amount">user_max_order_amount() (orders.models.Product method)</a>
 
@@ -1495,10 +1587,10 @@
 </li>
       <li><a href="users.html#users.admin.UserAdmin.Meta">UserAdmin.Meta (class in users.admin)</a>
 </li>
-      <li><a href="users.html#users.admin.UserAdminForm">UserAdminForm (class in users.admin)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="users.html#users.admin.UserAdminForm">UserAdminForm (class in users.admin)</a>
+</li>
       <li><a href="users.html#users.admin.UserAdminForm.Meta">UserAdminForm.Meta (class in users.admin)</a>
 </li>
       <li><a href="users.html#users.models.UserManager">UserManager (class in users.models)</a>
@@ -1573,6 +1665,8 @@
 </li>
         <li><a href="thaliedje.html#thaliedje.models.Player.venue">(thaliedje.models.Player attribute)</a>
 </li>
+        <li><a href="venues.html#venues.models.Reservation.venue">(venues.models.Reservation attribute)</a>
+</li>
       </ul></li>
       <li><a href="venues.html#venues.models.Venue.DoesNotExist">Venue.DoesNotExist</a>
 </li>
@@ -1585,9 +1679,15 @@
 </li>
         <li><a href="thaliedje.html#thaliedje.models.Player.venue_id">(thaliedje.models.Player attribute)</a>
 </li>
+        <li><a href="venues.html#venues.models.Reservation.venue_id">(venues.models.Reservation attribute)</a>
+</li>
       </ul></li>
       <li><a href="venues.html#venues.admin.VenueAdmin">VenueAdmin (class in venues.admin)</a>
 </li>
+      <li><a href="venues.html#venues.views.VenueCalendarView">VenueCalendarView (class in venues.views)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     venues
 
@@ -1595,8 +1695,6 @@
         <li><a href="venues.html#module-venues">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     venues.admin
 

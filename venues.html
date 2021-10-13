@@ -179,13 +179,126 @@
 <div class="section" id="module-venues.admin">
 <span id="venues-admin-module"></span><h2>venues.admin module<a class="headerlink" href="#module-venues.admin" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
+<dt id="venues.admin.ReservationAdmin">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">venues.admin.</span></code><code class="sig-name descname"><span class="pre">ReservationAdmin</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">admin_site</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#venues.admin.ReservationAdmin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.admin.options.ModelAdmin</span></code></p>
+<p>Custom admin for reservations.</p>
+<dl class="py class">
+<dt id="venues.admin.ReservationAdmin.Media">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Media</span></code><a class="headerlink" href="#venues.admin.ReservationAdmin.Media" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Necessary to use AutocompleteFilter.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="venues.admin.ReservationAdmin.date_hierarchy">
+<code class="sig-name descname"><span class="pre">date_hierarchy</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'start_time'</span></em><a class="headerlink" href="#venues.admin.ReservationAdmin.date_hierarchy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="venues.admin.ReservationAdmin.form">
+<code class="sig-name descname"><span class="pre">form</span></code><a class="headerlink" href="#venues.admin.ReservationAdmin.form" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#venues.admin.ReservationAdminForm" title="venues.admin.ReservationAdminForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">venues.admin.ReservationAdminForm</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="venues.admin.ReservationAdmin.list_display">
+<code class="sig-name descname"><span class="pre">list_display</span></code><em class="property"> <span class="pre">=</span> <span class="pre">['title',</span> <span class="pre">'venue',</span> <span class="pre">'association',</span> <span class="pre">'start_time',</span> <span class="pre">'end_time',</span> <span class="pre">'user']</span></em><a class="headerlink" href="#venues.admin.ReservationAdmin.list_display" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="venues.admin.ReservationAdmin.list_filter">
+<code class="sig-name descname"><span class="pre">list_filter</span></code><em class="property"> <span class="pre">=</span> <span class="pre">['venue',</span> <span class="pre">'association',</span> <span class="pre">'start_time',</span> <span class="pre">&lt;class</span> <span class="pre">'venues.admin.ReservationAdminUserFilter'&gt;]</span></em><a class="headerlink" href="#venues.admin.ReservationAdmin.list_filter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="venues.admin.ReservationAdmin.media">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">media</span></code><a class="headerlink" href="#venues.admin.ReservationAdmin.media" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="venues.admin.ReservationAdmin.search_fields">
+<code class="sig-name descname"><span class="pre">search_fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">['title']</span></em><a class="headerlink" href="#venues.admin.ReservationAdmin.search_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="venues.admin.ReservationAdminForm">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">venues.admin.</span></code><code class="sig-name descname"><span class="pre">ReservationAdminForm</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#venues.admin.ReservationAdminForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.forms.models.ModelForm</span></code></p>
+<p>Admin form to edit forms.</p>
+<dl class="py class">
+<dt id="venues.admin.ReservationAdminForm.Meta">
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">Meta</span></code><a class="headerlink" href="#venues.admin.ReservationAdminForm.Meta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Meta class for ReservationAdminForm.</p>
+<dl class="py attribute">
+<dt id="venues.admin.ReservationAdminForm.Meta.exclude">
+<code class="sig-name descname"><span class="pre">exclude</span></code><em class="property"> <span class="pre">=</span> <span class="pre">[]</span></em><a class="headerlink" href="#venues.admin.ReservationAdminForm.Meta.exclude" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="venues.admin.ReservationAdminForm.Meta.model">
+<code class="sig-name descname"><span class="pre">model</span></code><a class="headerlink" href="#venues.admin.ReservationAdminForm.Meta.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#venues.models.Reservation" title="venues.models.Reservation"><code class="xref py py-class docutils literal notranslate"><span class="pre">venues.models.Reservation</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="venues.admin.ReservationAdminForm.base_fields">
+<code class="sig-name descname"><span class="pre">base_fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'association':</span> <span class="pre">&lt;django.forms.models.ModelChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'comment':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'end_time':</span> <span class="pre">&lt;django.forms.fields.DateTimeField</span> <span class="pre">object&gt;,</span> <span class="pre">'start_time':</span> <span class="pre">&lt;django.forms.fields.DateTimeField</span> <span class="pre">object&gt;,</span> <span class="pre">'title':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'user':</span> <span class="pre">&lt;django.forms.models.ModelChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'venue':</span> <span class="pre">&lt;django.forms.models.ModelChoiceField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#venues.admin.ReservationAdminForm.base_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="venues.admin.ReservationAdminForm.declared_fields">
+<code class="sig-name descname"><span class="pre">declared_fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{}</span></em><a class="headerlink" href="#venues.admin.ReservationAdminForm.declared_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="venues.admin.ReservationAdminForm.media">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">media</span></code><a class="headerlink" href="#venues.admin.ReservationAdminForm.media" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all media required to render the widgets on this form.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="venues.admin.ReservationAdminUserFilter">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">venues.admin.</span></code><code class="sig-name descname"><span class="pre">ReservationAdminUserFilter</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_admin</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#venues.admin.ReservationAdminUserFilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">admin_auto_filters.filters.AutocompleteFilter</span></code></p>
+<p>Filter class to filter product objects available at a certain venue.</p>
+<dl class="py attribute">
+<dt id="venues.admin.ReservationAdminUserFilter.field_name">
+<code class="sig-name descname"><span class="pre">field_name</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'user'</span></em><a class="headerlink" href="#venues.admin.ReservationAdminUserFilter.field_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="venues.admin.ReservationAdminUserFilter.title">
+<code class="sig-name descname"><span class="pre">title</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'User'</span></em><a class="headerlink" href="#venues.admin.ReservationAdminUserFilter.title" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="venues.admin.VenueAdmin">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">venues.admin.</span></code><code class="sig-name descname"><span class="pre">VenueAdmin</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">admin_site</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#venues.admin.VenueAdmin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.contrib.admin.options.ModelAdmin</span></code></p>
 <p>Custom admin for venues.</p>
+<dl class="py attribute">
+<dt id="venues.admin.VenueAdmin.list_display">
+<code class="sig-name descname"><span class="pre">list_display</span></code><em class="property"> <span class="pre">=</span> <span class="pre">['name',</span> <span class="pre">'slug',</span> <span class="pre">'active',</span> <span class="pre">'can_be_reserved']</span></em><a class="headerlink" href="#venues.admin.VenueAdmin.list_display" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt id="venues.admin.VenueAdmin.media">
 <em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">media</span></code><a class="headerlink" href="#venues.admin.VenueAdmin.media" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="venues.admin.VenueAdmin.prepopulated_fields">
+<code class="sig-name descname"><span class="pre">prepopulated_fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'slug':</span> <span class="pre">('name',)}</span></em><a class="headerlink" href="#venues.admin.VenueAdmin.prepopulated_fields" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -214,6 +327,145 @@
 <div class="section" id="module-venues.models">
 <span id="venues-models-module"></span><h2>venues.models module<a class="headerlink" href="#module-venues.models" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
+<dt id="venues.models.Reservation">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">venues.models.</span></code><code class="sig-name descname"><span class="pre">Reservation</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#venues.models.Reservation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
+<p>Reservation model class.</p>
+<dl class="py exception">
+<dt id="venues.models.Reservation.DoesNotExist">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">DoesNotExist</span></code><a class="headerlink" href="#venues.models.Reservation.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.ObjectDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="venues.models.Reservation.MultipleObjectsReturned">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></code><a class="headerlink" href="#venues.models.Reservation.MultipleObjectsReturned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.core.exceptions.MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="venues.models.Reservation.association">
+<code class="sig-name descname"><span class="pre">association</span></code><a class="headerlink" href="#venues.models.Reservation.association" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="venues.models.Reservation.association_id">
+<code class="sig-name descname"><span class="pre">association_id</span></code><a class="headerlink" href="#venues.models.Reservation.association_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="venues.models.Reservation.clean">
+<code class="sig-name descname"><span class="pre">clean</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#venues.models.Reservation.clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clean model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="venues.models.Reservation.comment">
+<code class="sig-name descname"><span class="pre">comment</span></code><a class="headerlink" href="#venues.models.Reservation.comment" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="venues.models.Reservation.end_time">
+<code class="sig-name descname"><span class="pre">end_time</span></code><a class="headerlink" href="#venues.models.Reservation.end_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="venues.models.Reservation.get_next_by_end_time">
+<code class="sig-name descname"><span class="pre">get_next_by_end_time</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">*</span></em>, <em class="sig-param"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">end_time&gt;</span></em>, <em class="sig-param"><span class="pre">is_next=True</span></em>, <em class="sig-param"><span class="pre">**kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#venues.models.Reservation.get_next_by_end_time" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="venues.models.Reservation.get_next_by_start_time">
+<code class="sig-name descname"><span class="pre">get_next_by_start_time</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">*</span></em>, <em class="sig-param"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">start_time&gt;</span></em>, <em class="sig-param"><span class="pre">is_next=True</span></em>, <em class="sig-param"><span class="pre">**kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#venues.models.Reservation.get_next_by_start_time" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="venues.models.Reservation.get_previous_by_end_time">
+<code class="sig-name descname"><span class="pre">get_previous_by_end_time</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">*</span></em>, <em class="sig-param"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">end_time&gt;</span></em>, <em class="sig-param"><span class="pre">is_next=False</span></em>, <em class="sig-param"><span class="pre">**kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#venues.models.Reservation.get_previous_by_end_time" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="venues.models.Reservation.get_previous_by_start_time">
+<code class="sig-name descname"><span class="pre">get_previous_by_start_time</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">*</span></em>, <em class="sig-param"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">start_time&gt;</span></em>, <em class="sig-param"><span class="pre">is_next=False</span></em>, <em class="sig-param"><span class="pre">**kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#venues.models.Reservation.get_previous_by_start_time" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="venues.models.Reservation.id">
+<code class="sig-name descname"><span class="pre">id</span></code><a class="headerlink" href="#venues.models.Reservation.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="venues.models.Reservation.objects">
+<code class="sig-name descname"><span class="pre">objects</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#venues.models.Reservation.objects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="venues.models.Reservation.start_time">
+<code class="sig-name descname"><span class="pre">start_time</span></code><a class="headerlink" href="#venues.models.Reservation.start_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="venues.models.Reservation.title">
+<code class="sig-name descname"><span class="pre">title</span></code><a class="headerlink" href="#venues.models.Reservation.title" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="venues.models.Reservation.user">
+<code class="sig-name descname"><span class="pre">user</span></code><a class="headerlink" href="#venues.models.Reservation.user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="venues.models.Reservation.user_id">
+<code class="sig-name descname"><span class="pre">user_id</span></code><a class="headerlink" href="#venues.models.Reservation.user_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="venues.models.Reservation.venue">
+<code class="sig-name descname"><span class="pre">venue</span></code><a class="headerlink" href="#venues.models.Reservation.venue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related object on the forward side of a many-to-one or
+one-to-one (via ForwardOneToOneDescriptor subclass) relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Child.parent</span></code> is a <code class="docutils literal notranslate"><span class="pre">ForwardManyToOneDescriptor</span></code> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="venues.models.Reservation.venue_id">
+<code class="sig-name descname"><span class="pre">venue_id</span></code><a class="headerlink" href="#venues.models.Reservation.venue_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="venues.models.Venue">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">venues.models.</span></code><code class="sig-name descname"><span class="pre">Venue</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#venues.models.Venue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.db.models.base.Model</span></code></p>
@@ -233,6 +485,20 @@
 <dl class="py attribute">
 <dt id="venues.models.Venue.active">
 <code class="sig-name descname"><span class="pre">active</span></code><a class="headerlink" href="#venues.models.Venue.active" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="venues.models.Venue.can_be_reserved">
+<code class="sig-name descname"><span class="pre">can_be_reserved</span></code><a class="headerlink" href="#venues.models.Venue.can_be_reserved" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="venues.models.Venue.color_in_calendar">
+<code class="sig-name descname"><span class="pre">color_in_calendar</span></code><a class="headerlink" href="#venues.models.Venue.color_in_calendar" title="Permalink to this definition">¶</a></dt>
 <dd><p>A wrapper for a deferred-loading field. When the value is read from this
 object the first time, the query is executed.</p>
 </dd></dl>
@@ -282,11 +548,45 @@ relation.</p>
 <p><code class="docutils literal notranslate"><span class="pre">Place.restaurant</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseOneToOneDescriptor</span></code> instance.</p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt id="venues.models.Venue.reservations">
+<code class="sig-name descname"><span class="pre">reservations</span></code><a class="headerlink" href="#venues.models.Venue.reservations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Parent.children</span></code> is a <code class="docutils literal notranslate"><span class="pre">ReverseManyToOneDescriptor</span></code> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <code class="docutils literal notranslate"><span class="pre">create_forward_many_to_many_manager()</span></code> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="venues.models.Venue.slug">
+<code class="sig-name descname"><span class="pre">slug</span></code><a class="headerlink" href="#venues.models.Venue.slug" title="Permalink to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>
 <div class="section" id="module-venues.views">
 <span id="venues-views-module"></span><h2>venues.views module<a class="headerlink" href="#module-venues.views" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="venues.views.VenueCalendarView">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">venues.views.</span></code><code class="sig-name descname"><span class="pre">VenueCalendarView</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#venues.views.VenueCalendarView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">django.views.generic.base.TemplateView</span></code></p>
+<p>All venues calendar view.</p>
+<dl class="py attribute">
+<dt id="venues.views.VenueCalendarView.template_name">
+<code class="sig-name descname"><span class="pre">template_name</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'venues/calendar.html'</span></em><a class="headerlink" href="#venues.views.VenueCalendarView.template_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
 </div>
 
