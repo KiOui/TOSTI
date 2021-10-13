@@ -1,0 +1,20 @@
+{% extends 'tosti/base.html' %}
+{% load static calendar %}
+
+{% block styles %}
+    {{ block.super }}
+    <link href='{% static "borrel/css/create_reservation.css" %}' rel='stylesheet' />
+{% endblock %}
+
+{% block page %}
+    <div class="container mt-5 mb-5 text-center">
+        <h1>Create Reservation</h1>
+    </div>
+    <div class="container text-left form-container mb-5">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Submit" class="btn btn-primary w-100">
+        </form>
+    </div>
+{% endblock %}

@@ -1,0 +1,12 @@
+.form-container form p label, .form-container form p select, .form-container form p input, .form-container form p textarea {
+    width: 100%;
+}
+
+.form-container form p {
+    text-align: left;
+    margin-bottom: 10px;
+}
+
+.form-container {
+    max-width: 500px;
+}

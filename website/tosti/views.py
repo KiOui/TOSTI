@@ -61,7 +61,7 @@ def handler404(request, exception):
     return render(request, "tosti/404.html", status=404)
 
 
-def handler500(request):
+def handler500(request, *args, **kwargs):
     """
     Handle a 50x (server fault) exception.
 

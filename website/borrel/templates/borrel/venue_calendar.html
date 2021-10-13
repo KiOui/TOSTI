@@ -1,0 +1,11 @@
+{% extends 'tosti/base.html' %}
+{% load calendar %}
+
+{% block page %}
+    <div class="container mt-5 mb-5 text-center">
+        <h1>Reservations for {{ venue.name }}</h1>
+    </div>
+    <div class="container">
+        {% render_venue_calendar venue=venue %}
+    </div>
+{% endblock %}

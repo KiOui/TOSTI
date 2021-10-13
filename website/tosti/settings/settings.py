@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "users",
     "venues",
     "associations",
+    "borrel",
     "thaliedje",
     "orders",
     "tantalus",

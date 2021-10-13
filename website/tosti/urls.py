@@ -49,8 +49,8 @@ urlpatterns = [
         include(("users.urls", "users"), namespace="users"),
     ),
     path(
-        "venues/",
-        include(("venues.urls", "venues"), namespace="venues"),
+        "borrel/",
+        include(("borrel.urls", "borrel"), namespace="borrel"),
     ),
     path(
         "shifts/",
