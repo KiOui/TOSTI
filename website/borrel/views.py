@@ -1,6 +1,5 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView, FormView
-from django.contrib.auth.mixins import LoginRequiredMixin
 
 from borrel.forms import ReservationRequestForm
 from borrel.mixins import BasicBorrelBrevetRequiredMixin

@@ -24,7 +24,7 @@ class BasicBorrelBrevet(models.Model):
 class ReservationRequest(models.Model):
     """Reservation Request class."""
 
-    title = models.CharField(max_length=100, null=False, blank=False)
+    title = models.CharField(max_length=100)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reservation_requests")
     association = models.ForeignKey(
         Association, on_delete=models.SET_NULL, null=True, blank=True, related_name="reservation_requests"
@@ -45,6 +45,34 @@ class ReservationRequest(models.Model):
     def __str__(self):
         """Convert this object to string."""
         return "{}, {} ({} - {})".format(self.title, self.venue, self.start_time, self.end_time)
+
+
+class BorrelInventoryRequestProduct(models.Model):
+
+    name = models.CharField(max_length=100)
+    active = models.BooleanField(default=True)
+
+
+class BorrelFormProduct(models.Model):
+
+    name = models.CharField(max_length=100)
+    active = models.BooleanField(default=True)
+
+
+class BorrelInventoryRequest(models.Model):
+    """Borrel Inventory Request."""
+
+    reservation_request = models.OneToOneField(ReservationRequest, on_delete=models.CASCADE, null=True, blank=True, related_name="borrel_inventory_request")
+
+
+class BorrelInventoryRequestProductAmount(models.Model):
+
+    borrel_inventory_request = models.ForeignKey(BorrelInventoryRequest, on_delete=models.CASCADE, related_name="product_amounts")
+    product = models.ForeignKey(BorrelInventoryRequestProduct, on_delete=models.CASCADE, related_name="product_amounts")
+    amount = models.PositiveIntegerField()
+
+    class Meta:
+        unique_together = ["borrel_inventory_request", "product"]
 
 
 class BorrelForm(models.Model):
