@@ -1,6 +1,5 @@
 from django.urls.converters import IntConverter, SlugConverter
 
-from venues.models import Venue
 from .models import Shift, Order, OrderVenue
 
 
