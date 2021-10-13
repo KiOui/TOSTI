@@ -49,6 +49,10 @@ urlpatterns = [
         include(("users.urls", "users"), namespace="users"),
     ),
     path(
+        "venues/",
+        include(("venues.urls", "venues"), namespace="venues"),
+    ),
+    path(
         "shifts/",
         include(("orders.urls", "orders"), namespace="orders"),
     ),
