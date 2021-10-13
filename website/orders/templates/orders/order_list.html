@@ -56,7 +56,7 @@
                         </div>
                     {% else %}
                         <div class="button-row">
-                            <template v-if="{{ user.id }} === order.user.id">
+                            <template v-if="order.user !== null && {{ user.id }} === order.user.id">
                                 <div v-if="order.ready && order.paid" class="status-button mr-2 bg-success text-white">
                                     Done
                                 </div>

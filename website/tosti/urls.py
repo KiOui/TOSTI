@@ -22,6 +22,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+
 from .views import (
     IndexView,
     PrivacyView,
@@ -46,6 +47,10 @@ urlpatterns = [
     path(
         "users/",
         include(("users.urls", "users"), namespace="users"),
+    ),
+    path(
+        "venues/",
+        include(("venues.urls", "venues"), namespace="venues"),
     ),
     path(
         "shifts/",

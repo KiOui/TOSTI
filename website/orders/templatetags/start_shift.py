@@ -20,15 +20,15 @@ def render_start_shift_buttons(context, venues=None):
 
 
 @register.filter
-def currently_active_shift_for_venue(venue):
+def currently_active_shift_for_venue(venue: OrderVenue):
     """Get the currently active shift for a venue (if it exists)."""
     timezone = pytz.timezone(settings.TIME_ZONE)
     today = timezone.localize(datetime.now())
     start = timezone.localize(datetime(today.year, today.month, today.day))
 
-    if venue.shift_set.filter(start_date__lte=today, end_date__gte=today).exists():
-        return venue.shift_set.filter(start_date__lte=today, end_date__gte=today).first()
-    elif venue.shift_set.filter(end_date__gte=start).exists():
-        return venue.shift_set.filter(end_date__gte=start).order_by("-end_date").first()
+    if venue.shifts.filter(start_date__lte=today, end_date__gte=today).exists():
+        return venue.shifts.filter(start_date__lte=today, end_date__gte=today).first()
+    elif venue.shifts.filter(end_date__gte=start).exists():
+        return venue.shifts.filter(end_date__gte=start).order_by("-end_date").first()
     else:
         return None

@@ -80,17 +80,22 @@
                                     {{ user.username }}
                                 </a>
                                 <div class="dropdown-menu p-2" aria-labelledby="navbarDropdownMenuLink">
-                                    {% if user.is_staff %}
-                                        <a class="nav-link text-dark" href="{% url "admin:index" %}">
-                                            Site admin
-                                        </a>
-                                    {% endif %}
+                                    <a class="nav-link text-dark" href="{% url "venues:calendar" %}">
+                                        Calendar
+                                    </a>
+                                    <hr class="my-1">
                                     <a class="nav-link text-dark" href="{% url "documentation" %}">
                                         Documentation
                                     </a>
                                     <a class="nav-link text-dark" href="{% url "privacy" %}">
                                         Privacy
                                     </a>
+                                    <hr class="my-1">
+                                    {% if user.is_staff %}
+                                        <a class="nav-link text-dark" href="{% url "admin:index" %}">
+                                            Site admin
+                                        </a>
+                                    {% endif %}
                                     <a class="nav-link text-dark" href="{% url "users:account" %}">
                                         Account
                                     </a>

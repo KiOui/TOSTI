@@ -103,7 +103,7 @@ class ShiftSerializer(serializers.ModelSerializer):
 
     def get_amount_of_orders(self, instance):
         """Get the amount of orders in the shift."""
-        return len([x for x in instance.orders if x.type == Order.TYPE_ORDERED])
+        return instance.orders.filter(type=Order.TYPE_ORDERED).count()
 
     def get_max_user_orders(self, instance):
         """Get the max orders a user can still place in the shift."""

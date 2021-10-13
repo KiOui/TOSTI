@@ -321,9 +321,9 @@ class Shift(models.Model):
         return super(Shift, self).save(*args, **kwargs)
 
     @property
-    def orders(self):
+    def orders_sorted_staff_first(self):
         """
-        Get the orders of this shift.
+        Get the orders of this shift with the staff orders first.
 
         :return: a chain object with all the orders of this shift.
         """
@@ -334,7 +334,7 @@ class Shift(models.Model):
         return list(ordered_orders)
 
     @property
-    def ordered_orders(self):
+    def orders_ordered_type_only(self):
         """
         Get the orders with type Ordered of this shift.
 
@@ -511,7 +511,7 @@ class Shift(models.Model):
         :return: True if all Orders (with the Order type) of this Shift are ready and paid, False otherwise
         :rtype: boolean
         """
-        return False not in [x.done for x in self.orders if x.type != Order.TYPE_SCANNED]
+        return not self.orders.exclude(type=Order.TYPE_SCANNED).exclude(done=True).exists()
 
     def _clean(self):
         """

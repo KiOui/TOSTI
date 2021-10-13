@@ -113,9 +113,9 @@ class ShiftAdminForm(forms.ModelForm):
 
         if self.instance.pk:
             self.fields["venue"].queryset = OrderVenue.objects.filter(
-                Q(venue__active=True) | Q(shift=self.instance)
+                Q(venue__active=True) | Q(shifts=self.instance)
             ).distinct()
-            self.fields["venue"].initial = OrderVenue.objects.filter(shift=self.instance)
+            self.fields["venue"].initial = OrderVenue.objects.filter(shifts=self.instance)
             self.fields["assignees"].initial = User.objects.filter(shift=self.instance)
 
     assignees = forms.ModelMultipleChoiceField(
