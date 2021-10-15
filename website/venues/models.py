@@ -44,6 +44,7 @@ class Reservation(models.Model):
     end_time = models.DateTimeField()
     venue = models.ForeignKey(Venue, on_delete=models.CASCADE, related_name="reservations")
     comment = models.TextField(null=True, blank=True)
+    accepted = models.BooleanField(default=None, null=True, blank=True)
 
     def clean(self):
         """Clean model."""

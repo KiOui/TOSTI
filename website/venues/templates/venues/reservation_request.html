@@ -1,0 +1,42 @@
+{% extends 'tosti/base.html' %}
+{% load static %}
+
+{% block styles %}
+    {{ block.super }}
+    <link href='{% static "tosti/css/forms.css" %}' rel='stylesheet' />
+{% endblock %}
+
+{% block page %}
+    <div class="container text-left">
+        <a href="{% url 'venues:calendar' %}"><i class="fas fa-arrow-left"></i> back to calendar</a>
+    </div>
+    <div class="container mt-5 mb-5 text-center">
+        <h1>Request a Reservation</h1>
+    </div>
+    <div class="container">
+        <p>
+            You have to place a reservation at least three weeks in advance. If you have failed to do this, you can
+            still make an attempt. However, there's a chance that your reservation will be denied.
+
+            For very special requests, such as festivals or fairs, you might want to send an e-mail to
+            <a href="mailto:olympusreservering@science.ru.nl">olympusreservering@science.ru.nl</a>. In other cases, just
+            fill in the form.
+
+            Please note that, due to the temporary canteens, we cannot guarantee any refrigerated liquids.
+        </p>
+    </div>
+    {% if success %}
+        <div class="container">
+            <p class="alert alert-success">
+                Reservation request created successfully
+            </p>
+        </div>
+    {% endif %}
+    <div class="container-sm text-center mb-5">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Submit" class="btn-ml btn-on">
+        </form>
+    </div>
+{% endblock %}
