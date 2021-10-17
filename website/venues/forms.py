@@ -44,4 +44,4 @@ class ReservationForm(forms.ModelForm):
         """Meta class."""
 
         model = Reservation
-        fields = ["title", "association", "start_time", "end_time", "venue", "comment"]
+        fields = ["venue", "association", "start_time", "end_time", "title", "comment"]
