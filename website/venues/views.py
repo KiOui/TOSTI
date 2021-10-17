@@ -1,6 +1,6 @@
-from urllib.parse import urlencode
-
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.generic import TemplateView, FormView
 
@@ -19,15 +19,8 @@ class RequestReservationView(LoginRequiredMixin, FormView):
     template_name = "venues/reservation_request.html"
     form_class = ReservationForm
 
-    def get_success_url(self):
-        """Get the success URL."""
-        success_parameters = {"success": "true"}
-        query_string = urlencode(success_parameters)
-        return "{}?{}".format(reverse("venues:add_reservation"), query_string)
-
     def get_form_kwargs(self):
         """Get the kwargs for rendering the form."""
-        """Update kwargs with the request."""
         kwargs = super(RequestReservationView, self).get_form_kwargs()
         kwargs.update(
             {
@@ -36,8 +29,15 @@ class RequestReservationView(LoginRequiredMixin, FormView):
         )
         return kwargs
 
+    def form_valid(self, form):
+        """Save the form and add User data."""
+        instance = form.save()
+        instance.user = self.request.user
+        instance.save()
+        messages.success(self.request, "Reservation request added successfully.")
+        return redirect(reverse("venues:add_reservation"))
+
     def get_context_data(self, **kwargs):
         """Get the context data for rendering the template."""
         context = super(RequestReservationView, self).get_context_data(**kwargs)
-        context.update({"success": self.request.GET.get("success", None)})
         return context
