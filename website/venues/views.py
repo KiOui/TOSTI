@@ -31,7 +31,7 @@ class RequestReservationView(LoginRequiredMixin, FormView):
 
     def form_valid(self, form):
         """Save the form and add User data."""
-        instance = form.save()
+        instance = form.save(commit=False)
         instance.user = self.request.user
         instance.save()
         messages.success(self.request, "Reservation request added successfully.")
