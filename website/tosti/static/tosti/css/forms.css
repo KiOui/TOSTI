@@ -4,29 +4,36 @@ form {
     margin: auto;
 }
 
-p label {
+form p label {
+    text-align: left;
     width: 100%;
 }
 
-p input {
+form p input {
+    text-align: left;
     width: 100%;
 }
 
-p select {
+form p select {
+    text-align: left;
     width: 100%;
 }
 
-p span {
+form p span {
     font-style: italic;
     font-size: 0.7rem;
     width: 100%;
 }
 
-input[type=text], select {
+form input[type=text], select {
     padding:5px;
     border:2px solid #ccc;
 }
 
-input[type=text]:focus {
+form input[type=text]:focus {
     border-color:#333;
+}
+
+form textarea {
+    width: 100%;
 }

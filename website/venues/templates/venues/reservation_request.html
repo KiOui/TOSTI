@@ -1,0 +1,30 @@
+{% extends 'tosti/base.html' %}
+{% load static %}
+
+{% block styles %}
+    {{ block.super }}
+    <link href='{% static "tosti/css/forms.css" %}' rel='stylesheet' />
+{% endblock %}
+
+{% block page %}
+    <div class="container text-left">
+        <a href="{% url 'venues:calendar' %}"><i class="fas fa-arrow-left"></i> back to calendar</a>
+    </div>
+    <div class="container mt-5 mb-5 text-center">
+        <h1>Request a Reservation</h1>
+    </div>
+    <div class="container mt-5 mb-5 text-center">
+        {% if messages %}
+            {% for message in messages %}
+                <p class="alert {{ message.tags }}">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    </div>
+    <div class="container-sm text-center mb-5">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Submit" class="btn-ml btn-on">
+        </form>
+    </div>
+{% endblock %}
