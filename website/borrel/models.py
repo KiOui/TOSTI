@@ -21,61 +21,87 @@ class BasicBorrelBrevet(models.Model):
         return self.user.__str__()
 
 
-class ReservationRequest(models.Model):
-    """Reservation Request class."""
+class BorrelInventoryCategory(models.Model):
+
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
+class BorrelInventoryProduct(models.Model):
+
+    name = models.CharField(max_length=100)
+    active = models.BooleanField(default=True)
+    category = models.ForeignKey(BorrelInventoryCategory, on_delete=models.CASCADE, related_name="products")
+    unit_description = models.CharField(max_length=10)
+    price_per_unit = models.DecimalField(decimal_places=2, max_digits=6)
+
+    def __str__(self):
+        return self.name
+
+
+class BorrelReservation(models.Model):
+    """Borrel Reservation class."""
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    submitted_at = models.DateTimeField(null=True, blank=True)
 
     title = models.CharField(max_length=100)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reservation_requests")
-    association = models.ForeignKey(
-        Association, on_delete=models.SET_NULL, null=True, blank=True, related_name="reservation_requests"
+    start = models.DateTimeField()
+    end = models.DateTimeField(null=True)
+    user = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=False, related_name="borrel_reservations"
     )
-    start_time = models.DateTimeField()
-    end_time = models.DateTimeField()
-    venue = models.ForeignKey(Venue, on_delete=models.CASCADE, related_name="reservation_requests")
-    comment = models.TextField(null=True, blank=True)
+    association = models.ForeignKey(
+        Association, on_delete=models.SET_NULL, null=True, blank=True, related_name="borrel_reservations"
+    )
+    comments = models.TextField(null=True, blank=True)
+
     accepted = models.BooleanField(default=None, null=True, blank=True)
-    reservation = models.OneToOneField(Reservation, on_delete=models.SET_NULL, null=True, blank=True, related_name="reservation_request")
+
+    venue_reservation = models.OneToOneField(
+        Reservation, on_delete=models.SET_NULL, null=True, blank=True, related_name="borrel_reservations"
+    )
+
+    @property
+    def submitted(self):
+        return self.submitted_at is not None
 
     def clean(self):
         """Clean model."""
-        super(ReservationRequest, self).clean()
-        if self.end_time is not None and self.start_time is not None and self.end_time <= self.start_time:
-            raise ValidationError({"end_time": "End date cannot be before start date."})
+        super(BorrelReservation, self).clean()
+        if self.end is not None and self.start is not None and self.end <= self.start:
+            raise ValidationError({"end": "End date cannot be before start date."})
+        if self.submitted_at is not None and self.start is not None and self.start <= self.submitted_at:
+            raise ValidationError({"submitted_at": "Cannot be submitted before start."})
 
     def __str__(self):
         """Convert this object to string."""
-        return "{}, {} ({} - {})".format(self.title, self.venue, self.start_time, self.end_time)
+        return "{}, {} ({} - {})".format(self.title, self.association, self.start, self.end)
 
 
-class BorrelInventoryRequestProduct(models.Model):
+class ReservationItem(models.Model):
 
-    name = models.CharField(max_length=100)
-    active = models.BooleanField(default=True)
-
-
-class BorrelFormProduct(models.Model):
-
-    name = models.CharField(max_length=100)
-    active = models.BooleanField(default=True)
-
-
-class BorrelInventoryRequest(models.Model):
-    """Borrel Inventory Request."""
-
-    reservation_request = models.OneToOneField(ReservationRequest, on_delete=models.CASCADE, null=True, blank=True, related_name="borrel_inventory_request")
-
-
-class BorrelInventoryRequestProductAmount(models.Model):
-
-    borrel_inventory_request = models.ForeignKey(BorrelInventoryRequest, on_delete=models.CASCADE, related_name="product_amounts")
-    product = models.ForeignKey(BorrelInventoryRequestProduct, on_delete=models.CASCADE, related_name="product_amounts")
-    amount = models.PositiveIntegerField()
+    reservation = models.ForeignKey(BorrelReservation, on_delete=models.CASCADE, related_name="items")
+    product = models.ForeignKey(BorrelInventoryProduct, on_delete=models.CASCADE, related_name="product_amounts")
+    product_name = models.CharField(max_length=100)
+    product_unit_description = models.CharField(max_length=10)
+    product_price_per_unit = models.DecimalField(decimal_places=2, max_digits=6)
+    amount_reserved = models.PositiveIntegerField(null=True, blank=True)
+    amount_used = models.PositiveIntegerField(null=True, blank=True)
+    remarks = models.TextField(null=True, blank=True)
 
     class Meta:
-        unique_together = ["borrel_inventory_request", "product"]
+        unique_together = ["reservation", "product"]
 
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        self.product_name = self.product.name
+        self.product_unit_description = self.product.unit_description
+        self.product_price_per_unit = self.product.price_per_unit
+        return super(ReservationItem, self).save(force_insert, force_update, using, update_fields)
 
-class BorrelForm(models.Model):
-    """Borrel Form class."""
-
-    pass
+    def __str__(self):
+        """Convert this object to string."""
+        return f"{self.product_name} for {self.product}"
