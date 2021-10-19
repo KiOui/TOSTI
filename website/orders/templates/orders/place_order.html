@@ -20,7 +20,7 @@
                          class="item-overlay">
                         <p class="alert alert-warning">You have ordered the maximum of this item.</p>
                     </div>
-                    <input class="btn btn-success ml-2" type="button" value="Add"
+                    <input class="btn btn-success ms-2" type="button" value="Add"
                            :onclick="`add_product(${product.id});`"/>
                 </li>
                 <li v-if="shift.max_user_orders !== null && get_amount_of_restricted_cart_items() >= shift.max_user_orders"
@@ -34,7 +34,7 @@
                     <i v-if="product.icon" :class="`fas fa-${product.icon}`"></i>
                     <p class="order-name"><% product.name %></p>
                     <p class="item-price">€<% (Math.round(product.current_price * 100) / 100).toFixed(2) %></p>
-                    <input class="btn btn-success ml-2" type="button" value="Add"
+                    <input class="btn btn-success ms-2" type="button" value="Add"
                            :onclick="`add_product(${product.id});`"/>
                 </li>
             </ul>
@@ -52,7 +52,7 @@
                 <li v-for="item in cart" class="order-item">
                     <i v-if="item.icon" :class="`fas fa-${item.icon}`"></i>
                     <p class="order-name"><% item.name %></p>
-                    <input class="btn btn-danger ml-2" type="button" value="Remove"
+                    <input class="btn btn-danger ms-2" type="button" value="Remove"
                            :onclick="`delete_product(${item.id});`"/>
                 </li>
             </ul>

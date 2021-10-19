@@ -3,13 +3,13 @@
 <div class="container-sm" id="item-orders-{{ shift.id }}">
     <link rel="stylesheet" href="{% static 'orders/css/item-list.css' %}"/>
     <div style="font-size: 20pt;" class="d-flex align-items-center justify-content-center">
-        <div class="flex-grow-1 mr-3">
+        <div class="flex-grow-1 me-3">
             <hr>
         </div>
         {% if admin %}
-            <div class="d-flex align-items-center justify-content-center mr-3 cursor-pointer"
-                 id="overview-button-{{ shift.id }}" data-toggle="modal"
-                 data-target="#order-overview-popup-{{ shift.id }}">
+            <div class="d-flex align-items-center justify-content-center me-3 cursor-pointer"
+                 id="overview-button-{{ shift.id }}" data-bs-toggle="modal"
+                 data-bs-target="#order-overview-popup-{{ shift.id }}">
                 <i style="color: grey;" class="fas fa-tasks"></i>
             </div>
         {% endif %}
@@ -35,10 +35,10 @@
                     {% if admin %}
                         <div v-if="!shift.finalized" class="button-row">
                             <template v-if="order.type === 0">
-                                <input v-if="order.paid" type="button" class="checkbox-paid btn mr-2 btn-success"
+                                <input v-if="order.paid" type="button" class="checkbox-paid btn me-2 btn-success"
                                        :onclick="`patch('/api/v1/shifts/{{ shift.id }}/orders/${order.id}/paid', {}, function(data) {update_update_list()}, function(data) {toastr.error('Failed to toggle paid of order.')});`"
                                        value="Paid"/>
-                                <input v-else type="button" class="checkbox-paid btn mr-2 btn-danger"
+                                <input v-else type="button" class="checkbox-paid btn me-2 btn-danger"
                                        :onclick="`patch('/api/v1/shifts/{{ shift.id }}/orders/${order.id}/paid', {}, function(data) {update_update_list()}, function(data) {toastr.error('Failed to toggle paid of order.')});`"
                                        value="Paid"/>
                                 <input v-if="order.ready" type="button" class="checkbox-ready btn btn-success"
@@ -57,19 +57,19 @@
                     {% else %}
                         <div class="button-row">
                             <template v-if="order.user !== null && {{ user.id }} === order.user.id">
-                                <div v-if="order.ready && order.paid" class="status-button mr-2 bg-success text-white">
+                                <div v-if="order.ready && order.paid" class="status-button me-2 bg-success text-white">
                                     Done
                                 </div>
-                                <div v-else-if="order.ready && !order.paid" class="status-button mr-2 bg-warning">Done
+                                <div v-else-if="order.ready && !order.paid" class="status-button me-2 bg-warning">Done
                                 </div>
-                                <div v-else-if="!order.ready && order.paid" class="status-button mr-2 bg-warning">
+                                <div v-else-if="!order.ready && order.paid" class="status-button me-2 bg-warning">
                                     Processing
                                 </div>
-                                <div v-else class="status-button mr-2 bg-danger text-white">Not paid</div>
+                                <div v-else class="status-button me-2 bg-danger text-white">Not paid</div>
                             </template>
                             <template v-else>
-                                <div v-if="order.ready" class="status-button mr-2 bg-success text-white">Done</div>
-                                <div v-else class="status-button mr-2 bg-warning">Processing</div>
+                                <div v-if="order.ready" class="status-button me-2 bg-success text-white">Done</div>
+                                <div v-else class="status-button me-2 bg-warning">Processing</div>
                             </template>
                         </div>
                     {% endif %}
@@ -90,7 +90,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h2 class="modal-title">Shift summary</h2>
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body" id="order-overview-popup-list-{{ shift.id }}">
                         <h3>Orders to make</h3>
@@ -124,7 +124,7 @@
                         </template>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
