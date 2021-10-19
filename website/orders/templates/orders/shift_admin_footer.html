@@ -11,26 +11,26 @@
                     <div class="col expand-mobile">
                         <div v-if="shift.can_order" :id="`shift-status-${shift.id}`"
                              class="h-100 btn-ml m-auto cursor-pointer bg-success"
-                             onclick="patch('{% url "v1:shift_retrieveupdate" pk=shift.pk %}', {'can_order': false}, function(data) {admin_footer_vue_{{ shift.id }}.shift = data; update_update_list();}, show_error_from_api);">
+                             v-on:click="adjust_can_order(false)">
                             <p class="font-footer flex-fixed footer-button-icon"><i class="far fa-hand-paper"></i></p>
                             <p class="font-footer footer-button-text">Allow/disallow</p>
                         </div>
                         <div v-else :id="`shift-status-${shift.id}`" class="h-100 btn-ml m-auto cursor-pointer bg-danger"
-                             onclick="patch('{% url "v1:shift_retrieveupdate" pk=shift.pk %}', {'can_order': true}, function(data) {admin_footer_vue_{{ shift.id }}.shift = data; update_update_list();}, show_error_from_api);">
+                             v-on:click="adjust_can_order(true)">
                             <p class="font-footer flex-fixed footer-button-icon"><i class="far fa-hand-paper"></i></p>
                             <p class="font-footer footer-button-text">Allow/disallow</p>
                         </div>
                     </div>
                     <div class="col expand-mobile">
                         <div class="h-100 btn-ml btn-on m-auto"
-                             onclick="patch('{% url "v1:shifts_add_time" shift=shift %}', {}, function(data) {admin_footer_vue_{{ shift.id }}.shift = data; toastr.success('Added 5 minutes to the end of this shift'); update_update_list();}, show_error_from_api);">
+                             v-on:click="add_time()">
                             <p class="font-footer flex-fixed footer-button-icon"><i class="far fa-clock"></i> + 5</p>
                             <p class="font-footer footer-button-text">Extend time</p>
                         </div>
                     </div>
                     <div class="col expand-mobile">
                         <div class="h-100 btn-ml btn-on m-auto"
-                             onclick="patch('{% url "v1:shifts_add_capacity" shift=shift %}', {}, function(data) {admin_footer_vue_{{ shift.id }}.shift = data; toastr.success('Added 5 capacity to this shift'); update_update_list();}, show_error_from_api);">
+                             v-on:click="add_capacity()">
                             <p class="font-footer flex-fixed footer-button-icon"><i class="fas fa-list"></i> + 5</p>
                             <p class="font-footer footer-button-text">Add orders</p>
                         </div>
@@ -60,7 +60,7 @@
                 </div>
                 <div v-if="!shift.finalized" class="col expand-mobile">
                     <div class="h-100 btn-ml m-auto cursor-pointer bg-danger"
-                         onclick="if (confirm('Do you really want to finialize this Shift? Finalizing a Shift will make it read-only, this action can not be reverted!')) {patch('{% url "v1:shifts_finalize" shift=shift %}', {}, function(data) {admin_footer_vue_{{ shift.id }}.shift = data; toastr.success('Shift finalized succesfully'); update_update_list();}, show_error_from_api);}">
+                         v-on:click="finalize_shift()">
                         <p class="font-footer flex-fixed footer-button-icon"><i class="fas fa-times-circle"></i></p>
                         <p class="font-footer footer-button-text">Finalize shift</p>
                     </div>
@@ -95,6 +95,83 @@
                     this.shift = json;
                 });
         },
+        methods: {
+            adjust_can_order(can_order) {
+                fetch(
+                    '{% url "v1:shift_retrieveupdate" pk=shift.pk %}',
+                    {
+                        method: 'PATCH',
+                        body: JSON.stringify({'can_order': can_order}),
+                        headers: {
+                            "X-CSRFToken": get_csrf_token(),
+                            'Content-Type': 'application/json',
+                            "Accept": 'application/json',
+                        }
+                    }
+                ).then(response =>
+                    response.json()
+                ).then(data => {
+                    this.shift = data;
+                    update_update_list();
+                }).catch(error => show_error_from_api(error));
+            },
+            add_time() {
+                fetch(
+                    '{% url "v1:shifts_add_time" shift=shift %}',
+                    {
+                        method: 'PATCH',
+                        headers: {
+                            "X-CSRFToken": get_csrf_token(),
+                            "Accept": 'application/json',
+                        }
+                    }
+                ).then(response =>
+                    response.json()
+                ).then(data => {
+                    this.shift = data;
+                    toastr.success('Added 5 minutes to the end of this shift');
+                    update_update_list();
+                }).catch(error => show_error_from_api(error));
+            },
+            add_capacity() {
+                fetch(
+                    '{% url "v1:shifts_add_capacity" shift=shift %}',
+                    {
+                        method: 'PATCH',
+                        headers: {
+                            "X-CSRFToken": get_csrf_token(),
+                            "Accept": 'application/json',
+                        }
+                    }
+                ).then(response =>
+                    response.json()
+                ).then(data => {
+                    this.shift = data;
+                    toastr.success('Added 5 minutes to the end of this shift');
+                    update_update_list();
+                }).catch(error => show_error_from_api(error));
+            },
+            finalize_shift() {
+                if (confirm('Do you really want to finialize this Shift? Finalizing a Shift will make it read-only, this action can not be reverted!')) {
+                    fetch(
+                        '{% url "v1:shifts_finalize" shift=shift %}',
+                        {
+                            method: 'PATCH',
+                            headers: {
+                                "X-CSRFToken": get_csrf_token(),
+                                "Accept": 'application/json',
+                            }
+                        }
+                    ).then(response =>
+                        response.json()
+                    ).then(data => {
+                        this.shift = data;
+                        toastr.success('Shift finalized succesfully');
+                        update_update_list();
+                    }).catch(error => show_error_from_api(error));
+                }
+            }
+        }
     });
     add_update_list(get_and_callback, ["{% url "v1:orders_listcreate" shift=shift %}", {}, function (data) {
         admin_footer_vue_{{ shift.id }}.orders = data

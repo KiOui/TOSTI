@@ -36,16 +36,16 @@
                         <div v-if="!shift.finalized" class="button-row">
                             <template v-if="order.type === 0">
                                 <input v-if="order.paid" type="button" class="checkbox-paid btn me-2 btn-success"
-                                       :onclick="`patch('/api/v1/shifts/{{ shift.id }}/orders/${order.id}/paid', {}, function(data) {update_update_list()}, function(data) {toastr.error('Failed to toggle paid of order.')});`"
+                                       v-on:click="toggle_paid(order)"
                                        value="Paid"/>
                                 <input v-else type="button" class="checkbox-paid btn me-2 btn-danger"
-                                       :onclick="`patch('/api/v1/shifts/{{ shift.id }}/orders/${order.id}/paid', {}, function(data) {update_update_list()}, function(data) {toastr.error('Failed to toggle paid of order.')});`"
+                                       v-on:click="toggle_paid(order)"
                                        value="Paid"/>
                                 <input v-if="order.ready" type="button" class="checkbox-ready btn btn-success"
-                                       :onclick="`patch('/api/v1/shifts/{{ shift.id }}/orders/${order.id}/ready', {}, function(data) {update_update_list()}, function(data) {toastr.error('Failed to toggle ready of order.')});`"
+                                       v-on:click="toggle_ready(order)"
                                        value="Ready"/>
                                 <input v-else type="button" class="checkbox-ready btn btn-danger"
-                                       :onclick="`patch('/api/v1/shifts/{{ shift.id }}/orders/${order.id}/ready', {}, function(data) {update_update_list()}, function(data) {toastr.error('Failed to toggle ready of order.')});`"
+                                       v-on:click="toggle_ready(order)"
                                        value="Ready"/>
                             </template>
                             <template v-else>
@@ -188,6 +188,36 @@
                     }
                 });
                 return orders_total;
+            }
+        },
+        methods: {
+            toggle_paid(order) {
+                fetch(
+                    `/api/v1/shifts/{{ shift.id }}/orders/${order.id}/paid`,
+                    {
+                        method: 'PATCH',
+                        headers: {
+                            "X-CSRFToken": get_csrf_token(),
+                            "Accept": 'application/json',
+                        }
+                    }
+                ).then(() => {
+                    update_update_list();
+                }).catch(error => show_error_from_api(error));
+            },
+            toggle_ready(order) {
+                fetch(
+                    `/api/v1/shifts/{{ shift.id }}/orders/${order.id}/ready`,
+                    {
+                        method: 'PATCH',
+                        headers: {
+                            "X-CSRFToken": get_csrf_token(),
+                            "Accept": 'application/json',
+                        }
+                    }
+                ).then(() => {
+                    update_update_list();
+                }).catch(error => show_error_from_api(error));
             }
         }
     });

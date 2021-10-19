@@ -6,6 +6,7 @@ import pytz
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models import Q
 from guardian.shortcuts import get_objects_for_user
 
 from associations.models import Association
@@ -511,7 +512,7 @@ class Shift(models.Model):
         :return: True if all Orders (with the Order type) of this Shift are ready and paid, False otherwise
         :rtype: boolean
         """
-        return not self.orders.exclude(type=Order.TYPE_SCANNED).exclude(done=True).exists()
+        return not self.orders.exclude(type=Order.TYPE_SCANNED).exclude(Q(ready=True) & Q(paid=True)).exists()
 
     def _clean(self):
         """
