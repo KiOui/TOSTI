@@ -59,7 +59,7 @@
             <p v-else class='alert alert-warning'>There are no items in your cart.</p>
         </div>
         <div v-show="cart.length > 0" class="btn-on btn-ml" id="order-button"
-             onclick="cart_list_vue.loading = true; post_and_callback_with_error('{% url "v1:shifts_cart_order" shift=shift %}', {cart: cart_list_vue.cart.map(product => product.id)}, order_callback, order_error_callback);">
+             v-on:click="submit_cart()">
             Place order
         </div>
     </div>
@@ -116,6 +116,42 @@
                     });
                 this.cart = get_cart_list();
             },
+            methods: {
+                submit_cart() {
+                    this.loading = true;
+                    fetch(
+                        '{% url "v1:shifts_cart_order" shift=shift %}',
+                        {
+                            method: "POST",
+                            body: JSON.stringify({cart: this.cart.map(product => product.id)}),
+                            headers: {
+                                "X-CSRFToken": get_csrf_token(),
+                                "Accept": 'application/json',
+                                "Content-Type": 'application/json',
+                            }
+                        }
+                    ).then(response => {
+                        if (response.status === 200) {
+                            return response;
+                        } else {
+                            throw response;
+                        }
+                    }).then(() => {
+                        this.cart = [];
+                        set_cart_list([]);
+                        if (typeof (update_refresh_list) !== 'undefined') {
+                            update_refresh_list();
+                        }
+                        toastr.success("Your order has been placed!", "Order notification");
+                        setTimeout(function() {window.location.reload()}, 1000);
+                    }).catch(error => {
+                        console.log(error);
+                        show_error_from_api(error);
+                    }).finally(() => {
+                        this.loading = false;
+                    });
+                }
+            }
         });
     </script>
 {% endblock %}

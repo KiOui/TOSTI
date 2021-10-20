@@ -1,6 +1,5 @@
 {% load static %}
 <link rel="stylesheet" href="{% static 'thaliedje/css/player.css' %}"/>
-<script src="{% static 'thaliedje/js/player.js' %}"></script>
 <div class="player" id="player-container-{{ player.id }}">
 <template v-if="player_data.track !== null">
     <div class="w-50 mx-auto mb-2">
@@ -55,70 +54,118 @@
         },
         methods: {
             play() {
-                jQuery(function($) {
-                    let headers = {"X-CSRFToken": get_csrf_token()};
-                    $.ajax({type: 'PATCH', url: '{% url "v1:player_play" player=player %}', asynch: true, headers: headers, success:
-                        function() {
-                            update_update_list();
-                        }}).fail(function(error) {
-                            if (error.status !== 403) {
-                                toastr.error("Failed to communicate with the Spotify device, make sure the device is available.");
-                            }
-                            update_update_list();
-                        });
+                fetch(
+                    '{% url "v1:player_play" player=player %}',
+                    {
+                        method: "PATCH",
+                        headers: {
+                            "X-CSRFToken": get_csrf_token(),
+                            "Accept": 'application/json',
+                        }
                     }
-                )
+                ).then(response => {
+                    if (response.status === 200) {
+                        return response;
+                    } else {
+                        throw response;
+                    }
+                }).then(() => {
+                    if (typeof (update_refresh_list) !== 'undefined') {
+                        update_refresh_list();
+                    }
+                }).catch(error => {
+                    if (error.status && error.status !== 403) {
+                        toastr.error("Failed to communicate with the Spotify device, make sure the device is available.");
+                    } else {
+                        show_error_from_api(error);
+                    }
+                });
             },
             pause() {
-                jQuery(function($) {
-                    let headers = {"X-CSRFToken": get_csrf_token()};
-                    $.ajax({type: 'PATCH', url: '{% url "v1:player_pause" player=player %}', asynch: true, headers: headers, success:
-                        function() {
-                            update_update_list();
-                        }}).fail(function(error) {
-                            if (error.status !== 403) {
-                                toastr.error("Failed to communicate with the Spotify device, make sure the device is available.");
-                            }
-                            update_update_list();
-                        });
+                fetch(
+                    '{% url "v1:player_pause" player=player %}',
+                    {
+                        method: "PATCH",
+                        headers: {
+                            "X-CSRFToken": get_csrf_token(),
+                            "Accept": 'application/json',
+                        }
                     }
-                )
+                ).then(response => {
+                    if (response.status === 200) {
+                        return response;
+                    } else {
+                        throw response;
+                    }
+                }).then(() => {
+                    if (typeof (update_refresh_list) !== 'undefined') {
+                        update_refresh_list();
+                    }
+                }).catch(error => {
+                    if (error.status && error.status !== 403) {
+                        toastr.error("Failed to communicate with the Spotify device, make sure the device is available.");
+                    } else {
+                        show_error_from_api(error);
+                    }
+                });
             },
             forward() {
-                jQuery(function($) {
-                    let headers = {"X-CSRFToken": get_csrf_token()};
-                    $.ajax({type: 'PATCH', url: '{% url "v1:player_next" player=player %}', asynch: true, headers: headers, success:
-                        function() {
-                            update_update_list();
-                        }}).fail(function(error) {
-                            if (error.status !== 403) {
-                                toastr.error("Failed to communicate with the Spotify device, make sure the device is available.");
-                            }
-                            else {
-                                toastr.warning("There are no more tracks to play in the queue.");
-                            }
-                        });
+                fetch(
+                    '{% url "v1:player_next" player=player %}',
+                    {
+                        method: "PATCH",
+                        headers: {
+                            "X-CSRFToken": get_csrf_token(),
+                            "Accept": 'application/json',
+                        }
                     }
-                )
+                ).then(response => {
+                    if (response.status === 200) {
+                        return response;
+                    } else {
+                        throw response;
+                    }
+                }).then(() => {
+                    if (typeof (update_refresh_list) !== 'undefined') {
+                        update_refresh_list();
+                    }
+                }).catch(error => {
+                    if (error.status && error.status !== 403) {
+                        toastr.error("Failed to communicate with the Spotify device, make sure the device is available.");
+                    } else {
+                        show_error_from_api(error);
+                    }
+                });
             },
             backward() {
-                jQuery(function($) {
-                    let headers = {"X-CSRFToken": get_csrf_token()};
-                    $.ajax({type: 'PATCH', url: '{% url "v1:player_previous" player=player %}', asynch: true, headers: headers, success:
-                        function() {
-                            update_update_list();
-                        }}).fail(function(error) {
-                            if (error.status !== 403) {
-                                toastr.error("Failed to communicate with the Spotify device, make sure the device is available.");
-                            }
-                            else {
-                                toastr.warning("There are no more tracks to revert in the queue.");
-                            }
-                        });
+                fetch(
+                    '{% url "v1:player_previous" player=player %}',
+                    {
+                        method: "PATCH",
+                        headers: {
+                            "X-CSRFToken": get_csrf_token(),
+                            "Accept": 'application/json',
+                        }
                     }
-                )
+                ).then(response => {
+                    if (response.status === 200) {
+                        return response;
+                    } else {
+                        throw response;
+                    }
+                }).then(() => {
+                    if (typeof (update_refresh_list) !== 'undefined') {
+                        update_refresh_list();
+                    }
+                }).catch(error => {
+                    if (error.status && error.status !== 403) {
+                        toastr.error("Failed to communicate with the Spotify device, make sure the device is available.");
+                    } else {
+                        show_error_from_api(error);
+                    }
+                });
             }
         }
     });
-    add_update_list(get_and_callback, ['{% url "v1:player_retrieve" pk=player.id %}', {}, function(data) {player_{{ player.id }}_vue.player_data = data}]);
+    add_refresh_url("{% url "v1:player_retrieve" pk=player.id %}", function(data) {player_{{ player.id }}_vue.player_data = data});
 </script>

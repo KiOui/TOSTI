@@ -108,11 +108,17 @@
                             "Accept": 'application/json',
                         }
                     }
-                ).then(response =>
-                    response.json()
-                ).then(data => {
+                ).then(response => {
+                        if (response.status === 200) {
+                            return response.json();
+                        } else {
+                            throw response;
+                        }
+                }).then(data => {
                     this.shift = data;
-                    update_update_list();
+                    if (typeof (update_refresh_list) !== 'undefined') {
+                        update_refresh_list();
+                    }
                 }).catch(error => show_error_from_api(error));
             },
             add_time() {
@@ -125,12 +131,18 @@
                             "Accept": 'application/json',
                         }
                     }
-                ).then(response =>
-                    response.json()
-                ).then(data => {
+                ).then(response => {
+                        if (response.status === 200) {
+                            return response.json();
+                        } else {
+                            throw response;
+                        }
+                }).then(data => {
                     this.shift = data;
                     toastr.success('Added 5 minutes to the end of this shift');
-                    update_update_list();
+                    if (typeof (update_refresh_list) !== 'undefined') {
+                        update_refresh_list();
+                    }
                 }).catch(error => show_error_from_api(error));
             },
             add_capacity() {
@@ -143,12 +155,18 @@
                             "Accept": 'application/json',
                         }
                     }
-                ).then(response =>
-                    response.json()
-                ).then(data => {
+                ).then(response => {
+                        if (response.status === 200) {
+                            return response.json();
+                        } else {
+                            throw response;
+                        }
+                }).then(data => {
                     this.shift = data;
                     toastr.success('Added 5 minutes to the end of this shift');
-                    update_update_list();
+                    if (typeof (update_refresh_list) !== 'undefined') {
+                        update_refresh_list();
+                    }
                 }).catch(error => show_error_from_api(error));
             },
             finalize_shift() {
@@ -162,21 +180,27 @@
                                 "Accept": 'application/json',
                             }
                         }
-                    ).then(response =>
-                        response.json()
-                    ).then(data => {
+                    ).then(response => {
+                        if (response.status === 200) {
+                            return response.json();
+                        } else {
+                            throw response;
+                        }
+                    }).then(data => {
                         this.shift = data;
                         toastr.success('Shift finalized succesfully');
-                        update_update_list();
+                        if (typeof (update_refresh_list) !== 'undefined') {
+                            update_refresh_list();
+                        }
                     }).catch(error => show_error_from_api(error));
                 }
             }
         }
     });
-    add_update_list(get_and_callback, ["{% url "v1:orders_listcreate" shift=shift %}", {}, function (data) {
+    add_refresh_url("{% url "v1:orders_listcreate" shift=shift %}", function (data) {
         admin_footer_vue_{{ shift.id }}.orders = data
-    }]);
-    add_update_list(get_and_callback, ["{% url "v1:shift_retrieveupdate" pk=shift.id %}", {}, function (data) {
+    });
+    add_refresh_url("{% url "v1:shift_retrieveupdate" pk=shift.id %}", function (data) {
         admin_footer_vue_{{ shift.id }}.shift = data
-    }]);
+    });
 </script>

@@ -50,7 +50,7 @@
                             </template>
                             <template v-else>
                                 <input type="button" class="btn btn-danger"
-                                       :onclick="`if (window.confirm('Do you want to delete this order?')) { delete_and_callback('/api/v1/shifts/{{ shift.id }}/orders/${order.id}', {}, function() {update_update_list(); toastr.success('Order has been deleted.');})}`"
+                                       v-on:click="delete_order(order)"
                                        value="Remove"/>
                             </template>
                         </div>
@@ -201,8 +201,16 @@
                             "Accept": 'application/json',
                         }
                     }
-                ).then(() => {
-                    update_update_list();
+                ).then(response => {
+                    if (response.status === 200) {
+                        return response.json();
+                    } else {
+                        throw response;
+                    }
+                }).then(() => {
+                    if (typeof (update_refresh_list) !== 'undefined') {
+                        update_refresh_list();
+                    }
                 }).catch(error => show_error_from_api(error));
             },
             toggle_ready(order) {
@@ -215,16 +223,52 @@
                             "Accept": 'application/json',
                         }
                     }
-                ).then(() => {
-                    update_update_list();
+                ).then(response => {
+                    if (response.status === 200) {
+                        return response;
+                    } else {
+                        throw response;
+                    }
+                }).then(() => {
+                    if (typeof (update_refresh_list) !== 'undefined') {
+                        update_refresh_list();
+                    }
                 }).catch(error => show_error_from_api(error));
+            },
+            delete_order(order) {
+                if (window.confirm('Do you want to delete this order?')) {
+                    fetch(
+                        `/api/v1/shifts/{{ shift.id }}/orders/${order.id}`,
+                        {
+                            method: 'DELETE',
+                            headers: {
+                                "X-CSRFToken": get_csrf_token(),
+                                "Accept": 'application/json',
+                            }
+                        }
+                    ).then(response => {
+                        if (response.status === 204) {
+                            return response;
+                        } else {
+                            throw response;
+                        }
+                    }).then(() => {
+                        if (typeof (update_refresh_list) !== 'undefined') {
+                            update_refresh_list();
+                        }
+                        toastr.success('Order has been deleted.');
+                    }).catch(error => show_error_from_api(error));
+                }
             }
         }
     });
-    add_update_list(get_and_callback, ["{% url "v1:orders_listcreate" shift=shift %}", {}, function (data) {
+    add_refresh_url("{% url "v1:orders_listcreate" shift=shift %}", function (data) {
+        {% if not admin %}
+            data = data.filter(order => order.type === 0);
+        {% endif %}
         orders_vue_{{ shift.id }}.orders = data
-    }]);
-    add_update_list(get_and_callback, ["{% url "v1:shift_retrieveupdate" pk=shift.id %}", {}, function (data) {
+    });
+    add_refresh_url("{% url "v1:shift_retrieveupdate" pk=shift.id %}", function (data) {
         orders_vue_{{ shift.id }}.shift = data
-    }]);
+    });
 </script>

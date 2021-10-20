@@ -1,21 +1,25 @@
 
 let update_timer = null;
 let update_list = [];
+let refresh_list = {};
 
-function show_error_from_api(data) {
-    if  (data) {
-        if (data.responseJSON) {
-            if (data.responseJSON.detail) {
-                toastr.error(data.responseJSON.detail);
+async function show_error_from_api(data) {
+    if (data) {
+        try {
+            let json = await data.json();
+            if (json.detail) {
+                toastr.error(json.detail);
                 return;
             }
-        }
-        if (data.status && data.statusText) {
-            toastr.error(`An error occurred! ${data.statusText} (status code ${data.status}).`);
-            return;
-        }
+        } catch (error) {}
+        try {
+            if (data.status && data.statusText) {
+                toastr.error(`An error occurred! ${data.statusText} (status code ${data.status}).`);
+                return;
+            }
+        } catch (error) {}
     }
-    toasr.error("An unknown exception occurred");
+    toastr.error("An unknown exception occurred, the server might be offline or not responding.");
 }
 
 function create_element(tag_name, class_list, text) {
@@ -60,78 +64,47 @@ function set_list_cookie(name, list, days) {
     }
 }
 
-function post_and_callback_with_error(data_url, data, callback, callback_error/*, args */) {
-    let args = Array.prototype.slice.call(arguments, 4);
-    data.csrfmiddlewaretoken = get_csrf_token();
-    data = JSON.stringify(data);
-    fetch(
-        data_url,
-        {
-            method: "POST",
-            body: data,
-            headers: {
-                'Content-Type': 'application/json',
-                "X-CSRFToken": get_csrf_token(),
-            }
-        }
-    ).then(response => {
-        args.unshift(response);
-        callback.apply(this, args);
-    }).catch(error => {
-        args.unshift(error);
-        callback_error.apply(this, args);
-    });
-}
-
-function delete_and_callback(data_url, data, callback/*, args*/) {
-    let args = Array.prototype.slice.call(arguments, 4);
-    jQuery(function($) {
-        let headers = {"X-CSRFToken": get_csrf_token()};
-        $.ajax({type: 'DELETE', url: data_url, data, dataType:'json', asynch: true, headers: headers, success:
-            function(data) {
-                args.unshift(data);
-                callback.apply(this, args);
-            }}).fail(function() {
-                console.error("Error")
-            });
-        }
-    )
-}
-
-function get_and_callback(data_url, data, callback/*, args */) {
-    let args = Array.prototype.slice.call(arguments, 4);
-    jQuery(function($) {
-        let headers = {"X-CSRFToken": get_csrf_token()};
-        $.ajax({type: 'GET', url: data_url, data, dataType:'json', asynch: true, headers: headers, success:
-            function(data) {
-                if (data.error) {
-                    console.error(data.error);
-                }
-                else {
-                    args.unshift(data);
-                    callback.apply(this, args);
-                }
-            }}).fail(function() {
-                console.error("Error")
-            });
-        }
-    )
-}
-
 function replace_container(container, data) {
     container.innerHTML = data;
 }
 
-function add_update_list(func, args) {
-    update_list.push({func: func, args: args});
+function add_refresh_url(url, assigner_func) {
+    if (refresh_list[url]) {
+        refresh_list[url].push(assigner_func);
+    } else {
+        refresh_list[url] = [assigner_func];
+    }
 }
 
-function update_update_list() {
+function update_refresh_list() {
     clearTimeout(update_timer);
-    for (let i = 0; i < update_list.length; i++) {
-        update_list[i].func.apply(this, update_list[i].args);
+    for (const [key, value] of Object.entries(refresh_list)) {
+        fetch(
+            key,
+            {
+                headers: {
+                    "X-CSRFToken": get_csrf_token(),
+                }
+            }
+        ).then(response => {
+            if (response.status === 200) {
+                return response.json();
+            } else {
+                throw response;
+            }
+        }).then(data => {
+            for (let i = 0; i < value.length; i++) {
+                try {
+                    value[i].apply(this, [data]);
+                } catch (error) {
+                    console.log(`An error occurred while refreshing ${key} and executing function ${value[i]}. Error: ${error}`)
+                }
+            }
+        }).catch(error => {
+            console.log(`An error occurred while refreshing ${key}. Error: ${error}`)
+        });
     }
-    update_timer = setTimeout(update_update_list, 5000);
+    update_timer = setTimeout(update_refresh_list, 5000);
 }
 
 function get_csrf_token() {
@@ -149,6 +122,4 @@ function get_csrf_token() {
     }
 }
 
-$(document).ready(function() {
-    update_update_list();
-});
+update_refresh_list();
