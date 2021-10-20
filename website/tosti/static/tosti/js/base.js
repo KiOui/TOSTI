@@ -8,18 +8,26 @@ async function show_error_from_api(data) {
         try {
             let json = await data.json();
             if (json.detail) {
-                toastr.error(json.detail);
+                tata.error('', json.detail);
                 return;
             }
         } catch (error) {}
         try {
             if (data.status && data.statusText) {
-                toastr.error(`An error occurred! ${data.statusText} (status code ${data.status}).`);
+                tata.error('', `An error occurred! ${data.statusText} (status code ${data.status}).`);
                 return;
             }
         } catch (error) {}
     }
-    toastr.error("An unknown exception occurred, the server might be offline or not responding.");
+    tata.error('', "An unknown exception occurred, the server might be offline or not responding.");
+}
+
+function get_parents(elem) {
+    let parents = [];
+    for ( ; elem && elem !== document; elem = elem.parentNode ) {
+		parents.push(elem);
+	}
+    return parents;
 }
 
 function create_element(tag_name, class_list, text) {

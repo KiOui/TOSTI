@@ -102,12 +102,13 @@ function add_product_from_barcode(result) {
         }).then(data => {
             Quagga.stop();
             scanned_codes = [];
-            toastr.success("Added " + data.product.name + " (€" + data.order_price + ") to the queue.");
+            tata.success("", "Added " + data.product.name + " (€" + data.order_price + ") to the queue.");
             if (typeof (update_refresh_list) !== 'undefined') {
                 update_refresh_list();
             }
-            document.getElementById(POPUP_MODAL).modal('hide');
+            document.getElementById(POPUP_MODAL_ID).modal('hide');
         }).catch(error => {
+            console.log(error);
             console.log("No product data for barcode " + barcode + " .");
         });
     }

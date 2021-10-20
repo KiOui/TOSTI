@@ -4,9 +4,9 @@
 
 <div id="admin-footer-wrapper-{{ shift.id }}">
     <!-- Admin footer -->
-    <footer class="page-footer navbar navbar-expand-md fixed-bottom" id="shift-footer-container-{{ shift.id }}">
+    <footer v-on:click="stop_propagation" class="page-footer navbar navbar-expand-md fixed-bottom" id="footer-container">
         <div class="container text-center">
-            <div class="row flex-grow-1 navbar-collapse collapse" id="footer-menu">
+            <div class="row flex-grow-1 navbar-collapse collapse" id="footer-menu" ref="footer_menu">
                 <template v-if="!shift.finalized">
                     <div class="col expand-mobile">
                         <div v-if="shift.can_order" :id="`shift-status-${shift.id}`"
@@ -67,8 +67,8 @@
                 </div>
             </div>
             <button id="footer-toggler" class="navbar-toggler m-auto" style="border: 0" type="button"
-                    data-toggle="collapse"
-                    data-target="#footer-menu">
+                    data-bs-toggle="collapse"
+                    data-bs-target="#footer-menu">
                 <i class="fas fa-caret-up text-white"></i>
             </button>
         </div>
@@ -94,8 +94,21 @@
                 .then(json => {
                     this.shift = json;
                 });
+            // Close mobile footer automatically upon pressing out of the footer
+            window.addEventListener('click', () => {
+                if (document.getElementById('footer-menu').classList.contains('show') &&
+                    window.getComputedStyle(document.getElementById('footer-toggler')).display !== "none") {
+                    document.getElementById('footer-toggler').click();
+                }
+            });
         },
         methods: {
+            // Stop propagating the click event if pressed inside the mobile footer
+            stop_propagation(event) {
+                    !(get_parents(event.target).filter((element) => {return element.id === 'footer-toggler'}).length > 0 || event.target.id === "footer-toggler") &&
+                    event.stopPropagation();
+                }
+            },
             adjust_can_order(can_order) {
                 fetch(
                     '{% url "v1:shift_retrieveupdate" pk=shift.pk %}',
@@ -139,7 +152,7 @@
                         }
                 }).then(data => {
                     this.shift = data;
-                    toastr.success('Added 5 minutes to the end of this shift');
+                    tata.success('', 'Added 5 minutes to the end of this shift');
                     if (typeof (update_refresh_list) !== 'undefined') {
                         update_refresh_list();
                     }
@@ -163,7 +176,7 @@
                         }
                 }).then(data => {
                     this.shift = data;
-                    toastr.success('Added 5 minutes to the end of this shift');
+                    tata.success('', 'Added 5 capacity to this shift');
                     if (typeof (update_refresh_list) !== 'undefined') {
                         update_refresh_list();
                     }
@@ -188,7 +201,7 @@
                         }
                     }).then(data => {
                         this.shift = data;
-                        toastr.success('Shift finalized succesfully');
+                        tata.success('', 'Shift finalized succesfully');
                         if (typeof (update_refresh_list) !== 'undefined') {
                             update_refresh_list();
                         }
