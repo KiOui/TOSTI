@@ -1,9 +1,10 @@
 import datetime
 
+import django_filters.rest_framework
 import pytz
 from django.db.models import Q
 from oauth2_provider.contrib.rest_framework import IsAuthenticatedOrTokenHasScope
-from rest_framework import status
+from rest_framework import status, filters
 from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework.exceptions import PermissionDenied, ParseError, ValidationError as RestValidationError
 from rest_framework.generics import (
@@ -279,7 +280,13 @@ class ProductListAPIView(ListAPIView):
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
     permission_classes = [IsAuthenticatedOrTokenHasScope]
-    required_scopes = ["read"]
+    filter_backends = (
+        django_filters.rest_framework.DjangoFilterBackend,
+        filters.SearchFilter,
+    )
+    required_scopes = ["sales:admin"]
+    filterset_fields = ["available", "orderable", "ignore_shift_restrictions"]
+    search_fields = ["name", "barcode"]
 
     def get_queryset(self):
         """Get the queryset."""
@@ -398,51 +405,6 @@ class ShiftFinalizeAPIView(APIView):
         except DjangoValidationError as e:
             raise PermissionDenied(detail=", ".join(e.messages))
         return Response(status=status.HTTP_200_OK, data=ShiftSerializer(shift, context={"request": request}).data)
-
-
-class ProductSearchAPIView(APIView):
-    """Product Search API View."""
-
-    serializer_class = ProductSerializer
-    schema = CustomAutoSchema(
-        manual_operations=[{"name": "query", "in": "query", "required": True, "schema": {"type": "string"}}],
-        response_schema={"type": "array", "items": {"$ref": "#/components/schemas/Product"}},
-    )
-    permission_required = "orders.can_manage_shift_in_venue"
-    permission_classes = [HasPermissionOnObject, IsOnBakersList, IsAuthenticatedOrTokenHasScope]
-    required_scopes = ["orders:manage"]
-
-    def get_shift(self):
-        """Get Shift."""
-        return self.kwargs.get("shift")
-
-    def get_permission_object(self):
-        """Get the object to check permissions for."""
-        obj = self.kwargs.get("shift")
-        return obj.venue
-
-    def get(self, request, **kwargs):
-        """
-        Product Search API View.
-
-        Permission required: orders.can_manage_shift_in_venue and user must be in shift assignees
-
-        API endpoint for searching products.
-        A "query" GET parameter should be specified indicating the product or barcode search query.
-        """
-        query = request.GET.get("query")
-        if query is not None:
-            string_query = services.query_product_name(query)
-            barcode_query = services.query_product_barcode(query)
-            all_query = set(string_query)
-            all_query.update(barcode_query)
-            all_query = list(all_query)
-        else:
-            all_query = []
-        return Response(
-            status=status.HTTP_200_OK,
-            data=self.serializer_class(all_query, many=True, context={"request": request}).data,
-        )
 
 
 class ShiftScannerAPIView(APIView):

@@ -84,12 +84,12 @@
         },
         mounted() {
             //call function on modal shown
-            $(POPUP_MODAL).on('shown.bs.modal', function () {
+            document.getElementById(POPUP_MODAL).on('shown.bs.modal', function () {
                 start_scanner();
             });
 
             //call function on hiding modal
-            $(POPUP_MODAL).on('hidden.bs.modal', function () {
+            document.getElementById(POPUP_MODAL).on('hidden.bs.modal', function () {
                 stop_scanner();
             });
         },
@@ -116,7 +116,7 @@
                     if (typeof (update_refresh_list) !== 'undefined') {
                         update_refresh_list();
                     }
-                    $(POPUP_MODAL).modal('hide');
+                    document.getElementById(POPUP_MODAL).modal('hide');
                     scanner_vue.search_results = [];
                     scanner_vue.search_input = "";
                     toastr.success("Order added to queue.");
@@ -128,7 +128,7 @@
             },
             search() {
                 fetch(
-                    `{% url 'v1:product_search' shift=shift %}?query=${this.search_input}`,
+                    `{% url 'v1:product_list' shift=shift %}?search=${this.search_input}`,
                     {
                         data: this.search_input,
                         headers: {
