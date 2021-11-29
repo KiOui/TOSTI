@@ -69,7 +69,7 @@
                         </li>
                         {% if not user.is_authenticated %}
                             <li class="nav-item">
-                                <a class="nav-link" href="{% url "users:login" %}">
+                                <a class="nav-link" href="{% url "login" %}">
                                     Login
                                 </a>
                             </li>
@@ -99,7 +99,7 @@
                                     <a class="nav-link text-dark" href="{% url "users:account" %}">
                                         Account
                                     </a>
-                                    <a class="nav-link text-dark" href="{% url "users:logout" %}">
+                                    <a class="nav-link text-dark" href="{% url "logout" %}">
                                         Logout
                                     </a>
                                 </div>

@@ -1,0 +1,5 @@
+from .production import *
+
+# Use different database credentials when accessing from lilo than webserver
+
+DATABASES["default"]["PASSWORD"] = "*************"
