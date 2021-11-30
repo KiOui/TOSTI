@@ -11,6 +11,7 @@ User = get_user_model()
 def post_login(request, user, idp, saml):
     """Log a user in to the system using a custom function."""
     update_staff_status(user)
+    update_user_name(user)
     return login(request, user, idp, saml)
 
 
@@ -19,6 +20,16 @@ def join_auto_join_groups(user):
     auto_join_groups = Group.objects.filter(groupsettings__is_auto_join_group=True)
     for group in auto_join_groups:
         user.groups.add(group)
+
+
+def update_user_name(user):
+    """Update the user's first and last name based on the displayName attribute provided via SAML, expected to be mapped to first_name."""
+    if user.first_name and not user.last_name:
+        first_name = user.first_name[user.first_name.find("(") + 1 : user.first_name.find(")")]
+        last_name = user.first_name.split(",")[0]
+        user.first_name = first_name
+        user.last_name = last_name
+        user.save()
 
 
 def update_staff_status(user):
