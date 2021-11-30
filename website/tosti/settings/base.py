@@ -139,10 +139,8 @@ OAUTH2_PROVIDER = {
 
 
 # SAML SP SETTINGS
-LOGIN_REDIRECT_URL = "/"
-LOGOUT_REDIRECT_URL = "/"
 SP_UNIQUE_USERNAMES = False
-SP_LOGIN_METHOD = "users.services.post_login"
+SP_LOGIN = "users.services.post_login"
 SESSION_SERIALIZER = "django.contrib.sessions.serializers.PickleSerializer"
 
 # Messages

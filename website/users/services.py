@@ -9,6 +9,7 @@ User = get_user_model()
 
 
 def post_login(request, user, idp, saml):
+    """Log a user in to the system using a custom function."""
     update_staff_status(user)
     return login(request, user, idp, saml)
 
@@ -24,6 +25,9 @@ def update_staff_status(user):
     """Update the is_staff value of a user."""
     if len(user.groups.all().filter(groupsettings__gets_staff_permissions=True)) > 0:
         user.is_staff = True
+        user.save()
+    elif not user.is_superuser and len(user.user_permissions.all()) == 0:
+        user.is_staff = False
         user.save()
 
 
