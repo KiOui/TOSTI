@@ -33,6 +33,7 @@ GUARDIAN_RAISE_403 = True
 
 AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",  # default
+    "sp.backends.SAMLAuthenticationBackend",
     "guardian.backends.ObjectPermissionBackend",
 )
 
