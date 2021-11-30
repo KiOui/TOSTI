@@ -20,7 +20,6 @@ handler404 = custom_handler404
 handler500 = custom_handler500
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
     path("", IndexView.as_view(), name="index"),
     path("oauth/", include("oauth2_provider.urls", namespace="oauth2_provider")),
     path("welcome", WelcomeView.as_view(), name="welcome"),
@@ -53,4 +52,5 @@ urlpatterns = [
     path("admin/login/", RedirectView.as_view(url="/login"), name="login-redirect"),
     path("admin/logout/", RedirectView.as_view(url="/logout"), name="logout-redirect"),
     path("admin-login/", admin.site.login, name="admin-login"),
+    path("admin/", admin.site.urls),
 ]
