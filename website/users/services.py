@@ -3,13 +3,14 @@ from datetime import timedelta
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.utils import timezone
-
+from sp.utils import login
 
 User = get_user_model()
 
 
 def post_login(request, user, idp, saml):
     update_staff_status(user)
+    return login(request, user, idp, saml)
 
 
 def join_auto_join_groups(user):
