@@ -44,9 +44,7 @@ urlpatterns = [
     ),
     path("api/", include("tosti.api.urls")),
     path("sso/<idp_slug>/", include("sp.urls")),
-    path(
-        "login/", RedirectView.as_view(url="/sso/science/login/"), name="login"
-    ),
+    path("login/", RedirectView.as_view(url="/sso/science/login/"), name="login"),
     path(
         "logout/",
         RedirectView.as_view(url="/sso/science/logout/"),

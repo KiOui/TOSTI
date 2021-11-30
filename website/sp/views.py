@@ -14,9 +14,7 @@ from .utils import get_request_idp, get_session_nameid
 
 def metadata(request, **kwargs):
     idp = get_request_idp(request, **kwargs)
-    saml_settings = OneLogin_Saml2_Settings(
-        settings=idp.sp_settings, sp_validation_only=True
-    )
+    saml_settings = OneLogin_Saml2_Settings(settings=idp.sp_settings, sp_validation_only=True)
     return HttpResponse(saml_settings.get_sp_metadata(), content_type="text/xml")
 
 

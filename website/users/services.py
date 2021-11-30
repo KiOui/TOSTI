@@ -1,6 +1,3 @@
-from urllib.parse import urlencode, urlparse, parse_qsl
-import requests
-import re
 from datetime import timedelta
 
 from django.contrib.auth import get_user_model

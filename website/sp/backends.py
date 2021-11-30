@@ -63,17 +63,11 @@ class SAMLAuthenticationBackend(ModelBackend):
                 return None
 
         # The set of mapped attributes that should always be updated on the user.
-        always_update = set(
-            idp.attributes.filter(always_update=True).values_list(
-                "mapped_name", flat=True
-            )
-        )
+        always_update = set(idp.attributes.filter(always_update=True).values_list("mapped_name", flat=True))
 
         # For users created by this backend, set initial user default values.
         if created:
-            attrs.update(
-                {default.field: [default.value] for default in idp.user_defaults.all()}
-            )
+            attrs.update({default.field: [default.value] for default in idp.user_defaults.all()})
 
         # Keep track of which fields (if any) were updated.
         update_fields = []

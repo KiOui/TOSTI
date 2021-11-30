@@ -23,13 +23,10 @@ def login(request, user, idp, saml):
     if idp.respect_expiration:
         if not settings.SESSION_SERIALIZER.endswith("PickleSerializer"):
             raise ImproperlyConfigured(
-                "IdP-based session expiration is only supported with the "
-                "PickleSerializer SESSION_SERIALIZER."
+                "IdP-based session expiration is only supported with the " "PickleSerializer SESSION_SERIALIZER."
             )
         try:
-            dt = datetime.datetime.fromtimestamp(
-                saml.get_session_expiration(), tz=datetime.timezone.utc
-            )
+            dt = datetime.datetime.fromtimestamp(saml.get_session_expiration(), tz=datetime.timezone.utc)
             request.session.set_expiry(dt)
         except TypeError:
             pass
