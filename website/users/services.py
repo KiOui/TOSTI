@@ -27,6 +27,11 @@ def update_user_name(user):
     if user.first_name and not user.last_name:
         first_name = user.first_name[user.first_name.find("(") + 1 : user.first_name.find(")")]
         last_name = user.first_name.split(",")[0]
+
+        insert = user.first_name[user.first_name.rfind(".") + 1 : user.first_name.find("(")].strip()
+        if len(insert) > 0:
+            last_name = insert + " " + last_name
+
         user.first_name = first_name
         user.last_name = last_name
         user.save()
