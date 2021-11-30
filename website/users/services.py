@@ -8,6 +8,10 @@ from django.utils import timezone
 User = get_user_model()
 
 
+def post_login(request, user, idp, saml):
+    update_staff_status(user)
+
+
 def join_auto_join_groups(user):
     """Let new users join groups that are set for auto-joining."""
     auto_join_groups = Group.objects.filter(groupsettings__is_auto_join_group=True)
