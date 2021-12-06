@@ -9,7 +9,7 @@
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-
+import datetime
 import os
 import sys
 import sphinx_rtd_theme
@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.abspath("../../website"))
 import django
 from django.conf import settings
 
-from tosti import settings as tosti_settings
+from tosti.settings import development as tosti_settings
 
 # -- Initialise Django ----------------------------------------------------
 
@@ -29,7 +29,7 @@ django.setup()
 # -- Project information -----------------------------------------------------
 
 project = "TOSTI"
-copyright = "2020, Tartarus"
+copyright = f"{datetime.datetime.now().year}, Tartarus"
 author = "Tartarus"
 
 

@@ -1,5 +1,4 @@
 from django import forms
-from urllib.parse import quote
 
 from associations.models import Association
 

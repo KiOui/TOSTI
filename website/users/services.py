@@ -23,12 +23,15 @@ def join_auto_join_groups(user):
 
 
 def update_user_name(user):
-    """Update the user's first and last name based on the displayName attribute provided via SAML, expected to be mapped to first_name."""
+    """
+    Update the user's first and last name based on the displayName attribute
+    provided via SAML, expected to be mapped to first_name.
+    """
     if user.first_name and not user.last_name:
-        first_name = user.first_name[user.first_name.find("(") + 1 : user.first_name.find(")")]
+        first_name = user.first_name[user.first_name.find("(") + 1: user.first_name.find(")")]
         last_name = user.first_name.split(",")[0]
 
-        insert = user.first_name[user.first_name.rfind(".") + 1 : user.first_name.find("(")].strip()
+        insert = user.first_name[user.first_name.rfind(".") + 1: user.first_name.find("(")].strip()
         if len(insert) > 0:
             last_name = insert + " " + last_name
 
