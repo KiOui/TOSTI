@@ -2,7 +2,7 @@
 name = "tosti"
 version = "0.1.0"
 description = "Tartarus Order System for Take-away Items"
-authors = ["Tartarus WWWcie <www-tartarus@science.ru.nl>"]
+authors = ["Job Doesburg <job.doesburg@gmail.com>", "Lars van Rhijn <larsvanrhijn@gmail.com>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
