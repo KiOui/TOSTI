@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.abspath("../../website"))
 import django
 from django.conf import settings
 
-from tosti.settings import development as tosti_settings
+from tosti import settings as tosti_settings
 
 # -- Initialise Django ----------------------------------------------------
 
