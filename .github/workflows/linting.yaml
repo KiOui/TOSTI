@@ -52,4 +52,4 @@ jobs:
           website
 
       - name: "Run PyDocStyle"
-        run: poetry run pydocstyle --explain --add-ignore=D100,D104 --match-dir='(?!migrations).*'
+        run: poetry run pydocstyle --explain --add-ignore=D100,D104 --match-dir='(?!sp)(?!migrations).*'
