@@ -30,10 +30,10 @@ class Player(models.Model):
         "streaming, app-remote-control"
     )  # The required Spotify API permissions
 
-    display_name = models.CharField(max_length=256, default="", blank=True)
-    playback_device_id = models.CharField(max_length=256, default="", blank=True)
+    display_name = models.CharField(max_length=255, default="", blank=True)
+    playback_device_id = models.CharField(max_length=255, default="", blank=True)
     playback_device_name = models.CharField(
-        max_length=256,
+        max_length=255,
         default="",
         blank=True,
         help_text=(
@@ -42,9 +42,9 @@ class Player(models.Model):
             " configuration."
         ),
     )
-    client_id = models.CharField(max_length=256, unique=True)
-    client_secret = models.CharField(max_length=256)
-    redirect_uri = models.CharField(max_length=512)
+    client_id = models.CharField(max_length=255, unique=True)
+    client_secret = models.CharField(max_length=255)
+    redirect_uri = models.CharField(max_length=255)
     venue = models.OneToOneField(Venue, on_delete=models.SET_NULL, null=True, blank=True)
 
     class Meta:
@@ -188,8 +188,8 @@ class Player(models.Model):
 class SpotifyArtist(models.Model):
     """Spotify Artist model."""
 
-    artist_name = models.CharField(max_length=512, unique=True)
-    artist_id = models.CharField(max_length=512)
+    artist_name = models.CharField(max_length=255, unique=True)
+    artist_id = models.CharField(max_length=255)
 
     def __str__(self):
         """
@@ -203,8 +203,8 @@ class SpotifyArtist(models.Model):
 class SpotifyTrack(models.Model):
     """Spotify Track model."""
 
-    track_id = models.CharField(max_length=256, unique=True)
-    track_name = models.CharField(max_length=256)
+    track_id = models.CharField(max_length=255, unique=True)
+    track_name = models.CharField(max_length=255)
     track_artists = models.ManyToManyField(SpotifyArtist)
 
     def __str__(self):
