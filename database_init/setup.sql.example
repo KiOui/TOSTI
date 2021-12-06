@@ -1,3 +1,0 @@
-CREATE USER django WITH ENCRYPTED PASSWORD '[postgres_password]';
-CREATE DATABASE django OWNER django;
-GRANT ALL PRIVILEGES ON DATABASE django TO django;

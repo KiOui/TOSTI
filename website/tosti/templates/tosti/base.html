@@ -24,8 +24,8 @@
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'tosti/favicon/favicon-32x32.png' %}">
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'tosti/favicon/favicon-16x16.png' %}">
     <link rel="manifest" href="{% static 'tosti/favicon/site.webmanifest' %}">
-    <meta name="msapplication-TileColor" content="#d9a75d">
-    <meta name="theme-color" content="#ff0000">
+    <meta name="msapplication-TileColor" content="#e8b365">
+    <meta name="theme-color" content="#e8b365">
     <!-- Vue JS -->
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
     <!-- TaTa.js notifications -->
@@ -67,7 +67,7 @@
                         </li>
                         {% if not user.is_authenticated %}
                             <li class="nav-item">
-                                <a class="nav-link" href="{% url "users:login" %}">
+                                <a class="nav-link" href="{% url "login" %}">
                                     Login
                                 </a>
                             </li>
@@ -75,7 +75,7 @@
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink"
                                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    {{ user.username }}
+                                    {{ user.get_short_name }}
                                 </a>
                                 <div class="dropdown-menu p-2" aria-labelledby="navbarDropdownMenuLink">
                                     <a class="nav-link text-dark" href="{% url "venues:calendar" %}">
@@ -97,7 +97,7 @@
                                     <a class="nav-link text-dark" href="{% url "users:account" %}">
                                         Account
                                     </a>
-                                    <a class="nav-link text-dark" href="{% url "users:logout" %}">
+                                    <a class="nav-link text-dark" href="{% url "logout" %}">
                                         Logout
                                     </a>
                                 </div>

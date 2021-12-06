@@ -1,12 +1,3 @@
-"""
-Settings module.
-
-This file controls what settings are loaded.
-
-Using environment variables you can control the loading of various
-overrides.
-"""
-
 import logging
 import os
 
@@ -16,7 +7,7 @@ if os.environ.get("DOCUTILSCONFIG"):
     from django.conf.global_settings import *
 
 # Load base settings
-from .settings import *
+from . import base
 
 logger = logging.getLogger(__name__)
 
@@ -28,4 +19,4 @@ except ImportError:
 
 # Load production settings if DJANGO_PRODUCTION is set
 if os.environ.get("DJANGO_PRODUCTION"):
-    from .production import *
+    from . import production
