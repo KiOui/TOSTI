@@ -35,6 +35,10 @@
     margin-right: 5px;
 }
 
+.item-name {
+    margin-right: 5px;
+}
+
 .flex-divider {
     flex-grow: 1;
 }

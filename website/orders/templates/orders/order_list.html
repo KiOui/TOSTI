@@ -33,7 +33,7 @@
                         <i v-else class="item-username fas fa-desktop"></i>
                     </div>
                     {% if admin %}
-                        <div v-if="!shift.finalized" class="button-row">
+                        <div v-if="!shift.finalized" class="ms-2 button-row">
                             <template v-if="order.type === 0">
                                 <input v-if="order.paid" type="button" class="checkbox-paid btn me-2 btn-success"
                                        v-on:click="toggle_paid(order)"
@@ -55,7 +55,7 @@
                             </template>
                         </div>
                     {% else %}
-                        <div class="button-row">
+                        <div class="ms-2 button-row">
                             <template v-if="order.user !== null && {{ user.id }} === order.user.id">
                                 <div v-if="order.ready && order.paid" class="status-button me-2 bg-success text-white">
                                     Done
@@ -90,7 +90,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h2 class="modal-title">Shift summary</h2>
-                        <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+                        <button type="button" class="close btn btn-default" data-bs-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body" id="order-overview-popup-list-{{ shift.id }}">
                         <h3>Orders to make</h3>

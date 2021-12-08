@@ -390,6 +390,15 @@ class Shift(models.Model):
         return distinct_ordered_items
 
     @property
+    def number_of_restricted_orders(self):
+        """
+        Get the total number of restricted orders in this shift.
+
+        :return: the total number of orders in this shift
+        """
+        return Order.objects.filter(shift=self, product__ignore_shift_restrictions=False).count()
+
+    @property
     def number_of_orders(self):
         """
         Get the total number of orders in this shift.

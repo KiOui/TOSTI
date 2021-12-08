@@ -18,6 +18,7 @@
                     <p class="item-price">€<% (Math.round(product.current_price * 100) / 100).toFixed(2) %></p>
                     <div v-if="product.max_allowed !== null && get_amount_of_item_orders(product.id) >= product.max_allowed"
                          class="item-overlay">
+                        <div class="overlay"></div>
                         <p class="alert alert-warning">You have ordered the maximum of this item.</p>
                     </div>
                     <input class="btn btn-success ms-2" type="button" value="Add"
@@ -25,6 +26,7 @@
                 </li>
                 <li v-if="shift.max_user_orders !== null && get_amount_of_restricted_cart_items() >= shift.max_user_orders"
                     class="item-overlay">
+                    <div class="overlay"></div>
                     <p class="alert alert-warning">You have ordered the maximum amount of orders you can place this
                         shift.</p>
                 </li>
