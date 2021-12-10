@@ -33,11 +33,15 @@
             #user-tools a:focus, #user-tools a:hover {
                 color: var(--tosti-dark);
             }
-            .content a {
+            .content a:not(table a) {
                 color: var(--tosti-base);
             }
-            .content a:focus, .content a:hover{
+            .content a:not(table a):focus, .content a:not(table a):hover{
                 color: var(--tosti-base-dark);
+            }
+            #site-name {
+                font-family: 'Neucha', cursive;
+                text-transform: uppercase;
             }
         </style>
 {% endblock %}
