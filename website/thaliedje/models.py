@@ -126,6 +126,8 @@ class Player(models.Model):
 
         :return: the cache file path
         """
+        if not os.path.exists(settings.SPOTIFY_CACHE_PATH):
+            os.makedirs(settings.SPOTIFY_CACHE_PATH)
         return os.path.join(settings.SPOTIFY_CACHE_PATH, self.client_id)
 
     @property
