@@ -3,7 +3,9 @@ from django import forms
 
 from django.contrib import admin, messages
 from django.contrib.admin import widgets
+from django.db import models
 from django.db.models import Q
+from django.forms import CheckboxSelectMultiple
 from django.urls import reverse
 from guardian.admin import GuardedModelAdmin
 from import_export.admin import ImportExportModelAdmin
@@ -20,22 +22,18 @@ class OrderVenueAdmin(GuardedModelAdmin):
     pass
 
 
-class ProductAdminVenueFilter(AutocompleteFilter):
-    """Filter class to filter product objects available at a certain venue."""
-
-    title = "Venue"
-    field_name = "available_at"
-
-
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     """Custom admin for products."""
 
     list_display = ["name", "current_price", "available"]
-    list_filter = [ProductAdminVenueFilter, "available"]
+    list_filter = ["available"]
     search_fields = ["name", "venue"]
 
     actions = ["make_available", "make_unavailable"]
+    formfield_overrides = {
+        models.ManyToManyField: {"widget": CheckboxSelectMultiple},
+    }
 
     def clean_barcode(self):
         """Clean barcode."""
@@ -108,15 +106,20 @@ class ShiftAdminForm(forms.ModelForm):
         """Initialize the form."""
         super().__init__(*args, **kwargs)
 
-        self.fields["venue"].queryset = OrderVenue.objects.filter(venue__active=True)
-        self.fields["assignees"].queryset = User.objects.all()
+        if "venue" in self.fields:
+            self.fields["venue"].queryset = OrderVenue.objects.filter(venue__active=True)
+
+        if "assignees" in self.fields:
+            self.fields["assignees"].queryset = User.objects.all()
 
         if self.instance.pk:
-            self.fields["venue"].queryset = OrderVenue.objects.filter(
-                Q(venue__active=True) | Q(shifts=self.instance)
-            ).distinct()
-            self.fields["venue"].initial = OrderVenue.objects.filter(shifts=self.instance)
-            self.fields["assignees"].initial = User.objects.filter(shift=self.instance)
+            if "venue" in self.fields:
+                self.fields["venue"].queryset = OrderVenue.objects.filter(
+                    Q(venue__active=True) | Q(shifts=self.instance)
+                ).distinct()
+                self.fields["venue"].initial = OrderVenue.objects.filter(shifts=self.instance)
+            if "assignees" in self.fields:
+                self.fields["assignees"].initial = User.objects.filter(shift=self.instance)
 
     assignees = forms.ModelMultipleChoiceField(
         queryset=None,
@@ -140,9 +143,10 @@ class ShiftAdmin(GuardedModelAdmin, ImportExportModelAdmin):
         "capacity",
         "get_is_active",
         "can_order",
+        "finalized",
     ]
 
-    list_filter = ["venue", "can_order"]
+    list_filter = ["venue", "can_order", "finalized"]
     inlines = [OrderInline]
 
     search_fields = ["start_date", "venue__venue__name"]
@@ -179,6 +183,12 @@ class ShiftAdmin(GuardedModelAdmin, ImportExportModelAdmin):
         return obj.is_active
 
     get_is_active.boolean = True
+    get_is_active.short_description = "active"
+
+    def has_change_permission(self, request, obj=None):
+        if obj and obj.finalized:
+            return False
+        return super().has_change_permission(request, obj)
 
     class Media:
         """Necessary to use AutocompleteFilter."""
@@ -204,16 +214,23 @@ class OrderAdminForm(forms.ModelForm):
         """Initialize the form."""
         super().__init__(*args, **kwargs)
 
-        self.fields["product"].queryset = Product.objects.filter(available=True)
-        self.fields["shift"].queryset = Shift.objects.filter(can_order=True)
+        if "product" in self.fields:
+            self.fields["product"].queryset = Product.objects.filter(available=True)
+
+        if "shift" in self.fields:
+            self.fields["shift"].queryset = Shift.objects.filter(can_order=True)
 
         if self.instance.pk:
-            self.fields["product"].queryset = Product.objects.filter(
-                Q(available=True) | Q(order=self.instance)
-            ).distinct()
-            self.fields["product"].initial = Product.objects.filter(order=self.instance)
-            self.fields["shift"].queryset = Shift.objects.filter(Q(can_order=True) | Q(order=self.instance)).distinct()
-            self.fields["shift"].initial = Shift.objects.filter(order=self.instance)
+            if "product" in self.fields:
+                self.fields["product"].queryset = Product.objects.filter(
+                    Q(available=True) | Q(pk=self.instance.product.pk)
+                ).distinct()
+                self.fields["product"].initial = self.instance.product
+            if "shift" in self.fields:
+                self.fields["shift"].queryset = Shift.objects.filter(
+                    Q(can_order=True) | Q(pk=self.instance.shift.pk)
+                ).distinct()
+                self.fields["shift"].initial = self.instance.shift
 
 
 @admin.register(Order)
