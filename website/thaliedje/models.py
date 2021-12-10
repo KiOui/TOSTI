@@ -104,6 +104,8 @@ class Player(models.Model):
             currently_playing = self.spotify.currently_playing()
         except JSONDecodeError:
             currently_playing = None
+        except OSError:
+            currently_playing = None
 
         if currently_playing is None:
             return False
