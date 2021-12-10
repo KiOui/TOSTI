@@ -4,16 +4,16 @@
 <div class="d-flex flex-column justify-content-center">
     {% if page_obj|length > 0 %}
         <div class="d-flex my-2">
-            <div class="flex-grow-1" style="flex-basis: 0;">Product</div>
-            <div class="flex-grow-1" style="flex-basis: 0;">Shift</div>
             <div class="flex-grow-1" style="flex-basis: 0;">Ordered at</div>
+            <div class="flex-grow-1" style="flex-basis: 0;">Shift</div>
+            <div class="flex-grow-1" style="flex-basis: 0;">Product</div>
         </div>
         <div class="border"></div>
         {% for order in page_obj %}
             <div class="d-flex my-2">
-                <div class="flex-grow-1" style="flex-basis: 0;">{{ order.product }}</div>
-                <div class="flex-grow-1" style="flex-basis: 0;">{{ order.shift }}</div>
                 <div class="flex-grow-1" style="flex-basis: 0;">{{ order.created }}</div>
+                <div class="flex-grow-1" style="flex-basis: 0;">{{ order.shift }}</div>
+                <div class="flex-grow-1" style="flex-basis: 0;">{{ order.product }}</div>
             </div>
             <div class="border"></div>
         {% endfor %}
