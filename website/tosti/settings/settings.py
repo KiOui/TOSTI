@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "sp",
-    "admin_auto_filters",
+    "autocompletefilter",
     "import_export",
     "guardian",
     'rest_framework',

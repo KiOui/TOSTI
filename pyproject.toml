@@ -25,6 +25,7 @@ django-oauth-toolkit = "^1.3.3"
 django-cors-headers = "^3.6.0"
 uritemplate = "^3.0.1"
 django-saml-sp = "^0.4.1"
+django-autocompletefilter = "^0.0.8"
 
 [tool.poetry.dev-dependencies]
 pydocstyle = "^5.0.2"

@@ -682,6 +682,9 @@ class Order(models.Model):
         if not self.order_price:
             self.order_price = self.product.current_price
 
+        if self.shift.finalized:
+            raise ValidationError("Order can't be changed as shift is already finalized")
+
         super(Order, self).save(*args, **kwargs)
 
     def to_json(self):
@@ -698,16 +701,6 @@ class Order(models.Model):
             "paid": self.paid,
             "ready": self.ready,
         }
-
-    def clean(self):
-        """
-        Clean this Order.
-
-        Check if the Shift is already finalized.
-        """
-        super().clean()
-        if self.shift.finalized:
-            raise ValidationError("Order can't be changed as Shift is already finalized")
 
     @property
     def get_venue(self):

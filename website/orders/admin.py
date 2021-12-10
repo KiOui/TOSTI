@@ -1,4 +1,5 @@
-from admin_auto_filters.filters import AutocompleteFilter
+from autocompletefilter.admin import AutocompleteFilterMixin
+from autocompletefilter.filters import AutocompleteListFilter
 from django import forms
 
 from django.contrib import admin, messages
@@ -186,19 +187,13 @@ class ShiftAdmin(GuardedModelAdmin, ImportExportModelAdmin):
     get_is_active.short_description = "active"
 
     def has_change_permission(self, request, obj=None):
+        """Make shift read-only if the shift is finalized."""
         if obj and obj.finalized:
             return False
         return super().has_change_permission(request, obj)
 
     class Media:
         """Necessary to use AutocompleteFilter."""
-
-
-class OrderAdminShiftFilter(AutocompleteFilter):
-    """Filter class to filter Order objects on a certain shift."""
-
-    title = "Shift"
-    field_name = "shift"
 
 
 class OrderAdminForm(forms.ModelForm):
@@ -234,7 +229,7 @@ class OrderAdminForm(forms.ModelForm):
 
 
 @admin.register(Order)
-class OrderAdmin(ImportExportModelAdmin):
+class OrderAdmin(AutocompleteFilterMixin, ImportExportModelAdmin):
     """Custom admin for orders."""
 
     form = OrderAdminForm
@@ -251,7 +246,7 @@ class OrderAdmin(ImportExportModelAdmin):
         "paid",
     ]
     list_filter = [
-        OrderAdminShiftFilter,
+        ("shift", AutocompleteListFilter),
         "product",
         "ready",
         "paid",
@@ -260,6 +255,12 @@ class OrderAdmin(ImportExportModelAdmin):
     search_fields = ["user", "shift"]
 
     actions = ["set_ready", "set_paid"]
+
+    def has_change_permission(self, request, obj=None):
+        """Make order read-only if the shift is finalized."""
+        if obj and obj.shift.finalized:
+            return False
+        return super().has_change_permission(request, obj)
 
     def set_ready(self, request, queryset):
         """
@@ -292,6 +293,13 @@ class OrderAdmin(ImportExportModelAdmin):
         return request
 
     set_paid.short_description = "Mark selected orders as paid"
+
+    def get_venue(self, obj):
+        """Venue of the order."""
+        return obj.shift.venue
+
+    get_venue.short_description = "venue"
+    get_venue.admin_order_field = "shift__venue"
 
     class Media:
         """Necessary to use AutocompleteFilter."""
