@@ -1,6 +1,5 @@
 {% load static %}
 
-<link rel="stylesheet" href="{% static 'orders/css/forms.css' %}"/>
 <link rel="stylesheet" href="{% static 'orders/css/scanner.css' %}"/>
 <link rel="stylesheet" href="{% static 'orders/css/search.css' %}"/>
 
@@ -10,7 +9,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h2 class="modal-title">Barcode scanner</h2>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <button type="button" class="close btn btn-default" data-bs-dismiss="modal">&times;</button>
                 </div>
                 <div class="modal-body">
                     <div class="container">
@@ -24,7 +23,7 @@
                                         <p class="search-item-name"><% product.name %></p>
                                         <div class="flex-divider"></div>
                                         <p class="search-item-price">€<% (Math.round(product.current_price * 100) / 100).toFixed(2) %></p>
-                                        <input type="button" class="btn btn-success" :onclick="`post_and_callback_with_error('{% url "v1:orders_listcreate" shift=shift %}', {'product_id': ${product.id}, 'type': 1}, order_added, order_added_error)`" value="Add"/>
+                                        <input type="button" class="btn btn-success" v-on:click="add_order(product)" value="Add"/>
                                     </div>
                                 </div>
                                 <div v-else id="search-results">
@@ -41,7 +40,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -50,27 +49,29 @@
 
 <script>
     const SCANNER_DATA_URL = "{% url 'v1:shifts_scanner' shift=shift %}";
-    const POPUP_MODAL = "#scanner-popup";
-    const SEARCH_URL = "{% url 'v1:product_search' shift=shift %}";
 </script>
 <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
 <script src="{% static "orders/js/quagga.min.js" %}"></script>
 <script src="{% static "orders/js/admin-scanner.js" %}"></script>
-<script src="{% static "orders/js/search.js" %}"></script>
 
 <script>
+    const POPUP_MODAL_ID = "scanner-popup";
     let scanner_vue = new Vue({
         el: '#scanner-wrapper-{{ shift.id }}',
         delimiters: ['<%', '%>'],
         data: {
             shift: {},
             search_results: [],
-            search_input: ""
+            search_input: "",
+            typing_timer: null,
         },
         watch: {
             search_input: {
                 handler(val, oldVal) {
-                    set_search_timeout();
+                    clearTimeout(this.typing_timer);
+                    if (this.search_input !== "") {
+                        this.typing_timer = setTimeout(this.search, 200);
+                    }
                 }
             }
         },
@@ -83,15 +84,70 @@
         },
         mounted() {
             //call function on modal shown
-            $(POPUP_MODAL).on('shown.bs.modal', function () {
+            document.getElementById(POPUP_MODAL_ID).addEventListener('shown.bs.modal', () => {
                 start_scanner();
             });
 
             //call function on hiding modal
-            $(POPUP_MODAL).on('hidden.bs.modal', function () {
+            document.getElementById(POPUP_MODAL_ID).addEventListener('hidden.bs.modal', () => {
                 stop_scanner();
             });
+        },
+        methods: {
+            add_order(product) {
+                fetch(
+                    "{% url "v1:orders_listcreate" shift=shift %}",
+                    {
+                        method: 'POST',
+                        body: JSON.stringify({"product_id": product.id, "type": 1}),
+                        headers: {
+                            "X-CSRFToken": get_csrf_token(),
+                            "Content-Type": 'application/json',
+                            "Accept": 'application/json',
+                        }
+                    }
+                ).then(response => {
+                    if (response.status === 201) {
+                        return response.json();
+                    } else {
+                        throw response;
+                    }
+                }).then(() => {
+                    if (typeof (update_refresh_list) !== 'undefined') {
+                        update_refresh_list();
+                    }
+                    document.getElementById(POPUP_MODAL_ID).modal('hide');
+                    scanner_vue.search_results = [];
+                    scanner_vue.search_input = "";
+                    tata.success("", "Order added to queue.");
+                }).catch(error => {
+                    show_error_from_api(error);
+                }).finally(() => {
+                    this.loading = false;
+                });
+            },
+            search() {
+                fetch(
+                    `{% url 'v1:product_search' shift=shift %}?query=${this.search_input}`,
+                    {
+                        data: this.search_input,
+                        headers: {
+                            "X-CSRFToken": get_csrf_token(),
+                        }
+                    }
+                ).then(response => {
+                    if (response.status === 200) {
+                        return response.json();
+                    } else {
+                        throw response;
+                    }
+                }).then(data => {
+                    this.search_results = data;
+                }).catch(error => show_error_from_api(error));
+            }
         }
     });
-    add_update_list(get_and_callback, ["{% url "v1:shift_retrieveupdate" pk=shift.id %}", {}, function(data) {scanner_vue.shift = data}]);
+    add_refresh_url("{% url "v1:shift_retrieveupdate" pk=shift.id %}", function(data) {
+        scanner_vue.shift = data
+    });
 </script>

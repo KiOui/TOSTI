@@ -1,53 +1,55 @@
 {% load start_shift players order_now %}
-<div class="card mx-auto mx-sm-2 mb-3" style="max-width: 500px;">
-    <div class="card-header">
-        <h2>{{ venue }}</h2>
-    </div>
-    {% with venue|currently_active_shift_for_venue as venue_shift %}
-        <div class="card-body">
-            {% if show_player %}
-                <h5>Currently playing:</h5>
-                {% render_venue_player venue.venue %}
-            {% else %}
-                <h5>No music player</h5>
-            {% endif %}
+<div class="col mb-3">
+    <div class="card mx-auto mx-lg-2" style="max-width: 500px;">
+        <div class="card-header">
+            <h2>{{ venue }}</h2>
         </div>
-        <div class="card-footer">
-            {% render_order_now_button venue=venue shift=venue_shift %}
-            {% if admin %}
-                {% if venue_shift and venue_shift.is_active %}
-                    <a href="{% url 'orders:shift_join' shift=venue_shift %}">
-                        <div class="btn-ml btn-on my-2">
-                            <h4 class="my-0">
-                                Join shift at {{ venue }}
-                            </h4>
-                        </div>
-                    </a>
-                {% elif venue_shift %}
-                    <a href="{% url 'orders:shift_create' venue=venue %}">
-                        <div class="btn-ml btn-on my-2">
-                            <h4 class="my-0">
-                                Start shift
-                            </h4>
-                        </div>
-                    </a>
-                    <a href="{% url 'orders:shift_join' shift=venue_shift %}">
-                        <div class="btn-ml btn-on my-2">
-                            <h4 class="my-0">
-                                Show last shift
-                            </h4>
-                        </div>
-                    </a>
+        {% with venue|currently_active_shift_for_venue as venue_shift %}
+            <div class="card-body">
+                {% if show_player %}
+                    <h5>Currently playing:</h5>
+                    {% render_venue_player venue.venue %}
                 {% else %}
-                    <a href="{% url 'orders:shift_create' venue=venue %}">
-                        <div class="btn-ml btn-on my-2">
-                            <h4 class="my-0">
-                                Start shift
-                            </h4>
-                        </div>
-                    </a>
+                    <h5>No music player</h5>
                 {% endif %}
-            {% endif %}
-        </div>
-    {% endwith %}
+            </div>
+            <div class="card-footer">
+                {% render_order_now_button venue=venue shift=venue_shift %}
+                {% if admin %}
+                    {% if venue_shift and venue_shift.is_active %}
+                        <a href="{% url 'orders:shift_join' shift=venue_shift %}">
+                            <div class="btn-ml btn-on my-2">
+                                <h4 class="my-0">
+                                    Join shift at {{ venue }}
+                                </h4>
+                            </div>
+                        </a>
+                    {% elif venue_shift %}
+                        <a href="{% url 'orders:shift_create' venue=venue %}">
+                            <div class="btn-ml btn-on my-2">
+                                <h4 class="my-0">
+                                    Start shift
+                                </h4>
+                            </div>
+                        </a>
+                        <a href="{% url 'orders:shift_join' shift=venue_shift %}">
+                            <div class="btn-ml btn-on my-2">
+                                <h4 class="my-0">
+                                    Show last shift
+                                </h4>
+                            </div>
+                        </a>
+                    {% else %}
+                        <a href="{% url 'orders:shift_create' venue=venue %}">
+                            <div class="btn-ml btn-on my-2">
+                                <h4 class="my-0">
+                                    Start shift
+                                </h4>
+                            </div>
+                        </a>
+                    {% endif %}
+                {% endif %}
+            </div>
+        {% endwith %}
+    </div>
 </div>

@@ -2,6 +2,7 @@
 {% load static %}
     {% block extrahead %}
         {{ block.super }}
+        <link href="https://fonts.googleapis.com/css2?family=Neucha&display=swap" rel="stylesheet">
         <link rel="apple-touch-icon" sizes="180x180" href="{% static 'tosti/favicon/apple-touch-icon.png' %}">
         <link rel="icon" type="image/png" sizes="32x32" href="{% static 'tosti/favicon/favicon-32x32.png' %}">
         <link rel="icon" type="image/png" sizes="16x16" href="{% static 'tosti/favicon/favicon-16x16.png' %}">
@@ -32,6 +33,16 @@
             }
             #user-tools a:focus, #user-tools a:hover {
                 color: var(--tosti-dark);
+            }
+            .content a:not(table a) {
+                color: var(--tosti-base);
+            }
+            .content a:not(table a):focus, .content a:not(table a):hover{
+                color: var(--tosti-base-dark);
+            }
+            #site-name {
+                font-family: 'Neucha', cursive;
+                text-transform: uppercase;
             }
         </style>
 {% endblock %}

@@ -14,6 +14,10 @@ class ReservationForm(forms.ModelForm):
         """Initialise Reservation Form."""
         request = kwargs.pop("request", None)
         super(ReservationForm, self).__init__(*args, **kwargs)
+
+        self.fields["start_time"].widget.input_type = "datetime-local"
+        self.fields["end_time"].widget.input_type = "datetime-local"
+
         self.fields["venue"].queryset = Venue.objects.filter(can_be_reserved=True)
         if request is not None and request.user.is_authenticated and request.user.profile.association is not None:
             self.fields["association"].initial = request.user.profile.association

@@ -25,8 +25,6 @@ class PlayerListAPIView(ListAPIView):
 
     serializer_class = PlayerSerializer
     queryset = Player.objects.all()
-    permission_classes = [IsAuthenticatedOrTokenHasScope]
-    required_scopes = ["read"]
 
 
 class PlayerRetrieveAPIView(RetrieveAPIView):
@@ -40,8 +38,6 @@ class PlayerRetrieveAPIView(RetrieveAPIView):
 
     serializer_class = PlayerSerializer
     queryset = Player.objects.all()
-    permission_classes = [IsAuthenticatedOrTokenHasScope]
-    required_scopes = ["read"]
 
 
 class PlayerQueueListAPIView(ListAPIView):
@@ -57,13 +53,10 @@ class PlayerQueueListAPIView(ListAPIView):
     serializer_class = QueueItemSerializer
     queryset = SpotifyQueueItem.objects.all()
     pagination_class = StandardResultsSetPagination
-    permission_classes = [IsAuthenticatedOrTokenHasScope]
-    required_scopes = ["read"]
 
-
-def get_queryset(self):
-    """Get the queryset."""
-    return self.queryset.filter(player=self.kwargs.get("player"))
+    def get_queryset(self):
+        """Get the queryset."""
+        return self.queryset.filter(player=self.kwargs.get("player"))
 
 
 class PlayerTrackSearchAPIView(APIView):
@@ -72,14 +65,12 @@ class PlayerTrackSearchAPIView(APIView):
     schema = CustomAutoSchema(
         manual_operations=[
             {"name": "query", "in": "query", "required": True, "schema": {"type": "string"}},
-            {"name": "id", "in": "query", "required": False, "schema": {"type": "string"}},
             {"name": "maximum", "in": "query", "required": False, "schema": {"type": "int"}},
         ],
         response_schema={
             "type": "object",
             "properties": {
                 "query": {"type": "string", "example": "string"},
-                "id": {"type": "int", "example": "123"},
                 "results": {
                     "type": "array",
                     "items": {
@@ -87,7 +78,6 @@ class PlayerTrackSearchAPIView(APIView):
                         "properties": {
                             "name": {"type": "string", "example": "string"},
                             "artists": {"type": "array", "items": {"type": "string", "example": "string"}},
-                            "id": {"type": "string", "example": "string"},
                         },
                     },
                 },
@@ -112,7 +102,6 @@ class PlayerTrackSearchAPIView(APIView):
         """
         player = kwargs.get("player")
         query = request.GET.get("query", "")
-        request_id = request.GET.get("id", None)
         try:
             maximum = int(request.GET.get("maximum", 5))
         except ValueError:
@@ -122,7 +111,7 @@ class PlayerTrackSearchAPIView(APIView):
             results = services.search_tracks(query, player, maximum)
         else:
             results = []
-        return Response(status=status.HTTP_200_OK, data={"query": query, "id": request_id, "results": results})
+        return Response(status=status.HTTP_200_OK, data={"query": query, "results": results})
 
 
 class PlayerTrackAddAPIView(APIView):

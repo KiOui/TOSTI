@@ -18,10 +18,15 @@ class PlayerAdmin(GuardedModelAdmin):
     """Player admin for Players."""
 
     list_display = [
+        "client_id",
         "display_name",
         "playback_device_name",
-        "client_id",
         "get_configured",
+    ]
+    list_display_links = [
+        "client_id",
+        "display_name",
+        "playback_device_name",
     ]
     form = PlayerAdminForm
     view_on_site = True

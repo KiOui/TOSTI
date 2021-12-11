@@ -104,6 +104,8 @@ class Player(models.Model):
             currently_playing = self.spotify.currently_playing()
         except JSONDecodeError:
             currently_playing = None
+        except OSError:
+            currently_playing = None
 
         if currently_playing is None:
             return False
@@ -126,6 +128,8 @@ class Player(models.Model):
 
         :return: the cache file path
         """
+        if not os.path.exists(settings.SPOTIFY_CACHE_PATH):
+            os.makedirs(settings.SPOTIFY_CACHE_PATH)
         return os.path.join(settings.SPOTIFY_CACHE_PATH, self.client_id)
 
     @property

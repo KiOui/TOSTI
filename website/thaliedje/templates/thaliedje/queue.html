@@ -50,5 +50,10 @@
             });
         }
     });
-    add_update_list(get_and_callback, ["{% url 'v1:player_queue' player=player %}", {}, function (data) { data.results.forEach(track => {const date = new Date(track.added);track.added = `${date.toLocaleDateString()}, ${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;}); player_{{ player.id }}_queue_vue.queue = data.results}]);
+    add_refresh_url("{% url 'v1:player_queue' player=player %}", function (data) {
+        data.results.forEach(track => {
+            const date = new Date(track.added);track.added = `${date.toLocaleDateString()}, ${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+        });
+        player_{{ player.id }}_queue_vue.queue = data.results
+    });
 </script>

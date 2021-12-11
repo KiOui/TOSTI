@@ -4,22 +4,22 @@
 <div class="d-flex flex-column justify-content-center">
     {% if page_obj|length > 0 %}
         <div class="d-flex my-2">
+            <div class="flex-grow-1" style="flex-basis: 0;">Requested at</div>
+            <div class="flex-grow-1" style="flex-basis: 0;">Venue</div>
             <div class="flex-grow-1" style="flex-basis: 0;">Track</div>
             <div class="flex-grow-1" style="flex-basis: 0;">Artists</div>
-            <div class="flex-grow-1" style="flex-basis: 0;">Venue</div>
-            <div class="flex-grow-1" style="flex-basis: 0;">Requested at</div>
         </div>
         <div class="border"></div>
         {% for track in page_obj %}
             <div class="d-flex my-2">
+                <div class="flex-grow-1" style="flex-basis: 0;">{{ track.added }}</div>
+                <div class="flex-grow-1" style="flex-basis: 0;">{{ track.player.venue }}</div>
                 <div class="flex-grow-1" style="flex-basis: 0;">{{ track.track }}</div>
                 <div class="flex-grow-1" style="flex-basis: 0;">
                     {% for artist in track.track.artists %}
                         {{ artist }}{% if not forloop.last %}, {% endif %}
                     {% endfor %}
                 </div>
-                <div class="flex-grow-1" style="flex-basis: 0;">{{ track.player.venue }}</div>
-                <div class="flex-grow-1" style="flex-basis: 0;">{{ track.added }}</div>
             </div>
             <div class="border"></div>
         {% endfor %}

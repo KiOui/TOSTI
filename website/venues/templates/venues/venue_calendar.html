@@ -18,7 +18,6 @@
             let calendarEl = document.getElementById('calendar-{{ venue.pk }}');
             fetch('{% url 'v1:venue_reservations_list' venue=venue %}?days=90').then((response) => response.json()).then((data) => {
                 let calendar = new FullCalendar.Calendar(calendarEl, {
-                    themeSystem: 'bootstrap',
                     headerToolbar: {
                         left: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
                         center: 'title',

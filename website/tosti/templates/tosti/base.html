@@ -9,10 +9,9 @@
     {% include 'tosti/analytics.html' %}
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://fonts.googleapis.com/css2?family=Neucha&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'tosti/css/bootstrap/bootstrap.css' %}"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     {% block styles %}{% endblock %}
-    <!-- JQuery -->
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
     <!-- Fontawesome -->
     <script src="https://kit.fontawesome.com/cb8ec32f27.js" crossorigin="anonymous"></script>
     <!-- Base script -->
@@ -29,9 +28,8 @@
     <meta name="theme-color" content="#e8b365">
     <!-- Vue JS -->
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
-    <!-- Toastr notifications -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <!-- TaTa.js notifications -->
+    <script src="{% static 'tosti/js/tata.js' %}"></script>
 </head>
 <body>
 <div id="page-container">
@@ -60,8 +58,8 @@
                     <a class="navbar-brand drop-out-header-mobile" href="/"><img
                             src="{% static 'tosti/svg/TOSTI-logo.svg' %}" height="80"/></a>
                 </div>
-                <div class="navbar-collapse collapse w-100 order-3 dual-collapse2 ">
-                    <ul class="navbar-nav ml-auto">
+                <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+                    <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
                             <a class="nav-link" href="{% url "thaliedje:index" %}">
                                 Thaliedje
@@ -76,7 +74,7 @@
                         {% else %}
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink"
-                                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                   data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     {{ user.get_short_name }}
                                 </a>
                                 <div class="dropdown-menu p-2" aria-labelledby="navbarDropdownMenuLink">
@@ -107,7 +105,7 @@
                         {% endif %}
                     </ul>
                 </div>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".dual-collapse2">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".dual-collapse2">
                     <span class="navbar-toggler-icon"></span>
                 </button>
             </div>
@@ -119,10 +117,11 @@
     {% block footer %}
     {% endblock %}
 </div>
-<script src="{% static 'tosti/js/bootstrap/bootstrap.js' %}"></script>
 <script>
     CSRF_TOKEN = "{{ csrf_token }}";
 </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 {% block js %}{% endblock %}
 </body>
 </html>
