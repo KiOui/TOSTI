@@ -7,7 +7,7 @@ import sys
 def main():
     """Django management command."""
     try:
-        import tosti.settings.management
+        import tosti.settings.management  # noqa
     except ModuleNotFoundError:
         # Use development settings if no management settings are found
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tosti.settings.development")
