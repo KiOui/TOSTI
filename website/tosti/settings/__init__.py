@@ -7,7 +7,7 @@ if os.environ.get("DOCUTILSCONFIG"):
     from django.conf.global_settings import *
 
 # Load base settings
-from .settings import *
+from . import base
 
 logger = logging.getLogger(__name__)
 
