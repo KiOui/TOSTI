@@ -154,7 +154,8 @@ def player_next(player):
     :raises: SpotifyException on failure
     """
     try:
-        SpotifyCache.instance(player.id).next_track(player)
+        player.spotify.next_track()
+        SpotifyCache.instance(player.id).reset()
     except SpotifyException as e:
         logging.error(e)
         raise e
@@ -169,7 +170,8 @@ def player_previous(player):
     :raises: SpotifyException on failure
     """
     try:
-        SpotifyCache.instance(player.id).previous_track(player)
+        player.spotify.previous_track()
+        SpotifyCache.instance(player.id).reset()
     except SpotifyException as e:
         logging.error(e)
         raise e

@@ -13,6 +13,10 @@ class SpotifyCache:
         """Initialize."""
         self.cache = cache
 
+    def reset(self):
+        """Reset cache."""
+        self.cache.reset()
+
     @staticmethod
     def instance(identifier: int):
         """Get static instance of this class."""
@@ -49,7 +53,7 @@ class SpotifyCache:
             "{}_{}".format(player.id, inspect.currentframe().f_code.co_name),
             check_cache,
             store_cache,
-            valid_ms=2000,
+            valid_ms=1000,
             reset_cache=True,
         )
 
@@ -60,28 +64,6 @@ class SpotifyCache:
             "{}_{}".format(player.id, inspect.currentframe().f_code.co_name),
             check_cache,
             store_cache,
-            valid_ms=2000,
-            reset_cache=True,
-        )
-
-    def next_track(self, player: Player, check_cache=True, store_cache=True):
-        """Next track."""
-        return self.cache.call_method_cached(
-            player.spotify.next_track,
-            "{}_{}".format(player.id, inspect.currentframe().f_code.co_name),
-            check_cache,
-            store_cache,
-            valid_ms=2000,
-            reset_cache=True,
-        )
-
-    def previous_track(self, player: Player, check_cache=True, store_cache=True):
-        """Previous track."""
-        return self.cache.call_method_cached(
-            player.spotify.previous_track,
-            "{}_{}".format(player.id, inspect.currentframe().f_code.co_name),
-            check_cache,
-            store_cache,
-            valid_ms=2000,
+            valid_ms=1000,
             reset_cache=True,
         )
