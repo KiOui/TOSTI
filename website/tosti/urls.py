@@ -55,5 +55,6 @@ urlpatterns = [
     path("admin/logout/", RedirectView.as_view(url="/logout"), name="logout-redirect"),
     path("admin-login/", admin.site.login, name="admin-login"),
     path("admin-logout/", admin.site.logout, name="admin-logout"),
+    path("admin/doc/", include("django.contrib.admindocs.urls")),
     path("admin/", admin.site.urls),
 ]
