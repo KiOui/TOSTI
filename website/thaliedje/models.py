@@ -1,5 +1,4 @@
 import os
-from json import JSONDecodeError
 
 from django.db import models
 from django.conf import settings
@@ -85,41 +84,6 @@ class Player(models.Model):
     def configured(self):
         """Check if this object is ready to play music (a playback device is set)."""
         return self.playback_device_id is not None
-
-    @property
-    def currently_playing(self):
-        """
-        Get currently playing music information.
-
-        :return: a dictionary with the following content:
-            image: [link to image of track],
-            name: [name of currently playing track],
-            artists: [list of artist names],
-            is_playing: [True|False]
-        """
-        if not self.configured:
-            raise RuntimeError("This Spotify account is not configured yet.")
-
-        try:
-            currently_playing = self.spotify.currently_playing()
-        except JSONDecodeError:
-            currently_playing = None
-        except OSError:
-            currently_playing = None
-
-        if currently_playing is None:
-            return False
-
-        image = currently_playing["item"]["album"]["images"][0]["url"]
-        name = currently_playing["item"]["name"]
-        artists = [x["name"] for x in currently_playing["item"]["artists"]]
-
-        return {
-            "image": image,
-            "name": name,
-            "artists": artists,
-            "is_playing": currently_playing["is_playing"],
-        }
 
     @property
     def cache_path(self):
