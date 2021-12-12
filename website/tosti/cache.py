@@ -5,7 +5,7 @@ class CacheInstance:
     """Class for storing cache instances."""
 
     def __init__(self, value, cache_valid_time_ms):
-        """Initialize"""
+        """Initialize."""
         self.valid_until = datetime.now() + timedelta(milliseconds=cache_valid_time_ms)
         self.value = value
 
