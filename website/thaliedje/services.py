@@ -1,7 +1,9 @@
 import logging
 from datetime import timedelta
+from json import JSONDecodeError
 
 from spotipy import SpotifyException
+from .spotify import SpotifyCache
 
 from django.utils import timezone
 
@@ -122,7 +124,7 @@ def player_start(player):
     :raises: SpotifyException on failure
     """
     try:
-        player.spotify.start_playback(player.playback_device_id)
+        SpotifyCache.instance(player.id).start_playback(player)
     except SpotifyException as e:
         logging.error(e)
         raise e
@@ -137,7 +139,7 @@ def player_pause(player):
     :raises: SpotifyException on failure
     """
     try:
-        player.spotify.pause_playback(player.playback_device_id)
+        SpotifyCache.instance(player.id).pause_playback(player)
     except SpotifyException as e:
         logging.error(e)
         raise e
@@ -152,7 +154,7 @@ def player_next(player):
     :raises: SpotifyException on failure
     """
     try:
-        player.spotify.next_track()
+        SpotifyCache.instance(player.id).next_track(player)
     except SpotifyException as e:
         logging.error(e)
         raise e
@@ -167,10 +169,46 @@ def player_previous(player):
     :raises: SpotifyException on failure
     """
     try:
-        player.spotify.previous_track()
+        SpotifyCache.instance(player.id).previous_track(player)
     except SpotifyException as e:
         logging.error(e)
         raise e
+
+
+def player_currently_playing(player):
+    """
+    Get currently playing music information.
+
+    :return: a dictionary with the following content:
+        image: [link to image of track],
+        name: [name of currently playing track],
+        artists: [list of artist names],
+        is_playing: [True|False]
+    """
+    if not player.configured:
+        raise RuntimeError("This Spotify account is not configured yet.")
+
+    try:
+        # Use cache if available
+        currently_playing = SpotifyCache.instance(player.id).currently_playing(player)
+    except JSONDecodeError:
+        currently_playing = None
+    except OSError:
+        currently_playing = None
+
+    if currently_playing is None or currently_playing["currently_playing_type"] == "unknown":
+        return False
+
+    image = currently_playing["item"]["album"]["images"][0]["url"]
+    name = currently_playing["item"]["name"]
+    artists = [x["name"] for x in currently_playing["item"]["artists"]]
+
+    return {
+        "image": image,
+        "name": name,
+        "artists": artists,
+        "is_playing": currently_playing["is_playing"],
+    }
 
 
 def execute_data_minimisation(dry_run=False):
