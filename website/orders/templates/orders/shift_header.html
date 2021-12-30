@@ -65,5 +65,5 @@
             });
         }
     });
-    add_update_list(get_and_callback, ["{% url "v1:shift_retrieveupdate" pk=shift.id %}", {}, function(data) {shift_header_{{ shift.id }}_vue.shift = data}]);
+    add_refresh_url("{% url "v1:shift_retrieveupdate" pk=shift.id %}", function(data) {shift_header_{{ shift.id }}_vue.shift = data});
 </script>

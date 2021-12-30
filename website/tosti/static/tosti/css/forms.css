@@ -1,0 +1,39 @@
+
+form {
+    max-width: 500px;
+    margin: auto;
+}
+
+form p label {
+    text-align: left;
+    width: 100%;
+}
+
+form p input {
+    text-align: left;
+    width: 100%;
+}
+
+form p select {
+    text-align: left;
+    width: 100%;
+}
+
+form p span {
+    font-style: italic;
+    font-size: 0.7rem;
+    width: 100%;
+}
+
+form input[type=text], select {
+    padding:5px;
+    border:2px solid #ccc;
+}
+
+form input[type=text]:focus {
+    border-color:#333;
+}
+
+form textarea {
+    width: 100%;
+}

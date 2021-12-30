@@ -148,3 +148,7 @@ docker-compose.yml
 # Documentation
 /docs/build
 
+# Production settings
+/website/tosti/settings/production.py
+/website/tosti/settings/management.py
+RELOAD

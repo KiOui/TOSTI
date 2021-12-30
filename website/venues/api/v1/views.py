@@ -43,7 +43,7 @@ class VenueReservationListAPIView(ListAPIView):
     """
 
     serializer_class = ReservationSerializer
-    queryset = Reservation.objects.all()
+    queryset = Reservation.objects.filter(accepted=True)
 
     def get_queryset(self):
         """Get queryset."""
@@ -74,7 +74,7 @@ class ReservationListAPIView(ListAPIView):
     """
 
     serializer_class = ReservationSerializer
-    queryset = Reservation.objects.all()
+    queryset = Reservation.objects.filter(accepted=True)
 
     def get_queryset(self):
         """Get queryset."""

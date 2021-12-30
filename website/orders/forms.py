@@ -23,12 +23,15 @@ class CreateShiftForm(forms.ModelForm):
         self.fields["venue"].initial = venue
         self.fields["venue"].queryset = get_objects_for_user(self.user, "orders.can_manage_shift_in_venue")
 
+        self.fields["start_date"].widget.input_type = "datetime-local"
+        self.fields["end_date"].widget.input_type = "datetime-local"
+
         timezone = pytz.timezone(settings.TIME_ZONE)
         now = timezone.localize(datetime.now())
         start_time = now - timedelta(seconds=now.second, microseconds=now.microsecond)
-        self.fields["start_date"].initial = start_time
+        self.fields["start_date"].initial = start_time.strftime("%Y-%m-%dT%H:%M:%S")
         if now >= get_default_end_time_shift() or now <= get_default_start_time_shift() - timedelta(minutes=30):
-            self.fields["end_date"].initial = start_time + timedelta(hours=1)
+            self.fields["end_date"].initial = (start_time + timedelta(hours=1)).strftime("%Y-%m-%dT%H:%M:%S")
 
     def clean_venue(self):
         """Check whether venue is has an accepted value."""

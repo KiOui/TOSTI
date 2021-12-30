@@ -6,6 +6,7 @@ import pytz
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models import Q
 from guardian.shortcuts import get_objects_for_user
 
 from associations.models import Association
@@ -269,7 +270,7 @@ class Shift(models.Model):
     )
 
     finalized = models.BooleanField(
-        verbose_name="Shift Finalized",
+        verbose_name="Shift finalized",
         default=False,
         help_text="If checked, shift is finalized and no alterations on the shift can be made anymore.",
     )
@@ -387,6 +388,15 @@ class Shift(models.Model):
         for item in distinct_ordered_items:
             item.amount = Order.objects.filter(product=item, shift=self).count()
         return distinct_ordered_items
+
+    @property
+    def number_of_restricted_orders(self):
+        """
+        Get the total number of restricted orders in this shift.
+
+        :return: the total number of orders in this shift
+        """
+        return Order.objects.filter(shift=self, product__ignore_shift_restrictions=False).count()
 
     @property
     def number_of_orders(self):
@@ -511,7 +521,7 @@ class Shift(models.Model):
         :return: True if all Orders (with the Order type) of this Shift are ready and paid, False otherwise
         :rtype: boolean
         """
-        return not self.orders.exclude(type=Order.TYPE_SCANNED).exclude(done=True).exists()
+        return not self.orders.exclude(type=Order.TYPE_SCANNED).exclude(Q(ready=True) & Q(paid=True)).exists()
 
     def _clean(self):
         """
@@ -672,6 +682,9 @@ class Order(models.Model):
         if not self.order_price:
             self.order_price = self.product.current_price
 
+        if self.shift.finalized:
+            raise ValidationError("Order can't be changed as shift is already finalized")
+
         super(Order, self).save(*args, **kwargs)
 
     def to_json(self):
@@ -688,16 +701,6 @@ class Order(models.Model):
             "paid": self.paid,
             "ready": self.ready,
         }
-
-    def clean(self):
-        """
-        Clean this Order.
-
-        Check if the Shift is already finalized.
-        """
-        super().clean()
-        if self.shift.finalized:
-            raise ValidationError("Order can't be changed as Shift is already finalized")
 
     @property
     def get_venue(self):

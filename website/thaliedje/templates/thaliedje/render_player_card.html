@@ -1,17 +1,19 @@
 {% load players static %}
 
-<div class="card mx-auto mx-sm-2 mb-3" style="max-width: 500px">
-    <div class="card-header">
-        <h2>{{ player.venue }}</h2>
-    </div>
-    <div class="card-body">
-        {% render_player player %}
-    </div>
-    <div class="card-footer">
-        <a href="{% url 'thaliedje:now_playing' venue=player.venue %}">
-            <div class="btn-ml btn-on my-2">
-                <h4 class="my-0"><i class='fab fa-spotify'></i> {{ player }}</h4>
-            </div>
-        </a>
+<div class="col mb-3">
+    <div class="card mx-auto mx-lg-2" style="max-width: 500px;">
+        <div class="card-header">
+            <h2>{{ player.venue }}</h2>
+        </div>
+        <div class="card-body">
+            {% render_player player %}
+        </div>
+        <div class="card-footer">
+            <a href="{% url 'thaliedje:now_playing' venue=player.venue %}">
+                <div class="btn-ml btn-on my-2">
+                    <h4 class="my-0"><i class='fab fa-spotify'></i> {{ player }}</h4>
+                </div>
+            </a>
+        </div>
     </div>
 </div>

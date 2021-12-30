@@ -1,5 +1,4 @@
 
-let MAX_ORDERS = 5;
 let PRODUCTS = [];
 
 
@@ -97,18 +96,4 @@ function get_unrestricted_products(products) {
         }
     }
     return ret;
-}
-
-function order_callback(data) {
-    cart_list_vue.loading = false;
-    cart_list_vue.cart = [];
-    set_cart_list([]);
-    update_update_list();
-    toastr.success("Your order has been placed!", "Order notification");
-    setTimeout(function() {window.location.reload()}, 1000);
-}
-
-function order_error_callback(data) {
-    cart_list_vue.loading = false;
-    toastr.error(data.detail, "The following errors occurred: ");
 }

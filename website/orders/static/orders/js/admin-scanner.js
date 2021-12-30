@@ -37,7 +37,7 @@ function start_scanner() {
     }, function (err) {
         if (err) {
             console.log(err);
-            return
+            return;
         }
         Quagga.start();
     });
@@ -67,26 +67,7 @@ function start_scanner() {
     });
 
 
-    Quagga.onDetected(scan_result);
-}
-
-function add_product_from_barcode(data_url, callback_ok, callback_error, barcode /*, args */) {
-    let args = Array.prototype.slice.call(arguments, 4);
-    jQuery(function($) {
-        let data = {
-            'csrfmiddlewaretoken': get_csrf_token(),
-            'barcode': barcode,
-        };
-        $.ajax({type: 'POST', url: data_url, data, dataType:'json', asynch: true, success:
-            function(data) {
-                args.unshift(data);
-                callback_ok.apply(this, args);
-            }}).fail(function() {
-                args.unshift("Error while getting product data.");
-                callback_error.apply(this, args);
-            });
-        }
-    )
+    Quagga.onDetected(add_product_from_barcode);
 }
 
 function stop_scanner() {
@@ -94,25 +75,41 @@ function stop_scanner() {
     Quagga.stop();
 }
 
-function product_scanned(order) {
-    stop_scanner();
-    scanned_codes = [];
-    $(POPUP_MODAL).modal('hide');
-    toastr.success("Added " + order.product.name + " (€" + order.order_price + ") to the queue.");
-    if (typeof(update_update_list) !== 'undefined') {
-        update_update_list();
-    }
-}
-
-function product_error(errormsg, barcode) {
-    console.log(errormsg);
-    console.log("No product data for barcode " + barcode + " .");
-}
-
-function scan_result(result) {
-    let code = result.codeResult.code;
-    if (!scanned_codes.includes(code)) {
-        scanned_codes.push(code);
-        add_product_from_barcode(SCANNER_DATA_URL, product_scanned, product_error, code, code);
+function add_product_from_barcode(result) {
+    let barcode = result.codeResult.code;
+    if (!scanned_codes.includes(barcode)) {
+        scanned_codes.push(barcode);
+        fetch(
+            SCANNER_DATA_URL,
+            {
+                method: 'POST',
+                body: JSON.stringify({
+                    'csrfmiddlewaretoken': get_csrf_token(),
+                    'barcode': barcode,
+                }),
+                headers: {
+                    "X-CSRFToken": get_csrf_token(),
+                    "Accept": 'application/json',
+                    "Content-Type": 'application/json',
+                }
+            }
+        ).then(response => {
+            if (response.status === 200) {
+                return response.json();
+            } else {
+                throw response;
+            }
+        }).then(data => {
+            Quagga.stop();
+            scanned_codes = [];
+            tata.success("", "Added " + data.product.name + " (€" + data.order_price + ") to the queue.");
+            if (typeof (update_refresh_list) !== 'undefined') {
+                update_refresh_list();
+            }
+            document.getElementById(POPUP_MODAL_ID).modal('hide');
+        }).catch(error => {
+            console.log(error);
+            console.log("No product data for barcode " + barcode + " .");
+        });
     }
 }
