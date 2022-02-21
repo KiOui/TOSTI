@@ -7,6 +7,13 @@
 {% endblock %}
 
 {% block page %}
+    {% if messages %}
+        <div class="container p-0">
+            {% for message in messages %}
+                <p class="alert {{ message.tags }}">{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
     <div class="container mt-5 mb-5 text-center">
         <h1>Create Borrel Reservation</h1>
     </div>
@@ -14,14 +21,33 @@
         <form method="post">
             {% csrf_token %}
             {{ form.as_p }}
-            <h2 class="mt-3">Items:</h2>
-            {{ items.management_form }}
-            {% for i in items %}
-                <div class="items-form">
-                    <hr/>
-                    {{ i }}
+            {% if products_no_category|length > 0 or products|length > 0 %}
+                <hr>
+                <h2 class="mt-3">Items</h2>
+                <p>You can order drinks, food and other borrel material from the Voorraadcie below.</p>
+                <div class="d-flex flex-column mb-3">
+                    {% for category in categories %}
+                        <hr>
+                        <h2>{{ category.name }}</h2>
+                        {% for product in category.products.all %}
+                            <div class="d-flex flex-row justify-content-center">
+                                <div style="flex-basis: 0;" class="d-flex flex-grow-1 justify-content-end align-items-center"><label class="me-3" for="product_{{ product.id }}">{{ product.name }}</label></div>
+                                <div style="flex-basis: 0;" class="d-flex flex-grow-1"><input style="width: 100px;" name="product_{{ product.id }}" type="number" min="0" value=""/></div>
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+                    {% if products_no_category|length > 0 %}
+                        <hr>
+                        <h2>Other</h2>
+                        {% for product in products_no_category %}
+                            <div class="d-flex flex-row justify-content-center">
+                                <div style="flex-basis: 0;" class="d-flex flex-grow-1 justify-content-end align-items-center"><label class="me-3" for="product_{{ product.id }}">{{ product.name }}</label></div>
+                                <div style="flex-basis: 0;" class="d-flex flex-grow-1"><input style="width: 100px;" name="product_{{ product.id }}" type="number" min="0" value=""/></div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
                 </div>
-            {% endfor %}
+            {% endif %}
             <input type="submit" value="Submit" class="btn btn-primary w-100">
         </form>
     </div>

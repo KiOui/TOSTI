@@ -5,8 +5,8 @@ from django.forms import Textarea
 from .models import (
     BasicBorrelBrevet,
     BorrelReservation,
-    BorrelInventoryProduct,
-    BorrelInventoryCategory,
+    Product,
+    ProductCategory,
     ReservationItem,
 )
 
@@ -20,16 +20,16 @@ class BasicBorrelBrevetAdmin(admin.ModelAdmin):
     readonly_fields = ["registered_on"]
 
 
-@admin.register(BorrelInventoryProduct)
-class BorrelInventoryProductAdmin(admin.ModelAdmin):
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
     """Custom admin for borrel inventory products."""
 
     list_display = ["name", "active", "category"]
     search_fields = ["name", "category"]
 
 
-@admin.register(BorrelInventoryCategory)
-class BorrelInventoryCategoryAdmin(admin.ModelAdmin):
+@admin.register(ProductCategory)
+class CategoryAdmin(admin.ModelAdmin):
     """Custom admin for borrel inventory categories."""
 
     list_display = [
@@ -40,7 +40,7 @@ class BorrelInventoryCategoryAdmin(admin.ModelAdmin):
 
 class ReservationItemInline(admin.TabularInline):
     model = ReservationItem
-    fields = ("product", "_price_per_unit", "amount_reserved", "_unit", "amount_used", "_unit2", "remarks")
+    fields = ("product", "_price_per_unit", "amount_reserved", "_unit", "amount_used", "_unit2")
     readonly_fields = (
         "_price_per_unit",
         "_unit",

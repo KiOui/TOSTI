@@ -8,4 +8,19 @@
     <div class="container">
         {% render_venue_calendar venue=venue %}
     </div>
+    {% if can_request_reservation %}
+        <footer class="page-footer navbar navbar-expand-md">
+            <div class="container text-center">
+                <div class="row flex-grow-1">
+                    <div class="col">
+                        <a href="{% url 'borrel:reservation_request_create' %}?venue={{ venue.id }}">
+                            <div class="btn-ml m-auto cursor-pointer btn-on">
+                                <p class="font-footer"><i class="far fa-calendar-plus"></i> Request Reservation</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    {% endif %}
 {% endblock %}

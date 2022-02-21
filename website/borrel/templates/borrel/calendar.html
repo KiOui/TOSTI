@@ -8,12 +8,8 @@
     <div class="container">
         {% render_calendar %}
     </div>
-    <div class="container pb-5 pt-5"></div>
-{% endblock %}
-
-{% block footer %}
-    {% if request.user.is_authenticated %}
-        <footer class="page-footer navbar navbar-expand-md fixed-bottom">
+    {% if can_request_reservation %}
+        <footer class="page-footer navbar navbar-expand-md">
             <div class="container text-center">
                 <div class="row flex-grow-1">
                     <div class="col">

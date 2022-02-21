@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 
 from associations.models import Association
-from venues.models import Venue, Reservation
+from venues.models import Reservation
 
 User = get_user_model()
 
@@ -21,7 +21,7 @@ class BasicBorrelBrevet(models.Model):
         return self.user.__str__()
 
 
-class BorrelInventoryCategory(models.Model):
+class ProductCategory(models.Model):
 
     name = models.CharField(max_length=100)
 
@@ -29,15 +29,16 @@ class BorrelInventoryCategory(models.Model):
         return self.name
 
 
-class BorrelInventoryProduct(models.Model):
+class Product(models.Model):
 
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     active = models.BooleanField(default=True)
-    category = models.ForeignKey(BorrelInventoryCategory, on_delete=models.CASCADE, related_name="products")
-    unit_description = models.CharField(max_length=10)
-    price_per_unit = models.DecimalField(decimal_places=2, max_digits=6)
+    category = models.ForeignKey(ProductCategory, on_delete=models.SET_NULL, related_name="products", null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    price = models.DecimalField(decimal_places=2, max_digits=6)
 
     def __str__(self):
+        """Convert this object to string."""
         return self.name
 
 
@@ -85,22 +86,15 @@ class BorrelReservation(models.Model):
 class ReservationItem(models.Model):
 
     reservation = models.ForeignKey(BorrelReservation, on_delete=models.CASCADE, related_name="items")
-    product = models.ForeignKey(BorrelInventoryProduct, on_delete=models.CASCADE, related_name="product_amounts")
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True)
     product_name = models.CharField(max_length=100)
-    product_unit_description = models.CharField(max_length=10)
+    product_description = models.TextField(blank=True, null=True)
     product_price_per_unit = models.DecimalField(decimal_places=2, max_digits=6)
-    amount_reserved = models.PositiveIntegerField(null=True, blank=True)
+    amount_reserved = models.PositiveIntegerField()
     amount_used = models.PositiveIntegerField(null=True, blank=True)
-    remarks = models.TextField(null=True, blank=True)
 
     class Meta:
         unique_together = ["reservation", "product"]
-
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        self.product_name = self.product.name
-        self.product_unit_description = self.product.unit_description
-        self.product_price_per_unit = self.product.price_per_unit
-        return super(ReservationItem, self).save(force_insert, force_update, using, update_fields)
 
     def __str__(self):
         """Convert this object to string."""
