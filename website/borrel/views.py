@@ -1,74 +1,68 @@
 from django.contrib import messages
-from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.forms import inlineformset_factory
 from django.urls import reverse
-from django.views.generic import TemplateView, FormView
+from django.utils.decorators import method_decorator
+from django.views.generic import CreateView, ListView, UpdateView
 
-from borrel import models
-from borrel.forms import BorrelReservationRequestForm
+from borrel.forms import BorrelReservationRequestForm, ReservationItemForm, ReservationItemSubmissionForm
 from borrel.mixins import BasicBorrelBrevetRequiredMixin
-from borrel.selectors import product_categories, available_products
+from borrel.models import Product, BorrelReservation, ReservationItem
 from venues.models import Venue
 
 
-class AllCalendarView(TemplateView):
-    """All venues calendar view."""
-
-    template_name = "borrel/calendar.html"
-
-    def get(self, request, **kwargs):
-        has_borrel_brevet = request.user.is_authenticated and models.BasicBorrelBrevet.objects.filter(user=request.user).exists()
-        return render(request, self.template_name, {"can_request_reservation": has_borrel_brevet})
-
-
-class VenueCalendarView(TemplateView):
-    """Specific Venue calendar view."""
-
-    template_name = "borrel/venue_calendar.html"
-
-    def get(self, request, **kwargs):
-        venue = kwargs.get("venue")
-        has_borrel_brevet = request.user.is_authenticated and models.BasicBorrelBrevet.objects.filter(user=request.user).exists()
-        return render(request, self.template_name, {"venue": venue, "can_request_reservation": has_borrel_brevet})
-
-
-class ReservationRequestCreateView(BasicBorrelBrevetRequiredMixin, FormView):
+@method_decorator(login_required, name="dispatch")
+class ReservationRequestCreateView(BasicBorrelBrevetRequiredMixin, CreateView):
     """Create view for Reservation Request."""
 
     template_name = "borrel/reservation_request_create.html"
+    model = BorrelReservation
     form_class = BorrelReservationRequestForm
+
+    def _get_inline_formset(self, data=None, instance=None):
+        formset = inlineformset_factory(
+            parent_model=BorrelReservation,
+            model=ReservationItem,
+            form=ReservationItemForm,
+            can_delete=False,
+            extra=Product.objects.available_products().count(),
+            max_num=Product.objects.available_products().count(),
+            validate_max=True,
+            min_num=1,
+            validate_min=True,
+        )
+        if data:
+            return formset(data)
+        elif instance:
+            return formset(instance=instance)
+        return formset()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['categories'] = product_categories()
-        context['products_no_category'] = available_products().filter(category=None)
+        if self.request.POST:
+            context["items"] = self._get_inline_formset(self.request)
+            for item, product in zip(context["items"], Product.objects.available_products()):
+                item.initial = {"product": product}
+        else:
+            context["items"] = self._get_inline_formset()
+            for item, product in zip(context["items"], Product.objects.available_products()):
+                item.initial = {"product": product}
         return context
 
     def get_success_url(self):
-        return reverse("borrel:reservation_request_create")
-
-    def _add_line_items_to_reservation(self, reservation):
-        created_items = list()
-        form_keys = self.request.POST.keys()
-        for form_key in form_keys:
-            if form_key.startswith("product_"):
-                product_id = form_key.split('_', 1)[1]
-                try:
-                    product = models.Product.objects.get(id=product_id)
-                    product_amount = int(self.request.POST[form_key])
-                    created_items.append(models.ReservationItem.objects.create(reservation=reservation, product=product, product_name=product.name, product_description=product.description, product_price_per_unit=product.price, amount_reserved=product_amount))
-                except models.Product.DoesNotExist:
-                    # When the product can not be found
-                    pass
-                except ValueError:
-                    # When string is passed to product_id or value product_amount can not be converted to int
-                    pass
-        return created_items
+        return reverse("borrel:add_reservation")
 
     def form_valid(self, form):
-        reservation = form.save()
-        self._add_line_items_to_reservation(reservation)
-        messages.add_message(self.request, messages.SUCCESS, "Your reservation has been placed.")
-        return super().form_valid(form)
+        context = self.get_context_data()
+        items = context["items"]
+        if items.is_valid():
+            obj = form.save()
+            items.instance = obj
+            items.save()
+            messages.add_message(self.request, messages.SUCCESS, "Your borrel reservation has been placed.")
+            return super().form_valid(form)
+        else:
+            return self.form_invalid(form)
 
     def get_form_kwargs(self):
         kwargs = super(ReservationRequestCreateView, self).get_form_kwargs()
@@ -77,7 +71,7 @@ class ReservationRequestCreateView(BasicBorrelBrevetRequiredMixin, FormView):
                 "request": self.request,
             }
         )
-        preset_venue = self.request.GET.get('venue', None)
+        preset_venue = self.request.GET.get("venue", None)
         if preset_venue is not None:
             try:
                 venue = Venue.objects.get(id=preset_venue)
@@ -94,3 +88,67 @@ class ReservationRequestCreateView(BasicBorrelBrevetRequiredMixin, FormView):
                 pass
 
         return kwargs
+
+
+@method_decorator(login_required, name="dispatch")
+class ListReservationsView(ListView):
+    model = BorrelReservation
+    template_name = "borrel/reservation_list.html"
+
+    def get_queryset(self):
+        return super().get_queryset().filter(user__pk=self.request.user.pk)
+
+
+@method_decorator(login_required, name="dispatch")
+class ReservationView(UpdateView):
+    model = BorrelReservation
+    template_name = "borrel/reservation_request_submit.html"
+    form_class = BorrelReservationRequestForm
+
+    def get_queryset(self):
+        return super().get_queryset().filter(user__pk=self.request.user.pk)
+
+    def _get_inline_formset(self, data=None, instance=None):
+        formset = inlineformset_factory(
+            parent_model=BorrelReservation,
+            model=ReservationItem,
+            form=ReservationItemSubmissionForm,
+            can_delete=False,
+            extra=Product.objects.available_products().count(),
+            max_num=Product.objects.available_products().count(),
+            validate_max=True,
+            min_num=1,
+            validate_min=True,
+        )
+        if data:
+            return formset(data)
+        elif instance:
+            return formset(instance=instance)
+        return formset()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context["items"] = self._get_inline_formset(self.request.POST)
+            for item, product in zip(context["items"], Product.objects.available_products()):
+                item.initial = {"product": product}
+        else:
+            context["items"] = self._get_inline_formset(instance=self.get_object())
+            for item, product in zip(context["items"], Product.objects.available_products()):
+                item.initial = {"product": product}
+        return context
+
+    def get_success_url(self):
+        return reverse("borrel:add_reservation")
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        items = context["items"]
+        if items.is_valid():
+            obj = form.save()
+            items.instance = obj
+            items.save()
+            messages.add_message(self.request, messages.SUCCESS, "Your borrel reservation has been saved.")
+            return super().form_valid(form)
+        else:
+            return self.form_invalid(form)

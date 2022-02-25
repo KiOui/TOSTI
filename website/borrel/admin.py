@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.admin import EmptyFieldListFilter
 from django.db import models
 from django.forms import Textarea
 
@@ -24,8 +25,18 @@ class BasicBorrelBrevetAdmin(admin.ModelAdmin):
 class ProductAdmin(admin.ModelAdmin):
     """Custom admin for borrel inventory products."""
 
-    list_display = ["name", "active", "category"]
     search_fields = ["name", "category"]
+    list_display = [
+        "name",
+        "description",
+        "price",
+        "category",
+        "active",
+    ]
+    list_filter = (
+        "category",
+        "active",
+    )
 
 
 @admin.register(ProductCategory)
@@ -40,30 +51,25 @@ class CategoryAdmin(admin.ModelAdmin):
 
 class ReservationItemInline(admin.TabularInline):
     model = ReservationItem
-    fields = ("product", "_price_per_unit", "amount_reserved", "_unit", "amount_used", "_unit2")
+    fields = (
+        "product",
+        "product_name",
+        "product_description",
+        "amount_reserved",
+        "amount_used",
+    )
     readonly_fields = (
-        "_price_per_unit",
-        "_unit",
-        "_unit2",
+        "product_name",
+        "product_description",
     )
     formfield_overrides = {
         models.TextField: {"widget": Textarea(attrs={"rows": 1, "cols": 40})},
     }
-
-    def _price_per_unit(self, obj):
-        return f"€ {obj.product_price_per_unit}" if obj and obj.product_price_per_unit else ""
-
-    _price_per_unit.short_description = "Price per unit"
-
-    def _unit(self, obj):
-        return obj.product_unit_description if obj and obj.product_unit_description else ""
-
-    _unit.short_description = ""
-
-    def _unit2(self, obj):
-        return self._unit(obj)
-
-    _unit2.short_description = ""
+    extra = 0
+    ordering = (
+        "product__category",
+        "product__name",
+    )
 
 
 @admin.register(BorrelReservation)
@@ -94,6 +100,12 @@ class ReservationRequestAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.TextField: {"widget": Textarea(attrs={"rows": 4, "cols": 100})},
     }
+    list_filter = (
+        "accepted",
+        ("submitted_at", EmptyFieldListFilter),
+        "association",
+    )
+    date_hierarchy = "start"
 
     def submitted(self, obj):
         return obj.submitted if obj else None

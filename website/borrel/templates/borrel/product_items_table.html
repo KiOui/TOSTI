@@ -1,0 +1,28 @@
+<table class="table table-responsive w-100">
+    {{ items.management_form }}
+    {% for form in items %}
+        {% ifchanged form.initial.product.category %}
+            <thead class="mb-2">
+            <tr>
+                <th colspan="5">
+                    <h4 class="mb-0 mt-4">{{ form.initial.product.category|default_if_none:"Other" }}</h4>
+                </th>
+            </tr>
+            <tr>
+                <th scope="col" class="px-2">Product</th>
+                <th scope="col" class="px-2">Description</th>
+                <th scope="col" class="px-2">Price</th>
+                <th scope="col" class="text-center px-2">Reserved</th>
+                <th scope="col" class="text-center px-2">Used</th>
+            </tr>
+            </thead>
+        {% endifchanged %}
+        <tr>
+            <th scope="row" class="px-2"><label for="{{ form.amount_reserved.id_for_label }}">{{ form.product.initial }}</label>{{ form.product.as_hidden }}</th>
+            <td class="px-2">{{ form.product.initial.description }}</td>
+            <td class="px-2">€{{ form.product.initial.price }}</td>
+            <td class="px-2"><input class="form-control" type="number" value="{{ form.amount_reserved.value|default_if_none:'' }}" name="{{ form.amount_reserved.html_name }}" min="0" id="{{ form.amount_reserved.id_for_label }}" {% if form.amount_used.is_disabled %}disabled{% endif %}></td>
+            <td class="px-2"><input class="form-control" type="number" value="{{ form.amount_used.value|default_if_none:'' }}" name="{{ form.amount_used.html_name }}" min="0" id="{{ form.amount_used.id_for_label }}" {% if form.amount_reserved.is_disabled %}disabled{% endif %}></td>
+        </tr>
+    {% endfor %}
+</table>

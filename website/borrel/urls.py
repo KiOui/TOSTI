@@ -7,9 +7,7 @@ register_converter(VenueConverter, "venue")
 
 
 urlpatterns = [
-    path("calendar/", views.AllCalendarView.as_view(), name="calendars"),
-    path("calendar/<venue:venue>/", views.VenueCalendarView.as_view(), name="venue_calendar"),
-    path(
-        "calendar/reservations/create", views.ReservationRequestCreateView.as_view(), name="reservation_request_create"
-    ),
+    path("add-reservation/", views.ReservationRequestCreateView.as_view(), name="add_reservation"),
+    path("reservations/", views.ListReservationsView.as_view(), name="list_reservations"),
+    path("reservations/<int:pk>/", views.ReservationView.as_view(), name="view_reservation"),
 ]

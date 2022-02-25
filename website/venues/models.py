@@ -7,9 +7,23 @@ from associations.models import Association
 User = get_user_model()
 
 
+class VenueQuerySet(models.QuerySet):
+    def active(self):
+        return self.filter(active=True)
+
+
+class VenueManager(models.Manager):
+    def get_queryset(self):
+        return VenueQuerySet(self.model, using=self._db)
+
+    def active_venues(self):
+        return self.get_queryset().active()
+
+
 class Venue(models.Model):
     """Venue model class."""
 
+    objects = VenueManager()
     name = models.CharField(max_length=50, unique=True)
     slug = models.SlugField(unique=True, max_length=100)
     active = models.BooleanField(default=True)

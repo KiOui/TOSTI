@@ -79,6 +79,10 @@ p {
     margin-bottom: 3rem;
 }
 
+.table {
+    color: var(--text-color);
+}
+
 p.btn-note {
     font-size: .8rem
 }

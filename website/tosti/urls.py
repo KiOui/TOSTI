@@ -28,6 +28,10 @@ urlpatterns = [
         include(("users.urls", "users"), namespace="users"),
     ),
     path(
+        "venues/",
+        include(("venues.urls", "venues"), namespace="venues"),
+    ),
+    path(
         "borrel/",
         include(("borrel.urls", "borrel"), namespace="borrel"),
     ),

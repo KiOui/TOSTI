@@ -1,16 +1,22 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.generic import TemplateView, FormView
 
+from tosti.filter import Filter
 from venues.forms import ReservationForm
 
 
 class VenueCalendarView(TemplateView):
     """All venues calendar view."""
 
-    template_name = "venues/calendar.html"
+    template_name = "venues/all_venues_calendar.html"
+    reservation_buttons = Filter()
+
+    def get(self, request, **kwargs):
+        buttons = self.reservation_buttons.do_filter([])
+        return render(request, self.template_name, {"buttons": buttons})
 
 
 class RequestReservationView(LoginRequiredMixin, FormView):
@@ -34,7 +40,7 @@ class RequestReservationView(LoginRequiredMixin, FormView):
         instance = form.save(commit=False)
         instance.user = self.request.user
         instance.save()
-        messages.success(self.request, "Reservation request added successfully.")
+        messages.success(self.request, "Venue reservation request added successfully.")
         return redirect(reverse("venues:add_reservation"))
 
     def get_context_data(self, **kwargs):
