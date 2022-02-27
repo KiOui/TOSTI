@@ -28,6 +28,9 @@ class ProductCategory(models.Model):
     def __str__(self):
         return self.name
 
+    def __le__(self, other):
+        return self.pk <= other.pk
+
     class Meta:
         verbose_name = "product category"
         verbose_name_plural = "product categories"
@@ -128,5 +131,8 @@ class ReservationItem(models.Model):
             self.product_name = self.product.name
         if not self.product_description:
             self.product_description = self.product.description
+
+        if self.amount_used and self.amount_used > 0 and not self.amount_reserved:
+            self.amount_reserved = 0
 
         return super().save(force_insert, force_update, using, update_fields)

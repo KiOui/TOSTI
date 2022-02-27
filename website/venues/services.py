@@ -1,16 +1,15 @@
-from datetime import datetime
-
 from django.contrib.auth import get_user_model
 from django.db.models import Q
+from django.utils import timezone
 
 from venues.models import Venue, Reservation
 
 User = get_user_model()
 
 
-def add_reservation(user: User, venue: Venue, start_time, end_time):
+def add_reservation(user: User, venue: Venue, start_time, end_time, title):
     """Add a reservation with a start and end time."""
-    if start_time < datetime.now():
+    if start_time < timezone.now():
         raise ValueError("Reservation start date should be in the future.")
     elif (
         Reservation.objects.filter(venue=venue)
@@ -25,7 +24,12 @@ def add_reservation(user: User, venue: Venue, start_time, end_time):
 
     if user.profile.association is not None:
         return Reservation.objects.create(
-            user=user, association=user.profile.association, venue=venue, start_time=start_time, end_time=end_time
+            user=user,
+            association=user.profile.association,
+            venue=venue,
+            start_time=start_time,
+            end_time=end_time,
+            title=title,
         )
     else:
         return Reservation.objects.create(user=user, venue=venue, start_time=start_time, end_time=end_time)

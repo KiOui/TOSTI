@@ -5,6 +5,11 @@
         <h1>Borrel reservations</h1>
     </div>
     <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <p class="alert {{ message.tags }}">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
         {% if object_list %}
             <table class="table table-responsive w-100">
                 <thead>
@@ -27,6 +32,9 @@
                         <td>{{ reservation.submitted_at|default_if_none:"" }}</td>
                         <td>
                             <a href="{% url 'borrel:view_reservation' reservation.pk %}" class="btn btn-primary">View details</a>
+                            {% if not reservation.submitted_at %}
+                            <a href="{% url 'borrel:submit_reservation' reservation.pk %}" class="btn btn-primary">Submit</a>
+                            {% endif %}
                         </td>
                     </tr>
                 {% endfor %}

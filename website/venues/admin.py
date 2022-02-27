@@ -46,7 +46,7 @@ class ReservationAdmin(admin.ModelAdmin):
     """Custom admin for reservations."""
 
     list_display = ["title", "venue", "association", "start_time", "end_time", "user", "accepted"]
-    list_filter = ["venue", "association", "start_time", ReservationAdminUserFilter, "accepted"]
+    list_filter = ["venue", "association", "start_time", "accepted"]
     search_fields = ["title"]
     date_hierarchy = "start_time"
     form = ReservationAdminForm

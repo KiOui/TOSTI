@@ -18,11 +18,15 @@
             </thead>
         {% endifchanged %}
         <tr>
-            <th scope="row" class="px-2"><label for="{{ form.amount_reserved.id_for_label }}">{{ form.product.initial }}</label>{{ form.product.as_hidden }}</th>
-            <td class="px-2">{{ form.product.initial.description }}</td>
-            <td class="px-2">€{{ form.product.initial.price }}</td>
-            <td class="px-2"><input class="form-control" type="number" value="{{ form.amount_reserved.value|default_if_none:'' }}" name="{{ form.amount_reserved.html_name }}" min="0" id="{{ form.amount_reserved.id_for_label }}" {% if form.amount_used.is_disabled %}disabled{% endif %}></td>
-            <td class="px-2"><input class="form-control" type="number" value="{{ form.amount_used.value|default_if_none:'' }}" name="{{ form.amount_used.html_name }}" min="0" id="{{ form.amount_used.id_for_label }}" {% if form.amount_reserved.is_disabled %}disabled{% endif %}></td>
+            <th scope="row" class="px-2">
+                <label for="{{ form.amount_reserved.id_for_label }}">{{ form.product_name.value }}</label>
+                {{ form.id.as_hidden }}
+                {{ form.product.as_hidden }}
+            </th>
+            <td class="px-2">{{ form.product_description.value }}</td>
+            <td class="px-2">{{ form.product_price_per_unit.value }}</td>
+            <td class="px-2"><input class="form-control" type="number" value="{{ form.amount_reserved.value|default_if_none:'' }}" name="{{ form.amount_reserved.html_name }}" min="0" id="{{ form.amount_reserved.id_for_label }}" {% if form.amount_reserved.field.disabled %}disabled{% endif %}></td>
+            <td class="px-2"><input class="form-control" type="number" value="{{ form.amount_used.value|default_if_none:'' }}" name="{{ form.amount_used.html_name }}" min="0" id="{{ form.amount_used.id_for_label }}" {% if form.amount_used.field.disabled %}disabled{% endif %}></td>
         </tr>
     {% endfor %}
 </table>

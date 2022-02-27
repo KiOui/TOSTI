@@ -9,5 +9,6 @@ register_converter(VenueConverter, "venue")
 urlpatterns = [
     path("add-reservation/", views.ReservationRequestCreateView.as_view(), name="add_reservation"),
     path("reservations/", views.ListReservationsView.as_view(), name="list_reservations"),
-    path("reservations/<int:pk>/", views.ReservationView.as_view(), name="view_reservation"),
+    path("reservations/<int:pk>/", views.ReservationRequestUpdateView.as_view(), name="view_reservation"),
+    path("reservations/<int:pk>/submit", views.ReservationRequestSubmitView.as_view(), name="submit_reservation"),
 ]
