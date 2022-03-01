@@ -146,12 +146,10 @@ class ReservationRequestUpdateView(BasicBorrelBrevetRequiredMixin, ReservationRe
     """View and update a reservation"""
 
     template_name = "borrel/reservation_request_view.html"
-    form_class = BorrelReservationUpdateForm
-    inline_form_class = ReservationItemForm
 
     def get_form_class(self):
         if self.get_object().can_be_changed:
-            return BorrelReservationSubmissionForm
+            return BorrelReservationUpdateForm
         else:
             return BorrelReservationDisabledForm
 
