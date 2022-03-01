@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from django.forms import models
+from django.forms import models, DateTimeInput
 
 from borrel.models import BorrelReservation, ReservationItem
 from venues.models import Venue
@@ -20,9 +20,6 @@ class BorrelReservationRequestForm(forms.ModelForm):
         request = kwargs.pop("request", None)
         self.user = request.user
         super().__init__(*args, **kwargs)
-        self.fields["start"].widget.input_type = "datetime-local"
-        self.fields["end"].widget.input_type = "datetime-local"
-
         # Automatically set association to user association
         if request is not None and request.user.is_authenticated and request.user.profile.association is not None:
             self.fields["association"].initial = self.user.profile.association
@@ -39,8 +36,8 @@ class BorrelReservationRequestForm(forms.ModelForm):
             add_reservation(
                 user=self.user,
                 venue=Venue.objects.get(id=self.cleaned_data["venue"]),
-                start_time=self.cleaned_data["start"],
-                end_time=self.cleaned_data["end"],
+                start=self.cleaned_data["start"],
+                end=self.cleaned_data["end"],
                 title=self.cleaned_data["title"],
             )
         return value
@@ -54,18 +51,18 @@ class BorrelReservationRequestForm(forms.ModelForm):
                     "rows": 2,
                 }
             ),
+            "start": DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
+            "end": DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
         }
 
 
 class BorrelReservationUpdateForm(forms.ModelForm):
-    """Form to view and update borrel reservations."""
+    """Form to update borrel reservations."""
 
     def __init__(self, *args, **kwargs):
         request = kwargs.pop("request", None)
         self.user = request.user
         super().__init__(*args, **kwargs)
-        self.fields["start"].widget.input_type = "datetime-local"
-        self.fields["end"].widget.input_type = "datetime-local"
 
     class Meta:
         model = BorrelReservation
@@ -76,10 +73,48 @@ class BorrelReservationUpdateForm(forms.ModelForm):
                     "rows": 2,
                 }
             ),
+            "start": DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
+            "end": DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
         }
 
 
+class BorrelReservationSubmissionForm(forms.ModelForm):
+    """A reservation form that only allows changing the remarks."""
+
+    def __init__(self, *args, **kwargs):
+        request = kwargs.pop("request", None)
+        self.user = request.user
+        super().__init__(*args, **kwargs)
+        self.fields["title"].disabled = True
+        self.fields["start"].disabled = True
+        self.fields["end"].disabled = True
+        self.fields["association"].disabled = True
+
+    class Meta:
+        model = BorrelReservation
+        fields = ["title", "association", "start", "end", "comments"]
+        widgets = {
+            "comments": forms.Textarea(
+                attrs={
+                    "rows": 2,
+                }
+            ),
+            "start": DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
+            "end": DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
+        }
+
+
+class BorrelReservationDisabledForm(BorrelReservationSubmissionForm):
+    """A fully disabled form for reservations."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["comments"].disabled = True
+
+
 class ReservationItemForm(models.ModelForm):
+    """A reservation item form that allows you to reserve products."""
+
     class Meta:
         model = ReservationItem
         fields = [
@@ -103,31 +138,20 @@ class ReservationItemForm(models.ModelForm):
         self.fields["amount_used"].disabled = True
 
 
-class BorrelReservationSubmissionForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        request = kwargs.pop("request", None)
-        self.user = request.user
-        super().__init__(*args, **kwargs)
-        self.fields["title"].disabled = True
-        self.fields["start"].disabled = True
-        self.fields["end"].disabled = True
-        self.fields["association"].disabled = True
-
-    class Meta:
-        model = BorrelReservation
-        fields = ["title", "association", "start", "end", "comments"]
-        widgets = {
-            "comments": forms.Textarea(
-                attrs={
-                    "rows": 2,
-                }
-            ),
-        }
-
-
 class ReservationItemSubmissionForm(ReservationItemForm):
+    """A reservation item form that only allows changing the amount_used."""
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["amount_reserved"].disabled = True
         self.fields["amount_used"].required = True
         self.fields["amount_used"].disabled = False
+
+
+class ReservationItemDisabledForm(ReservationItemForm):
+    """A fully disabled form for reservation items."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["amount_reserved"].disabled = True
+        self.fields["amount_used"].disabled = True

@@ -93,6 +93,10 @@ class BorrelReservation(models.Model):
     def submitted(self):
         return self.submitted_at is not None
 
+    @property
+    def can_be_changed(self):
+        return self.accepted is None and not self.submitted  # this last case should not happen in practice
+
     def clean(self):
         """Clean model."""
         super(BorrelReservation, self).clean()

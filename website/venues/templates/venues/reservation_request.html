@@ -10,21 +10,20 @@
     <div class="container text-left">
         <a href="{% url 'venues:calendar' %}"><i class="fas fa-arrow-left"></i> back to calendar</a>
     </div>
-    <div class="container mt-5 mb-5 text-center">
-        <h1>Request a Reservation</h1>
+    <div class="container mb-5 text-center">
+        <h1>Reserve a venue</h1>
     </div>
-    <div class="container mt-5 mb-5 text-center">
+    <div class="container text-left form-container mb-5">
         {% if messages %}
             {% for message in messages %}
                 <p class="alert {{ message.tags }}">{{ message }}</p>
             {% endfor %}
         {% endif %}
-    </div>
-    <div class="container-sm text-center mb-5">
+        {{ form.non_field_errors }}
         <form method="post">
             {% csrf_token %}
             {{ form.as_p }}
-            <input type="submit" value="Submit" class="btn-ml btn-on">
+            <input type="submit" value="Submit" class="btn btn-primary w-100 mt-5">
         </form>
     </div>
 {% endblock %}

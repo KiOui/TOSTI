@@ -64,7 +64,7 @@
                     editable: false,
                     droppable: false,
                     displayEventEnd: true,
-                    events: data.map((reservation) => {return {'start': reservation.start_time, 'end': reservation.end_time,
+                    events: data.map((reservation) => {return {'start': reservation.start, 'end': reservation.end,
                         'title': (reservation.title ?
                             `${reservation.title} - ${reservation.venue.name}` :
                             `${reservation.venue.name}`) + (reservation.association ? ` (reserved by ${reservation.association.name})` : ""), 'backgroundColor': `${reservation.venue.color_in_calendar}`}})

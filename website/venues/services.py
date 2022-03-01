@@ -7,16 +7,14 @@ from venues.models import Venue, Reservation
 User = get_user_model()
 
 
-def add_reservation(user: User, venue: Venue, start_time, end_time, title):
+def add_reservation(user: User, venue: Venue, start, end, title):
     """Add a reservation with a start and end time."""
-    if start_time < timezone.now():
+    if start < timezone.now():
         raise ValueError("Reservation start date should be in the future.")
     elif (
         Reservation.objects.filter(venue=venue)
         .filter(
-            Q(start_time__lte=start_time, end_time__gt=start_time)
-            | Q(start_time__lt=end_time, end_time__gte=end_time)
-            | Q(start_time__gte=start_time, end_time__lte=end_time)
+            Q(start__lte=start, end__gt=start) | Q(start__lt=end, end__gte=end) | Q(start__gte=start, end__lte=end)
         )
         .exists()
     ):
@@ -27,9 +25,9 @@ def add_reservation(user: User, venue: Venue, start_time, end_time, title):
             user=user,
             association=user.profile.association,
             venue=venue,
-            start_time=start_time,
-            end_time=end_time,
+            start=start,
+            end=end,
             title=title,
         )
     else:
-        return Reservation.objects.create(user=user, venue=venue, start_time=start_time, end_time=end_time)
+        return Reservation.objects.create(user=user, venue=venue, start=start, end=end)

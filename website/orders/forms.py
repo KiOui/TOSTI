@@ -1,6 +1,7 @@
 import pytz
 from django import forms
 from django.conf import settings
+from django.forms import DateTimeInput
 from guardian.shortcuts import get_objects_for_user
 
 from .models import Shift, get_default_end_time_shift, get_default_start_time_shift
@@ -22,9 +23,6 @@ class CreateShiftForm(forms.ModelForm):
         self.user = user
         self.fields["venue"].initial = venue
         self.fields["venue"].queryset = get_objects_for_user(self.user, "orders.can_manage_shift_in_venue")
-
-        self.fields["start_date"].widget.input_type = "datetime-local"
-        self.fields["end_date"].widget.input_type = "datetime-local"
 
         timezone = pytz.timezone(settings.TIME_ZONE)
         now = timezone.localize(datetime.now())
@@ -49,3 +47,7 @@ class CreateShiftForm(forms.ModelForm):
             "start_date",
             "end_date",
         ]
+        widgets = {
+            "start_date": DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
+            "end_date": DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
+        }

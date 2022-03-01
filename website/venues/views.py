@@ -1,17 +1,19 @@
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.urls import reverse
-from django.views.generic import TemplateView, FormView
+from django.utils.decorators import method_decorator
+from django.views.generic import TemplateView, FormView, ListView
 
 from tosti.filter import Filter
 from venues.forms import ReservationForm
+from venues.models import Reservation
 
 
 class VenueCalendarView(TemplateView):
     """All venues calendar view."""
 
-    template_name = "venues/all_venues_calendar.html"
+    template_name = "venues/calendar.html"
     reservation_buttons = Filter()
 
     def get(self, request, **kwargs):
@@ -19,7 +21,8 @@ class VenueCalendarView(TemplateView):
         return render(request, self.template_name, {"buttons": buttons})
 
 
-class RequestReservationView(LoginRequiredMixin, FormView):
+@method_decorator(login_required, name="dispatch")
+class RequestReservationView(FormView):
     """Request Reservation view."""
 
     template_name = "venues/reservation_request.html"
@@ -47,3 +50,12 @@ class RequestReservationView(LoginRequiredMixin, FormView):
         """Get the context data for rendering the template."""
         context = super(RequestReservationView, self).get_context_data(**kwargs)
         return context
+
+
+@method_decorator(login_required, name="dispatch")
+class ListReservationsView(ListView):
+    model = Reservation
+    template_name = "venues/reservation_list.html"
+
+    def get_queryset(self):
+        return super().get_queryset().filter(user__pk=self.request.user.pk)

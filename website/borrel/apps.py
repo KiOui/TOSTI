@@ -19,12 +19,6 @@ class BorrelConfig(AppConfig):
                     "href": reverse("borrel:add_reservation"),
                 }
             )
-            reservation_buttons.append(
-                {
-                    "name": "View borrel reservations",
-                    "href": reverse("borrel:list_reservations"),
-                }
-            )
             return reservation_buttons
 
         VenueCalendarView.reservation_buttons.add_filter(filter_reservation_button)

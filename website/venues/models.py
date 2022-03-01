@@ -54,8 +54,8 @@ class Reservation(models.Model):
     association = models.ForeignKey(
         Association, on_delete=models.SET_NULL, null=True, blank=True, related_name="reservations"
     )
-    start_time = models.DateTimeField()
-    end_time = models.DateTimeField()
+    start = models.DateTimeField()
+    end = models.DateTimeField()
     venue = models.ForeignKey(Venue, on_delete=models.CASCADE, related_name="reservations")
     comment = models.TextField(null=True, blank=True)
     accepted = models.BooleanField(default=None, null=True, blank=True)
@@ -63,9 +63,9 @@ class Reservation(models.Model):
     def clean(self):
         """Clean model."""
         super(Reservation, self).clean()
-        if self.end_time is not None and self.start_time is not None and self.end_time <= self.start_time:
+        if self.end is not None and self.start is not None and self.end <= self.start:
             raise ValidationError({"end_time": "End date cannot be before start date."})
 
     def __str__(self):
         """Convert this object to string."""
-        return "{} ({} - {})".format(self.venue, self.start_time, self.end_time)
+        return "{} ({} - {})".format(self.venue, self.start, self.end)

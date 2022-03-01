@@ -2,7 +2,7 @@
 
 {% block page %}
     <div class="container mt-5 mb-5 text-center">
-        <h1>Your borrel reservations</h1>
+        <h1>Your venue reservations</h1>
     </div>
     <div class="container">
         {% if messages %}
@@ -18,7 +18,6 @@
                     <th scope="col">Start</th>
                     <th scope="col">End</th>
                     <th scope="col">Accepted</th>
-                    <th scope="col">Submitted</th>
                     <th scope="col"></th>
                 </tr>
                 </thead>
@@ -29,18 +28,7 @@
                         <td>{{ reservation.start }}</td>
                         <td>{{ reservation.end|default_if_none:"" }}</td>
                         <td>{{ reservation.accepted|yesno:"Accepted,Declined,Pending" }}</td>
-                        <td>{{ reservation.submitted_at|default_if_none:"" }}</td>
-                        <td>
-                            {% if reservation.can_be_changed %}
-                                <a href="{% url 'borrel:view_reservation' reservation.pk %}" class="btn btn-primary my-1">Update reservation</a>
-                            {% else %}
-                                {% if reservation.accepted and not reservation.submitted %}
-                                    <a href="{% url 'borrel:submit_reservation' reservation.pk %}" class="btn btn-success my-1">Submit</a>
-                                {% else %}
-                                    <a href="{% url 'borrel:view_reservation' reservation.pk %}" class="btn btn-secondary my-1">View details</a>
-                                {% endif %}
-                            {% endif %}
-                        </td>
+                        <td></td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -53,9 +41,9 @@
         <div class="container text-center">
             <div class="row flex-grow-1">
                 <div class="col">
-                    <a href="{% url 'borrel:add_reservation' %}">
+                    <a href="{% url 'venues:add_reservation' %}">
                         <div class="btn-ml m-auto cursor-pointer btn-on">
-                            <p class="font-footer">Add borrel reservation</p>
+                            <p class="font-footer">Add venue reservation</p>
                         </div>
                     </a>
                 </div>

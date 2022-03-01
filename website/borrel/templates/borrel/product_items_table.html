@@ -1,5 +1,6 @@
 <table class="table table-responsive w-100">
     {{ items.management_form }}
+    {{ items.non_form_errors }}
     {% for form in items %}
         {% ifchanged form.initial.product.category %}
             <thead class="mb-2">
@@ -28,5 +29,6 @@
             <td class="px-2"><input class="form-control" type="number" value="{{ form.amount_reserved.value|default_if_none:'' }}" name="{{ form.amount_reserved.html_name }}" min="0" id="{{ form.amount_reserved.id_for_label }}" {% if form.amount_reserved.field.disabled %}disabled{% endif %}></td>
             <td class="px-2"><input class="form-control" type="number" value="{{ form.amount_used.value|default_if_none:'' }}" name="{{ form.amount_used.html_name }}" min="0" id="{{ form.amount_used.id_for_label }}" {% if form.amount_used.field.disabled %}disabled{% endif %}></td>
         </tr>
+        {{ form.non_field_errors }}
     {% endfor %}
 </table>
