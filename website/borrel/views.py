@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
-from django.views.generic import CreateView, ListView, UpdateView, FormView
+from django.views.generic import CreateView, ListView, UpdateView, FormView, DeleteView
 
 from borrel.forms import (
     BorrelReservationRequestForm,
@@ -199,6 +199,29 @@ class ReservationRequestUpdateView(BasicBorrelBrevetRequiredMixin, ReservationRe
         else:
             messages.add_message(self.request, messages.ERROR, f"Something went wrong. {items.errors}")
             return self.form_invalid(form)
+
+
+class ReservationRequestDeleteView(DeleteView):
+    """Delete a reservation request if it is not yet accepted."""
+
+    model = BorrelReservation
+    template_name = "borrel/reservation_request_delete.html"
+
+    def get_queryset(self):
+        return super().get_queryset().filter(user__pk=self.request.user.pk)
+
+    def get_success_url(self):
+        return reverse("borrel:list_reservations")
+
+    def dispatch(self, request, *args, **kwargs):
+        if not self.get_object().can_be_changed:
+            messages.add_message(
+                self.request,
+                messages.ERROR,
+                "Your borrel reservation cannot be deleted anymore, as it is already accepted.",
+            )
+            return HttpResponseRedirect(self.get_success_url())
+        return super().dispatch(request, *args, **kwargs)
 
 
 @method_decorator(login_required, name="dispatch")

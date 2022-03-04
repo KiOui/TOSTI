@@ -1,0 +1,26 @@
+{% extends 'tosti/base.html' %}
+{% load static calendar %}
+
+{% block styles %}
+    {{ block.super }}
+{% endblock %}
+
+{% block page %}
+    <div class="container mt-5 mb-5 text-center">
+        <h1>Delete reservation</h1>
+    </div>
+    <div class="container text-left form-container mb-5">
+        {% if messages %}
+            {% for message in messages %}
+                <p class="alert {{ message.tags }}">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <p>Are you sure you want to delete this reservation?</p>
+            <input type="submit" value="Submit" class="btn btn-danger mt-5">
+        </form>
+    </div>
+{% endblock %}
+
+{% block  %}

@@ -32,6 +32,7 @@
             {% include "borrel/product_items_table.html" %}
             {% if object.can_be_changed %}
                 <input type="submit" value="Submit" class="btn btn-primary w-100 mt-5">
+                <a href="{% url 'borrel:delete_reservation' object.pk %}" class="btn btn-danger my-3 w-100">Delete reservation</a>
             {% endif %}
         </form>
     </div>

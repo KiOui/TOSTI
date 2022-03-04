@@ -128,6 +128,9 @@ class ReservationItem(models.Model):
         return f"{self.product_name} for {self.reservation}"
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        if self.amount_reserved == 0 and (self.amount_used is None or self.amount_used == 0):
+            self.delete()
+            return
 
         if not self.product_price_per_unit:
             self.product_price_per_unit = self.product.price
