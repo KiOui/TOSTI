@@ -11,5 +11,6 @@ urlpatterns = [
     path("add-reservation/", views.ReservationRequestCreateView.as_view(), name="add_reservation"),
     path("reservations/<int:pk>/", views.ReservationRequestUpdateView.as_view(), name="view_reservation"),
     path("reservations/<int:pk>/submit/", views.ReservationRequestSubmitView.as_view(), name="submit_reservation"),
-    path("reservations/<int:pk>/delete/", views.ReservationRequestDeleteView.as_view(), name="delete_reservation"),
+    path("reservations/<int:pk>/delete/", views.ReservationRequestCancelView.as_view(), name="delete_reservation"),
+    path("reservations/join/<uuid:code>", views.JoinReservationView.as_view(), name="join_reservation"),
 ]

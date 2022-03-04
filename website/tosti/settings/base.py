@@ -53,6 +53,10 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "tosti.urls"
 
+LOGIN_URL = '/login/'
+
+LOGIN_REDIRECT_URL = '/users/account/'
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",

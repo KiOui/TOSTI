@@ -1,10 +1,12 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.forms import inlineformset_factory
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
+from django.views import View
 from django.views.generic import CreateView, ListView, UpdateView, FormView, DeleteView
 
 from borrel.forms import (
@@ -81,6 +83,16 @@ class ReservationRequestBaseView(FormView):
             )
         )
 
+    def get_queryset(self):
+        return (
+            super()
+            .get_queryset()
+            .filter(
+                Q(user_created__pk=self.request.user.pk)
+                | Q(pk__in=self.request.user.borrel_reservations_access.values("pk"))
+            )
+        )
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs.update({"request": self.request})
@@ -131,7 +143,7 @@ class ReservationRequestCreateView(BasicBorrelBrevetRequiredMixin, ReservationRe
         items = context["items"]
         if items.is_valid():
             obj = form.save()
-            obj.user = self.request.user
+            obj.user_created = self.request.user
             obj.save()
             items.instance = obj
             items.save()
@@ -159,10 +171,6 @@ class ReservationRequestUpdateView(BasicBorrelBrevetRequiredMixin, ReservationRe
         else:
             return ReservationItemDisabledForm
 
-    def get_queryset(self):
-        """Only be allowed to see your own reservations."""
-        return super().get_queryset().filter(user__pk=self.request.user.pk)
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         products = Product.objects.available_products()
@@ -190,7 +198,8 @@ class ReservationRequestUpdateView(BasicBorrelBrevetRequiredMixin, ReservationRe
         items = context["items"]
         if items.is_valid():
             obj = form.save()
-            obj.user = self.request.user
+            obj.user_updated = self.request.user
+            obj.updated_at = timezone.now()
             obj.save()
             items.instance = obj
             items.save()
@@ -201,14 +210,11 @@ class ReservationRequestUpdateView(BasicBorrelBrevetRequiredMixin, ReservationRe
             return self.form_invalid(form)
 
 
-class ReservationRequestDeleteView(DeleteView):
+class ReservationRequestCancelView(DeleteView):
     """Delete a reservation request if it is not yet accepted."""
 
     model = BorrelReservation
-    template_name = "borrel/reservation_request_delete.html"
-
-    def get_queryset(self):
-        return super().get_queryset().filter(user__pk=self.request.user.pk)
+    template_name = "borrel/reservation_request_cancel.html"
 
     def get_success_url(self):
         return reverse("borrel:list_reservations")
@@ -218,7 +224,7 @@ class ReservationRequestDeleteView(DeleteView):
             messages.add_message(
                 self.request,
                 messages.ERROR,
-                "Your borrel reservation cannot be deleted anymore, as it is already accepted.",
+                "Your borrel reservation cannot be cancelled anymore, as it is already accepted.",
             )
             return HttpResponseRedirect(self.get_success_url())
         return super().dispatch(request, *args, **kwargs)
@@ -230,7 +236,31 @@ class ListReservationsView(ListView):
     template_name = "borrel/reservation_list.html"
 
     def get_queryset(self):
-        return super().get_queryset().filter(user__pk=self.request.user.pk)
+        return (
+            super()
+            .get_queryset()
+            .filter(
+                Q(user_created__pk=self.request.user.pk)
+                | Q(pk__in=self.request.user.borrel_reservations_access.values("pk"))
+            )
+        )
+
+
+@method_decorator(login_required, name="dispatch")
+class JoinReservationView(BasicBorrelBrevetRequiredMixin, View):
+    def get(self, *args, **kwargs):
+        try:
+            reservation = BorrelReservation.objects.get(join_code=self.kwargs.get("code"))
+        except BorrelReservation.DoesNotExist:
+            messages.add_message(self.request, messages.INFO, "Invalid code.")
+            return HttpResponseRedirect(reverse("index"))
+
+        if self.request.user not in reservation.users_access.all():
+            reservation.users_access.add(self.request.user)
+            reservation.save()
+            messages.add_message(self.request, messages.INFO, "You now have access to this reservation.")
+
+        return HttpResponseRedirect(reverse("borrel:view_reservation", kwargs={"pk": reservation.pk}))
 
 
 class ReservationRequestSubmitView(BasicBorrelBrevetRequiredMixin, ReservationRequestBaseView, UpdateView):
@@ -239,10 +269,6 @@ class ReservationRequestSubmitView(BasicBorrelBrevetRequiredMixin, ReservationRe
     template_name = "borrel/reservation_request_submit.html"
     form_class = BorrelReservationSubmissionForm
     inline_form_class = ReservationItemSubmissionForm
-
-    def get_queryset(self):
-        """Only be allowed to see your own reservations."""
-        return super().get_queryset().filter(user__pk=self.request.user.pk)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -278,7 +304,7 @@ class ReservationRequestSubmitView(BasicBorrelBrevetRequiredMixin, ReservationRe
         items = context["items"]
         if items.is_valid():
             obj = form.save()
-            obj.user = self.request.user
+            obj.user_submitted = self.request.user
             obj.submitted_at = timezone.now()
             obj.save()
             items.instance = obj

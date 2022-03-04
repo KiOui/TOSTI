@@ -76,13 +76,14 @@ class ReservationItemInline(admin.TabularInline):
 class ReservationRequestAdmin(admin.ModelAdmin):
     """Custom admin for Reservation requests."""
 
-    list_display = ["title", "association", "user", "start", "end", "accepted", "submitted"]
-    search_fields = ["title", "user"]
+    list_display = ["title", "association", "user_created", "start", "end", "accepted", "submitted"]
+    search_fields = ["title", "user_created"]
     inlines = [ReservationItemInline]
     readonly_fields = (
         "created_at",
         "updated_at",
         "submitted_at",
+        "join_code",
     )
     fields = (
         "title",
@@ -91,12 +92,19 @@ class ReservationRequestAdmin(admin.ModelAdmin):
         "association",
         "venue_reservation",
         "comments",
-        "user",
         "accepted",
         "created_at",
+        "user_created",
         "updated_at",
+        "user_updated",
         "submitted_at",
+        "user_submitted",
+        "join_code",
+        "users_access",
     )
+    filter_horizontal = [
+        "users_access",
+    ]
     formfield_overrides = {
         models.TextField: {"widget": Textarea(attrs={"rows": 4, "cols": 100})},
     }

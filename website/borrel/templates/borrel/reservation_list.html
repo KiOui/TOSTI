@@ -18,7 +18,7 @@
                     <th scope="col">Start</th>
                     <th scope="col">End</th>
                     <th scope="col">Venue</th>
-                    <th scope="col">Accepted</th>
+                    <th scope="col">Status</th>
                     <th scope="col"></th>
                 </tr>
                 </thead>
@@ -42,10 +42,13 @@
                         </td>
                         <td>
                             {% if reservation.can_be_changed %}
-                                <a href="{% url 'borrel:view_reservation' reservation.pk %}" class="btn btn-outline-primary my-1 w-100">Update or delete reservation</a>
+                                <div class="d-flex gap-2">
+                                    <a href="{% url 'borrel:view_reservation' reservation.pk %}" class="btn btn-primary w-100">Update reservation</a>
+                                    <a href="{% url 'borrel:delete_reservation' reservation.pk %}" class="btn btn-danger w-100">Cancel reservation</a>
+                                </div>
                             {% else %}
                                 {% if reservation.accepted and not reservation.submitted %}
-                                    <a href="{% url 'borrel:submit_reservation' reservation.pk %}" class="btn btn-outline-success my-1 w-100">Submit</a>
+                                    <a href="{% url 'borrel:submit_reservation' reservation.pk %}" class="btn btn-success my-1 w-100">Submit</a>
                                 {% else %}
                                     <a href="{% url 'borrel:view_reservation' reservation.pk %}" class="btn btn-outline-secondary my-1 w-100"><small>Submitted at {{ reservation.submitted_at }}</small><br/>View details</a>
                                 {% endif %}

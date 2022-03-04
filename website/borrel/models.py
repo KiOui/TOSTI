@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -75,9 +77,17 @@ class BorrelReservation(models.Model):
     title = models.CharField(max_length=100)
     start = models.DateTimeField()
     end = models.DateTimeField(null=True, blank=True)
-    user = models.ForeignKey(
-        User, on_delete=models.SET_NULL, null=True, blank=False, related_name="borrel_reservations"
+    user_created = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True, related_name="borrel_reservations_created"
     )
+    user_updated = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True, related_name="borrel_reservations_updated"
+    )
+    user_submitted = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True, related_name="borrel_reservations_submitted"
+    )
+    users_access = models.ManyToManyField(User, related_name="borrel_reservations_access", null=True, blank=True)
+
     association = models.ForeignKey(
         Association, on_delete=models.SET_NULL, null=True, blank=True, related_name="borrel_reservations"
     )
@@ -88,6 +98,8 @@ class BorrelReservation(models.Model):
     venue_reservation = models.OneToOneField(
         Reservation, on_delete=models.SET_NULL, null=True, blank=True, related_name="borrel_reservations"
     )
+
+    join_code = models.UUIDField(null=True, blank=True, unique=True)
 
     @property
     def submitted(self):
@@ -104,6 +116,13 @@ class BorrelReservation(models.Model):
             raise ValidationError({"end": "End date cannot be before start date."})
         if self.submitted_at is not None and self.start is not None and self.start <= self.submitted_at:
             raise ValidationError({"submitted_at": "Cannot be submitted before start."})
+        if self.user_submitted is not None and self.submitted_at is None:
+            raise ValidationError({"user_submitted": "Cannot have a user submitted if not submitted."})
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        if not self.join_code:
+            self.join_code = uuid.uuid4()
+        return super().save(force_insert, force_update, using, update_fields)
 
     def __str__(self):
         """Convert this object to string."""
