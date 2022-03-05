@@ -27,6 +27,15 @@
             {% csrf_token %}
             {{ form.as_p }}
             <hr/>
+            {% if object.venue_reservation %}
+                <h3>Venue reservation:</h3>
+                <div class="text-center">
+                    <a href="{% url 'venues:list_reservations' %}">{{ object.venue_reservation.venue }}
+                        <span class='ms-2 badge {{ object.venue_reservation.accepted|yesno:"bg-success,bg-danger,bg-secondary" }}'>{{ object.venue_reservation.accepted|yesno:"Accepted,Declined,Pending" }}</span>
+                    </a>
+                </div>
+                <hr/>
+            {% endif %}
             <h3>Items:</h3>
             <p>You view ordered drinks, food and other material below.</p>
             {% include "borrel/product_items_table.html" %}

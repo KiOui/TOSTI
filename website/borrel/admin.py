@@ -81,8 +81,11 @@ class ReservationRequestAdmin(admin.ModelAdmin):
     inlines = [ReservationItemInline]
     readonly_fields = (
         "created_at",
+        "user_created",
         "updated_at",
+        "user_updated",
         "submitted_at",
+        "user_submitted",
         "join_code",
     )
     fields = (
