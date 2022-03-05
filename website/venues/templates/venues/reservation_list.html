@@ -17,8 +17,8 @@
                     <th scope="col">Title</th>
                     <th scope="col">Start</th>
                     <th scope="col">End</th>
-                    <th scope="col">Accepted</th>
-                    <th scope="col"></th>
+                    <th scope="col">Venue</th>
+                    <th scope="col">Status</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -26,9 +26,11 @@
                     <tr>
                         <th scope="row">{{ reservation.title }}</th>
                         <td>{{ reservation.start }}</td>
-                        <td>{{ reservation.end|default_if_none:"" }}</td>
-                        <td>{{ reservation.accepted|yesno:"Accepted,Declined,Pending" }}</td>
-                        <td></td>
+                        <td>{{ reservation.end }}</td>
+                        <td>{{ reservation.venue }}</td>
+                        <td>
+                            <span class='badge {{ reservation.accepted|yesno:"bg-success,bg-danger,bg-secondary" }}'>{{ reservation.accepted|yesno:"Accepted,Declined,Pending" }}</span>
+                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>

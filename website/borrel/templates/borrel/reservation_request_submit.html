@@ -25,6 +25,9 @@
             <p>You can order drinks, food and other material below.</p>
             {% include "borrel/product_items_table.html" %}
             <input type="submit" value="Submit" class="btn btn-primary w-100 mt-5">
+            <hr/>
+            {% include "borrel/share_reservation_block.html" %}
+            <hr/>
         </form>
     </div>
 {% endblock %}

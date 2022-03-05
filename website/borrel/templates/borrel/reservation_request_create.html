@@ -24,12 +24,8 @@
             <h2>Items:</h2>
             <p>You can order drinks, food and other material below.</p>
             {% include "borrel/product_items_table.html" %}
-            <hr/>
-            <h3>Share this reservation:</h3>
-            <p>Give other people access to this reservation request by sharing the following URL with them:</p>
-            <span class="font-monospace user-select-all text-break">https://tosti.science.ru.nl{% url 'borrel:join_reservation' object.join_code %}</span>
-            <p class="mt-3">Watch out: anyone with this URL can get full access to your reservation. Do not make it public.</p>
-            <hr/>
+            {% include "borrel/share_reservation_block.html" %}
+            <input type="submit" value="Submit" class="btn btn-primary w-100 mt-5">
         </form>
     </div>
 {% endblock %}

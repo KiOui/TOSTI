@@ -3,6 +3,7 @@ import uuid
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils import timezone
 
 from associations.models import Association
 from venues.models import Reservation
@@ -109,6 +110,10 @@ class BorrelReservation(models.Model):
     def can_be_changed(self):
         return self.accepted is None and not self.submitted  # this last case should not happen in practice
 
+    @property
+    def can_be_submitted(self):
+        return self.accepted and timezone.now() > self.start and not self.submitted
+
     def clean(self):
         """Clean model."""
         super(BorrelReservation, self).clean()
@@ -122,7 +127,12 @@ class BorrelReservation(models.Model):
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if not self.join_code:
             self.join_code = uuid.uuid4()
-        return super().save(force_insert, force_update, using, update_fields)
+
+        super().save(force_insert, force_update, using, update_fields)
+
+        if self.user_created and self.user_created not in self.users_access.all():
+            self.users_access.add(self.user_created)
+            self.users_access.save()
 
     def __str__(self):
         """Convert this object to string."""

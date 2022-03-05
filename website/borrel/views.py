@@ -1,6 +1,5 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
 from django.forms import inlineformset_factory
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -84,14 +83,7 @@ class ReservationRequestBaseView(FormView):
         )
 
     def get_queryset(self):
-        return (
-            super()
-            .get_queryset()
-            .filter(
-                Q(user_created__pk=self.request.user.pk)
-                | Q(pk__in=self.request.user.borrel_reservations_access.values("pk"))
-            )
-        )
+        return super().get_queryset().filter(pk__in=self.request.user.borrel_reservations_access.values("pk"))
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -187,6 +179,15 @@ class ReservationRequestUpdateView(BasicBorrelBrevetRequiredMixin, ReservationRe
 
         return context
 
+    def dispatch(self, request, *args, **kwargs):
+        if not self.get_object().can_be_changed and not self.get_object().submitted:
+            messages.add_message(
+                self.request,
+                messages.INFO,
+                "Your borrel reservation cannot be changed anymore. Contact the voorraadcie in case you want to make changes.",
+            )
+        return super().dispatch(request, *args, **kwargs)
+
     def get_success_url(self):
         return reverse("borrel:view_reservation", kwargs={"pk": self.get_object().pk})
 
@@ -236,14 +237,7 @@ class ListReservationsView(ListView):
     template_name = "borrel/reservation_list.html"
 
     def get_queryset(self):
-        return (
-            super()
-            .get_queryset()
-            .filter(
-                Q(user_created__pk=self.request.user.pk)
-                | Q(pk__in=self.request.user.borrel_reservations_access.values("pk"))
-            )
-        )
+        return super().get_queryset().filter(pk__in=self.request.user.borrel_reservations_access.values("pk"))
 
 
 @method_decorator(login_required, name="dispatch")
@@ -290,6 +284,9 @@ class ReservationRequestSubmitView(BasicBorrelBrevetRequiredMixin, ReservationRe
         if self.get_object().submitted:
             messages.add_message(self.request, messages.INFO, "Your borrel reservation was already submitted.")
             return HttpResponseRedirect(self.get_success_url())
+        if not self.get_object().can_be_submitted:
+            messages.add_message(self.request, messages.WARNING, "This reservation cannot be submitted.")
+            return HttpResponseRedirect(self.get_success_url())
         return super().dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
@@ -298,6 +295,10 @@ class ReservationRequestSubmitView(BasicBorrelBrevetRequiredMixin, ReservationRe
     def form_valid(self, form):
         if self.get_object().submitted:
             messages.add_message(self.request, messages.INFO, "Your borrel reservation was already submitted.")
+            return HttpResponseRedirect(self.get_success_url())
+
+        if not self.get_object().can_be_submitted:
+            messages.add_message(self.request, messages.WARNING, "This reservation cannot be submitted.")
             return HttpResponseRedirect(self.get_success_url())
 
         context = self.get_context_data()

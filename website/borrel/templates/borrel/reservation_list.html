@@ -25,12 +25,14 @@
                 <tbody>
                 {% for reservation in object_list reversed %}
                     <tr>
-                        <th scope="row">{{ reservation.title }}</th>
+                        <th scope="row">
+                            <a href="{% url 'borrel:view_reservation' reservation.pk %}" class="no-color">{{ reservation.title }}</a>
+                        </th>
                         <td>{{ reservation.start }}</td>
                         <td>{{ reservation.end|default_if_none:"" }}</td>
                         <td>
                             {% if reservation.venue_reservation %}
-                                <a href="{% url 'venues:list_reservations' %}">{{ reservation.venue_reservation.venue }}
+                                <a class="no-color" href="{% url 'venues:list_reservations' %}">{{ reservation.venue_reservation.venue }}
                                     <span class='ms-2 badge {{ reservation.venue_reservation.accepted|yesno:"bg-success,bg-danger,bg-secondary" }}'>{{ reservation.venue_reservation.accepted|yesno:"Accepted,Declined,Pending" }}</span>
                                 </a>
                             {% else %}
@@ -46,12 +48,15 @@
                                     <a href="{% url 'borrel:view_reservation' reservation.pk %}" class="btn btn-primary w-100">Update reservation</a>
                                     <a href="{% url 'borrel:delete_reservation' reservation.pk %}" class="btn btn-danger w-100">Cancel reservation</a>
                                 </div>
+                            {% elif reservation.can_be_submitted %}
+                                <a href="{% url 'borrel:submit_reservation' reservation.pk %}" class="btn btn-success my-1 w-100">Submit</a>
                             {% else %}
-                                {% if reservation.accepted and not reservation.submitted %}
-                                    <a href="{% url 'borrel:submit_reservation' reservation.pk %}" class="btn btn-success my-1 w-100">Submit</a>
-                                {% else %}
-                                    <a href="{% url 'borrel:view_reservation' reservation.pk %}" class="btn btn-outline-secondary my-1 w-100"><small>Submitted at {{ reservation.submitted_at }}</small><br/>View details</a>
-                                {% endif %}
+                                <a href="{% url 'borrel:view_reservation' reservation.pk %}" class="btn btn-outline-secondary my-1 w-100">
+                                    {% if reservation.submitted %}
+                                        <small>Submitted at {{ reservation.submitted_at }}</small><br/>
+                                    {% endif %}
+                                    View details
+                                </a>
                             {% endif %}
                         </td>
                     </tr>
