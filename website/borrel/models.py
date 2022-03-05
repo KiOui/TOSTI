@@ -87,7 +87,7 @@ class BorrelReservation(models.Model):
     user_submitted = models.ForeignKey(
         User, on_delete=models.SET_NULL, null=True, blank=True, related_name="borrel_reservations_submitted"
     )
-    users_access = models.ManyToManyField(User, related_name="borrel_reservations_access", null=True, blank=True)
+    users_access = models.ManyToManyField(User, related_name="borrel_reservations_access", blank=True)
 
     association = models.ForeignKey(
         Association, on_delete=models.SET_NULL, null=True, blank=True, related_name="borrel_reservations"
@@ -100,7 +100,7 @@ class BorrelReservation(models.Model):
         Reservation, on_delete=models.SET_NULL, null=True, blank=True, related_name="borrel_reservations"
     )
 
-    join_code = models.UUIDField(null=True, blank=True, unique=True)
+    join_code = models.UUIDField(null=False, blank=True, unique=True)
 
     @property
     def submitted(self):
