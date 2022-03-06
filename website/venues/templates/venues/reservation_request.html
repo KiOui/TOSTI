@@ -1,29 +1,18 @@
 {% extends 'tosti/base.html' %}
-{% load static %}
-
-{% block styles %}
-    {{ block.super }}
-    <link href='{% static "tosti/css/forms.css" %}' rel='stylesheet' />
-{% endblock %}
+{% load django_bootstrap5 %}
 
 {% block page %}
-    <div class="container text-left">
-        <a href="{% url 'venues:calendar' %}"><i class="fas fa-arrow-left"></i> back to calendar</a>
-    </div>
-    <div class="container mb-5 text-center">
+    <div class="container mt-5 mb-5 text-center">
         <h1>Reserve a venue</h1>
     </div>
-    <div class="container text-left form-container mb-5">
-        {% if messages %}
-            {% for message in messages %}
-                <p class="alert {{ message.tags }}">{{ message }}</p>
-            {% endfor %}
-        {% endif %}
-        {{ form.non_field_errors }}
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <input type="submit" value="Submit" class="btn btn-primary w-100 mt-5">
-        </form>
+    <div class="container mb-5">
+        <div class="row justify-content-center">
+            <form method="post" class="col-8 col-sm-offset-2">
+                {% bootstrap_messages %}
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                {% bootstrap_button button_type="submit" content="Place reservation" extra_classes="mt-4 w-100" %}
+            </form>
+        </div>
     </div>
 {% endblock %}

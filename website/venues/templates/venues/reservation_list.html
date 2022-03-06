@@ -1,15 +1,12 @@
 {% extends 'tosti/base.html' %}
+{% load django_bootstrap5 %}
 
 {% block page %}
     <div class="container mt-5 mb-5 text-center">
         <h1>Your venue reservations</h1>
     </div>
     <div class="container">
-        {% if messages %}
-            {% for message in messages %}
-                <p class="alert {{ message.tags }}">{{ message }}</p>
-            {% endfor %}
-        {% endif %}
+        {% bootstrap_messages %}
         {% if object_list %}
             <table class="table table-responsive w-100">
                 <thead>
@@ -18,6 +15,7 @@
                     <th scope="col">Start</th>
                     <th scope="col">End</th>
                     <th scope="col">Venue</th>
+                    <th scope="col">Comments</th>
                     <th scope="col">Status</th>
                 </tr>
                 </thead>
@@ -28,6 +26,7 @@
                         <td>{{ reservation.start }}</td>
                         <td>{{ reservation.end }}</td>
                         <td>{{ reservation.venue }}</td>
+                        <td>{{ reservation.comments }}</td>
                         <td>
                             <span class='badge {{ reservation.accepted|yesno:"bg-success,bg-danger,bg-secondary" }}'>{{ reservation.accepted|yesno:"Accepted,Declined,Pending" }}</span>
                         </td>

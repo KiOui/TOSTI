@@ -1,24 +1,18 @@
 {% extends 'tosti/base.html' %}
-{% load static calendar %}
-
-{% block styles %}
-    {{ block.super }}
-{% endblock %}
+{% load django_bootstrap5 %}
 
 {% block page %}
     <div class="container mt-5 mb-5 text-center">
         <h1>Cancel reservation</h1>
     </div>
-    <div class="container form-container text-center mb-5">
-        {% if messages %}
-            {% for message in messages %}
-                <p class="alert {{ message.tags }}">{{ message }}</p>
-            {% endfor %}
-        {% endif %}
-        <form method="post">
-            {% csrf_token %}
-            <p>Are you sure you want to cancel this reservation?</p>
-            <input type="submit" value="Yes, cancel this reservation" class="btn btn-danger">
-        </form>
+    <div class="container mb-5">
+        <div class="row justify-content-center">
+            <form method="post" class="col-8 col-sm-offset-2">
+                {% bootstrap_messages %}
+                {% csrf_token %}
+                <p>Are you sure you want to cancel this reservation?</p>
+                {% bootstrap_button button_type="submit" content="Yes, cancel this reservation" button_class="btn-danger" extra_classes="mt-4 w-100" %}
+            </form>
+        </div>
     </div>
 {% endblock %}

@@ -50,6 +50,8 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 class ReservationItemInline(admin.TabularInline):
+    """Inline or reservation items."""
+
     model = ReservationItem
     fields = (
         "product",
@@ -119,6 +121,7 @@ class ReservationRequestAdmin(admin.ModelAdmin):
     date_hierarchy = "start"
 
     def submitted(self, obj):
+        """Reservation is submitted."""
         return obj.submitted if obj else None
 
     submitted.boolean = True

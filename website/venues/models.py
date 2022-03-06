@@ -8,15 +8,22 @@ User = get_user_model()
 
 
 class VenueQuerySet(models.QuerySet):
+    """Venue queryset."""
+
     def active(self):
+        """Filter for active venues."""
         return self.filter(active=True)
 
 
 class VenueManager(models.Manager):
+    """Custom venue manager."""
+
     def get_queryset(self):
+        """Use the VenueQuerySet."""
         return VenueQuerySet(self.model, using=self._db)
 
     def active_venues(self):
+        """Return active venues only."""
         return self.get_queryset().active()
 
 

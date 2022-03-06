@@ -14,6 +14,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "sp",
+    "django_bootstrap5",
     "autocompletefilter",
     "import_export",
     "guardian",

@@ -17,6 +17,7 @@ class VenueCalendarView(TemplateView):
     reservation_buttons = Filter()
 
     def get(self, request, **kwargs):
+        """Get the calendar view."""
         buttons = self.reservation_buttons.do_filter([])
         return render(request, self.template_name, {"buttons": buttons})
 
@@ -54,8 +55,11 @@ class RequestReservationView(FormView):
 
 @method_decorator(login_required, name="dispatch")
 class ListReservationsView(ListView):
+    """List venue reservations."""
+
     model = Reservation
     template_name = "venues/reservation_list.html"
 
     def get_queryset(self):
+        """Only allow access to user's own reservations."""
         return super().get_queryset().filter(user__pk=self.request.user.pk)

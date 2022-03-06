@@ -1,12 +1,13 @@
 {% extends 'tosti/base.html' %}
-{% load static venue_cards %}
+{% load static venue_cards django_bootstrap5 %}
 
 {% block page %}
     <div class="container mt-5 mb-5 text-center">
-        <h1 class="tosti-title">TOSTI</h1>
+        <h1>T.O.S.T.I.</h1>
         <h6>Tartarus Order System for Take-away Items</h6>
     </div>
     <div class="container">
+        {% bootstrap_messages %}
         <div class="row-cols-1 row-cols-lg-3 justify-content-center d-flex flex-wrap">
             {% render_venue_cards_venues %}
         </div>

@@ -1,10 +1,5 @@
 {% extends 'tosti/base.html' %}
-{% load static calendar %}
-
-{% block styles %}
-    {{ block.super }}
-    <link href='{% static "borrel/css/create_reservation.css" %}' rel='stylesheet' />
-{% endblock %}
+{% load django_bootstrap5 %}
 
 {% block page %}
     <div class="container mt-5 mb-5 text-center">
@@ -16,36 +11,21 @@
             {% endif %}
         </h1>
     </div>
-    <div class="container text-left form-container mb-5">
-        {% if messages %}
-            {% for message in messages %}
-                <p class="alert {{ message.tags }}">{{ message }}</p>
-            {% endfor %}
-        {% endif %}
-        {{ form.non_field_errors }}
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <hr/>
-            {% if object.venue_reservation %}
-                <h3>Venue reservation:</h3>
-                <div class="text-center">
-                    <a href="{% url 'venues:list_reservations' %}">{{ object.venue_reservation.venue }}
-                        <span class='ms-2 badge {{ object.venue_reservation.accepted|yesno:"bg-success,bg-danger,bg-secondary" }}'>{{ object.venue_reservation.accepted|yesno:"Accepted,Declined,Pending" }}</span>
-                    </a>
-                </div>
-                <hr/>
-            {% endif %}
-            <h3>Items:</h3>
-            <p>You view ordered drinks, food and other material below.</p>
-            {% include "borrel/product_items_table.html" %}
-            {% if object.can_be_changed %}
-                <input type="submit" value="Submit" class="btn btn-primary w-100 mt-5">
-                <a href="{% url 'borrel:delete_reservation' object.pk %}" class="btn btn-danger my-3 w-100">Delete reservation</a>
-            {% endif %}
-            <hr/>
-            {% include "borrel/share_reservation_block.html" %}
-            <hr/>
-        </form>
+    <div class="container mb-5">
+        <div class="row justify-content-center">
+            <form method="post" class="col-8 col-sm-offset-2">
+                {% bootstrap_messages %}
+                {% include "borrel/reservation_cannot_be_changed_message.html" %}
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                {% include "borrel/venue_reservation_block.html" %}
+                {% include "borrel/share_reservation_block.html" %}
+                {% include "borrel/product_items_table.html" %}
+                {% if object.can_be_changed %}
+                    {% bootstrap_button button_type="submit" content="Update reservation" size="lg" extra_classes="mt-4 mb-2 w-100" %}
+                    {% bootstrap_button button_type="link" href="" content="Cancel reservation" button_class="btn-danger" extra_classes="mb-3 w-100" %}
+                {% endif %}
+            </form>
+        </div>
     </div>
 {% endblock %}

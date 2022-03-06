@@ -20,6 +20,13 @@ class ReservationForm(forms.ModelForm):
         if request is not None and request.user.is_authenticated and request.user.profile.association is not None:
             self.fields["association"].initial = request.user.profile.association
 
+    def clean_start(self):
+        """Validate the start field."""
+        start = self.cleaned_data.get("start")
+        now = timezone.now()
+        if start <= now:
+            raise ValidationError("Reservation should be in the future")
+
     def clean(self):
         """
         Clean data.

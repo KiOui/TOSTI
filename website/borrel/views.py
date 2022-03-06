@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.forms import inlineformset_factory
 from django.http import HttpResponseRedirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -19,14 +19,17 @@ from borrel.forms import (
 )
 from borrel.mixins import BasicBorrelBrevetRequiredMixin
 from borrel.models import Product, BorrelReservation, ReservationItem, ProductCategory
-from venues.models import Venue
 
 
 class ReservationRequestBaseView(FormView):
+    """Base class for views with a borrel reservation object and inlines."""
+
     model = BorrelReservation
     inline_form_class = ReservationItemForm
+    success_url = reverse_lazy("borrel:list_reservations")
 
     def get_inline_form_class(self):
+        """Get the form class for the inline forms."""
         return self.inline_form_class
 
     def _get_inline_formset(self, data=None, instance=None, files=None):
@@ -54,7 +57,9 @@ class ReservationRequestBaseView(FormView):
         """Fill formset forms with data for products."""
         assert len(forms) == len(products)
         for item, product in zip(forms, products):
-            # Note that this puts the full product object in the product field, not just the pk as would be default behaviour. This is done so that when sorting the formset, the category and immediately be accessed.
+            # Note that this puts the full product object in the product field,
+            # not just the pk as would be default behaviour. This is done so that
+            # when sorting the formset, the category and immediately be accessed.
             item.initial.update(
                 {
                     "product": product,
@@ -66,8 +71,9 @@ class ReservationRequestBaseView(FormView):
 
     def _sort_formset(self, formset):
         """Sort the forms in a formset based on category."""
-        # First, replace the initial product id's in the form for full product objects
-        # This is not required for the extra_forms, as those are already initialized with full objects by `_initialize_forms()`
+        # First, replace the initial product id's in the form for full product
+        # objects. This is not required for the extra_forms, as those are already
+        # initialized with full objects by `_initialize_forms()`
         for form in formset.forms:
             if type(form.initial["product"]) == int:
                 form.initial["product"] = Product.objects.get(id=form.initial["product"])
@@ -83,26 +89,13 @@ class ReservationRequestBaseView(FormView):
         )
 
     def get_queryset(self):
+        """Only allow access to reservations users have access to."""
         return super().get_queryset().filter(pk__in=self.request.user.borrel_reservations_access.values("pk"))
 
     def get_form_kwargs(self):
+        """Pass the request to the form."""
         kwargs = super().get_form_kwargs()
         kwargs.update({"request": self.request})
-        preset_venue = self.request.GET.get("venue", None)
-        if preset_venue is not None:
-            try:
-                venue = Venue.objects.get(id=preset_venue)
-                kwargs.update(
-                    {
-                        "initial": {
-                            "venue": venue.id,
-                        }
-                    }
-                )
-            except Venue.DoesNotExist:
-                pass
-            except ValueError:
-                pass
         return kwargs
 
 
@@ -115,6 +108,7 @@ class ReservationRequestCreateView(BasicBorrelBrevetRequiredMixin, ReservationRe
     inline_form_class = ReservationItemForm
 
     def get_context_data(self, **kwargs):
+        """Get context data."""
         context = super().get_context_data(**kwargs)
 
         if self.request.POST:
@@ -127,10 +121,8 @@ class ReservationRequestCreateView(BasicBorrelBrevetRequiredMixin, ReservationRe
 
         return context
 
-    def get_success_url(self):
-        return reverse("borrel:list_reservations")
-
     def form_valid(self, form):
+        """Process the form if it is valid."""
         context = self.get_context_data()
         items = context["items"]
         if items.is_valid():
@@ -147,23 +139,26 @@ class ReservationRequestCreateView(BasicBorrelBrevetRequiredMixin, ReservationRe
 
 
 class ReservationRequestUpdateView(BasicBorrelBrevetRequiredMixin, ReservationRequestBaseView, UpdateView):
-    """View and update a reservation"""
+    """View and update a reservation."""
 
     template_name = "borrel/reservation_request_view.html"
 
     def get_form_class(self):
+        """Determine which form class to use for the main form."""
         if self.get_object().can_be_changed:
             return BorrelReservationUpdateForm
         else:
             return BorrelReservationDisabledForm
 
     def get_inline_form_class(self):
+        """Determine which form class to use for the inlines."""
         if self.get_object().can_be_changed:
             return ReservationItemForm
         else:
             return ReservationItemDisabledForm
 
     def get_context_data(self, **kwargs):
+        """Get context data."""
         context = super().get_context_data(**kwargs)
         products = Product.objects.available_products()
         products_reserved = self.get_object().items.values_list("product")
@@ -179,19 +174,12 @@ class ReservationRequestUpdateView(BasicBorrelBrevetRequiredMixin, ReservationRe
 
         return context
 
-    def dispatch(self, request, *args, **kwargs):
-        if not self.get_object().can_be_changed and not self.get_object().submitted:
-            messages.add_message(
-                self.request,
-                messages.INFO,
-                "Your borrel reservation cannot be changed anymore. Contact the voorraadcie in case you want to make changes.",
-            )
-        return super().dispatch(request, *args, **kwargs)
-
     def get_success_url(self):
+        """Redirect to the details of the reservation."""
         return reverse("borrel:view_reservation", kwargs={"pk": self.get_object().pk})
 
     def form_valid(self, form):
+        """Process the form."""
         if not self.get_object().can_be_changed:
             return HttpResponseRedirect(self.get_success_url())
 
@@ -216,11 +204,10 @@ class ReservationRequestCancelView(DeleteView):
 
     model = BorrelReservation
     template_name = "borrel/reservation_request_cancel.html"
-
-    def get_success_url(self):
-        return reverse("borrel:list_reservations")
+    success_url = reverse_lazy("borrel:list_reservations")
 
     def dispatch(self, request, *args, **kwargs):
+        """Display a warning if the reservation cannot be cancelled."""
         if not self.get_object().can_be_changed:
             messages.add_message(
                 self.request,
@@ -233,16 +220,22 @@ class ReservationRequestCancelView(DeleteView):
 
 @method_decorator(login_required, name="dispatch")
 class ListReservationsView(ListView):
+    """List all reservations that a user has access to."""
+
     model = BorrelReservation
     template_name = "borrel/reservation_list.html"
 
     def get_queryset(self):
+        """Only list reservations you have access to."""
         return super().get_queryset().filter(pk__in=self.request.user.borrel_reservations_access.values("pk"))
 
 
 @method_decorator(login_required, name="dispatch")
 class JoinReservationView(BasicBorrelBrevetRequiredMixin, View):
+    """Join a reservations via the join code."""
+
     def get(self, *args, **kwargs):
+        """Process a get request."""
         try:
             reservation = BorrelReservation.objects.get(join_code=self.kwargs.get("code"))
         except BorrelReservation.DoesNotExist:
@@ -258,13 +251,14 @@ class JoinReservationView(BasicBorrelBrevetRequiredMixin, View):
 
 
 class ReservationRequestSubmitView(BasicBorrelBrevetRequiredMixin, ReservationRequestBaseView, UpdateView):
-    """View and update a reservation"""
+    """View and update a reservation."""
 
     template_name = "borrel/reservation_request_submit.html"
     form_class = BorrelReservationSubmissionForm
     inline_form_class = ReservationItemSubmissionForm
 
     def get_context_data(self, **kwargs):
+        """Get context data."""
         context = super().get_context_data(**kwargs)
         products = Product.objects.available_products()
         products_reserved = self.get_object().items.values_list("product")
@@ -281,6 +275,7 @@ class ReservationRequestSubmitView(BasicBorrelBrevetRequiredMixin, ReservationRe
         return context
 
     def dispatch(self, request, *args, **kwargs):
+        """Display error messages in certain conditions."""
         if self.get_object().submitted:
             messages.add_message(self.request, messages.INFO, "Your borrel reservation was already submitted.")
             return HttpResponseRedirect(self.get_success_url())
@@ -290,9 +285,11 @@ class ReservationRequestSubmitView(BasicBorrelBrevetRequiredMixin, ReservationRe
         return super().dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
+        """Redirect to the reservation."""
         return reverse("borrel:view_reservation", kwargs={"pk": self.get_object().pk})
 
     def form_valid(self, form):
+        """Process the form."""
         if self.get_object().submitted:
             messages.add_message(self.request, messages.INFO, "Your borrel reservation was already submitted.")
             return HttpResponseRedirect(self.get_success_url())

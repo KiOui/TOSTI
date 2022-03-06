@@ -25,34 +25,48 @@ class BasicBorrelBrevet(models.Model):
 
 
 class ProductCategory(models.Model):
+    """Product category model."""
 
     name = models.CharField(max_length=100)
 
     def __str__(self):
+        """Convert this object to string."""
         return self.name
 
     def __le__(self, other):
+        """Compare categories for ordering."""
         return self.pk <= other.pk
 
     class Meta:
+        """Meta class for model."""
+
         verbose_name = "product category"
         verbose_name_plural = "product categories"
 
 
 class ProductQuerySet(models.QuerySet):
+    """Product queryset."""
+
     def available(self):
+        """Only available products."""
         return self.filter(active=True)
 
 
 class ProductManager(models.Manager):
+    """Custom manager for products."""
+
     def get_queryset(self):
+        """Get product queryset."""
         return ProductQuerySet(self.model, using=self._db)
 
     def available_products(self):
+        """Only available products."""
         return self.get_queryset().available()
 
 
 class Product(models.Model):
+    """Product model."""
+
     objects = ProductManager()
 
     name = models.CharField(max_length=100, unique=True)
@@ -104,14 +118,17 @@ class BorrelReservation(models.Model):
 
     @property
     def submitted(self):
+        """Borrel reservation is submitted."""
         return self.submitted_at is not None
 
     @property
     def can_be_changed(self):
+        """Borrel reservation can be changed by users."""
         return self.accepted is None and not self.submitted  # this last case should not happen in practice
 
     @property
     def can_be_submitted(self):
+        """Borrel reservation can be submitted."""
         return self.accepted and timezone.now() > self.start and not self.submitted
 
     def clean(self):
@@ -125,6 +142,7 @@ class BorrelReservation(models.Model):
             raise ValidationError({"user_submitted": "Cannot have a user submitted if not submitted."})
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        """Save the reservation request."""
         if not self.join_code:
             self.join_code = uuid.uuid4()
 
@@ -132,7 +150,6 @@ class BorrelReservation(models.Model):
 
         if self.user_created and self.user_created not in self.users_access.all():
             self.users_access.add(self.user_created)
-            self.users_access.save()
 
     def __str__(self):
         """Convert this object to string."""
@@ -140,6 +157,7 @@ class BorrelReservation(models.Model):
 
 
 class ReservationItem(models.Model):
+    """Reservation items model."""
 
     reservation = models.ForeignKey(BorrelReservation, on_delete=models.CASCADE, related_name="items")
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True)
@@ -150,6 +168,8 @@ class ReservationItem(models.Model):
     amount_used = models.PositiveIntegerField(null=True, blank=True)
 
     class Meta:
+        """Meta class for the model."""
+
         unique_together = ["reservation", "product"]
 
     def __str__(self):
@@ -157,6 +177,7 @@ class ReservationItem(models.Model):
         return f"{self.product_name} for {self.reservation}"
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        """Save reservation item."""
         if self.amount_reserved == 0 and (self.amount_used is None or self.amount_used == 0):
             self.delete()
             return
