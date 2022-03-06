@@ -15,7 +15,7 @@ class BorrelReservationRequestForm(forms.ModelForm):
         choices=[(None, "---------")] + [(venue.id, venue.name) for venue in Venue.objects.active_venues()],
         required=False,
         help_text="If you directly want to reserve a venue as well, choose it here. "
-                  "It will have the same start and end time.",
+        "It will have the same start and end time.",
     )
 
     def __init__(self, *args, **kwargs):

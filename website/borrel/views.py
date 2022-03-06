@@ -34,13 +34,23 @@ class ReservationRequestBaseView(FormView):
 
     def _get_inline_formset(self, data=None, instance=None, files=None):
         """Create and populate a formset."""
+        products = Product.objects.available_products()
+        if instance:
+            products_reserved = instance.items.values_list("product")
+            new_products = products.exclude(id__in=products_reserved)
+            num_extra = new_products.count()
+            max_num = products.values("pk").union(products_reserved.values("pk")).count()
+        else:
+            num_extra = products.count()
+            max_num = products.count()
+
         formset = inlineformset_factory(
             parent_model=BorrelReservation,
             model=ReservationItem,
             form=self.get_inline_form_class(),
             can_delete=True,
-            extra=Product.objects.available_products().count(),
-            max_num=Product.objects.available_products().count(),
+            extra=num_extra,
+            max_num=max_num,
             validate_max=True,
             min_num=1,
             validate_min=True,
@@ -55,6 +65,10 @@ class ReservationRequestBaseView(FormView):
 
     def _initialize_forms(self, forms, products):
         """Fill formset forms with data for products."""
+        print(forms)
+        print(products)
+        print(len(forms))
+        print(len(products))
         assert len(forms) == len(products)
         for item, product in zip(forms, products):
             # Note that this puts the full product object in the product field,
