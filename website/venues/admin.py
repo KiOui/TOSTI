@@ -1,5 +1,5 @@
 from admin_auto_filters.filters import AutocompleteFilter
-from django.contrib import admin
+from django.contrib import admin, messages
 from django import forms
 from django.db.models import Q
 
@@ -50,6 +50,28 @@ class ReservationAdmin(admin.ModelAdmin):
     search_fields = ["title"]
     date_hierarchy = "start"
     form = ReservationAdminForm
+
+    def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
+        """Display warning for overlapping reservations."""
+        if object_id:
+            obj = self.get_object(request, object_id)
+            print(obj)
+            if (
+                Reservation.objects.filter(venue=obj.venue)
+                .filter(
+                    Q(start__lte=obj.start, end__gt=obj.start)
+                    | Q(start__lt=obj.end, end__gte=obj.end)
+                    | Q(start__gte=obj.start, end__lte=obj.end)
+                )
+                .exclude(pk=obj.pk)
+                .exists()
+            ):
+                self.message_user(
+                    request,
+                    "This reservation overlaps with another reservation for the same venue.",
+                    level=messages.WARNING,
+                )
+        return super().changeform_view(request, object_id, form_url, extra_context)
 
     class Media:
         """Necessary to use AutocompleteFilter."""
