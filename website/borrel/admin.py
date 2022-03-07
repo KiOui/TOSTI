@@ -75,8 +75,8 @@ class ReservationItemInline(admin.TabularInline):
 
 
 @admin.register(BorrelReservation)
-class ReservationRequestAdmin(admin.ModelAdmin):
-    """Custom admin for Reservation requests."""
+class BorrelReservationAdmin(admin.ModelAdmin):
+    """Custom admin for borrel reservations."""
 
     list_display = ["title", "association", "user_created", "start", "end", "accepted", "submitted"]
     search_fields = ["title", "user_created"]

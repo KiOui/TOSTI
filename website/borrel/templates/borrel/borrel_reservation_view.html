@@ -15,12 +15,12 @@
         <div class="row justify-content-center">
             <form method="post" class="col-8 col-sm-offset-2">
                 {% bootstrap_messages %}
-                {% include "borrel/reservation_cannot_be_changed_message.html" %}
+                {% include "borrel/includes/reservation_cannot_be_changed.html" %}
                 {% csrf_token %}
                 {% bootstrap_form form %}
-                {% include "borrel/venue_reservation_block.html" %}
-                {% include "borrel/share_reservation_block.html" %}
-                {% include "borrel/product_items_table.html" %}
+                {% include "borrel/includes/venue_reservation.html" %}
+                {% include "borrel/includes/share_reservation.html" %}
+                {% include "borrel/includes/product_items_table.html" %}
                 {% if object.can_be_changed %}
                     {% bootstrap_button button_type="submit" content="Update reservation" size="lg" extra_classes="mt-4 mb-2 w-100" %}
                     {% bootstrap_button button_type="link" href="" content="Cancel reservation" button_class="btn-danger" extra_classes="mb-3 w-100" %}

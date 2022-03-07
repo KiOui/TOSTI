@@ -142,7 +142,7 @@ class BorrelReservation(models.Model):
             raise ValidationError({"user_submitted": "Cannot have a user submitted if not submitted."})
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        """Save the reservation request."""
+        """Save the reservation."""
         if not self.join_code:
             self.join_code = uuid.uuid4()
 

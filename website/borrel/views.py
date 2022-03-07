@@ -9,7 +9,7 @@ from django.views import View
 from django.views.generic import CreateView, ListView, UpdateView, FormView, DeleteView
 
 from borrel.forms import (
-    BorrelReservationRequestForm,
+    BorrelReservationForm,
     ReservationItemForm,
     ReservationItemSubmissionForm,
     BorrelReservationSubmissionForm,
@@ -21,7 +21,7 @@ from borrel.mixins import BasicBorrelBrevetRequiredMixin
 from borrel.models import Product, BorrelReservation, ReservationItem, ProductCategory
 
 
-class ReservationRequestBaseView(FormView):
+class BorrelReservationBaseView(FormView):
     """Base class for views with a borrel reservation object and inlines."""
 
     model = BorrelReservation
@@ -114,11 +114,11 @@ class ReservationRequestBaseView(FormView):
 
 
 @method_decorator(login_required, name="dispatch")
-class ReservationRequestCreateView(BasicBorrelBrevetRequiredMixin, ReservationRequestBaseView, CreateView):
+class BorrelReservationCreateView(BasicBorrelBrevetRequiredMixin, BorrelReservationBaseView, CreateView):
     """Create a new reservation (request)."""
 
-    template_name = "borrel/reservation_request_create.html"
-    form_class = BorrelReservationRequestForm
+    template_name = "borrel/borrel_reservation_create.html"
+    form_class = BorrelReservationForm
     inline_form_class = ReservationItemForm
 
     def get_context_data(self, **kwargs):
@@ -152,10 +152,10 @@ class ReservationRequestCreateView(BasicBorrelBrevetRequiredMixin, ReservationRe
             return self.form_invalid(form)
 
 
-class ReservationRequestUpdateView(BasicBorrelBrevetRequiredMixin, ReservationRequestBaseView, UpdateView):
+class BorrelBorrelReservationUpdateView(BasicBorrelBrevetRequiredMixin, BorrelReservationBaseView, UpdateView):
     """View and update a reservation."""
 
-    template_name = "borrel/reservation_request_view.html"
+    template_name = "borrel/borrel_reservation_view.html"
 
     def get_form_class(self):
         """Determine which form class to use for the main form."""
@@ -216,7 +216,7 @@ class ReservationRequestCancelView(DeleteView):
     """Delete a reservation request if it is not yet accepted."""
 
     model = BorrelReservation
-    template_name = "borrel/reservation_request_cancel.html"
+    template_name = "borrel/borrel_reservation_cancel.html"
     success_url = reverse_lazy("borrel:list_reservations")
 
     def dispatch(self, request, *args, **kwargs):
@@ -236,7 +236,7 @@ class ListReservationsView(ListView):
     """List all reservations that a user has access to."""
 
     model = BorrelReservation
-    template_name = "borrel/reservation_list.html"
+    template_name = "borrel/borrel_reservation_list.html"
 
     def get_queryset(self):
         """Only list reservations you have access to."""
@@ -263,10 +263,10 @@ class JoinReservationView(BasicBorrelBrevetRequiredMixin, View):
         return HttpResponseRedirect(reverse("borrel:view_reservation", kwargs={"pk": reservation.pk}))
 
 
-class ReservationRequestSubmitView(BasicBorrelBrevetRequiredMixin, ReservationRequestBaseView, UpdateView):
+class BorrelReservationSubmitView(BasicBorrelBrevetRequiredMixin, BorrelReservationBaseView, UpdateView):
     """View and update a reservation."""
 
-    template_name = "borrel/reservation_request_submit.html"
+    template_name = "borrel/borrel_reservation_submit.html"
     form_class = BorrelReservationSubmissionForm
     inline_form_class = ReservationItemSubmissionForm
 

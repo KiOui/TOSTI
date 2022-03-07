@@ -8,7 +8,7 @@ from venues.models import Venue
 from venues.services import add_reservation
 
 
-class BorrelReservationRequestForm(forms.ModelForm):
+class BorrelReservationForm(forms.ModelForm):
     """Form to create a new borrel reservation, and venue reservation at the same time."""
 
     venue = forms.ModelChoiceField(
