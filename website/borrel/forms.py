@@ -48,7 +48,7 @@ class BorrelReservationForm(forms.ModelForm):
         if commit and self.cleaned_data["venue"] and self.cleaned_data["start"] and self.cleaned_data["end"]:
             reservation = add_reservation(
                 user=self.user,
-                venue=Venue.objects.get(id=self.cleaned_data["venue"]),
+                venue=self.cleaned_data["venue"],
                 start=self.cleaned_data["start"],
                 end=self.cleaned_data["end"],
                 title=self.cleaned_data["title"],
