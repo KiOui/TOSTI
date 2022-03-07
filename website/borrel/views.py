@@ -142,7 +142,7 @@ class BorrelReservationCreateView(BasicBorrelBrevetRequiredMixin, BorrelReservat
             items.instance = obj
             items.save()
             messages.add_message(self.request, messages.SUCCESS, "Your borrel reservation has been placed.")
-            return HttpResponseRedirect(self.get_success_url())
+            return HttpResponseRedirect(reverse("borrel:list_reservations"))
         else:
             messages.add_message(self.request, messages.ERROR, "Something went wrong.")
             return self.form_invalid(form)

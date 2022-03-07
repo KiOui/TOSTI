@@ -153,9 +153,9 @@ SESSION_SERIALIZER = "django.contrib.sessions.serializers.PickleSerializer"
 
 # Messages
 MESSAGE_TAGS = {
-    messages.DEBUG: 'alert-info',
-    messages.INFO: 'alert-info',
-    messages.SUCCESS: 'alert-success',
-    messages.WARNING: 'alert-warning',
-    messages.ERROR: 'alert-danger',
+    messages.DEBUG: 'alert-info info',
+    messages.INFO: 'alert-info info',
+    messages.SUCCESS: 'alert-success success',
+    messages.WARNING: 'alert-warning warning',
+    messages.ERROR: 'alert-danger danger',
 }
