@@ -65,10 +65,6 @@ class BorrelReservationBaseView(FormView):
 
     def _initialize_forms(self, forms, products):
         """Fill formset forms with data for products."""
-        print(forms)
-        print(products)
-        print(len(forms))
-        print(len(products))
         assert len(forms) == len(products)
         for item, product in zip(forms, products):
             # Note that this puts the full product object in the product field,
