@@ -28,7 +28,7 @@ urlpatterns = [
         "docs",
         TemplateView.as_view(
             template_name="tosti/swagger.html",
-            extra_context={"schema_urls": ["v1:schema-v1"], "swagger_oauth_client_id": get_swagger_client_id()},
+            extra_context={"schema_urls": ["v1:schema-v1"], "swagger_oauth_client_id": get_swagger_client_id},
         ),
         name="swagger",
     ),
