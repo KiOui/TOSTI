@@ -26,6 +26,7 @@ class ReservationForm(forms.ModelForm):
         now = timezone.now()
         if start <= now:
             raise ValidationError("Reservation should be in the future")
+        return start
 
     def clean(self):
         """
