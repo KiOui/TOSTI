@@ -8,7 +8,6 @@ from django.views.generic import TemplateView
 
 def get_swagger_client_id():
     """Get the client_id for a Swagger OAuth2 application."""
-
     hosts = settings.ALLOWED_HOSTS
     if not hosts:
         hosts = ["localhost", "127.0.0.1"]
@@ -18,7 +17,6 @@ def get_swagger_client_id():
             for scheme, url in itertools.product(settings.OAUTH2_PROVIDER["ALLOWED_REDIRECT_URI_SCHEMES"], hosts)
         ]
     )
-
     swagger_oauth_client, _ = oauth2_provider.models.Application.objects.get_or_create(
         name="Swagger",
     )
