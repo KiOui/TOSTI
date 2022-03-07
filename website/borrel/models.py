@@ -21,7 +21,7 @@ class BasicBorrelBrevet(models.Model):
 
     def __str__(self):
         """Convert this object to string."""
-        return self.user.__str__()
+        return f"Borrel brevet for {self.user}"
 
 
 class ProductCategory(models.Model):
@@ -153,7 +153,13 @@ class BorrelReservation(models.Model):
 
     def __str__(self):
         """Convert this object to string."""
-        return "{}, {} ({} - {})".format(self.title, self.association, self.start, self.end)
+        if self.association:
+            if self.end:
+                return f"Reservation {self.title} ({self.association}, {self.start:%Y-%m-%d %H:%M} - {self.end:%Y-%m-%d %H:%M})"
+            return f"Reservation {self.title} ({self.association}, {self.start:%Y-%m-%d %H:%M})"
+        if self.end:
+            return f"Reservation {self.title} ({self.start:%Y-%m-%d %H:%M} - {self.end:%Y-%m-%d %H:%M})"
+        return f"Reservation {self.title} ({self.start:%Y-%m-%d %H:%M})"
 
 
 class ReservationItem(models.Model):
