@@ -2,10 +2,11 @@ from django.apps import AppConfig
 from django.urls import reverse
 
 
-class VenuesConfig(AppConfig):
-    """App config for venue app."""
+class BorrelConfig(AppConfig):
+    """Borrel Config."""
 
-    name = "venues"
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "borrel"
 
     def ready(self):
         """Ready method."""
@@ -14,9 +15,9 @@ class VenuesConfig(AppConfig):
         def filter_reservation_button(reservation_buttons: list):
             reservation_buttons.append(
                 {
-                    "name": "Add venue reservation",
-                    "href": reverse("venues:add_reservation"),
-                }  # noqa
+                    "name": "Add borrel reservation",
+                    "href": reverse("borrel:add_reservation"),
+                }
             )
             return reservation_buttons
 

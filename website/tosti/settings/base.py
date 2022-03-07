@@ -14,6 +14,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "sp",
+    "django_bootstrap5",
     "autocompletefilter",
     "import_export",
     "guardian",
@@ -21,6 +22,7 @@ INSTALLED_APPS = [
     "users",
     "venues",
     "associations",
+    "borrel",
     "thaliedje",
     "orders",
     "tantalus",
@@ -51,6 +53,10 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "tosti.urls"
+
+LOGIN_URL = '/login/'
+
+LOGIN_REDIRECT_URL = '/users/account/'
 
 TEMPLATES = [
     {

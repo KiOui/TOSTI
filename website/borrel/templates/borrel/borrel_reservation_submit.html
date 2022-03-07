@@ -3,15 +3,17 @@
 
 {% block page %}
     <div class="container mt-5 mb-5 text-center">
-        <h1>Reserve a venue</h1>
+        <h1>Submit borrel list</h1>
     </div>
     <div class="container mb-5">
         <div class="row justify-content-center">
             <form method="post" class="col-12 col-md-8 col-md-offset-2">
                 {% bootstrap_messages %}
                 {% csrf_token %}
+                {% include "borrel/includes/share_reservation.html" %}
                 {% bootstrap_form form %}
-                {% bootstrap_button button_type="submit" content="Place reservation" extra_classes="mt-4 w-100" %}
+                {% include "borrel/includes/product_items_table.html" %}
+                {% bootstrap_button button_type="submit" content="Submit" extra_classes="mt-4 mb-3 w-100" %}
             </form>
         </div>
     </div>

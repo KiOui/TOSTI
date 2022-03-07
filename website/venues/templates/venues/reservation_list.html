@@ -1,0 +1,56 @@
+{% extends 'tosti/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block page %}
+    <div class="container mt-5 mb-5 text-center">
+        <h1>Your venue reservations</h1>
+    </div>
+    <div class="container">
+        {% bootstrap_messages %}
+        {% if object_list %}
+            <table class="table table-responsive w-100">
+                <thead>
+                <tr>
+                    <th scope="col">Title</th>
+                    <th scope="col">Start</th>
+                    <th scope="col">End</th>
+                    <th scope="col">Venue</th>
+                    <th scope="col">Comments</th>
+                    <th scope="col">Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for reservation in object_list reversed %}
+                    <tr>
+                        <th scope="row">{{ reservation.title }}</th>
+                        <td>{{ reservation.start }}</td>
+                        <td>{{ reservation.end }}</td>
+                        <td>{{ reservation.venue }}</td>
+                        <td>{{ reservation.comments }}</td>
+                        <td>
+                            <span class='badge {{ reservation.accepted|yesno:"bg-success,bg-danger,bg-secondary" }}'>{{ reservation.accepted|yesno:"Accepted,Declined,Pending" }}</span>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>You do not have any reservations</p>
+        {% endif %}
+    </div>
+{% endblock %}
+{% block footer %}
+    <footer class="page-footer navbar navbar-expand-md fixed-bottom">
+        <div class="container text-center">
+            <div class="row flex-grow-1">
+                <div class="col">
+                    <a href="{% url 'venues:add_reservation' %}">
+                        <div class="btn-ml m-auto cursor-pointer btn-on">
+                            <p class="font-footer">Add venue reservation</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+{% endblock %}

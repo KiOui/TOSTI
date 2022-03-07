@@ -1,0 +1,5 @@
+{% if not object.can_be_changed and not object.submitted %}
+    <div class="alert alert-info" role="alert">
+        Your borrel reservation cannot be changed anymore. Contact the voorraadcie in case you want to make changes.
+    </div>
+{% endif %}

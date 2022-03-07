@@ -8,7 +8,6 @@ class AccountForm(forms.Form):
 
     username = forms.CharField(
         label="Username",
-        help_text="This is your username used to log you in to this website.",
         widget=forms.TextInput(attrs={"readonly": "readonly"}),
         required=False,
     )

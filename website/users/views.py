@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from django.urls import reverse
@@ -54,6 +55,7 @@ class AccountView(LoginRequiredMixin, TemplateView):
         if form.is_valid():
             request.user.profile.association = form.cleaned_data.get("association")
             request.user.profile.save()
+            messages.add_message(self.request, messages.SUCCESS, "Your profile has been saved.")
         return render(
             request, self.template_name, {"form": form, "active": "users", "tabs": tabs, "rendered_tab": None}
         )

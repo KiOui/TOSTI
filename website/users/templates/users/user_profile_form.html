@@ -1,0 +1,11 @@
+{% load django_bootstrap5 %}
+
+<h2>Personal details</h2>
+<div class="row justify-content-center">
+    <form method="post" class="col-8 col-sm-offset-2">
+        {% bootstrap_messages %}
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        {% bootstrap_button button_type="submit" content="Save" extra_classes="mt-4 w-100" %}
+    </form>
+</div>

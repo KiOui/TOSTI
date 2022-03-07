@@ -6,7 +6,7 @@ authors = ["Job Doesburg <job.doesburg@gmail.com>", "Lars van Rhijn <larsvanrhij
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.10"
 django = "^3.2.12"
 Pillow = "^9.0.0"
 django-admin-autocomplete-filter = "^0.5"
@@ -23,6 +23,7 @@ django-cors-headers = "^3.6.0"
 uritemplate = "^3.0.1"
 django-saml-sp = "^0.4.1"
 django-autocompletefilter = "^0.0.8"
+django-bootstrap5 = "^21.3"
 
 [tool.poetry.dev-dependencies]
 pydocstyle = "^5.0.2"
@@ -31,7 +32,7 @@ flake8 = "^3.7.9"
 
 [tool.black]
 line-length = 119
-target-version = ["py37"]
+target-version = ["py310"]
 exclude = '''
 /(
   migrations

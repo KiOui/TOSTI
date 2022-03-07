@@ -1,0 +1,82 @@
+{% extends 'tosti/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block page %}
+    <div class="container mt-5 mb-5 text-center">
+        <h1><i class="fas fa-glass-cheers me-4"></i>B.O.R.R.E.L.</h1>
+        <h6>Beer Order Registry for Reserving Edibles & Liquor</h6>
+        <h3 class="mt-5">Your borrel reservations</h3>
+    </div>
+    <div class="container">
+        {% bootstrap_messages %}
+        {% if object_list %}
+            <table class="table table-responsive w-100">
+                <thead>
+                <tr>
+                    <th scope="col">Title</th>
+                    <th scope="col">Start</th>
+                    <th scope="col">End</th>
+                    <th scope="col">Venue</th>
+                    <th scope="col">Status</th>
+                    <th scope="col"></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for reservation in object_list reversed %}
+                    <tr>
+                        <th scope="row">
+                            <a href="{% url 'borrel:view_reservation' reservation.pk %}" class="no-color">{{ reservation.title }}</a>
+                        </th>
+                        <td>{{ reservation.start }}</td>
+                        <td>{{ reservation.end|default_if_none:"" }}</td>
+                        <td>
+                            {% if reservation.venue_reservation %}
+                                <a class="no-color" href="{% url 'venues:list_reservations' %}">{{ reservation.venue_reservation.venue }}<span class='ms-2 badge {{ reservation.venue_reservation.accepted|yesno:"bg-success,bg-danger,bg-secondary" }}'>{{ reservation.venue_reservation.accepted|yesno:"Accepted,Declined,Pending" }}</span></a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class='badge {{ reservation.accepted|yesno:"bg-success,bg-danger,bg-secondary" }}'>{{ reservation.accepted|yesno:"Accepted,Declined,Pending" }}</span>
+                        </td>
+                        <td>
+                            {% if reservation.can_be_changed %}
+                                <div class="d-flex gap-2">
+                                    <a href="{% url 'borrel:view_reservation' reservation.pk %}" class="btn btn-primary w-100">Update reservation</a>
+                                    <a href="{% url 'borrel:delete_reservation' reservation.pk %}" class="btn btn-danger w-100">Cancel reservation</a>
+                                </div>
+                            {% elif reservation.can_be_submitted %}
+                                <a href="{% url 'borrel:submit_reservation' reservation.pk %}" class="btn btn-success my-1 w-100">Submit</a>
+                            {% else %}
+                                <a href="{% url 'borrel:view_reservation' reservation.pk %}" class="btn btn-outline-secondary my-1 w-100">
+                                    {% if reservation.submitted %}
+                                        <small>Submitted at {{ reservation.submitted_at }}</small><br/>
+                                    {% endif %}
+                                    View details
+                                </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>You do not have any reservations</p>
+        {% endif %}
+    </div>
+{% endblock %}
+{% block footer %}
+    <footer class="page-footer navbar navbar-expand-md fixed-bottom">
+        <div class="container text-center">
+            <div class="row flex-grow-1">
+                <div class="col">
+                    <a href="{% url 'borrel:add_reservation' %}">
+                        <div class="btn-ml m-auto cursor-pointer btn-on">
+                            <p class="font-footer">Add borrel reservation</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+{% endblock %}

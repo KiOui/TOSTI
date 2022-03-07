@@ -1,0 +1,11 @@
+{% if object.venue_reservation %}
+    <div class="alert {{ object.venue_reservation.accepted|yesno:"alert-info,alert-danger,alert-secondary" }} mt-5" role="alert">
+        <h5 class="alert-heading text-start">Venue reservation<span class='ms-2 badge {{ object.venue_reservation.accepted|yesno:"bg-success,bg-danger,bg-secondary" }}'>{{ object.venue_reservation.accepted|yesno:"Accepted,Declined,Pending" }}</span></h5>
+        This borrel reservation belongs to a venue reservation for the <a class="alert-link" href="{% url 'venues:list_reservations' %}">{{ object.venue_reservation.venue }}</a>.
+        {% if object.venue_reservation.accepted == None %}
+            This reservation has not yet been accepted.
+        {% elif not object.venue_reservation.accepted %}
+            This reservation, however, has been <span class="fw-bold">rejected</span>! You might want to cancel your borrel reservation too.
+        {% endif %}
+    </div>
+{% endif %}
