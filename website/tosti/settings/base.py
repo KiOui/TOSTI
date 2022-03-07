@@ -145,8 +145,6 @@ OAUTH2_PROVIDER = {
     },
 }
 
-SWAGGER_OAUTH_CALLBACK_URL = "http://localhost:8000/api/docs/oauth2-redirect"
-
 # SAML SP SETTINGS
 SP_UNIQUE_USERNAMES = False
 SP_LOGIN = "users.services.post_login"
