@@ -202,7 +202,6 @@ class ReservationRequestUpdateView(BasicBorrelBrevetRequiredMixin, ReservationRe
         if items.is_valid():
             obj = form.save()
             obj.user_updated = self.request.user
-            obj.updated_at = timezone.now()
             obj.save()
             items.instance = obj
             items.save()

@@ -192,4 +192,7 @@ class ReservationItem(models.Model):
         if self.amount_used and self.amount_used > 0 and not self.amount_reserved:
             self.amount_reserved = 0
 
-        return super().save(force_insert, force_update, using, update_fields)
+        super().save(force_insert, force_update, using, update_fields)
+
+        self.reservation.updated_at = timezone.now()
+        self.reservation.save()
