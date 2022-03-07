@@ -90,22 +90,37 @@ class ReservationRequestAdmin(admin.ModelAdmin):
         "user_submitted",
         "join_code",
     )
-    fields = (
-        "title",
-        "start",
-        "end",
-        "association",
-        "venue_reservation",
-        "comments",
-        "accepted",
-        "created_at",
-        "user_created",
-        "updated_at",
-        "user_updated",
-        "submitted_at",
-        "user_submitted",
-        "join_code",
-        "users_access",
+    fieldsets = (
+        (
+            None,
+            {
+                "fields": (
+                    "title",
+                    "start",
+                    "end",
+                    "association",
+                    "venue_reservation",
+                    "comments",
+                    "accepted",
+                )
+            },
+        ),
+        (
+            "Details",
+            {
+                "classes": ("collapse",),
+                "fields": (
+                    "created_at",
+                    "user_created",
+                    "updated_at",
+                    "user_updated",
+                    "submitted_at",
+                    "user_submitted",
+                    "join_code",
+                    "users_access",
+                ),
+            },
+        ),
     )
     filter_horizontal = [
         "users_access",
