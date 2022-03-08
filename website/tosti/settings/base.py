@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from django.contrib import messages
+from sentry_sdk.integrations.django import DjangoIntegration
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 

@@ -24,6 +24,7 @@ uritemplate = "^3.0.1"
 django-saml-sp = "^0.4.1"
 django-autocompletefilter = "^0.0.8"
 django-bootstrap5 = "^21.3"
+sentry-sdk = "^1.5.7"
 
 [tool.poetry.dev-dependencies]
 pydocstyle = "^5.0.2"
