@@ -145,7 +145,6 @@ OAUTH2_PROVIDER = {
     },
 }
 
-
 # SAML SP SETTINGS
 SP_UNIQUE_USERNAMES = False
 SP_LOGIN = "users.services.post_login"
