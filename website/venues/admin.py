@@ -46,9 +46,15 @@ class ReservationAdmin(admin.ModelAdmin):
     """Custom admin for reservations."""
 
     list_display = ["title", "venue", "association", "start", "end", "user", "accepted"]
-    list_filter = ["venue", "association", "start", "accepted"]
+    list_filter = [
+        "venue",
+        "association",
+        "start",
+        "accepted",
+        "start",
+    ]
     search_fields = ["title"]
-    date_hierarchy = "start"
+    # date_hierarchy = "start"
     form = ReservationAdminForm
 
     def changeform_view(self, request, object_id=None, form_url="", extra_context=None):

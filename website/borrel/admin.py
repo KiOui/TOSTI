@@ -132,8 +132,9 @@ class BorrelReservationAdmin(admin.ModelAdmin):
         "accepted",
         ("submitted_at", EmptyFieldListFilter),
         "association",
+        "start",
     )
-    date_hierarchy = "start"
+    # date_hierarchy = "start"
 
     def submitted(self, obj):
         """Reservation is submitted."""
