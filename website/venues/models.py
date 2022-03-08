@@ -75,4 +75,13 @@ class Reservation(models.Model):
 
     def __str__(self):
         """Convert this object to string."""
-        return "{} ({} - {})".format(self.venue, self.start, self.end)
+        if self.association:
+            if self.end:
+                return (
+                    f"Reservation {self.title} ({self.association}, "
+                    f"{self.start:%Y-%m-%d %H:%M} - {self.end:%Y-%m-%d %H:%M})"
+                )
+            return f"Reservation {self.title} ({self.association}, {self.start:%Y-%m-%d %H:%M})"
+        if self.end:
+            return f"Reservation {self.title} ({self.start:%Y-%m-%d %H:%M} - {self.end:%Y-%m-%d %H:%M})"
+        return f"Reservation {self.title} ({self.start:%Y-%m-%d %H:%M})"
