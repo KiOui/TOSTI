@@ -1,5 +1,7 @@
 from .base import *
 
+from sentry_sdk.integrations.django import DjangoIntegration
+
 SECRET_KEY = "***************"
 
 DEBUG = False
