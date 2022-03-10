@@ -77,11 +77,6 @@ GOOGLE_ANALYTICS_KEY = "***************"
 # SPOTIFY
 SPOTIFY_CACHE_PATH = "***************"
 
-# TANTALUS
-TANTALUS_ENDPOINT_URL = "***************"
-TANTALUS_USERNAME = "***************"
-TANTALUS_PASSWORD = "***************"
-
 # SENTRY
 sentry_sdk.init(
     dsn="***********",

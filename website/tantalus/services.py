@@ -1,6 +1,6 @@
 import requests
 import logging
-from django.conf import settings
+from settings.settings import settings
 
 from orders.models import Shift, Order
 from tantalus.models import TantalusProduct, TantalusOrderVenue
@@ -27,6 +27,14 @@ class TantalusClient:
             raise TantalusException(e)
 
         self._session = session
+
+    @staticmethod
+    def can_create_client():
+        return (
+            settings.get_setting("tantalus_endpoint_url")
+            and settings.get_setting("tantalus_username")
+            and settings.get_setting("tantalus_password")
+        )
 
     def get_products(self):
         """Get all registered Tantalus products."""
@@ -88,9 +96,9 @@ class TantalusClient:
 def get_tantalus_client() -> TantalusClient:
     """Get the default Tantalus client (with the login credentials in the Django settings file)."""
     return TantalusClient(
-        settings.TANTALUS_ENDPOINT_URL,
-        settings.TANTALUS_USERNAME,
-        settings.TANTALUS_PASSWORD,
+        settings.get_setting("tantalus_endpoint_url"),
+        settings.get_setting("tantalus_username"),
+        settings.get_setting("tantalus_password"),
     )
 
 
