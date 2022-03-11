@@ -30,6 +30,7 @@ class TantalusClient:
 
     @staticmethod
     def can_create_client():
+        """Check whether all settings are instantiated."""
         return (
             settings.get_setting("tantalus_endpoint_url")
             and settings.get_setting("tantalus_username")
