@@ -1,10 +1,48 @@
 {% extends 'admin/base.html' %}
 {% load static %}
     {% block extrahead %}
+        {{ block.super }}
+        <link href="https://fonts.googleapis.com/css2?family=Neucha&display=swap" rel="stylesheet">
         <link rel="apple-touch-icon" sizes="180x180" href="{% static 'tosti/favicon/apple-touch-icon.png' %}">
         <link rel="icon" type="image/png" sizes="32x32" href="{% static 'tosti/favicon/favicon-32x32.png' %}">
         <link rel="icon" type="image/png" sizes="16x16" href="{% static 'tosti/favicon/favicon-16x16.png' %}">
         <link rel="manifest" href="{% static 'tosti/favicon/site.webmanifest' %}">
-        <meta name="msapplication-TileColor" content="#d9a75d">
-        <meta name="theme-color" content="#ff0000">
-    {% endblock %}
+        <meta name="msapplication-TileColor" content="#e8b365">
+        <meta name="theme-color" content="#e8b365">
+        <style>
+            :root {
+                --tosti-base: #e8b365;
+                --tosti-base-dark: #ba9553;
+                --tosti-2: #e5dc5d;
+                --tosti-accent: #ec918d;
+                --tosti-dark: #b96b34;
+                --accent: white;
+                --primary: var(--tosti-base);
+                --secondary: var(--tosti-accent);
+                --link-fg: var(--body-fg);
+                --link-hover-color: var(--tosti-base-dark);
+                --link-selected-fg: var(--tosti-accent);
+                --header-bg: var(--tosti-base);
+                --header-color: white;
+                --default-button-bg: var(--tosti-dark);
+                --default-button-hover-bg: var(--tosti-accent);
+                --button-hover-bg: var(--tosti-base-dark);
+                --breadcrumbs-link-fg: var(--tosti-2);
+                --breadcrumbs-fg: white;
+                --breadcrumbs-bg: var(--tosti-base-dark);
+            }
+            #user-tools a:focus, #user-tools a:hover {
+                color: var(--tosti-dark);
+            }
+            .content a:not(table a) {
+                color: var(--tosti-base);
+            }
+            .content a:not(table a):focus, .content a:not(table a):hover{
+                color: var(--tosti-base-dark);
+            }
+            #site-name {
+                font-family: 'Neucha', cursive;
+                text-transform: uppercase;
+            }
+        </style>
+{% endblock %}

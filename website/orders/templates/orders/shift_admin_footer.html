@@ -105,7 +105,8 @@
         methods: {
             // Stop propagating the click event if pressed inside the mobile footer
             stop_propagation(event) {
-                    !(get_parents(event.target).filter((element) => {return element.id === 'footer-toggler'}).length > 0 || event.target.id === "footer-toggler") &&
+                if (!(get_parents(event.target).filter((element) => {return element.id === 'footer-toggler'}).length > 0 || event.target.id === "footer-toggler") &&
+                    !(get_parents(event.target).filter((element) => {return element.id === 'overview-button'}).length > 0 || event.target.id === "overview-button")) {
                     event.stopPropagation();
                 }
             },

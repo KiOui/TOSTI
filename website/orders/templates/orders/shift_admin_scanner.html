@@ -9,7 +9,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h2 class="modal-title">Barcode scanner</h2>
-                    <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+                    <button type="button" class="close btn btn-default" data-bs-dismiss="modal">&times;</button>
                 </div>
                 <div class="modal-body">
                     <div class="container">
@@ -128,7 +128,7 @@
             },
             search() {
                 fetch(
-                    `{% url 'v1:product_list' shift=shift %}?search=${this.search_input}`,
+                    `{% url 'v1:product_search' shift=shift %}?query=${this.search_input}`,
                     {
                         data: this.search_input,
                         headers: {

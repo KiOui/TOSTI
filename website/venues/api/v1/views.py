@@ -57,8 +57,8 @@ class VenueReservationListAPIView(ListAPIView):
             now = timezone.localize(datetime.datetime.now())
             return self.queryset.filter(
                 venue=self.kwargs.get("venue"),
-                start_time__gte=now - datetime.timedelta(days=days),
-                start_time__lt=now + datetime.timedelta(days=days),
+                start__gte=now - datetime.timedelta(days=days),
+                start__lt=now + datetime.timedelta(days=days),
             )
         else:
             return self.queryset.filter(venue=self.kwargs.get("venue"))
@@ -87,7 +87,7 @@ class ReservationListAPIView(ListAPIView):
             timezone = pytz.timezone(settings.TIME_ZONE)
             now = timezone.localize(datetime.datetime.now())
             return self.queryset.filter(
-                start_time__gte=now - datetime.timedelta(days=days), start_time__lt=now + datetime.timedelta(days=days)
+                start__gte=now - datetime.timedelta(days=days), start__lt=now + datetime.timedelta(days=days)
             )
         else:
             return self.queryset

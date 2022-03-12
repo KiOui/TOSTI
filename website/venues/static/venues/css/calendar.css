@@ -6,3 +6,11 @@
 .calendar-wrapper a {
     color: var(--text-color);
 }
+
+.fc .fc-list-event:hover td {
+    background-color: var(--background-shade);
+}
+
+.calendar-wrapper .fc-list-day-cushion {
+    background-color: var(--background-shade-light);
+}

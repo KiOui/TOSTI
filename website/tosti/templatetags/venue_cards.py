@@ -1,4 +1,5 @@
 from django import template
+from django.utils import timezone
 
 from thaliedje.models import Player
 from orders.models import OrderVenue
@@ -7,13 +8,18 @@ register = template.Library()
 
 
 @register.inclusion_tag("tosti/venue_card.html", takes_context=True)
-def render_venue_card(context, shift=None, venue=None, show_player=True):
+def render_venue_card(context, shift=None, venue=None, show_player=True, show_venue_reservation=True):
     """Render venue card."""
     if shift and venue is None:
         venue = shift.venue
 
     return {
         "venue": venue,
+        "show_venue_reservation": show_venue_reservation,
+        "venue_reservation": venue.venue.reservations.filter(
+            accepted=True, start__lte=timezone.now(), end__gte=timezone.now()
+        ).first()
+        or None,
         "request": context.get("request"),
         "admin": context["request"].user in venue.get_users_with_shift_admin_perms(),
         "show_player": show_player and Player.get_player(venue.venue) is not None,

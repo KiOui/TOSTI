@@ -28,27 +28,27 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='player',
             name='display_name',
-            field=models.CharField(blank=True, default='', max_length=256),
+            field=models.CharField(blank=True, default='', max_length=255),
         ),
         migrations.AlterField(
             model_name='player',
             name='playback_device_id',
-            field=models.CharField(blank=True, default='', max_length=256),
+            field=models.CharField(blank=True, default='', max_length=255),
         ),
         migrations.AlterField(
             model_name='player',
             name='playback_device_name',
-            field=models.CharField(blank=True, default='', help_text='When configuring this Spotify account for the first time, make sure to have the Spotify accounnt active on at least one playback device to complete configuration.', max_length=256),
+            field=models.CharField(blank=True, default='', help_text='When configuring this Spotify account for the first time, make sure to have the Spotify accounnt active on at least one playback device to complete configuration.', max_length=255),
         ),
         migrations.AlterField(
             model_name='spotifyartist',
             name='artist_id',
-            field=models.CharField(max_length=512),
+            field=models.CharField(max_length=255),
         ),
         migrations.AlterField(
             model_name='spotifyartist',
             name='artist_name',
-            field=models.CharField(max_length=512, unique=True),
+            field=models.CharField(max_length=255, unique=True),
         ),
         migrations.AlterField(
             model_name='spotifyqueueitem',
@@ -63,6 +63,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='spotifytrack',
             name='track_name',
-            field=models.CharField(max_length=256),
+            field=models.CharField(max_length=255),
         ),
     ]

@@ -1,5 +1,4 @@
 import os
-from json import JSONDecodeError
 
 from django.db import models
 from django.conf import settings
@@ -30,10 +29,10 @@ class Player(models.Model):
         "streaming, app-remote-control"
     )  # The required Spotify API permissions
 
-    display_name = models.CharField(max_length=256, default="", blank=True)
-    playback_device_id = models.CharField(max_length=256, default="", blank=True)
+    display_name = models.CharField(max_length=255, default="", blank=True)
+    playback_device_id = models.CharField(max_length=255, default="", blank=True)
     playback_device_name = models.CharField(
-        max_length=256,
+        max_length=255,
         default="",
         blank=True,
         help_text=(
@@ -42,9 +41,9 @@ class Player(models.Model):
             " configuration."
         ),
     )
-    client_id = models.CharField(max_length=256, unique=True)
-    client_secret = models.CharField(max_length=256)
-    redirect_uri = models.CharField(max_length=512)
+    client_id = models.CharField(max_length=255, unique=True)
+    client_secret = models.CharField(max_length=255)
+    redirect_uri = models.CharField(max_length=255)
     venue = models.OneToOneField(Venue, on_delete=models.SET_NULL, null=True, blank=True)
 
     class Meta:
@@ -87,45 +86,14 @@ class Player(models.Model):
         return self.playback_device_id is not None
 
     @property
-    def currently_playing(self):
-        """
-        Get currently playing music information.
-
-        :return: a dictionary with the following content:
-            image: [link to image of track],
-            name: [name of currently playing track],
-            artists: [list of artist names],
-            is_playing: [True|False]
-        """
-        if not self.configured:
-            raise RuntimeError("This Spotify account is not configured yet.")
-
-        try:
-            currently_playing = self.spotify.currently_playing()
-        except JSONDecodeError:
-            currently_playing = None
-
-        if currently_playing is None:
-            return False
-
-        image = currently_playing["item"]["album"]["images"][0]["url"]
-        name = currently_playing["item"]["name"]
-        artists = [x["name"] for x in currently_playing["item"]["artists"]]
-
-        return {
-            "image": image,
-            "name": name,
-            "artists": artists,
-            "is_playing": currently_playing["is_playing"],
-        }
-
-    @property
     def cache_path(self):
         """
         Get the Spotipy cache file path for this auth object.
 
         :return: the cache file path
         """
+        if not os.path.exists(settings.SPOTIFY_CACHE_PATH):
+            os.makedirs(settings.SPOTIFY_CACHE_PATH)
         return os.path.join(settings.SPOTIFY_CACHE_PATH, self.client_id)
 
     @property
@@ -188,8 +156,8 @@ class Player(models.Model):
 class SpotifyArtist(models.Model):
     """Spotify Artist model."""
 
-    artist_name = models.CharField(max_length=512, unique=True)
-    artist_id = models.CharField(max_length=512)
+    artist_name = models.CharField(max_length=255, unique=True)
+    artist_id = models.CharField(max_length=255)
 
     def __str__(self):
         """
@@ -203,8 +171,8 @@ class SpotifyArtist(models.Model):
 class SpotifyTrack(models.Model):
     """Spotify Track model."""
 
-    track_id = models.CharField(max_length=256, unique=True)
-    track_name = models.CharField(max_length=256)
+    track_id = models.CharField(max_length=255, unique=True)
+    track_name = models.CharField(max_length=255)
     track_artists = models.ManyToManyField(SpotifyArtist)
 
     def __str__(self):

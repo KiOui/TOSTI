@@ -1,3 +1,4 @@
+from thaliedje.services import player_currently_playing
 from users.api.v1.serializers import UserRelatedField
 from rest_framework import serializers
 from thaliedje import models
@@ -44,7 +45,7 @@ class PlayerSerializer(serializers.ModelSerializer):
 
     def get_track(self, instance):
         """Get track as a dict."""
-        currently_playing = instance.currently_playing
+        currently_playing = player_currently_playing(instance)
         if currently_playing:
             return {
                 "image": currently_playing["image"],
@@ -56,7 +57,7 @@ class PlayerSerializer(serializers.ModelSerializer):
 
     def get_is_playing(self, instance):
         """Get if the player is playing."""
-        currently_playing = instance.currently_playing
+        currently_playing = player_currently_playing(instance)
         return currently_playing is not False and currently_playing["is_playing"]
 
     class Meta:

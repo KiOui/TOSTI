@@ -11,6 +11,11 @@ a {
     text-decoration: none;
 }
 
+a.no-color {
+    color: inherit;
+    text-decoration: underline;
+}
+
 .site-header, .page-footer {
     background-color: var(--nav-background-color);
     color: var(--nav-link-color);
@@ -77,6 +82,10 @@ p {
     text-align: center;
     font-size: 1.5rem;
     margin-bottom: 3rem;
+}
+
+.table {
+    color: var(--text-color);
 }
 
 p.btn-note {

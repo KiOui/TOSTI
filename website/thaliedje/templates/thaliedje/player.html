@@ -23,16 +23,25 @@
     <div class="text-center m-auto">No currently playing track</div>
 </template>
 {% if controls %}
-    <div class="player-controls mt-3 mb-3">
-        <i class="fas fa-backward" v-on:click="backward()"></i>
-        <template v-if="player_data.is_playing">
-            <i class="fas fa-pause" v-on:click="pause()"></i>
-        </template>
-        <template v-else>
-            <i class="fas fa-play" v-on:click="play()"></i>
-        </template>
-        <i class="fas fa-forward" v-on:click="forward()"></i>
-    </div>
+    <template v-if="doing_call">
+        <div class="player-controls mt-3 mb-3">
+            <div class="loader-container">
+                <span class="loader"></span>
+            </div>
+        </div>
+    </template>
+    <template v-else>
+        <div class="player-controls mt-3 mb-3">
+            <i class="fas fa-backward" v-on:click="backward()"></i>
+            <template v-if="player_data.is_playing">
+                <i class="fas fa-pause" v-on:click="pause()"></i>
+            </template>
+            <template v-else>
+                <i class="fas fa-play" v-on:click="play()"></i>
+            </template>
+            <i class="fas fa-forward" v-on:click="forward()"></i>
+        </div>
+    </template>
 {% endif %}
 </div>
 <script>
@@ -43,17 +52,16 @@
             player_data: {
                 is_playing: false,
                 track: null,
-            }
+            },
+            doing_call: false,
+            refresh_timer: null,
         },
         created() {
-            fetch('{% url "v1:player_retrieve" pk=player.id %}')
-            .then(response => response.json())
-            .then(json => {
-                this.player_data = json;
-            });
+            this.refresh();
         },
         methods: {
             play() {
+                this.doing_call = true;
                 fetch(
                     '{% url "v1:player_play" player=player %}',
                     {
@@ -69,19 +77,20 @@
                     } else {
                         throw response;
                     }
-                }).then(() => {
-                    if (typeof (update_refresh_list) !== 'undefined') {
-                        update_refresh_list();
-                    }
                 }).catch(error => {
                     if (error.status && error.status !== 403) {
                         tata.error('', "Failed to communicate with the Spotify device, make sure the device is available.");
                     } else {
                         show_error_from_api(error);
                     }
+                }).finally(() => {
+                    this.refresh().finally(() => {
+                        this.doing_call = false;
+                    });
                 });
             },
             pause() {
+                this.doing_call = true;
                 fetch(
                     '{% url "v1:player_pause" player=player %}',
                     {
@@ -97,19 +106,20 @@
                     } else {
                         throw response;
                     }
-                }).then(() => {
-                    if (typeof (update_refresh_list) !== 'undefined') {
-                        update_refresh_list();
-                    }
                 }).catch(error => {
                     if (error.status && error.status !== 403) {
                         tata.error('', "Failed to communicate with the Spotify device, make sure the device is available.");
                     } else {
                         show_error_from_api(error);
                     }
+                }).finally(() => {
+                    this.refresh().finally(() => {
+                        this.doing_call = false;
+                    });
                 });
             },
             forward() {
+                this.doing_call = true;
                 fetch(
                     '{% url "v1:player_next" player=player %}',
                     {
@@ -125,19 +135,20 @@
                     } else {
                         throw response;
                     }
-                }).then(() => {
-                    if (typeof (update_refresh_list) !== 'undefined') {
-                        update_refresh_list();
-                    }
                 }).catch(error => {
                     if (error.status && error.status !== 403) {
                         tata.error('', "Failed to communicate with the Spotify device, make sure the device is available.");
                     } else {
                         show_error_from_api(error);
                     }
+                }).finally(() => {
+                    this.refresh().finally(() => {
+                        this.doing_call = false;
+                    });
                 });
             },
             backward() {
+                this.doing_call = true;
                 fetch(
                     '{% url "v1:player_previous" player=player %}',
                     {
@@ -153,19 +164,41 @@
                     } else {
                         throw response;
                     }
-                }).then(() => {
-                    if (typeof (update_refresh_list) !== 'undefined') {
-                        update_refresh_list();
-                    }
                 }).catch(error => {
                     if (error.status && error.status !== 403) {
                         tata.error('', "Failed to communicate with the Spotify device, make sure the device is available.");
                     } else {
                         show_error_from_api(error);
                     }
+                }).finally(() => {
+                    this.refresh().finally(() => {
+                        this.doing_call = false;
+                    });
+                });
+            },
+            refresh() {
+                clearTimeout(update_timer);
+                return fetch(
+                    "{% url "v1:player_retrieve" pk=player.id %}",
+                    {
+                        headers: {
+                            "X-CSRFToken": get_csrf_token(),
+                        }
+                    }
+                ).then(response => {
+                    if (response.status === 200) {
+                        return response.json();
+                    } else {
+                        throw response;
+                    }
+                }).then(data => {
+                    this.player_data = data
+                }).catch(error => {
+                    console.log(`An error occurred while refreshing player {{ player.id }}. Error: ${error}`)
+                }).finally(() => {
+                    this.refresh_timer = setTimeout(this.refresh, 5000);
                 });
             }
         }
     });
-    add_refresh_url("{% url "v1:player_retrieve" pk=player.id %}", function(data) {player_{{ player.id }}_vue.player_data = data});
 </script>

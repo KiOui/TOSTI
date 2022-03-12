@@ -16,7 +16,12 @@ jobs:
       - name: "Setup Python"
         uses: actions/setup-python@v1
         with:
-          python-version: '3.7'
+          python-version: '3.10'
+
+      - name: "Install OS dependencies"
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --fix-missing libxmlsec1-dev pkg-config
 
       - name: "Install Poetry"
         run: |

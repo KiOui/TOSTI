@@ -1,0 +1,19 @@
+{% extends 'tosti/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block page %}
+    <div class="container mt-5 mb-5 text-center">
+        <h1>Create a borrel reservation</h1>
+    </div>
+    <div class="container mb-5">
+        <div class="row justify-content-center">
+            <form method="post" class="col-12 col-md-8 col-md-offset-2">
+                {% bootstrap_messages %}
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                {% include "borrel/includes/product_items_table.html" %}
+                {% bootstrap_button button_type="submit" content="Place reservation" extra_classes="mt-4 w-100" %}
+            </form>
+        </div>
+    </div>
+{% endblock %}

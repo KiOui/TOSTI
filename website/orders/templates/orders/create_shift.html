@@ -1,17 +1,16 @@
 {% extends 'tosti/base.html' %}
-{% load static %}
-
-{% block styles %}
-    <link rel="stylesheet" href="{% static 'tosti/css/forms.css' %}"/>
-{% endblock %}
+{% load django_bootstrap5 %}
 
 {% block page %}
-    <div class="container-sm text-center">
-        <h1>Create new shift</h1>
-        <form method="POST">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <input type="submit" value="Start shift" class="btn-ml btn-on"/>
-        </form>
+    <div class="container">
+        <div class="row justify-content-center">
+            <form method="post" class="col-8 col-sm-offset-2">
+                <h1>Create new shift</h1>
+                {% bootstrap_messages %}
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                {% bootstrap_button button_type="submit" content="Start shift" extra_classes="mt-4 w-100" %}
+            </form>
+        </div>
     </div>
 {% endblock %}

@@ -18,12 +18,12 @@ class Migration(migrations.Migration):
             name='Player',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('display_name', models.CharField(blank=True, max_length=256, null=True)),
-                ('playback_device_id', models.CharField(blank=True, max_length=256, null=True)),
+                ('display_name', models.CharField(blank=True, max_length=255, null=True)),
+                ('playback_device_id', models.CharField(blank=True, max_length=255, null=True)),
                 ('playback_device_name', models.CharField(blank=True, help_text='When configuring this Spotify account for the first time, make sure to have the Spotify accounnt active on at least one playback device to complete configuration.', max_length=256, null=True)),
-                ('client_id', models.CharField(max_length=256, unique=True)),
-                ('client_secret', models.CharField(max_length=256)),
-                ('redirect_uri', models.CharField(max_length=512)),
+                ('client_id', models.CharField(max_length=255, unique=True)),
+                ('client_secret', models.CharField(max_length=255)),
+                ('redirect_uri', models.CharField(max_length=255)),
                 ('venue', models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='venues.Venue')),
             ],
             options={
@@ -36,16 +36,16 @@ class Migration(migrations.Migration):
             name='SpotifyArtist',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('artist_name', models.CharField(max_length=2048, unique=True)),
-                ('artist_id', models.CharField(max_length=2048)),
+                ('artist_name', models.CharField(max_length=255, unique=True)),
+                ('artist_id', models.CharField(max_length=255)),
             ],
         ),
         migrations.CreateModel(
             name='SpotifyTrack',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('track_id', models.CharField(max_length=256, unique=True)),
-                ('track_name', models.CharField(max_length=1024)),
+                ('track_id', models.CharField(max_length=255, unique=True)),
+                ('track_name', models.CharField(max_length=255)),
                 ('track_artists', models.ManyToManyField(to='thaliedje.SpotifyArtist')),
             ],
         ),

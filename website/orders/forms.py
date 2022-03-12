@@ -1,6 +1,7 @@
 import pytz
 from django import forms
 from django.conf import settings
+from django.forms import DateTimeInput
 from guardian.shortcuts import get_objects_for_user
 
 from .models import Shift, get_default_end_time_shift, get_default_start_time_shift
@@ -26,9 +27,9 @@ class CreateShiftForm(forms.ModelForm):
         timezone = pytz.timezone(settings.TIME_ZONE)
         now = timezone.localize(datetime.now())
         start_time = now - timedelta(seconds=now.second, microseconds=now.microsecond)
-        self.fields["start_date"].initial = start_time
+        self.fields["start_date"].initial = start_time.strftime("%Y-%m-%dT%H:%M:%S")
         if now >= get_default_end_time_shift() or now <= get_default_start_time_shift() - timedelta(minutes=30):
-            self.fields["end_date"].initial = start_time + timedelta(hours=1)
+            self.fields["end_date"].initial = (start_time + timedelta(hours=1)).strftime("%Y-%m-%dT%H:%M:%S")
 
     def clean_venue(self):
         """Check whether venue is has an accepted value."""
@@ -46,3 +47,7 @@ class CreateShiftForm(forms.ModelForm):
             "start_date",
             "end_date",
         ]
+        widgets = {
+            "start_date": DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
+            "end_date": DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
+        }

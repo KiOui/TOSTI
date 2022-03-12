@@ -270,7 +270,7 @@ class Shift(models.Model):
     )
 
     finalized = models.BooleanField(
-        verbose_name="Shift Finalized",
+        verbose_name="Shift finalized",
         default=False,
         help_text="If checked, shift is finalized and no alterations on the shift can be made anymore.",
     )
@@ -388,6 +388,15 @@ class Shift(models.Model):
         for item in distinct_ordered_items:
             item.amount = Order.objects.filter(product=item, shift=self).count()
         return distinct_ordered_items
+
+    @property
+    def number_of_restricted_orders(self):
+        """
+        Get the total number of restricted orders in this shift.
+
+        :return: the total number of orders in this shift
+        """
+        return Order.objects.filter(shift=self, product__ignore_shift_restrictions=False).count()
 
     @property
     def number_of_orders(self):
@@ -673,6 +682,9 @@ class Order(models.Model):
         if not self.order_price:
             self.order_price = self.product.current_price
 
+        if self.shift.finalized:
+            raise ValidationError("Order can't be changed as shift is already finalized")
+
         super(Order, self).save(*args, **kwargs)
 
     def to_json(self):
@@ -689,16 +701,6 @@ class Order(models.Model):
             "paid": self.paid,
             "ready": self.ready,
         }
-
-    def clean(self):
-        """
-        Clean this Order.
-
-        Check if the Shift is already finalized.
-        """
-        super().clean()
-        if self.shift.finalized:
-            raise ValidationError("Order can't be changed as Shift is already finalized")
 
     @property
     def get_venue(self):

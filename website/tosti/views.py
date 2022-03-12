@@ -47,7 +47,7 @@ def handler403(request, exception):
     if request.user.is_authenticated:
         return render(request, "tosti/403.html", status=403)
     else:
-        return redirect("users:login")
+        return redirect("login")
 
 
 def handler404(request, exception):
@@ -61,7 +61,7 @@ def handler404(request, exception):
     return render(request, "tosti/404.html", status=404)
 
 
-def handler500(request):
+def handler500(request, *args, **kwargs):
     """
     Handle a 50x (server fault) exception.
 

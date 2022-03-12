@@ -25,8 +25,6 @@ class PlayerListAPIView(ListAPIView):
 
     serializer_class = PlayerSerializer
     queryset = Player.objects.all()
-    permission_classes = [IsAuthenticatedOrTokenHasScope]
-    required_scopes = ["read"]
 
 
 class PlayerRetrieveAPIView(RetrieveAPIView):
@@ -40,8 +38,6 @@ class PlayerRetrieveAPIView(RetrieveAPIView):
 
     serializer_class = PlayerSerializer
     queryset = Player.objects.all()
-    permission_classes = [IsAuthenticatedOrTokenHasScope]
-    required_scopes = ["read"]
 
 
 class PlayerQueueListAPIView(ListAPIView):
@@ -57,13 +53,10 @@ class PlayerQueueListAPIView(ListAPIView):
     serializer_class = QueueItemSerializer
     queryset = SpotifyQueueItem.objects.all()
     pagination_class = StandardResultsSetPagination
-    permission_classes = [IsAuthenticatedOrTokenHasScope]
-    required_scopes = ["read"]
 
-
-def get_queryset(self):
-    """Get the queryset."""
-    return self.queryset.filter(player=self.kwargs.get("player"))
+    def get_queryset(self):
+        """Get the queryset."""
+        return self.queryset.filter(player=self.kwargs.get("player"))
 
 
 class PlayerTrackSearchAPIView(APIView):

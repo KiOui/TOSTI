@@ -45,7 +45,11 @@ class UserAdmin(BaseUserAdmin):
 
     form = UserAdminForm
 
-    search_fields = ["username"]
+    search_fields = [
+        "username",
+        "first_name",
+        "last_name",
+    ]
     fieldsets = (
         ("User", {"fields": ("username", "first_name", "last_name", "email")}),
         (

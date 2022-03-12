@@ -26,4 +26,4 @@ class ReservationSerializer(serializers.ModelSerializer):
         """Meta class."""
 
         model = models.Reservation
-        fields = ["pk", "title", "user", "association", "start_time", "end_time", "venue", "comment"]
+        fields = ["pk", "title", "user", "association", "start", "end", "venue", "comment"]

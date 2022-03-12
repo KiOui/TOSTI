@@ -1,0 +1,31 @@
+{% extends 'tosti/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block page %}
+    <div class="container mt-5 mb-5 text-center">
+        <h1>
+            {% if object.can_be_changed %}
+                Update borrel reservation
+            {% else %}
+                View borrel reservation
+            {% endif %}
+        </h1>
+    </div>
+    <div class="container mb-5">
+        <div class="row justify-content-center">
+            <form method="post" class="col-12 col-md-8 col-md-offset-2">
+                {% bootstrap_messages %}
+                {% include "borrel/includes/reservation_cannot_be_changed.html" %}
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                {% include "borrel/includes/venue_reservation.html" %}
+                {% include "borrel/includes/share_reservation.html" %}
+                {% include "borrel/includes/product_items_table.html" %}
+                {% if object.can_be_changed %}
+                    {% bootstrap_button button_type="submit" content="Update reservation" size="lg" extra_classes="mt-4 mb-2 w-100" %}
+                    {% bootstrap_button button_type="link" href="" content="Cancel reservation" button_class="btn-danger" extra_classes="mb-3 w-100" %}
+                {% endif %}
+            </form>
+        </div>
+    </div>
+{% endblock %}

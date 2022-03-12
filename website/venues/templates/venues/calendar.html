@@ -1,30 +1,80 @@
 {% extends 'tosti/base.html' %}
-{% load calendar %}
+{% load static %}
 
 {% block page %}
-    <div class="container mt-5 mb-5 text-center">
-        <h1>Reservations</h1>
-    </div>
     <div class="container">
-        {% render_calendar %}
+        <div class="calendar-wrapper">
+            <div id="calendar-all"></div>
+        </div>
     </div>
-    <div class="container pb-5 pt-5"></div>
 {% endblock %}
-
 {% block footer %}
-    {% if request.user.is_authenticated %}
-        <footer class="page-footer navbar navbar-expand-md fixed-bottom">
-            <div class="container text-center">
-                <div class="row flex-grow-1">
+    <footer class="page-footer navbar navbar-expand-md fixed-bottom">
+        <div class="container text-center">
+            <div class="row flex-grow-1">
+                {% for button in buttons %}
                     <div class="col">
-                        <a href="{% url 'venues:add_reservation' %}">
+                        <a href="{{ button.href }}">
                             <div class="btn-ml m-auto cursor-pointer btn-on">
-                                <p class="font-footer"><i class="far fa-calendar-plus"></i> Request Reservation</p>
+                                <p class="font-footer">{{ button.name }}</p>
                             </div>
                         </a>
                     </div>
-                </div>
+                {% endfor %}
             </div>
-        </footer>
-    {% endif %}
+        </div>
+    </footer>
+{% endblock %}
+
+{% block styles %}
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/main.min.css' rel='stylesheet' />
+    <link href='{% static 'venues/css/calendar.css' %}' rel='stylesheet' />
+{% endblock %}
+
+{% block js %}
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/main.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            let calendarEl = document.getElementById('calendar-all');
+            fetch('{% url 'v1:reservations_list' %}?days=90').then((response) => response.json()).then((data) => {
+                let calendar = new FullCalendar.Calendar(calendarEl, {
+                    headerToolbar: {
+                        left: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
+                        center: 'title',
+                        right: 'prev,next today'
+                    },
+                    initialView: 'timeGridWeek',
+                    weekNumbers: true,
+                    weekends: true,
+                    firstDay: 1,
+                    slotLabelFormat: {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false,
+                    },
+                    slotDuration: '00:30:00',
+                    eventTimeFormat: {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false,
+                    },
+                    slotEventOverlap: false,
+                    height: 800,
+                    timeZone: 'local',
+                    allDaySlot: false,
+                    nowIndicator: true,
+                    editable: false,
+                    droppable: false,
+                    displayEventEnd: true,
+                    events: data.map((reservation) => {return {'start': reservation.start, 'end': reservation.end,
+                        'title': (reservation.title ?
+                            `${reservation.title} - ${reservation.venue.name}` :
+                            `${reservation.venue.name}`) + (reservation.association ? ` (reserved by ${reservation.association.name})` : ""), 'backgroundColor': `${reservation.venue.color_in_calendar}`}})
+                });
+                calendar.render();
+            }).catch((exception) => {
+                alert("An error occurred while getting calendar data. Please reload this page.");
+            });
+        });
+    </script>
 {% endblock %}

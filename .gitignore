@@ -58,7 +58,7 @@ coverage.xml
 # Django stuff:
 *.log
 local_settings.py
-db.sqlite3
+website/db.sqlite3
 db.sqlite3-journal
 
 # Flask stuff:
@@ -148,3 +148,7 @@ docker-compose.yml
 # Documentation
 /docs/build
 
+# Production settings
+/website/tosti/settings/production.py
+/website/tosti/settings/management.py
+RELOAD
