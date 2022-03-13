@@ -208,8 +208,8 @@ def increase_shift_capacity(shift, amount=5):
 
 
 def increase_shift_time(shift, amount_minutes=5):
-    """Extend the end_date of a shift."""
-    shift.end_date += datetime.timedelta(minutes=amount_minutes)
+    """Extend the end of a shift."""
+    shift.end += datetime.timedelta(minutes=amount_minutes)
     shift.save()
     return shift
 

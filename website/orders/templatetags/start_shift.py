@@ -26,9 +26,9 @@ def currently_active_shift_for_venue(venue: OrderVenue):
     today = timezone.localize(datetime.now())
     start = timezone.localize(datetime(today.year, today.month, today.day))
 
-    if venue.shifts.filter(start_date__lte=today, end_date__gte=today).exists():
-        return venue.shifts.filter(start_date__lte=today, end_date__gte=today).first()
-    elif venue.shifts.filter(end_date__gte=start).exists():
-        return venue.shifts.filter(end_date__gte=start).order_by("-end_date").first()
+    if venue.shifts.filter(start__lte=today, end__gte=today).exists():
+        return venue.shifts.filter(start__lte=today, end__gte=today).first()
+    elif venue.shifts.filter(end__gte=start).exists():
+        return venue.shifts.filter(end__gte=start).order_by("-end").first()
     else:
         return None

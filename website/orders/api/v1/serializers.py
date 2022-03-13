@@ -138,8 +138,8 @@ class ShiftSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "venue",
-            "start_date",
-            "end_date",
+            "start",
+            "end",
             "can_order",
             "is_active",
             "finalized",
