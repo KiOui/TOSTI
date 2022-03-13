@@ -15,7 +15,5 @@ class AssociationListAPIView(ListAPIView):
 
     serializer_class = AssociationSerializer
     queryset = Association.objects.all()
-    filter_backends = (
-        filters.SearchFilter,
-    )
+    filter_backends = (filters.SearchFilter,)
     search_fields = ["name"]

@@ -27,18 +27,16 @@ class ShiftFilter(FilterSet):
 
         model = Shift
         fields = {
-            'start_date': ('lte', 'gte'),
-            'end_date': ('lte', 'gte'),
-            'venue': ('exact',),
-            'can_order': ('exact',),
-            'finalized': ('exact',),
-            'assignees': ('exact',),
+            "start_date": ("lte", "gte"),
+            "end_date": ("lte", "gte"),
+            "venue": ("exact",),
+            "can_order": ("exact",),
+            "finalized": ("exact",),
+            "assignees": ("exact",),
         }
 
     filter_overrides = {
-        models.DateTimeField: {
-            'filter_class': IsoDateTimeFilter
-        },
+        models.DateTimeField: {"filter_class": IsoDateTimeFilter},
     }
 
 
@@ -50,9 +48,12 @@ class OrderFilter(FilterSet):
 
         model = Order
         fields = {
-            'user': ('exact', 'isnull',),
-            'ready': ('exact',),
-            'paid': ('exact',),
-            'type': ('exact',),
-            'product': ('exact',),
+            "user": (
+                "exact",
+                "isnull",
+            ),
+            "ready": ("exact",),
+            "paid": ("exact",),
+            "type": ("exact",),
+            "product": ("exact",),
         }

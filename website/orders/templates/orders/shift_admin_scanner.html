@@ -107,6 +107,7 @@
                         }
                     }
                 ).then(response => {
+                    console.log(response);
                     if (response.status === 201) {
                         return response.json();
                     } else {
@@ -116,7 +117,8 @@
                     if (typeof (update_refresh_list) !== 'undefined') {
                         update_refresh_list();
                     }
-                    document.getElementById(POPUP_MODAL_ID).modal('hide');
+                    let popupModal = bootstrap.Modal.getOrCreateInstance(document.getElementById(POPUP_MODAL_ID));
+                    popupModal.hide();
                     scanner_vue.search_results = [];
                     scanner_vue.search_input = "";
                     tata.success("", "Order added to queue.");
@@ -128,7 +130,7 @@
             },
             search() {
                 fetch(
-                    `{% url 'v1:product_search' shift=shift %}?query=${this.search_input}`,
+                    `{% url 'v1:product_list' shift=shift %}?search=${this.search_input}`,
                     {
                         data: this.search_input,
                         headers: {

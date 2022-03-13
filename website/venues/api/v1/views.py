@@ -1,4 +1,3 @@
-
 import django_filters.rest_framework
 from rest_framework.filters import SearchFilter
 from rest_framework.generics import ListAPIView, RetrieveAPIView
@@ -18,10 +17,7 @@ class VenueListAPIView(ListAPIView):
 
     serializer_class = VenueSerializer
     queryset = Venue.objects.filter(active=True)
-    filter_backends = (
-        django_filters.rest_framework.DjangoFilterBackend,
-        SearchFilter
-    )
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend, SearchFilter)
     filter_class = VenueFilter
     search_fields = ["name", "slug"]
 
@@ -50,9 +46,6 @@ class ReservationListAPIView(ListAPIView):
 
     serializer_class = ReservationSerializer
     queryset = Reservation.objects.filter(accepted=True)
-    filter_backends = (
-        django_filters.rest_framework.DjangoFilterBackend,
-        SearchFilter
-    )
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend, SearchFilter)
     filter_class = ReservationFilter
     search_fields = ["title"]

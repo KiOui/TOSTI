@@ -13,7 +13,7 @@ class VenueFilter(FilterSet):
 
         model = Venue
         fields = {
-            'can_be_reserved': ('exact',),
+            "can_be_reserved": ("exact",),
         }
 
 
@@ -25,15 +25,13 @@ class ReservationFilter(FilterSet):
 
         model = Reservation
         fields = {
-            'user': ('exact',),
-            'venue': ('exact',),
-            'association': ('exact', 'isnull'),
-            'start': ('lte', 'gte'),
-            'end': ('lte', 'gte'),
+            "user": ("exact",),
+            "venue": ("exact",),
+            "association": ("exact", "isnull"),
+            "start": ("lte", "gte"),
+            "end": ("lte", "gte"),
         }
 
     filter_overrides = {
-        models.DateTimeField: {
-            'filter_class': IsoDateTimeFilter
-        },
+        models.DateTimeField: {"filter_class": IsoDateTimeFilter},
     }
