@@ -36,7 +36,13 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             let calendarEl = document.getElementById('calendar-all');
-            fetch('{% url 'v1:reservations_list' %}?days=90').then((response) => response.json()).then((data) => {
+            let now = new Date();
+            let yearOffset = (24*60*60*1000) * 365; // 365 days
+            let yearInThePast = now.getTime() - yearOffset;
+            let yearInTheFuture = now.getTime() + yearOffset;
+            let yearInThePastDate = new Date(yearInThePast);
+            let yearInTheFutureDate = new Date(yearInTheFuture);
+            fetch('{% url 'v1:reservations_list' %}' + `?start__gte=${yearInThePastDate.toISOString()}&start__lte=${yearInTheFutureDate.toISOString()}`).then((response) => response.json()).then((data) => {
                 let calendar = new FullCalendar.Calendar(calendarEl, {
                     headerToolbar: {
                         left: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',

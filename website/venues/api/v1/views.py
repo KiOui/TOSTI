@@ -1,9 +1,9 @@
-import datetime
 
-import pytz
-from django.conf import settings
+import django_filters.rest_framework
+from rest_framework.filters import SearchFilter
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from venues.models import Venue, Reservation
+from .filters import ReservationFilter, VenueFilter
 from .serializers import VenueSerializer, ReservationSerializer
 
 
@@ -18,6 +18,12 @@ class VenueListAPIView(ListAPIView):
 
     serializer_class = VenueSerializer
     queryset = Venue.objects.filter(active=True)
+    filter_backends = (
+        django_filters.rest_framework.DjangoFilterBackend,
+        SearchFilter
+    )
+    filter_class = VenueFilter
+    search_fields = ["name", "slug"]
 
 
 class VenueRetrieveAPIView(RetrieveAPIView):
@@ -33,37 +39,6 @@ class VenueRetrieveAPIView(RetrieveAPIView):
     queryset = Venue.objects.filter(active=True)
 
 
-class VenueReservationListAPIView(ListAPIView):
-    """
-    Venue Reservation List API View.
-
-    Permissions required: None
-
-    Use this endpoint to get the Reservations of a Venue.
-    """
-
-    serializer_class = ReservationSerializer
-    queryset = Reservation.objects.filter(accepted=True)
-
-    def get_queryset(self):
-        """Get queryset."""
-        try:
-            days = int(self.request.query_params.get("days", None))
-        except (TypeError, ValueError):
-            days = None
-
-        if days is not None:
-            timezone = pytz.timezone(settings.TIME_ZONE)
-            now = timezone.localize(datetime.datetime.now())
-            return self.queryset.filter(
-                venue=self.kwargs.get("venue"),
-                start__gte=now - datetime.timedelta(days=days),
-                start__lt=now + datetime.timedelta(days=days),
-            )
-        else:
-            return self.queryset.filter(venue=self.kwargs.get("venue"))
-
-
 class ReservationListAPIView(ListAPIView):
     """
     Reservation List API View.
@@ -75,19 +50,9 @@ class ReservationListAPIView(ListAPIView):
 
     serializer_class = ReservationSerializer
     queryset = Reservation.objects.filter(accepted=True)
-
-    def get_queryset(self):
-        """Get queryset."""
-        try:
-            days = int(self.request.query_params.get("days", None))
-        except (TypeError, ValueError):
-            days = None
-
-        if days is not None:
-            timezone = pytz.timezone(settings.TIME_ZONE)
-            now = timezone.localize(datetime.datetime.now())
-            return self.queryset.filter(
-                start__gte=now - datetime.timedelta(days=days), start__lt=now + datetime.timedelta(days=days)
-            )
-        else:
-            return self.queryset
+    filter_backends = (
+        django_filters.rest_framework.DjangoFilterBackend,
+        SearchFilter
+    )
+    filter_class = ReservationFilter
+    search_fields = ["title"]

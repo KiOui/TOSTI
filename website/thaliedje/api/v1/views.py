@@ -1,12 +1,14 @@
+import django_filters
 import spotipy
 from oauth2_provider.contrib.rest_framework import IsAuthenticatedOrTokenHasScope
-from rest_framework import status
+from rest_framework import status, filters
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from thaliedje import services
+from thaliedje.api.v1.filters import PlayerFilter
 from thaliedje.api.v1.pagination import StandardResultsSetPagination
 from thaliedje.api.v1.serializers import PlayerSerializer, QueueItemSerializer
 from thaliedje.models import Player, SpotifyQueueItem
@@ -25,6 +27,12 @@ class PlayerListAPIView(ListAPIView):
 
     serializer_class = PlayerSerializer
     queryset = Player.objects.all()
+    filter_backends = (
+        django_filters.rest_framework.DjangoFilterBackend,
+        filters.SearchFilter,
+    )
+    filter_class = PlayerFilter
+    search_fields = ["display_name"]
 
 
 class PlayerRetrieveAPIView(RetrieveAPIView):
