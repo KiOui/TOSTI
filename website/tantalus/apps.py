@@ -13,3 +13,4 @@ class TantalusConfig(AppConfig):
         :return: None
         """
         from tantalus import signals  # noqa
+        from tantalus import settings  # noqa

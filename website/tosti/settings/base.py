@@ -13,6 +13,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "settings",
     "sp",
     "django_bootstrap5",
     "autocompletefilter",
