@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     "import_export",
     "guardian",
     'rest_framework',
+    'django_filters',
     "users",
     "venues",
     "associations",

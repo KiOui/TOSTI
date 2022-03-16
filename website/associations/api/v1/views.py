@@ -1,3 +1,4 @@
+from rest_framework import filters
 from rest_framework.generics import ListAPIView
 from associations.models import Association
 from .serializers import AssociationSerializer
@@ -14,3 +15,5 @@ class AssociationListAPIView(ListAPIView):
 
     serializer_class = AssociationSerializer
     queryset = Association.objects.all()
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ["name"]
