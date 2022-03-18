@@ -146,7 +146,7 @@ def add_user_order(product: Product, shift: Shift, user: User) -> Order:
         raise OrderException("This Shift is closed.")
 
     # Check Shift order maximum while ignoring Products without Shift restrictions
-    if not shift.user_can_order_amount(user, amount=1):
+    if not product.ignore_shift_restrictions and not shift.user_can_order_amount(user, amount=1):
         raise OrderException("User can not order that many products in this shift")
 
     # Check Product availability
@@ -160,7 +160,6 @@ def add_user_order(product: Product, shift: Shift, user: User) -> Order:
     # Check per-Product order maximum
     if not product.user_can_order_amount(user, shift, amount=1):
         raise OrderException("User can not order {} {} for this shift".format(product, 1))
-
     return Order.objects.create(
         product=product,
         shift=shift,
@@ -224,6 +223,7 @@ def query_product_barcode(query):
     return Product.objects.filter(barcode__startswith=query, available=True)
 
 
+# TODO: Remove cart
 class Cart:
     """Cart model for Orders."""
 

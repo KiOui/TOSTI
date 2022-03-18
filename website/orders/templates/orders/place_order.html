@@ -25,8 +25,9 @@
                                     <div class="overlay"></div>
                                     <p class="alert alert-warning">You have ordered the maximum of this item.</p>
                                 </div>
-                                <input class="btn btn-success ms-2" type="button" value="Add"
+                                <input v-if="!placing_order" class="btn btn-success ms-2" type="button" value="Add"
                                        v-on:click="add_product(product);"/>
+                                <div v-else class="btn btn-success ms-2 disabled">Add</div>
                             </li>
                             <li v-if="shift.max_user_orders !== null && amount_of_restricted_cart_items >= shift.max_user_orders"
                                 class="item-overlay">
@@ -40,8 +41,9 @@
                                 <i v-if="product.icon" :class="`fas fa-${product.icon}`"></i>
                                 <p class="order-name"><% product.name %></p>
                                 <p class="item-price">€<% (Math.round(product.current_price * 100) / 100).toFixed(2) %></p>
-                                <input class="btn btn-success ms-2" type="button" value="Add"
+                                <input v-if="!placing_order" class="btn btn-success ms-2" type="button" value="Add"
                                        v-on:click="add_product(product);"/>
+                                <div v-else class="btn btn-success ms-2 disabled">Add</div>
                             </li>
                         </ul>
                         <p v-if="unrestricted_products.length === 0 && restricted_products.length === 0" class="alert alert-warning">There are no products you can order.</p>
@@ -51,22 +53,35 @@
             <div class="col-md-4">
                 <div class="container-sm text-center pb-5 order-vue-container" id="cart-list">
                     <h2>Ordered items</h2>
-                    <p>Manage the items in your cart</p>
+                    <p>These are the items you already ordered</p>
                     <div id="order-list">
                         <ul v-if="cart.length > 0" class="order-list">
                             <li v-for="item in cart" class="order-item">
                                 <i v-if="item.icon" :class="`fas fa-${item.icon}`"></i>
                                 <p class="order-name"><% item.name %></p>
-                                <input class="btn btn-danger ms-2" type="button" value="Remove"
+                                <input v-if="!placing_order" class="btn btn-danger ms-2" type="button" value="Remove"
                                        v-on:click="delete_product(item);"/>
+                                <template v-else>
+                                    <i v-if="succeeded_orders_sent.includes(item)" class="fas fa-check text-success"></i>
+                                    <i v-else-if="failed_orders_sent.includes(item)" class="fas fa-times text-danger"></i>
+                                    <div v-else-if="pending_orders.includes(item)" class="loader"></div>
+                                </template>
                             </li>
                         </ul>
                         <p v-else class='alert alert-warning'>There are no items in your cart.</p>
                     </div>
-                    <div v-show="cart.length > 0" class="btn-on btn-ml" id="order-button"
-                         v-on:click="submit_cart()">
-                        Place order
-                    </div>
+                    <template v-if="cart.length > 0">
+                        <div v-if="!placing_order" class="btn-on btn-ml" id="order-button"
+                             v-on:click="submit_cart()">
+                            Place orders
+                        </div>
+                        <div v-else-if="!placing_order_completed" class="btn-off btn-ml">
+                            Place orders <div class="loader"></div>
+                        </div>
+                        <div v-else v-on:click="reset()" class="btn-on btn-ml">
+                            Reset
+                        </div>
+                    </template>
                 </div>
             </div>
         </div>
@@ -92,26 +107,13 @@
                 shift: {},
                 loading: true,
                 placing_order: false,
+                placing_order_completed: false,
+                succeeded_orders_sent: [],
+                failed_orders_sent: [],
+                pending_orders: [],
             },
             created() {
-                const product_unrestricted_list_fetch = fetch('{% url "v1:product_list" shift=shift %}?orderable=True&available=True&ignore_shift_restrictions=True')
-                    .then(response => response.json())
-                    .then(json => {
-                        this.unrestricted_products = json;
-                    });
-                const product_restricted_list_fetch = fetch('{% url "v1:product_list" shift=shift %}?orderable=True&available=True&ignore_shift_restrictions=False')
-                    .then(response => response.json())
-                    .then(json => {
-                        this.restricted_products = json;
-                    });
-                const shift_fetch = fetch('{% url "v1:shift_retrieveupdate" pk=shift.id %}')
-                    .then(response => response.json())
-                    .then(json => {
-                        this.shift = json;
-                    });
-                Promise.all([product_unrestricted_list_fetch, product_restricted_list_fetch, shift_fetch]).then(_ => {
-                    this.loading = false;
-                })
+                this.setup();
             },
             computed: {
                 amount_of_restricted_cart_items() {
@@ -128,8 +130,12 @@
                 },
                 add_product(product) {
                     if (this.amount_of_restricted_cart_items < this.shift.max_user_orders || product.ignore_shift_restrictions) {
-                        this.cart.push(product);
+                        // Clone the product such that we can check includes in other functions
+                        let productClone = { ...product };
+                        this.cart.push(productClone);
                         return true;
+                    } else {
+                        return false;
                     }
                 },
                 delete_product(product) {
@@ -143,8 +149,80 @@
                 submit_cart() {
                     if (!this.placing_order) {
                         this.placing_order = true;
-
                     }
+                    for (let i = 0; i < this.cart.length; i++) {
+                        let product_to_submit = this.cart[i];
+                        this.pending_orders.push(product_to_submit);
+                        setTimeout(() => this.submit_product(product_to_submit), 500*i);
+                    }
+                },
+                reset() {
+                    this.loading = true;
+                    this.cart = [];
+                    this.placing_order = false;
+                    this.placing_order_completed = false;
+                    this.pending_orders = [];
+                    this.succeeded_orders_sent = [];
+                    this.failed_orders_sent = [];
+                    this.restricted_products = [];
+                    this.unrestricted_products = [];
+                    this.shift = {};
+                    this.setup();
+                },
+                setup() {
+                    const product_unrestricted_list_fetch = fetch('{% url "v1:product_list" shift=shift %}?orderable=True&available=True&ignore_shift_restrictions=True')
+                        .then(response => response.json())
+                        .then(json => {
+                            this.unrestricted_products = json;
+                        });
+                    const product_restricted_list_fetch = fetch('{% url "v1:product_list" shift=shift %}?orderable=True&available=True&ignore_shift_restrictions=False')
+                        .then(response => response.json())
+                        .then(json => {
+                            this.restricted_products = json;
+                        });
+                    const shift_fetch = fetch('{% url "v1:shift_retrieveupdate" pk=shift.id %}')
+                        .then(response => response.json())
+                        .then(json => {
+                            this.shift = json;
+                        });
+                    Promise.all([product_unrestricted_list_fetch, product_restricted_list_fetch, shift_fetch]).then(_ => {
+                        this.loading = false;
+                    });
+                },
+                submit_product(product_to_submit) {
+                    fetch('{% url 'v1:orders_listcreate' shift=shift %}', {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            'csrfmiddlewaretoken': get_csrf_token(),
+                            'product_id': product_to_submit.id,
+                            'type': 0,
+                        }),
+                        headers: {
+                            "X-CSRFToken": get_csrf_token(),
+                            "Accept": 'application/json',
+                            "Content-Type": 'application/json',
+                        }
+                    }).then(response => {
+                        if (response.status === 201) {
+                            return response.json();
+                        } else {
+                            throw response;
+                        }
+                    }).then(() => {
+                        this.succeeded_orders_sent.push(product_to_submit);
+                    }).catch(() => {
+                        this.failed_orders_sent.push(product_to_submit);
+                    }).finally(() => {
+                        this.pending_orders.splice(this.pending_orders.indexOf(product_to_submit), 1);
+                        if (this.pending_orders.length === 0 ) {
+                            if (this.failed_orders_sent.length > 0) {
+                                tata.error('', 'Some orders failed to submit, check your cart for details')
+                            } else {
+                                tata.success('', 'Orders places successfully');
+                            }
+                            this.placing_order_completed = true;
+                        }
+                    })
                 }
             }
         });

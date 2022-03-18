@@ -4,7 +4,7 @@ from orders import models
 from orders.exceptions import OrderException
 from orders.models import Order, Product
 from orders.services import add_user_order, add_scanned_order
-from users.api.v1.serializers import UserRelatedField, UserSerializer
+from users.api.v1.serializers import UserSerializer, UserSerializer
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -45,7 +45,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     product_id = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all(), many=False, read_only=False)
     product = ProductSerializer(many=False, read_only=True)
-    user = UserRelatedField(many=False, read_only=True)
+    user = UserSerializer(many=False, read_only=True)
 
     def validate_product_id(self, value):
         """Validate the product id."""

@@ -84,7 +84,7 @@ class OrderListCreateAPIView(ListCreateAPIView):
             # Save the order while ignoring the order_type, user, paid and ready argument as the user does not have
             # permissions to save orders for all users in the shift
             serializer.save(
-                shift=shift, order_type=Order.TYPE_ORDERED, user=self.request.user, paid=False, ready=False
+                shift=shift, type=Order.TYPE_ORDERED, user=self.request.user, paid=False, ready=False
             )
 
     def create(self, request, *args, **kwargs):

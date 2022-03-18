@@ -297,7 +297,7 @@ class Shift(models.Model):
     class Meta:
         """Meta class."""
 
-        ordering = ["start", "end"]
+        ordering = ["-start", "-end"]
 
     def __str__(self):
         """

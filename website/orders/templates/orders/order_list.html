@@ -2,6 +2,21 @@
 
 <div class="container-sm" id="item-orders-{{ shift.id }}">
     <link rel="stylesheet" href="{% static 'orders/css/item-list.css' %}"/>
+
+    <!-- Order buttons -->
+    {% if show_order_buttons %}
+        <div v-if="!shift.finalized && shift.can_order && shift.is_active" class="row row-cols-2 row-cols-md-4">
+            <div class="col mb-3" v-for="product in products">
+                <div class="p-1 d-flex flex-column h-100 rounded" style="background-color: var(--background-shade);">
+                    <p class="m-0 order-name small"><% product.name %></p>
+                    <p class="m-0 item-price small">€<% (Math.round(product.current_price * 100) / 100).toFixed(2) %></p>
+                    <div v-if="!addingOrder" class="btn btn-success" v-on:click="add_order(product)">Order</div>
+                    <div v-else class="btn btn-success disabled">Order <div class="loader"></div></div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
     <div style="font-size: 20pt;" class="d-flex align-items-center justify-content-center">
         <div class="flex-grow-1 me-3">
             <hr>
@@ -138,7 +153,9 @@
         delimiters: ['<%', '%>'],
         data: {
             orders: [],
-            shift: {}
+            shift: {},
+            products: [],
+            addingOrder: false,
         },
         created() {
             fetch('{% url "v1:orders_listcreate" shift=shift %}')
@@ -153,6 +170,11 @@
                 .then(response => response.json())
                 .then(json => {
                     this.shift = json;
+                });
+            fetch('{% url "v1:product_list" shift=shift %}?orderable=True&available=True')
+                .then(response => response.json())
+                .then(json => {
+                    this.products = json;
                 });
         },
         computed: {
@@ -191,6 +213,40 @@
             }
         },
         methods: {
+            add_order(product) {
+                this.addingOrder = true;
+                fetch('{% url 'v1:orders_listcreate' shift=shift %}', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        'csrfmiddlewaretoken': get_csrf_token(),
+                        'product_id': product.id,
+                        'type': 0,
+                    }),
+                    headers: {
+                        "X-CSRFToken": get_csrf_token(),
+                        "Accept": 'application/json',
+                        "Content-Type": 'application/json',
+                    }
+                }).then(response => {
+                    if (response.status === 201) {
+                        return response.json();
+                    } else {
+                        throw response;
+                    }
+                }).then(() => {
+                    tata.success('', 'Order places successfully');
+                }).catch(() => {
+                    tata.error('', 'Order failed to submit')
+                }).finally(() => {
+                    fetch('{% url "v1:product_list" shift=shift %}?orderable=True&available=True')
+                    .then(response => response.json())
+                    .then(json => {
+                        this.products = json;
+                    }).finally(() => {
+                         this.addingOrder = false;
+                    });
+                });
+            },
             toggle_paid(order) {
                 fetch(
                     `/api/v1/shifts/{{ shift.id }}/orders/${order.id}/paid`,
