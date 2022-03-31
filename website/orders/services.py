@@ -1,8 +1,5 @@
 import datetime
-import json
 import logging
-from collections import Counter
-from typing import List
 
 from django.utils import timezone
 
@@ -31,62 +28,6 @@ def execute_data_minimisation(dry_run=False):
         else:
             logging.warning(f"An unpaid order of {order.user} has not been touched.")
     return users
-
-
-def add_user_orders(products: [Product], shift: Shift, user: User) -> [Order]:
-    """
-    Add a list of User orders after checking if those orders can be added.
-
-    :param products: A list of Products for which Orders have to be created
-    :param shift: The shift for which the Orders have to be created
-    :param user: The User for which the Orders have to be created
-    :return: A list of created Orders
-    """
-    # Check order permissions
-    if not user.has_perm("orders.can_order_in_venue", shift.venue):
-        raise OrderException("User has no order permission for this Venue.")
-
-    # Check if Shift is not finalized
-    if shift.finalized:
-        raise OrderException("Shift is finalized, no Orders can be added anymore")
-
-    # Check if Shift is active
-    if not shift.is_active:
-        raise OrderException("Shift is not active")
-
-    # Check if Shift is not closed
-    if not shift.can_order:
-        raise OrderException("This Shift is closed.")
-
-    # Check Shift order maximum while ignoring Products without Shift restrictions
-    products_ignore_shift_restrictions = [x for x in products if x.ignore_shift_restrictions]
-    if not shift.user_can_order_amount(user, amount=len(products) - len(products_ignore_shift_restrictions)):
-        raise OrderException("User can not order that many products in this shift")
-
-    mapped_product_amounts = Counter(products)
-    for product, amount in mapped_product_amounts.items():
-        # Check Product availability
-        if not product.available:
-            raise OrderException("This product is not available")
-
-        # Check Product-Shift availability
-        if shift.venue not in product.available_at.all():
-            raise OrderException("This Product is not available in this Shift")
-
-        # Check per-Product order maximum
-        if not product.user_can_order_amount(user, shift, amount=amount):
-            raise OrderException("User can not order {} {} for this shift".format(product, amount))
-
-    return [
-        Order.objects.create(
-            product=product,
-            shift=shift,
-            type=Order.TYPE_ORDERED,
-            user=user,
-            user_association=user.profile.association,
-        )
-        for product in products
-    ]
 
 
 def add_scanned_order(product: Product, shift: Shift, ready=True, paid=True) -> Order:
@@ -221,61 +162,3 @@ def query_product_name(query):
 def query_product_barcode(query):
     """Query a product barcode."""
     return Product.objects.filter(barcode__startswith=query, available=True)
-
-
-# TODO: Remove cart
-class Cart:
-    """Cart model for Orders."""
-
-    def __init__(self, cart_items: List[Product]):
-        """
-        Initialize a Cart.
-
-        :param cart_items: a List of Products indicating the Products in a Cart
-        """
-        self.cart_items = cart_items
-
-    def get_item_list(self):
-        """Get the item list."""
-        return self.cart_items
-
-    def get_item_list_ids(self):
-        """Get the ids of all Products in the item list."""
-        return [x.id for x in self.cart_items]
-
-    @staticmethod
-    def from_json(json_str):
-        """
-        Convert a JSON string to a Cart object.
-
-        :param json_str: the JSON string
-        :return: a Cart object or a JSONDecodeError on failed decoding
-        """
-        try:
-            cart_item_ids = json.loads(json_str)
-        except json.JSONDecodeError as e:
-            raise e
-
-        return Cart.from_list(cart_item_ids)
-
-    @staticmethod
-    def from_list(cart_item_ids):
-        """
-        Convert a List of Product ids to a Cart.
-
-        :param cart_item_ids: a List of Product ids
-        :return: a Cart object or a ValueError if a Product could not be found
-        """
-        cart_items = list()
-        for item_id in cart_item_ids:
-            try:
-                item = Product.objects.get(id=item_id)
-                cart_items.append(item)
-            except Product.DoesNotExist:
-                raise ValueError(f"Product with id {item_id} does not exist.")
-
-        return Cart(cart_items)
-
-    def to_json(self):
-        """Convert this object to JSON."""
-        return json.dumps(self.get_item_list_ids())

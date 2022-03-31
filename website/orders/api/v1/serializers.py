@@ -4,19 +4,14 @@ from orders import models
 from orders.exceptions import OrderException
 from orders.models import Order, Product
 from orders.services import add_user_order, add_scanned_order
-from users.api.v1.serializers import UserSerializer, UserSerializer
+from users.api.v1.serializers import UserSerializer
 
 
 class ProductSerializer(serializers.ModelSerializer):
     """Serializer for Product model."""
 
-    max_allowed = serializers.SerializerMethodField()
     # Swagger UI does not know a DecimalField so we have to do it this way
     current_price = serializers.SerializerMethodField()
-
-    def get_max_allowed(self, instance):
-        """Get the maximum amount of orders a user can still place for this product."""
-        return instance.user_max_order_amount(self.context["request"].user, self.context["request"].data.get("shift"))
 
     def get_current_price(self, instance):
         """Get the current price."""
@@ -34,7 +29,6 @@ class ProductSerializer(serializers.ModelSerializer):
             "current_price",
             "orderable",
             "ignore_shift_restrictions",
-            "max_allowed",
             "max_allowed_per_shift",
             "barcode",
         ]
@@ -99,15 +93,10 @@ class ShiftSerializer(serializers.ModelSerializer):
 
     assignees = UserSerializer(many=True)
     amount_of_orders = serializers.SerializerMethodField()
-    max_user_orders = serializers.SerializerMethodField()
 
     def get_amount_of_orders(self, instance):
         """Get the amount of orders in the shift."""
         return instance.orders.filter(type=Order.TYPE_ORDERED).count()
-
-    def get_max_user_orders(self, instance):
-        """Get the max orders a user can still place in the shift."""
-        return instance.user_max_order_amount(self.context["request"].user)
 
     def create(self, validated_data):
         """
@@ -146,7 +135,6 @@ class ShiftSerializer(serializers.ModelSerializer):
             "amount_of_orders",
             "max_orders_per_user",
             "max_orders_total",
-            "max_user_orders",
             "assignees",
         ]
-        read_only_fields = ["id", "is_active", "finalized", "amount_of_orders", "max_user_orders"]
+        read_only_fields = ["id", "is_active", "finalized", "amount_of_orders"]

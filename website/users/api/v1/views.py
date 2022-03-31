@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.http import Http404
-from rest_framework.generics import RetrieveAPIView, get_object_or_404
-from rest_framework.views import APIView
+from rest_framework.generics import RetrieveAPIView
 
 from tosti.api.permissions import IsAuthenticatedOrTokenHasScopeForMethod
 from users.api.v1.serializers import UserSerializer
@@ -27,7 +26,7 @@ class MeRetrieveAPIView(RetrieveAPIView):
     }
 
     def get_object(self):
-        """Get the current logged in User."""
+        """Get the current logged-in User."""
         try:
             return self.queryset.get(pk=self.request.user.pk)
         except User.DoesNotExist:

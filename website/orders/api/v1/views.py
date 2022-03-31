@@ -6,7 +6,7 @@ from django.db.models import Q
 from oauth2_provider.contrib.rest_framework import IsAuthenticatedOrTokenHasScope
 from rest_framework import status, filters
 from django.core.exceptions import ValidationError as DjangoValidationError
-from rest_framework.exceptions import PermissionDenied, ParseError, ValidationError as RestValidationError
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import (
     ListCreateAPIView,
     ListAPIView,
@@ -21,7 +21,7 @@ from orders.api.v1.permissions import IsOnBakersList
 from orders.api.v1.serializers import OrderSerializer, ShiftSerializer, ProductSerializer
 from orders.exceptions import OrderException
 from orders.models import Order, Shift, Product
-from orders.services import Cart, increase_shift_time, increase_shift_capacity, add_user_orders
+from orders.services import increase_shift_time, increase_shift_capacity
 from tosti import settings
 from tosti.api.openapi import CustomAutoSchema
 from tosti.api.permissions import HasPermissionOnObject, IsAuthenticatedOrTokenHasScopeForMethod
@@ -83,9 +83,7 @@ class OrderListCreateAPIView(ListCreateAPIView):
         else:
             # Save the order while ignoring the order_type, user, paid and ready argument as the user does not have
             # permissions to save orders for all users in the shift
-            serializer.save(
-                shift=shift, type=Order.TYPE_ORDERED, user=self.request.user, paid=False, ready=False
-            )
+            serializer.save(shift=shift, type=Order.TYPE_ORDERED, user=self.request.user, paid=False, ready=False)
 
     def create(self, request, *args, **kwargs):
         """Catch the OrderException that might be thrown by creating a new Order."""

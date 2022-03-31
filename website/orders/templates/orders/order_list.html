@@ -10,7 +10,13 @@
                 <div class="p-1 d-flex flex-column h-100 rounded" style="background-color: var(--background-shade);">
                     <p class="m-0 order-name small"><% product.name %></p>
                     <p class="m-0 item-price small">€<% (Math.round(product.current_price * 100) / 100).toFixed(2) %></p>
-                    <div v-if="!addingOrder" class="btn btn-success" v-on:click="add_order(product)">Order</div>
+                    <template v-if="!addingOrder">
+                        <div v-if="orders.length >= shift.max_orders_total" class="btn btn-success disabled">Shift limit</div>
+                        <div v-else-if="user_orders_with_shift_restrictions.length >= shift.max_orders_per_user && !product.ignore_shift_restrictions" class="btn btn-success disabled">Maximum ordered</div>
+                        <div v-else-if="user_orders.length >= shift.max_orders_per_user && !product.ignore_shift_restrictions" class="btn btn-success disabled">Maximum ordered</div>
+                        <div v-else-if="product.max_allowed_per_shift !== null && user_orders_with_product_id(product.id).length >= product.max_allowed_per_shift" class="btn btn-success disabled">Maximum ordered</div>
+                        <div v-else class="btn btn-success" v-on:click="add_order(product)">Order</div>
+                    </template>
                     <div v-else class="btn btn-success disabled">Order <div class="loader"></div></div>
                 </div>
             </div>
@@ -155,9 +161,15 @@
             orders: [],
             shift: {},
             products: [],
+            user: null,
             addingOrder: false,
         },
         created() {
+             fetch('{% url "v1:me" %}')
+                .then(response => response.json())
+                .then(json => {
+                    this.user = json;
+                });
             fetch('{% url "v1:orders_listcreate" shift=shift %}')
                 .then(response => response.json())
                 .then(json => {
@@ -178,6 +190,23 @@
                 });
         },
         computed: {
+            user_orders: function() {
+                let userCopy = this.user;
+                return this.orders.filter(function(order) {
+                    return userCopy === null || order.user.id === userCopy.id;
+                });
+            },
+            user_orders_with_shift_restrictions: function() {
+                let userCopy = this.user;
+                return this.orders.filter(function(order) {
+                    return userCopy === null || (order.user.id === userCopy.id && !order.product.ignore_shift_restrictions);
+                });
+            },
+            orders_with_shift_restrictions: function() {
+                return this.orders.filter(function(order) {
+                    return !order.product.ignore_shift_restrictions;
+                });
+            },
             orders_to_make: function () {
                 let orders_to_make = {};
                 this.orders.filter(order => !order.ready).forEach(order => {
@@ -213,6 +242,11 @@
             }
         },
         methods: {
+            user_orders_with_product_id(productId) {
+                return this.user_orders.filter(function(order) {
+                    return order.product.id === productId;
+                });
+            },
             add_order(product) {
                 this.addingOrder = true;
                 fetch('{% url 'v1:orders_listcreate' shift=shift %}', {

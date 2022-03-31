@@ -1,6 +1,8 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
+from associations.api.v1.serializers import AssociationSerializer
+
 User = get_user_model()
 
 
@@ -8,7 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
     """Serializers for Users."""
 
     username = serializers.CharField(source="__str__")
-    association = serializers.R
+    association = AssociationSerializer(source="profile.association")
 
     class Meta:
         """Meta class."""
@@ -20,4 +22,3 @@ class UserSerializer(serializers.ModelSerializer):
             "association",
         ]
         read_only_fields = ["id", "username", "association"]
-
