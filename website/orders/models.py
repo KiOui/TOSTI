@@ -534,6 +534,9 @@ class Shift(models.Model):
         except Shift.DoesNotExist:
             old_instance = None
 
+        if self.venue_id is None:
+            raise ValidationError({"venue": "Venue is None"})
+
         if old_instance is not None and old_instance.finalized and not self.finalized:
             # Shift was already finalized so can't be un-finalized
             raise ValidationError({"finalized": "A finalized shift can not be un-finalized."})

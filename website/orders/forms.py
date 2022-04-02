@@ -23,7 +23,6 @@ class CreateShiftForm(forms.ModelForm):
         self.user = user
         self.fields["venue"].initial = venue
         self.fields["venue"].queryset = get_objects_for_user(self.user, "orders.can_manage_shift_in_venue")
-
         timezone = pytz.timezone(settings.TIME_ZONE)
         now = timezone.localize(datetime.now())
         start_time = now - timedelta(seconds=now.second, microseconds=now.microsecond)
@@ -33,7 +32,7 @@ class CreateShiftForm(forms.ModelForm):
 
     def clean_venue(self):
         """Check whether venue is has an accepted value."""
-        venue = self.cleaned_data["venue"]
+        venue = self.cleaned_data.get("venue")
         if self.user not in venue.get_users_with_shift_admin_perms():
             raise forms.ValidationError("You don't have permissions to start a shift in this venue!")
         return venue
