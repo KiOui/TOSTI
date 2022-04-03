@@ -190,22 +190,6 @@ class Product(models.Model):
         """
         return self.name
 
-    def to_json(self):
-        """
-        Convert this object to JSON.
-
-        :return: a to JSON convertable dictionary of properties.
-        """
-        return {
-            "name": self.name,
-            "icon": self.icon,
-            "price": self.current_price,
-            "max_per_shift": self.max_allowed_per_shift,
-            "available": self.available,
-            "id": self.pk,
-            "ignore_shift_restriction": self.ignore_shift_restrictions,
-        }
-
     def user_can_order_amount(self, user, shift, amount=1):
         """
         Test if a user can order the specified amount of this Product in a specific shift.
@@ -216,6 +200,7 @@ class Product(models.Model):
         :return: True if the already ordered amount of this Product plus the amount specified in the amount parameter
         is lower than the max_allowed_per_shift variable, False otherwise
         """
+        # TODO: Why are we not checking Shift restrictions here and should we do that?
         if self.max_allowed_per_shift is not None:
             user_order_amount_product = Order.objects.filter(user=user, shift=shift, product=self).count()
             return user_order_amount_product + amount <= self.max_allowed_per_shift
@@ -230,6 +215,7 @@ class Product(models.Model):
         :return: None if the user can order unlimited of the product, the maximum allowed to still order otherwise
         """
         if self.max_allowed_per_shift is not None:
+            # TODO: Why are we checking authentication here? This should be done on another place.
             if not user.is_authenticated:
                 return 0  # Non logged-in users can never order items
             user_order_amount_product = Order.objects.filter(user=user, shift=shift, product=self).count()
@@ -689,21 +675,6 @@ class Order(models.Model):
             raise ValidationError("Order can't be changed as shift is already finalized")
 
         super(Order, self).save(*args, **kwargs)
-
-    def to_json(self):
-        """
-        Convert this object to JSON.
-
-        :return: a to JSON convertable dictionary of properties.
-        """
-        return {
-            "id": self.pk,
-            "user": self.user.username,
-            "product": self.product.to_json(),
-            "price": self.order_price,
-            "paid": self.paid,
-            "ready": self.ready,
-        }
 
     @property
     def get_venue(self):

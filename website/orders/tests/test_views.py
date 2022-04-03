@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from django.utils import timezone
-from guardian.shortcuts import assign_perm, get_objects_for_user
+from guardian.shortcuts import assign_perm
 
 from orders.models import Shift, OrderVenue
 from orders.services import add_user_to_assignees_of_shift
