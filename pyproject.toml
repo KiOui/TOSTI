@@ -26,6 +26,7 @@ django-autocompletefilter = "^0.0.8"
 django-bootstrap5 = "^21.3"
 sentry-sdk = "^1.5.7"
 django-filter = "^21.1"
+freezegun = "^1.2.1"
 
 [tool.poetry.dev-dependencies]
 pydocstyle = "^5.0.2"

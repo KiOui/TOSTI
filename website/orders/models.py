@@ -11,7 +11,6 @@ from guardian.shortcuts import get_objects_for_user
 
 from associations.models import Association
 from venues.models import Venue
-from itertools import chain
 
 from users.models import User
 
@@ -301,79 +300,15 @@ class Shift(models.Model):
         except Shift.DoesNotExist:
             old_instance = None
 
-        if old_instance is not None and not old_instance.finalized and self.finalized:
-            # Shift was not finalized yet but will be made finalized now
+        if (
+            (old_instance is not None and not old_instance.finalized and self.finalized)
+            or old_instance is None
+            and self.finalized
+        ):
+            # Shift was not finalized yet but will be made finalized now or was created finalized.
             self._make_finalized()
 
         return super(Shift, self).save(*args, **kwargs)
-
-    @property
-    def orders_sorted_staff_first(self):
-        """
-        Get the orders of this shift with the staff orders first.
-
-        :return: a chain object with all the orders of this shift.
-        """
-        staff_users = self.venue.get_users_with_shift_admin_perms()
-        ordered_staff_orders = Order.objects.filter(shift=self, user__in=staff_users).order_by("created")
-        ordered_normal_orders = Order.objects.filter(shift=self).exclude(user__in=staff_users).order_by("created")
-        ordered_orders = chain(ordered_staff_orders, ordered_normal_orders)
-        return list(ordered_orders)
-
-    @property
-    def orders_ordered_type_only(self):
-        """
-        Get the orders with type Ordered of this shift.
-
-        :return: a chain object with the ordered orders of this shift.
-        """
-        staff_users = self.venue.get_users_with_shift_admin_perms()
-        ordered_staff_orders = Order.objects.filter(
-            shift=self, user__in=staff_users, type=Order.TYPE_ORDERED
-        ).order_by("created")
-        ordered_normal_orders = (
-            Order.objects.filter(shift=self, type=Order.TYPE_ORDERED).exclude(user__in=staff_users).order_by("created")
-        )
-        ordered_orders = chain(ordered_staff_orders, ordered_normal_orders)
-        return list(ordered_orders)
-
-    @property
-    def products_open(self):
-        """
-        Get a list with all products and amounts that are not ready.
-
-        :return: a list of products with a amount object variable indicating the products and amounts that are not
-        ready for this shift
-        """
-        distinct_ordered_items = Product.objects.filter(order__shift_id=self, order__ready=False).distinct()
-        for item in distinct_ordered_items:
-            item.amount = Order.objects.filter(product=item, ready=False, shift=self).count()
-        return distinct_ordered_items
-
-    @property
-    def products_closed(self):
-        """
-        Get a list with all products and amounts that are ready.
-
-        :return: a list of products with a amount object variable indicating the products and amounts that are ready
-        for this shift
-        """
-        distinct_ordered_items = Product.objects.filter(order__shift_id=self, order__ready=True).distinct()
-        for item in distinct_ordered_items:
-            item.amount = Order.objects.filter(product=item, ready=True, shift=self).count()
-        return distinct_ordered_items
-
-    @property
-    def products_total(self):
-        """
-        Get a list with all products and amounts.
-
-        :return: a list of products with a amount object variable indicating the products and amounts for this shift
-        """
-        distinct_ordered_items = Product.objects.filter(order__shift_id=self).distinct()
-        for item in distinct_ordered_items:
-            item.amount = Order.objects.filter(product=item, shift=self).count()
-        return distinct_ordered_items
 
     @property
     def number_of_restricted_orders(self):
@@ -401,7 +336,7 @@ class Shift(models.Model):
         :return: the maximum amount of orders in string format
         """
         if self.max_orders_total:
-            return self.max_orders_total
+            return "{}".format(self.max_orders_total)
         return "∞"
 
     @property
@@ -474,14 +409,6 @@ class Shift(models.Model):
             f"{self.start_date.strftime(self.HUMAN_DATE_FORMAT)}, {self.start_time} until "
             f"{self.end_date.strftime(self.HUMAN_DATE_FORMAT)}, {self.end_time}"
         )
-
-    def get_assignees(self):
-        """
-        Get assignees of this shift.
-
-        :return: a QuerySet with User objects of assignees of this shift
-        """
-        return self.assignees.all()
 
     def get_users_with_change_perms(self):
         """Get users that my change this shift."""
