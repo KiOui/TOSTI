@@ -1,6 +1,6 @@
 import datetime
 from datetime import timedelta
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 from freezegun import freeze_time
 
 import pytz
@@ -13,6 +13,7 @@ from guardian.shortcuts import assign_perm
 
 from orders import models
 from venues.models import Venue
+from users.models import User as User_models
 
 
 User = get_user_model()
@@ -24,6 +25,7 @@ class OrderModelTests(TestCase):
 
     def setUp(self):
         self.normal_user = User.objects.get(pk=2)
+        self.admin_user = User.objects.get(pk=1)
         venue_pk_1 = Venue.objects.get(pk=1)
         self.order_venue = models.OrderVenue.objects.create(venue=venue_pk_1)
         self.product = models.Product.objects.create(name="Test product", current_price=1.25)
@@ -321,3 +323,152 @@ class OrderModelTests(TestCase):
             shift._make_finalized()
             self.assertEqual(shift.end_date.timestamp(), now.timestamp())
             self.assertFalse(shift.can_order)
+
+    def test_shift_shift_done(self):
+        self.assertTrue(self.shift.shift_done)
+        order = models.Order.objects.create(user=self.normal_user, product=self.product, shift=self.shift)
+        self.assertFalse(self.shift.shift_done)
+        order.paid = True
+        order.ready = True
+        order.save()
+        self.assertTrue(self.shift.shift_done)
+        models.Order.objects.create(
+            user=self.normal_user, product=self.product, shift=self.shift, type=models.Order.TYPE_SCANNED
+        )
+        self.assertTrue(self.shift.shift_done)
+
+    def test_shift__clean_no_venue_id(self):
+        start = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=12, minute=15))
+        end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=13, minute=30))
+        shift = models.Shift.objects.create(venue=self.order_venue, start_date=start, end_date=end)
+        shift.venue = None
+
+        def throw_validation_error():
+            shift._clean()
+
+        self.assertRaises(ValidationError, throw_validation_error)
+
+    @patch("tantalus.signals.synchronize_to_tantalus")
+    def test_shift__clean_unfinalize(self, *args):
+        start = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=12, minute=15))
+        end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=13, minute=30))
+        shift = models.Shift.objects.create(venue=self.order_venue, start_date=start, end_date=end, finalized=True)
+        shift.finalized = False
+
+        def throw_validation_error():
+            shift._clean()
+
+        self.assertRaises(ValidationError, throw_validation_error)
+
+    @patch("tantalus.signals.synchronize_to_tantalus")
+    def test_shift__clean_change_finalized_shift(self, *args):
+        start = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=12, minute=15))
+        end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=13, minute=30))
+        shift = models.Shift.objects.create(venue=self.order_venue, start_date=start, end_date=end, finalized=True)
+        shift.max_orders_per_user = 15
+
+        def throw_validation_error():
+            shift._clean()
+
+        self.assertRaises(ValidationError, throw_validation_error)
+
+    def test_shift__clean_finalized_not_done_shift(self):
+        start = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=12, minute=15))
+        end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=13, minute=30))
+        shift = models.Shift.objects.create(venue=self.order_venue, start_date=start, end_date=end)
+        models.Order.objects.create(user=self.normal_user, product=self.product, shift=shift)
+        shift.finalized = True
+
+        def throw_validation_error():
+            shift._clean()
+
+        self.assertRaises(ValidationError, throw_validation_error)
+
+    @patch("tantalus.signals.synchronize_to_tantalus")
+    def test_shift__clean_end_date_before_start_date(self, *args):
+        start = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=12, minute=15))
+        end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=13, minute=30))
+        shift = models.Shift.objects.create(venue=self.order_venue, start_date=start, end_date=end)
+        shift.end_date = start - timedelta(hours=1)
+
+        def throw_validation_error():
+            shift._clean()
+
+        self.assertRaises(ValidationError, throw_validation_error)
+
+    def test_shift__clean_overlapping_shifts(self):
+        venue_2 = Venue.objects.get(pk=2)
+        order_venue_2 = models.OrderVenue.objects.create(venue=venue_2)
+        start = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=12, minute=15))
+        end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=13, minute=30))
+        models.Shift.objects.create(venue=self.order_venue, start_date=start, end_date=end)
+
+        start_shift_inside_other_shift = timezone.make_aware(
+            datetime.datetime(year=2022, month=3, day=2, hour=12, minute=30)
+        )
+        end_shift_inside_other_shift = timezone.make_aware(
+            datetime.datetime(year=2022, month=3, day=2, hour=13, minute=15)
+        )
+        shift_inside_other_shift = models.Shift.objects.create(
+            venue=order_venue_2, start_date=start_shift_inside_other_shift, end_date=end_shift_inside_other_shift
+        )
+        shift_inside_other_shift.venue = self.order_venue
+
+        def throw_validation_error_shift_inside_other_shift():
+            shift_inside_other_shift._clean()
+
+        self.assertRaises(ValidationError, throw_validation_error_shift_inside_other_shift)
+        shift_inside_other_shift.delete()
+
+        start_shift_before_other_shift = timezone.make_aware(
+            datetime.datetime(year=2022, month=3, day=2, hour=11, minute=30)
+        )
+        end_shift_before_other_shift = timezone.make_aware(
+            datetime.datetime(year=2022, month=3, day=2, hour=12, minute=45)
+        )
+        shift_before_other_shift = models.Shift.objects.create(
+            venue=order_venue_2, start_date=start_shift_before_other_shift, end_date=end_shift_before_other_shift
+        )
+        shift_before_other_shift.venue = self.order_venue
+
+        def throw_validation_error_shift_before_other_shift():
+            shift_before_other_shift._clean()
+
+        self.assertRaises(ValidationError, throw_validation_error_shift_before_other_shift)
+        shift_before_other_shift.delete()
+
+        start_shift_after_other_shift = timezone.make_aware(
+            datetime.datetime(year=2022, month=3, day=2, hour=13, minute=15)
+        )
+        end_shift_after_other_shift = timezone.make_aware(
+            datetime.datetime(year=2022, month=3, day=2, hour=14, minute=45)
+        )
+        shift_after_other_shift = models.Shift.objects.create(
+            venue=order_venue_2, start_date=start_shift_after_other_shift, end_date=end_shift_after_other_shift
+        )
+        shift_after_other_shift.venue = self.order_venue
+
+        def throw_validation_error_shift_after_other_shift():
+            shift_before_other_shift._clean()
+
+        self.assertRaises(ValidationError, throw_validation_error_shift_after_other_shift)
+
+    @patch("orders.models.Shift._clean")
+    def test_shift_clean(self, _clean_mock: MagicMock):
+        self.shift.clean()
+        _clean_mock.assert_called()
+
+    def test_shift_save_m2m(self):
+        start = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=12, minute=15))
+        end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=13, minute=30))
+        shift = models.Shift.objects.create(venue=self.order_venue, start_date=start, end_date=end)
+        shift.assignees.add(User_models.objects.get(pk=self.admin_user.pk))
+        shift.save_m2m()
+
+        normal_user_copy = self.normal_user
+        shift.assignees.add(User_models.objects.get(pk=normal_user_copy.pk))
+
+        def throw_value_error():
+            shift.save_m2m()
+
+        self.assertRaises(ValueError, throw_value_error)

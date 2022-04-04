@@ -464,25 +464,17 @@ class Shift(models.Model):
         if self.end_date <= self.start_date:
             raise ValidationError({"end_date": "End date cannot be before start date."})
 
-        overlapping_start = (
-            Shift.objects.filter(
-                start_date__gte=self.start_date,
-                start_date__lte=self.end_date,
-                venue=self.venue,
+        overlapping_shifts = (
+            Shift.objects.filter(venue=self.venue)
+            .filter(
+                Q(start_date__lte=self.start_date, end_date__gt=self.start_date)
+                | Q(start_date__lt=self.end_date, end_date__gte=self.end_date)
+                | Q(start_date__gte=self.start_date, end_date__lte=self.end_date)
             )
             .exclude(pk=self.pk)
-            .count()
+            .exists()
         )
-        overlapping_end = (
-            Shift.objects.filter(
-                end_date__gte=self.start_date,
-                end_date__lte=self.end_date,
-                venue=self.venue,
-            )
-            .exclude(pk=self.pk)
-            .count()
-        )
-        if overlapping_start > 0 or overlapping_end > 0:
+        if overlapping_shifts:
             raise ValidationError("Overlapping shifts for the same venue are not allowed.")
 
     def clean(self):
