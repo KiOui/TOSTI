@@ -496,6 +496,8 @@ class Shift(models.Model):
         :param amount: the amount that the user wants to order
         :return: True if the user is allowed to order amount of products, False otherwise
         """
+        # TODO: We do not check for the amount of orders and the maximum amount of orders for this shift, should we do
+        # that here?
         if self.max_orders_per_user is not None:
             user_order_amount = Order.objects.filter(
                 user=user, shift=self, product__ignore_shift_restrictions=False
@@ -512,6 +514,7 @@ class Shift(models.Model):
         :return: the maximum of orders a user can still place in this shift, None if there is no maximum specified
         """
         if self.max_orders_per_user is not None:
+            # TODO: Why are we checking authentication here? This should be done on another place.
             if not user.is_authenticated:
                 return 0  # Non logged-in users can never order items
             user_order_amount = Order.objects.filter(
@@ -596,7 +599,7 @@ class Order(models.Model):
         super(Order, self).save(*args, **kwargs)
 
     @property
-    def get_venue(self):
+    def venue(self):
         """
         Get the venue of this Order.
 

@@ -472,3 +472,87 @@ class OrderModelTests(TestCase):
             shift.save_m2m()
 
         self.assertRaises(ValueError, throw_value_error)
+
+    def test_shift_user_can_order_amount(self):
+        start = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=12, minute=15))
+        end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=13, minute=30))
+        shift = models.Shift.objects.create(
+            venue=self.order_venue, start_date=start, end_date=end, max_orders_per_user=None
+        )
+        self.assertTrue(shift.user_can_order_amount(self.normal_user, 15))
+        shift.max_orders_per_user = 2
+        shift.save()
+        models.Order.objects.create(user=self.normal_user, shift=shift, product=self.product)
+        self.assertTrue(shift.user_can_order_amount(self.normal_user))
+        self.assertFalse(shift.user_can_order_amount(self.normal_user, 2))
+        models.Order.objects.create(user=self.normal_user, shift=shift, product=self.product)
+        self.assertFalse(shift.user_can_order_amount(self.normal_user))
+
+    def test_shift_max_order_amount(self):
+        start = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=12, minute=15))
+        end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=13, minute=30))
+        shift = models.Shift.objects.create(
+            venue=self.order_venue, start_date=start, end_date=end, max_orders_per_user=None
+        )
+        self.assertIsNone(shift.user_max_order_amount(self.normal_user))
+        shift.max_orders_per_user = 2
+        shift.save()
+        models.Order.objects.create(user=self.normal_user, shift=shift, product=self.product)
+        self.assertEqual(shift.user_max_order_amount(self.normal_user), 1)
+        models.Order.objects.create(user=self.normal_user, shift=shift, product=self.product)
+        self.assertEqual(shift.user_max_order_amount(self.normal_user), 0)
+
+    def test_available_product_filter(self):
+        test_product_available = models.Product.objects.create(
+            name="Available product", current_price=0.99, available=True
+        )
+        test_product_unavailable = models.Product.objects.create(
+            name="Unavailable product", current_price=1.45, available=False
+        )
+
+        def throws_validation_error():
+            models.available_product_filter(test_product_unavailable.pk)
+
+        def throws_validation_error_obj():
+            models.available_product_filter(test_product_unavailable)
+
+        self.assertTrue(models.available_product_filter(test_product_available.pk))
+        self.assertRaises(ValidationError, throws_validation_error)
+        self.assertTrue(models.available_product_filter(test_product_available))
+        self.assertRaises(ValidationError, throws_validation_error_obj)
+
+    def test_order___str__(self):
+        order = models.Order.objects.create(user=self.normal_user, shift=self.shift, product=self.product)
+        self.assertEqual(order.__str__(), "{} for {} ({})".format(self.product, self.normal_user, self.shift))
+
+    @patch("tantalus.signals.synchronize_to_tantalus")
+    def test_order_save(self, *args):
+        start = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=12, minute=15))
+        end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=13, minute=30))
+        shift = models.Shift.objects.create(
+            venue=self.order_venue, start_date=start, end_date=end, max_orders_per_user=None
+        )
+        order = models.Order.objects.create(
+            user=self.normal_user, shift=shift, product=self.product, paid=True, ready=True
+        )
+        self.assertEqual(order.order_price, self.product.current_price)
+        shift.finalized = True
+        shift.save()
+        order.order_price = 5
+
+        def test_throw_validation_error():
+            order.save()
+
+        self.assertRaises(ValidationError, test_throw_validation_error)
+
+    def test_order_venue(self):
+        order = models.Order.objects.create(user=self.normal_user, shift=self.shift, product=self.product)
+        self.assertEqual(order.venue, self.shift.venue)
+
+    def test_order_done(self):
+        order = models.Order.objects.create(user=self.normal_user, shift=self.shift, product=self.product)
+        self.assertFalse(order.done)
+        order.paid = True
+        self.assertFalse(order.done)
+        order.ready = True
+        self.assertTrue(order.done)
