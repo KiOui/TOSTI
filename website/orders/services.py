@@ -24,12 +24,12 @@ def execute_data_minimisation(dry_run=False):
     users = []
     for order in orders:
         if not order.paid:
+            logging.warning(f"An unpaid order of {order.user} has not been touched.")
+        else:
             users.append(order.user)
             order.user = None
             if not dry_run:
                 order.save()
-        else:
-            logging.warning(f"An unpaid order of {order.user} has not been touched.")
     return users
 
 
@@ -174,7 +174,7 @@ def add_user_to_assignees_of_shift(user, shift: Shift):
     """Add a user to the list of assignees for the shift."""
     if user not in shift.assignees.all():
         if user not in shift.venue.get_users_with_shift_admin_perms():
-            raise OrderException("User does not have permissions to manage shifts in this venue.")
+            raise PermissionError("User does not have permissions to manage shifts in this venue.")
         shift.assignees.add(User.objects.get(pk=user.pk))
         shift.save()
 
