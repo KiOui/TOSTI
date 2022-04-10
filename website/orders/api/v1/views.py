@@ -59,6 +59,10 @@ class OrderListCreateAPIView(ListCreateAPIView):
         obj = self.kwargs.get("shift")
         return obj.venue
 
+    def get_serializer_context(self):
+        """Add shift to serializer context."""
+        return {"shift": self.kwargs.get("shift")}
+
     def perform_create(self, serializer):
         """
         Perform the creation of a new Order.

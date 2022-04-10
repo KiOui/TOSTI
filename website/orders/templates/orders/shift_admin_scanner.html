@@ -99,7 +99,7 @@
                     "{% url "v1:orders_listcreate" shift=shift %}",
                     {
                         method: 'POST',
-                        body: JSON.stringify({"product_id": product.id, "type": 1}),
+                        body: JSON.stringify({"product": product.id, "type": 1}),
                         headers: {
                             "X-CSRFToken": get_csrf_token(),
                             "Content-Type": 'application/json',

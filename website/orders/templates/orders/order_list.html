@@ -253,7 +253,7 @@
                     method: 'POST',
                     body: JSON.stringify({
                         'csrfmiddlewaretoken': get_csrf_token(),
-                        'product_id': product.id,
+                        'product': product.id,
                         'type': 0,
                     }),
                     headers: {
