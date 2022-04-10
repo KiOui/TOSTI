@@ -113,3 +113,12 @@ class SettingsTest(TestCase):
         Setting.objects.create(slug="not-registered", type=Setting.TYPE_INT, nullable=False, value=123)
         self.assertTrue(self.settings.is_registered("registered"))
         self.assertFalse(self.settings.is_registered("not-registered"))
+
+    def test_typeerror_on_creation(self):
+        settings = self.settings
+
+        def throw_exception():
+            settings._create_setting("type-error", Setting.TYPE_INT, False, "bla")
+
+        self.assertRaises(TypeError, throw_exception)
+        self.assertFalse(Setting.objects.filter(slug="type-error").exists())
