@@ -268,17 +268,32 @@
                         throw response;
                     }
                 }).then(() => {
-                    tata.success('', 'Order places successfully');
+                    tata.success('', `${product.name} ordered successfully`);
                 }).catch(() => {
                     tata.error('', 'Order failed to submit')
                 }).finally(() => {
-                    fetch('{% url "v1:product_list" shift=shift %}?orderable=True&available=True')
-                    .then(response => response.json())
-                    .then(json => {
-                        this.products = json;
-                    }).finally(() => {
-                         this.addingOrder = false;
-                    });
+                    Promise.all([
+                        fetch('{% url "v1:product_list" shift=shift %}?orderable=True&available=True')
+                            .then(response => response.json())
+                            .then(json => {
+                                this.products = json;
+                            }),
+                        fetch('{% url "v1:shift_retrieveupdate" pk=shift.id %}')
+                            .then(response => response.json())
+                            .then(json => {
+                                this.shift = json;
+                            }),
+                        fetch('{% url "v1:orders_listcreate" shift=shift %}')
+                            .then(response => response.json())
+                            .then(json => {
+                                {% if not admin %}
+                                    json = json.filter(order => order.type === 0);
+                                {% endif %}
+                                this.orders = json;
+                            })
+                    ]).finally(() => {
+                        this.addingOrder = false;
+                    })
                 });
             },
             toggle_paid(order) {
