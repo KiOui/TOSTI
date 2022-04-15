@@ -5,19 +5,33 @@
 
     <!-- Order buttons -->
     {% if show_order_buttons %}
-        <div v-if="!shift.finalized && shift.can_order && shift.is_active" class="row row-cols-2 row-cols-md-4">
-            <div class="col mb-3" v-for="product in products">
-                <div class="p-1 d-flex flex-column h-100 rounded" style="background-color: var(--background-shade);">
-                    <p class="m-0 order-name small"><% product.name %></p>
-                    <p class="m-0 item-price small">€<% (Math.round(product.current_price * 100) / 100).toFixed(2) %></p>
-                    <template v-if="!addingOrder">
-                        <div v-if="orders.length >= shift.max_orders_total" class="btn btn-success disabled">Shift limit</div>
-                        <div v-else-if="user_orders_with_shift_restrictions.length >= shift.max_orders_per_user && !product.ignore_shift_restrictions" class="btn btn-success disabled">Maximum ordered</div>
-                        <div v-else-if="user_orders.length >= shift.max_orders_per_user && !product.ignore_shift_restrictions" class="btn btn-success disabled">Maximum ordered</div>
-                        <div v-else-if="product.max_allowed_per_shift !== null && user_orders_with_product_id(product.id).length >= product.max_allowed_per_shift" class="btn btn-success disabled">Maximum ordered</div>
-                        <div v-else class="btn btn-success" v-on:click="add_order(product)">Order</div>
-                    </template>
-                    <div v-else class="btn btn-success disabled">Order <div class="loader"></div></div>
+        <div v-if="!shift.finalized && shift.can_order && shift.is_active">
+            <h5>Place your order:</h5>
+            <div class="row row-cols-2 row-cols-md-4 justify-content-center align-items-stretch">
+                <div class="col mb-3 d-flex justify-content-center align-items-stretch" v-for="product in products">
+                    <div class="flex-grow-1">
+                        <button class="btn btn-lg btn-ml m-auto cursor-pointer btn-on d-flex flex-column align-items-center" style="border-radius: 0; max-width: unset;"
+                            :class="{ disabled: addingOrder || orders.length >= shift.max_orders_total || user_orders_with_shift_restrictions.length >= shift.max_orders_per_user && !product.ignore_shift_restrictions || product.max_allowed_per_shift !== null && user_orders_with_product_id(product.id).length >= product.max_allowed_per_shift }"
+                            v-on:click="add_order(product)"
+                        >
+                            <span :class="{ invisible: addingOrder }"><i v-if="product.icon !== null" :class="`fas fa-${product.icon} me-2`"></i></span>
+                            <span :class="{ invisible: addingOrder }">Order <% product.name %></span>
+                            <span class="small" :class="{ invisible: addingOrder }">€<% product.current_price.toFixed(2) %></span>
+                        </button>
+                        <div class="card-footer text-center"
+                             v-if="orders.length >= shift.max_orders_total || user_orders_with_shift_restrictions.length >= shift.max_orders_per_user && !product.ignore_shift_restrictions || product.max_allowed_per_shift !== null && user_orders_with_product_id(product.id).length >= product.max_allowed_per_shift"
+                        >
+                            <span class="small" v-if="orders.length >= shift.max_orders_total">
+                                    This shift is full
+                            </span>
+                            <span class="small" v-else-if="user_orders_with_shift_restrictions.length >= shift.max_orders_per_user && !product.ignore_shift_restrictions">
+                                    Max. orders in this shift reached
+                            </span>
+                            <span class="small" v-else-if="product.max_allowed_per_shift !== null && user_orders_with_product_id(product.id).length >= product.max_allowed_per_shift">
+                                    Max. orders for this product reached
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

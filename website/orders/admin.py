@@ -80,17 +80,9 @@ class ProductAdmin(admin.ModelAdmin):
 
 
 class OrderInline(admin.TabularInline):
-    """Inline form for Registration."""
+    """Inline form for orders."""
 
     model = Order
-    readonly_fields = [
-        "user",
-        "product",
-        "order_price",
-        "created",
-        "paid_at",
-        "ready_at",
-    ]
     extra = 0
 
 
