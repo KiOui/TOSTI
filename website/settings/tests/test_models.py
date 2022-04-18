@@ -8,11 +8,7 @@ class SettingsTest(TestCase):
         self.assertEqual(Setting.convert_index_to_type(1), Setting.TYPE_INT_TEXT)
         self.assertEqual(Setting.convert_index_to_type(2), Setting.TYPE_STR_TEXT)
         self.assertEqual(Setting.convert_index_to_type(3), Setting.TYPE_FLOAT_TEXT)
-
-        def throw_value_error():
-            Setting.convert_index_to_type(4)
-
-        self.assertRaises(ValueError, throw_value_error)
+        self.assertRaises(ValueError, Setting.convert_index_to_type, 4)
 
     def test_setting_clean(self):
         setting = Setting.objects.create(slug="test", value="test value", type=Setting.TYPE_STR, nullable=True)
@@ -20,11 +16,7 @@ class SettingsTest(TestCase):
         setting.clean()
         setting.value = None
         setting.nullable = False
-
-        def throw_validation_error():
-            setting.clean()
-
-        self.assertRaises(ValidationError, throw_validation_error)
+        self.assertRaises(ValidationError, setting.clean)
 
     def test_setting_get_value(self):
         setting_int = Setting.objects.create(slug="test-int", value="4", type=Setting.TYPE_INT, nullable=True)
@@ -51,11 +43,7 @@ class SettingsTest(TestCase):
         self.assertEqual(setting_float.value, "1.23456")
         setting_none.set_value(None)
         self.assertIsNone(setting_none.value)
-
-        def throw_type_error():
-            setting_int.set_value("blablabla")
-
-        self.assertRaises(TypeError, throw_type_error)
+        self.assertRaises(TypeError, setting_int.set_value, "blablabla")
 
     def test_setting___str__(self):
         setting = Setting.objects.create(slug="test", value=None, type=Setting.TYPE_STR, nullable=True)

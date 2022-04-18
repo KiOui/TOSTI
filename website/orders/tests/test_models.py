@@ -39,23 +39,14 @@ class OrderModelTests(TestCase):
         )
 
     def test_validate_barcode(self):
-        def barcode_wrong_checksum():
-            models.validate_barcode("8710624356915")
-
-        def barcode_too_short():
-            models.validate_barcode("87106243569")
-
-        def barcode_not_only_digits():
-            models.validate_barcode("87C062B356A")
-
         models.validate_barcode("8710624356910")
         models.validate_barcode("5449000000439")
         models.validate_barcode("61940017")
         models.validate_barcode("87654325")
         models.validate_barcode(None)
-        self.assertRaises(ValidationError, barcode_wrong_checksum)
-        self.assertRaises(ValidationError, barcode_too_short)
-        self.assertRaises(ValidationError, barcode_not_only_digits)
+        self.assertRaises(ValidationError, models.validate_barcode, "8710624356915")
+        self.assertRaises(ValidationError, models.validate_barcode, "87106243569")
+        self.assertRaises(ValidationError, models.validate_barcode, "87C062B356A")
 
     def test_default_start_time_shift(self):
         start_time = models.get_default_start_time_shift()
@@ -152,11 +143,7 @@ class OrderModelTests(TestCase):
         self.assertTrue(models.active_venue_validator(self.order_venue))
         self.order_venue.venue.active = False
         self.order_venue.venue.save()
-
-        def do_raise_validation_error():
-            models.active_venue_validator(self.order_venue)
-
-        self.assertRaises(ValidationError, do_raise_validation_error)
+        self.assertRaises(ValidationError, models.active_venue_validator, self.order_venue)
 
     def test_shift_str(self):
         start = timezone.now() + timedelta(days=1)
@@ -342,11 +329,7 @@ class OrderModelTests(TestCase):
         end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=13, minute=30))
         shift = models.Shift.objects.create(venue=self.order_venue, start_date=start, end_date=end)
         shift.venue = None
-
-        def throw_validation_error():
-            shift._clean()
-
-        self.assertRaises(ValidationError, throw_validation_error)
+        self.assertRaises(ValidationError, shift._clean)
 
     @patch("tantalus.signals.synchronize_to_tantalus")
     def test_shift__clean_unfinalize(self, *args):
@@ -354,11 +337,7 @@ class OrderModelTests(TestCase):
         end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=13, minute=30))
         shift = models.Shift.objects.create(venue=self.order_venue, start_date=start, end_date=end, finalized=True)
         shift.finalized = False
-
-        def throw_validation_error():
-            shift._clean()
-
-        self.assertRaises(ValidationError, throw_validation_error)
+        self.assertRaises(ValidationError, shift._clean)
 
     @patch("tantalus.signals.synchronize_to_tantalus")
     def test_shift__clean_change_finalized_shift(self, *args):
@@ -366,11 +345,7 @@ class OrderModelTests(TestCase):
         end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=13, minute=30))
         shift = models.Shift.objects.create(venue=self.order_venue, start_date=start, end_date=end, finalized=True)
         shift.max_orders_per_user = 15
-
-        def throw_validation_error():
-            shift._clean()
-
-        self.assertRaises(ValidationError, throw_validation_error)
+        self.assertRaises(ValidationError, shift._clean)
 
     def test_shift__clean_finalized_not_done_shift(self):
         start = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=12, minute=15))
@@ -378,11 +353,7 @@ class OrderModelTests(TestCase):
         shift = models.Shift.objects.create(venue=self.order_venue, start_date=start, end_date=end)
         models.Order.objects.create(user=self.normal_user, product=self.product, shift=shift)
         shift.finalized = True
-
-        def throw_validation_error():
-            shift._clean()
-
-        self.assertRaises(ValidationError, throw_validation_error)
+        self.assertRaises(ValidationError, shift._clean)
 
     @patch("tantalus.signals.synchronize_to_tantalus")
     def test_shift__clean_end_date_before_start_date(self, *args):
@@ -390,11 +361,7 @@ class OrderModelTests(TestCase):
         end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=13, minute=30))
         shift = models.Shift.objects.create(venue=self.order_venue, start_date=start, end_date=end)
         shift.end_date = start - timedelta(hours=1)
-
-        def throw_validation_error():
-            shift._clean()
-
-        self.assertRaises(ValidationError, throw_validation_error)
+        self.assertRaises(ValidationError, shift._clean)
 
     def test_shift__clean_overlapping_shifts(self):
         venue_2 = Venue.objects.get(pk=2)
@@ -413,11 +380,7 @@ class OrderModelTests(TestCase):
             venue=order_venue_2, start_date=start_shift_inside_other_shift, end_date=end_shift_inside_other_shift
         )
         shift_inside_other_shift.venue = self.order_venue
-
-        def throw_validation_error_shift_inside_other_shift():
-            shift_inside_other_shift._clean()
-
-        self.assertRaises(ValidationError, throw_validation_error_shift_inside_other_shift)
+        self.assertRaises(ValidationError, shift_inside_other_shift._clean)
         shift_inside_other_shift.delete()
 
         start_shift_before_other_shift = timezone.make_aware(
@@ -430,11 +393,7 @@ class OrderModelTests(TestCase):
             venue=order_venue_2, start_date=start_shift_before_other_shift, end_date=end_shift_before_other_shift
         )
         shift_before_other_shift.venue = self.order_venue
-
-        def throw_validation_error_shift_before_other_shift():
-            shift_before_other_shift._clean()
-
-        self.assertRaises(ValidationError, throw_validation_error_shift_before_other_shift)
+        self.assertRaises(ValidationError, shift_before_other_shift._clean)
         shift_before_other_shift.delete()
 
         start_shift_after_other_shift = timezone.make_aware(
@@ -447,11 +406,7 @@ class OrderModelTests(TestCase):
             venue=order_venue_2, start_date=start_shift_after_other_shift, end_date=end_shift_after_other_shift
         )
         shift_after_other_shift.venue = self.order_venue
-
-        def throw_validation_error_shift_after_other_shift():
-            shift_before_other_shift._clean()
-
-        self.assertRaises(ValidationError, throw_validation_error_shift_after_other_shift)
+        self.assertRaises(ValidationError, shift_before_other_shift._clean)
 
     @patch("orders.models.Shift._clean")
     def test_shift_clean(self, _clean_mock: MagicMock):
@@ -467,11 +422,7 @@ class OrderModelTests(TestCase):
 
         normal_user_copy = self.normal_user
         shift.assignees.add(User_models.objects.get(pk=normal_user_copy.pk))
-
-        def throw_value_error():
-            shift.save_m2m()
-
-        self.assertRaises(ValueError, throw_value_error)
+        self.assertRaises(ValueError, shift.save_m2m)
 
     def test_shift_user_can_order_amount(self):
         start = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=12, minute=15))
@@ -509,17 +460,10 @@ class OrderModelTests(TestCase):
         test_product_unavailable = models.Product.objects.create(
             name="Unavailable product", current_price=1.45, available=False
         )
-
-        def throws_validation_error():
-            models.available_product_filter(test_product_unavailable.pk)
-
-        def throws_validation_error_obj():
-            models.available_product_filter(test_product_unavailable)
-
         self.assertTrue(models.available_product_filter(test_product_available.pk))
-        self.assertRaises(ValidationError, throws_validation_error)
+        self.assertRaises(ValidationError, models.available_product_filter, test_product_unavailable.pk)
         self.assertTrue(models.available_product_filter(test_product_available))
-        self.assertRaises(ValidationError, throws_validation_error_obj)
+        self.assertRaises(ValidationError, models.available_product_filter, test_product_unavailable)
 
     def test_order___str__(self):
         order = models.Order.objects.create(user=self.normal_user, shift=self.shift, product=self.product)
@@ -539,11 +483,7 @@ class OrderModelTests(TestCase):
         shift.finalized = True
         shift.save()
         order.order_price = 5
-
-        def test_throw_validation_error():
-            order.save()
-
-        self.assertRaises(ValidationError, test_throw_validation_error)
+        self.assertRaises(ValidationError, order.save)
 
     def test_order_venue(self):
         order = models.Order.objects.create(user=self.normal_user, shift=self.shift, product=self.product)

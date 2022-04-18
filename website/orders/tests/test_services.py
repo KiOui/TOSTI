@@ -57,11 +57,7 @@ class OrderServicesTests(TestCase):
         end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=4, hour=13, minute=30))
         shift = models.Shift.objects.create(venue=self.order_venue, start_date=start, end_date=end)
         self.assertFalse(shift.assignees.filter(id=self.normal_user.id).exists())
-
-        def throws_exception():
-            services.add_user_to_assignees_of_shift(self.normal_user, shift)
-
-        self.assertRaises(PermissionError, throws_exception)
+        self.assertRaises(PermissionError, services.add_user_to_assignees_of_shift, self.normal_user, shift)
         self.assertFalse(shift.assignees.filter(id=self.normal_user.id).exists())
         assign_perm("orders.can_manage_shift_in_venue", self.normal_user, self.order_venue)
         services.add_user_to_assignees_of_shift(self.normal_user, shift)
