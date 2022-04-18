@@ -336,7 +336,7 @@ class Shift(models.Model):
         :return: the maximum amount of orders in string format
         """
         if self.max_orders_total:
-            return "{}".format(self.max_orders_total)
+            return str(self.max_orders_total)
         return "∞"
 
     @property
