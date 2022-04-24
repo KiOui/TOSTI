@@ -31,6 +31,9 @@ Now your server is setup and running on ```localhost:8000```. The administrator 
 
 SAML login will not be used by default on development systems.
 
+For deployment situations, use `poetry export -f requirements.txt --output requirements.txt` to export the requirements to a `requirements.txt` file.
+
+
 ## Module features
 ### Venues
 - Venue model, so functionalities can be linked to different venues.

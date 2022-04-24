@@ -746,7 +746,7 @@ lxml = ">=3.8"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "6485b2fb3e7dff84c13237967e5ce24a74ef59b7a45a4f5bc905435aaae68b73"
+content-hash = "031fafdcd04d3ea9f02b9556458cfaa195a85eb93d74e777ccbf5718bc06ca5e"
 
 [metadata.files]
 asgiref = [
