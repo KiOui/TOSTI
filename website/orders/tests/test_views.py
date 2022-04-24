@@ -1,3 +1,4 @@
+import logging
 from datetime import timedelta
 
 from django.contrib.auth import get_user_model
@@ -13,21 +14,26 @@ from venues.models import Venue
 
 
 User = get_user_model()
+logging.disable()
 
 
 class OrderViewTests(TestCase):
 
     fixtures = ["users.json", "venues.json"]
 
-    def setUp(self):
+    @classmethod
+    def setUpTestData(cls):
         venue_pk_1 = Venue.objects.get(pk=1)
-        self.order_venue_1 = OrderVenue.objects.create(venue=venue_pk_1)
+        order_venue_1 = OrderVenue.objects.create(venue=venue_pk_1)
+        cls.order_venue_1 = order_venue_1
         venue_pk_2 = Venue.objects.get(pk=2)
-        self.order_venue_2 = OrderVenue.objects.create(venue=venue_pk_2)
-        self.shift = Shift.objects.create(
-            venue=self.order_venue_1, start_date=timezone.now(), end_date=timezone.now() + timedelta(hours=4)
+        cls.order_venue_2 = OrderVenue.objects.create(venue=venue_pk_2)
+        cls.shift = Shift.objects.create(
+            venue=order_venue_1, start_date=timezone.now(), end_date=timezone.now() + timedelta(hours=4)
         )
-        self.normal_user = User.objects.get(pk=2)
+        cls.normal_user = User.objects.get(pk=2)
+
+    def setUp(self):
         self.normal_user.set_password("temporary")
         self.normal_user.save()
 

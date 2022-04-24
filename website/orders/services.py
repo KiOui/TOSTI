@@ -11,6 +11,9 @@ from orders.models import Order, Product, Shift
 from users.models import User
 
 
+logger = logging.getLogger(__name__)
+
+
 def execute_data_minimisation(dry_run=False):
     """
     Remove order history from users that is more than 31 days old.
@@ -24,7 +27,7 @@ def execute_data_minimisation(dry_run=False):
     users = []
     for order in orders:
         if not order.paid:
-            logging.warning(f"An unpaid order of {order.user} has not been touched.")
+            logger.warning(f"An unpaid order of {order.user} has not been touched.")
         else:
             users.append(order.user)
             order.user = None

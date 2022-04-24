@@ -6,6 +6,9 @@ from orders.models import Shift, Order
 from tantalus.models import TantalusProduct, TantalusOrderVenue
 
 
+logger = logging.getLogger(__name__)
+
+
 class TantalusException(Exception):
     """Tantalus Exception."""
 
@@ -127,7 +130,7 @@ def synchronize_to_tantalus(shift: Shift):
     try:
         venue = TantalusOrderVenue.objects.get(order_venue=shift.venue)
     except TantalusOrderVenue.DoesNotExist:
-        logging.warning(
+        logger.warning(
             "No Tantalus endpoint for {} exists, if you want to automatically synchronize to Tantalus,"
             " please add a TantalusOrderVenue for it.".format(shift.venue)
         )
@@ -136,7 +139,7 @@ def synchronize_to_tantalus(shift: Shift):
     try:
         tantalus_client = get_tantalus_client()
     except TantalusException as e:
-        logging.error(
+        logger.error(
             "Synchronization for Shift {} failed due to an Exception while initializing the Tantalus Client. The "
             "following Exception occurred: {}".format(shift, e)
         )
@@ -148,12 +151,12 @@ def synchronize_to_tantalus(shift: Shift):
             tantalus_product = TantalusProduct.objects.get(product=product)
             tantalus_client.register_order(tantalus_product, len(order_list), venue.endpoint_id)
         except TantalusProduct.DoesNotExist:
-            logging.warning(
+            logger.warning(
                 "Skipping Tantalus synchronization for Shift {} and Product {} as the Product is not connected"
                 "to any TantalusProduct.".format(shift, product)
             )
         except TantalusException as e:
-            logging.error(
+            logger.error(
                 "Synchronization for Shift {} and Product {} failed with the following Exception: {}".format(
                     shift, product, e
                 )
