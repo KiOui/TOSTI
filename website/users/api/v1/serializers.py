@@ -9,7 +9,7 @@ User = get_user_model()
 class UserSerializer(serializers.ModelSerializer):
     """Serializers for Users."""
 
-    username = serializers.CharField(source="__str__")
+    full_name = serializers.CharField(source="__str__")
     association = AssociationSerializer(source="profile.association")
 
     class Meta:
@@ -18,7 +18,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             "id",
-            "username",
+            "full_name",
             "association",
         ]
-        read_only_fields = ["id", "username", "association"]
+        read_only_fields = ["id", "full_name", "association"]

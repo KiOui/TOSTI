@@ -463,9 +463,9 @@ class Shift(models.Model):
         overlapping_shifts = (
             Shift.objects.filter(venue=self.venue)
             .filter(
-                Q(start_date__lte=self.start, end_date__gt=self.start)
-                | Q(start_date__lt=self.end, end_date__gte=self.end)
-                | Q(start_date__gte=self.start, end_date__lte=self.end)
+                Q(start__lte=self.start, end__gt=self.start)
+                | Q(start__lt=self.end, end__gte=self.end)
+                | Q(start__gte=self.start, end__lte=self.end)
             )
             .exclude(pk=self.pk)
             .exists()

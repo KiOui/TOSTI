@@ -26,7 +26,7 @@ class OrderServicesTests(TestCase):
         order_venue = models.OrderVenue.objects.create(venue=venue_pk_1)
         cls.order_venue = order_venue
         cls.shift = models.Shift.objects.create(
-            venue=order_venue, start_date=timezone.now(), end_date=timezone.now() + timedelta(hours=4)
+            venue=order_venue, start=timezone.now(), end=timezone.now() + timedelta(hours=4)
         )
         cls.product = models.Product.objects.create(name="Test product", current_price=1.25)
         cls.normal_user = User.objects.get(pk=2)
@@ -63,7 +63,7 @@ class OrderServicesTests(TestCase):
     def test_add_user_to_assignees_of_shift(self):
         start = timezone.make_aware(datetime.datetime(year=2022, month=3, day=4, hour=12, minute=15))
         end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=4, hour=13, minute=30))
-        shift = models.Shift.objects.create(venue=self.order_venue, start_date=start, end_date=end)
+        shift = models.Shift.objects.create(venue=self.order_venue, start=start, end=end)
         self.assertFalse(shift.assignees.filter(id=self.normal_user.id).exists())
 
         with self.subTest("Adding a user as assignee without permissions"):
@@ -82,7 +82,7 @@ class OrderServicesTests(TestCase):
     def test_set_shift_active(self):
         start = timezone.make_aware(datetime.datetime(year=2022, month=3, day=4, hour=12, minute=15))
         end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=4, hour=13, minute=30))
-        shift = models.Shift.objects.create(venue=self.order_venue, start_date=start, end_date=end)
+        shift = models.Shift.objects.create(venue=self.order_venue, start=start, end=end)
 
         with self.subTest("Set shift active True"):
             services.set_shift_active(shift, True)
@@ -116,7 +116,7 @@ class OrderServicesTests(TestCase):
     def test_increase_shift_capacity(self):
         start = timezone.make_aware(datetime.datetime(year=2022, month=3, day=4, hour=12, minute=15))
         end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=4, hour=13, minute=30))
-        shift = models.Shift.objects.create(venue=self.order_venue, start_date=start, end_date=end)
+        shift = models.Shift.objects.create(venue=self.order_venue, start=start, end=end)
         start_capacity = shift.max_orders_total
         with self.subTest("Increase shift capacity with default amount"):
             services.increase_shift_capacity(shift)
@@ -129,11 +129,11 @@ class OrderServicesTests(TestCase):
     def test_increase_shift_time(self):
         start = timezone.make_aware(datetime.datetime(year=2022, month=3, day=4, hour=12, minute=15))
         end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=4, hour=13, minute=30))
-        shift = models.Shift.objects.create(venue=self.order_venue, start_date=start, end_date=end)
+        shift = models.Shift.objects.create(venue=self.order_venue, start=start, end=end)
         with self.subTest("Increase shift time with default amount"):
             services.increase_shift_time(shift)
-            self.assertEqual(models.Shift.objects.get(id=shift.id).end_date, end + timedelta(minutes=5))
+            self.assertEqual(models.Shift.objects.get(id=shift.id).end, end + timedelta(minutes=5))
 
         with self.subTest("Increase shift time with custom amount"):
             services.increase_shift_time(shift, 13)
-            self.assertEqual(models.Shift.objects.get(id=shift.id).end_date, end + timedelta(minutes=18))
+            self.assertEqual(models.Shift.objects.get(id=shift.id).end, end + timedelta(minutes=18))
