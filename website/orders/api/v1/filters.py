@@ -27,8 +27,8 @@ class ShiftFilter(FilterSet):
 
         model = Shift
         fields = {
-            "start_date": ("lte", "gte"),
-            "end_date": ("lte", "gte"),
+            "start": ("lte", "gte"),
+            "end": ("lte", "gte"),
             "venue": ("exact",),
             "can_order": ("exact",),
             "finalized": ("exact",),

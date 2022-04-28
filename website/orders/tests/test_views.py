@@ -29,7 +29,7 @@ class OrderViewTests(TestCase):
         venue_pk_2 = Venue.objects.get(pk=2)
         cls.order_venue_2 = OrderVenue.objects.create(venue=venue_pk_2)
         cls.shift = Shift.objects.create(
-            venue=order_venue_1, start_date=timezone.now(), end_date=timezone.now() + timedelta(hours=4)
+            venue=order_venue_1, start=timezone.now(), end=timezone.now() + timedelta(hours=4)
         )
         cls.normal_user = User.objects.get(pk=2)
 
@@ -72,8 +72,8 @@ class OrderViewTests(TestCase):
             follow=True,
             data={
                 "venue": self.order_venue_2.pk,
-                "start_date": timezone.now(),
-                "end_date": timezone.now() + timedelta(hours=4),
+                "start": timezone.now(),
+                "end": timezone.now() + timedelta(hours=4),
             },
         )
         self.assertTrue(Shift.objects.filter(venue=self.order_venue_2).exists())
@@ -90,8 +90,8 @@ class OrderViewTests(TestCase):
             follow=True,
             data={
                 "venue": self.order_venue_2.pk,
-                "start_date": timezone.now(),
-                "end_date": timezone.now() + timedelta(hours=4),
+                "start": timezone.now(),
+                "end": timezone.now() + timedelta(hours=4),
             },
         )
         self.assertFalse(Shift.objects.filter(venue=self.order_venue_2).exists())

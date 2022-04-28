@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from users.api.v1.serializers import UserRelatedField
+from users.api.v1.serializers import UserSerializer
 from venues import models
 from associations.api.v1.serializers import AssociationSerializer
 
@@ -18,7 +18,7 @@ class VenueSerializer(serializers.ModelSerializer):
 class ReservationSerializer(serializers.ModelSerializer):
     """Reservation Serializer."""
 
-    user = UserRelatedField(many=False, read_only=True)
+    user = UserSerializer(many=False, read_only=True)
     venue = VenueSerializer(many=False, read_only=True)
     association = AssociationSerializer(many=False, read_only=True)
 

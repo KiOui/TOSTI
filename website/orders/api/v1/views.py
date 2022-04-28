@@ -6,7 +6,7 @@ from django.db.models import Q
 from oauth2_provider.contrib.rest_framework import IsAuthenticatedOrTokenHasScope
 from rest_framework import status, filters
 from django.core.exceptions import ValidationError as DjangoValidationError
-from rest_framework.exceptions import PermissionDenied, ParseError, ValidationError as RestValidationError
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import (
     ListCreateAPIView,
     ListAPIView,
@@ -21,69 +21,10 @@ from orders.api.v1.permissions import IsOnBakersList
 from orders.api.v1.serializers import OrderSerializer, ShiftSerializer, ProductSerializer
 from orders.exceptions import OrderException
 from orders.models import Order, Shift, Product
-from orders.services import Cart, increase_shift_time, increase_shift_capacity, add_user_orders
+from orders.services import increase_shift_time, increase_shift_capacity
 from tosti import settings
 from tosti.api.openapi import CustomAutoSchema
 from tosti.api.permissions import HasPermissionOnObject, IsAuthenticatedOrTokenHasScopeForMethod
-
-
-class CartOrderAPIView(APIView):
-    """
-    Cart Order API View.
-
-    Permission required: orders.can_order_in_venue
-
-    Use this API endpoint to order a list of Products in one go. The list of Products should be set as an array of
-    Product id's in the "cart" POST parameter.
-    """
-
-    schema = CustomAutoSchema(
-        request_schema={"type": "object", "properties": {"cart": {"type": "array", "example": "[1,2,3]"}}}
-    )
-    permission_required = "orders.can_order_in_venue"
-    permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
-    required_scopes = ["orders:order"]
-
-    def get_permission_object(self):
-        """Get the object to check permissions for."""
-        obj = self.kwargs.get("shift")
-        return obj.venue
-
-    def _extract_cart(self):
-        """
-        Extract the cart items from the POST data.
-
-        :return: a Cart object with the cart items as specified in the cart in the POST data. Raises a ValidationError
-        when there is not cart in the POST data. Raises a ParseError when the cart can not be parsed.
-        """
-        cart_as_id_list = self.request.data.get("cart", None)
-        if cart_as_id_list is None:
-            raise RestValidationError
-
-        try:
-            return Cart.from_list(cart_as_id_list)
-        except ValueError:
-            raise ParseError
-
-    def post(self, request, **kwargs):
-        """
-        Create multiple Orders in one go.
-
-        Permission required: orders.can_order_in_venue
-
-        API endpoint for creating multiple orders in one go (handling of a cart).
-        A "cart" POST parameter must be specified including the ID's of the Products the user wants to order.
-        """
-        shift = self.kwargs.get("shift")
-        try:
-            cart = self._extract_cart()
-        except ValueError:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        try:
-            add_user_orders(cart.get_item_list(), shift, request.user)
-        except OrderException as e:
-            raise PermissionDenied(detail=e.__str__())
-        return Response(status=status.HTTP_200_OK)
 
 
 class OrderListCreateAPIView(ListCreateAPIView):
@@ -118,6 +59,10 @@ class OrderListCreateAPIView(ListCreateAPIView):
         obj = self.kwargs.get("shift")
         return obj.venue
 
+    def get_serializer_context(self):
+        """Add shift to serializer context."""
+        return {"shift": self.kwargs.get("shift")}
+
     def perform_create(self, serializer):
         """
         Perform the creation of a new Order.
@@ -142,9 +87,7 @@ class OrderListCreateAPIView(ListCreateAPIView):
         else:
             # Save the order while ignoring the order_type, user, paid and ready argument as the user does not have
             # permissions to save orders for all users in the shift
-            serializer.save(
-                shift=shift, order_type=Order.TYPE_ORDERED, user=self.request.user, paid=False, ready=False
-            )
+            serializer.save(shift=shift, type=Order.TYPE_ORDERED, user=self.request.user, paid=False, ready=False)
 
     def create(self, request, *args, **kwargs):
         """Catch the OrderException that might be thrown by creating a new Order."""
@@ -216,9 +159,9 @@ class ShiftListCreateAPIView(ListCreateAPIView):
             timezone = pytz.timezone(settings.TIME_ZONE)
             current_time = timezone.localize(datetime.datetime.now())
             if active:
-                return self.queryset.filter(start_date__lte=current_time, end_date__gte=current_time)
+                return self.queryset.filter(start__lte=current_time, end__gte=current_time)
             else:
-                return self.queryset.filter(Q(start_date__gte=current_time) | Q(end_date__lte=current_time))
+                return self.queryset.filter(Q(start__gte=current_time) | Q(end__lte=current_time))
         else:
             return self.queryset.all()
 

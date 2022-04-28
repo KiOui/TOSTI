@@ -26,9 +26,9 @@ class CreateShiftForm(forms.ModelForm):
         timezone = pytz.timezone(settings.TIME_ZONE)
         now = timezone.localize(datetime.now())
         start_time = now - timedelta(seconds=now.second, microseconds=now.microsecond)
-        self.fields["start_date"].initial = start_time.strftime("%Y-%m-%dT%H:%M:%S")
+        self.fields["start"].initial = start_time.strftime("%Y-%m-%dT%H:%M:%S")
         if now >= get_default_end_time_shift() or now <= get_default_start_time_shift() - timedelta(minutes=30):
-            self.fields["end_date"].initial = (start_time + timedelta(hours=1)).strftime("%Y-%m-%dT%H:%M:%S")
+            self.fields["end"].initial = (start_time + timedelta(hours=1)).strftime("%Y-%m-%dT%H:%M:%S")
 
     def clean_venue(self):
         """Check whether venue is has an accepted value."""
@@ -43,10 +43,10 @@ class CreateShiftForm(forms.ModelForm):
         model = Shift
         fields = [
             "venue",
-            "start_date",
-            "end_date",
+            "start",
+            "end",
         ]
         widgets = {
-            "start_date": DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
-            "end_date": DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
+            "start": DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
+            "end": DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
         }

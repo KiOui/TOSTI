@@ -42,24 +42,3 @@
 .player-controls i:hover {
     cursor: pointer;
 }
-
-.loader {
-    width: 20px;
-    height: 20px;
-    padding: 0;
-    border: 2px solid var(--text-color);
-    border-bottom-color: var(--background-shade);
-    border-radius: 50%;
-    display: inline-block;
-    box-sizing: border-box;
-    animation: rotation 1s linear infinite;
-}
-
-@keyframes rotation {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}

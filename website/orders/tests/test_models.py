@@ -35,7 +35,7 @@ class OrderModelTests(TestCase):
         cls.product = models.Product.objects.create(name="Test product", current_price=1.25)
         cls.product_2 = models.Product.objects.create(name="Test product 2", current_price=2.00)
         cls.shift = models.Shift.objects.create(
-            venue=order_venue, start_date=timezone.now(), end_date=timezone.now() + timedelta(hours=4)
+            venue=order_venue, start=timezone.now(), end=timezone.now() + timedelta(hours=4)
         )
 
     def setUp(self):
@@ -157,7 +157,7 @@ class OrderModelTests(TestCase):
     def test_shift_str(self):
         start = timezone.now() + timedelta(days=1)
         end = timezone.now() + timedelta(days=1, hours=4)
-        shift = models.Shift.objects.create(venue=self.order_venue, start_date=start, end_date=end)
+        shift = models.Shift.objects.create(venue=self.order_venue, start=start, end=end)
         self.assertEqual(shift.__str__(), "{} {}".format(self.order_venue, shift.date))
 
     @patch("orders.models.Shift._clean")
@@ -165,7 +165,7 @@ class OrderModelTests(TestCase):
     def test_shift_save(self, _make_finalized_mock, _clean_mock):
         start = timezone.now() + timedelta(days=1)
         end = timezone.now() + timedelta(days=1, hours=4)
-        shift = models.Shift.objects.create(venue=self.order_venue, start_date=start, end_date=end)
+        shift = models.Shift.objects.create(venue=self.order_venue, start=start, end=end)
         shift.finalized = True
         shift.save()
         _make_finalized_mock.assert_called()
@@ -175,7 +175,7 @@ class OrderModelTests(TestCase):
     def test_shift_save_not_finalized(self, _make_finalized_mock, _clean_mock):
         start = timezone.now() + timedelta(days=1)
         end = timezone.now() + timedelta(days=1, hours=4)
-        shift = models.Shift.objects.create(venue=self.order_venue, start_date=start, end_date=end)
+        shift = models.Shift.objects.create(venue=self.order_venue, start=start, end=end)
         shift.finalized = False
         shift.save()
         _make_finalized_mock.assert_not_called()
@@ -185,7 +185,7 @@ class OrderModelTests(TestCase):
     def test_shift_save_create_finalized(self, _make_finalized_mock, _clean_mock):
         start = timezone.now() + timedelta(days=1)
         end = timezone.now() + timedelta(days=1, hours=4)
-        models.Shift.objects.create(venue=self.order_venue, start_date=start, end_date=end, finalized=True)
+        models.Shift.objects.create(venue=self.order_venue, start=start, end=end, finalized=True)
         _make_finalized_mock.assert_called()
 
     def test_shift_number_of_restricted_orders(self):
@@ -211,9 +211,7 @@ class OrderModelTests(TestCase):
     def test_shift_max_orders_total_string(self):
         start = timezone.now() + timedelta(days=1)
         end = timezone.now() + timedelta(days=1, hours=4)
-        shift = models.Shift.objects.create(
-            venue=self.order_venue, start_date=start, end_date=end, max_orders_total=13
-        )
+        shift = models.Shift.objects.create(venue=self.order_venue, start=start, end=end, max_orders_total=13)
         self.assertEqual(shift.max_orders_total_string, "{}".format(shift.max_orders_total))
         shift.max_orders_total = None
         shift.save()
@@ -233,30 +231,28 @@ class OrderModelTests(TestCase):
         self.assertTrue(self.shift.is_active)
         start = timezone.now() + timedelta(days=1)
         end = timezone.now() + timedelta(days=1, hours=4)
-        shift = models.Shift.objects.create(
-            venue=self.order_venue, start_date=start, end_date=end, max_orders_total=13
-        )
+        shift = models.Shift.objects.create(venue=self.order_venue, start=start, end=end, max_orders_total=13)
         self.assertFalse(shift.is_active)
 
     def test_shift_date(self):
         start = timezone.make_aware(datetime.datetime(year=2022, month=3, day=4, hour=12, minute=15))
         end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=4, hour=13, minute=30))
-        shift = models.Shift.objects.create(venue=self.order_venue, start_date=start, end_date=end)
+        shift = models.Shift.objects.create(venue=self.order_venue, start=start, end=end)
         self.assertEqual(shift.date, "2022-03-04")
-        shift.end_date = timezone.make_aware(datetime.datetime(year=2022, month=3, day=5, hour=13, minute=30))
+        shift.end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=5, hour=13, minute=30))
         shift.save()
         self.assertEqual(shift.date, "2022-03-04 - 2022-03-05")
 
     def test_shift_start_time(self):
         start = timezone.make_aware(datetime.datetime(year=2022, month=3, day=4, hour=12, minute=15))
         end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=4, hour=13, minute=30))
-        shift = models.Shift.objects.create(venue=self.order_venue, start_date=start, end_date=end)
+        shift = models.Shift.objects.create(venue=self.order_venue, start=start, end=end)
         self.assertEqual(shift.start_time, "12:15")
 
     def test_shift_end_time(self):
         start = timezone.make_aware(datetime.datetime(year=2022, month=3, day=4, hour=12, minute=15))
         end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=4, hour=13, minute=30))
-        shift = models.Shift.objects.create(venue=self.order_venue, start_date=start, end_date=end)
+        shift = models.Shift.objects.create(venue=self.order_venue, start=start, end=end)
         self.assertEqual(shift.end_time, "13:30")
 
     @freeze_time("2022-04-03")
@@ -266,7 +262,7 @@ class OrderModelTests(TestCase):
         with self.subTest("Start end on same day"):
             start = timezone.make_aware(datetime.datetime(year=2022, month=3, day=4, hour=12, minute=15))
             end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=4, hour=13, minute=30))
-            shift = models.Shift.objects.create(venue=self.order_venue, start_date=start, end_date=end)
+            shift = models.Shift.objects.create(venue=self.order_venue, start=start, end=end)
             self.assertEqual(
                 shift.human_readable_start_end_time,
                 "{}, 12:15 until 13:30".format(start.strftime(models.Shift.HUMAN_DATE_FORMAT)),
@@ -281,14 +277,14 @@ class OrderModelTests(TestCase):
             end_today = (
                 timezone.now().astimezone(current_timezone).replace(hour=13, minute=30, second=0, microsecond=0)
             )
-            shift_2 = models.Shift.objects.create(venue=order_venue_2, start_date=start_today, end_date=end_today)
+            shift_2 = models.Shift.objects.create(venue=order_venue_2, start=start_today, end=end_today)
             self.assertEqual(shift_2.human_readable_start_end_time, "12:30 until 13:30")
 
         with self.subTest("Start today, end tomorrow"):
             tomorrow = timezone.now().astimezone(current_timezone).replace(
                 hour=13, minute=30, second=0, microsecond=0
             ) + timedelta(days=1)
-            shift_2.end_date = tomorrow
+            shift_2.end = tomorrow
             shift_2.save()
             self.assertEqual(
                 shift_2.human_readable_start_end_time,
@@ -297,8 +293,8 @@ class OrderModelTests(TestCase):
 
         with self.subTest("Start and end both not today"):
             day_after_tomorrow = tomorrow + timedelta(days=1)
-            shift_2.start_date = tomorrow
-            shift_2.end_date = day_after_tomorrow
+            shift_2.start = tomorrow
+            shift_2.end = day_after_tomorrow
             shift_2.save()
             self.assertEqual(
                 shift_2.human_readable_start_end_time,
@@ -311,7 +307,7 @@ class OrderModelTests(TestCase):
     def test_shift_get_users_with_change_perms(self):
         start = timezone.make_aware(datetime.datetime(year=2022, month=3, day=4, hour=12, minute=15))
         end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=4, hour=13, minute=30))
-        shift = models.Shift.objects.create(venue=self.order_venue, start_date=start, end_date=end)
+        shift = models.Shift.objects.create(venue=self.order_venue, start=start, end=end)
         self.assertEqual(len(shift.get_users_with_change_perms()), 1)
         self.assertFalse(self.normal_user in shift.get_users_with_change_perms())
         assign_perm("orders.change_shift", self.normal_user, shift)
@@ -321,11 +317,11 @@ class OrderModelTests(TestCase):
     def test_shift__make_finalized(self):
         start = timezone.make_aware(datetime.datetime(year=2022, month=4, day=2, hour=12, minute=15))
         end = timezone.make_aware(datetime.datetime(year=2022, month=4, day=2, hour=13, minute=30))
-        shift = models.Shift.objects.create(venue=self.order_venue, start_date=start, end_date=end)
-        self.assertEqual(shift.end_date, end)
+        shift = models.Shift.objects.create(venue=self.order_venue, start=start, end=end)
+        self.assertEqual(shift.end, end)
         shift._make_finalized()
         self.assertEqual(
-            shift.end_date.timestamp(), timezone.make_aware(datetime.datetime(year=2022, month=4, day=3)).timestamp()
+            shift.end.timestamp(), timezone.make_aware(datetime.datetime(year=2022, month=4, day=3)).timestamp()
         )
         self.assertFalse(shift.can_order)
 
@@ -345,37 +341,37 @@ class OrderModelTests(TestCase):
     def test_shift__clean_no_venue_id(self):
         start = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=12, minute=15))
         end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=13, minute=30))
-        shift = models.Shift.objects.create(venue=self.order_venue, start_date=start, end_date=end)
+        shift = models.Shift.objects.create(venue=self.order_venue, start=start, end=end)
         shift.venue = None
         self.assertRaises(ValidationError, shift._clean)
 
     def test_shift__clean_unfinalize(self, *args):
         start = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=12, minute=15))
         end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=13, minute=30))
-        shift = models.Shift.objects.create(venue=self.order_venue, start_date=start, end_date=end, finalized=True)
+        shift = models.Shift.objects.create(venue=self.order_venue, start=start, end=end, finalized=True)
         shift.finalized = False
         self.assertRaises(ValidationError, shift._clean)
 
     def test_shift__clean_change_finalized_shift(self, *args):
         start = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=12, minute=15))
         end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=13, minute=30))
-        shift = models.Shift.objects.create(venue=self.order_venue, start_date=start, end_date=end, finalized=True)
+        shift = models.Shift.objects.create(venue=self.order_venue, start=start, end=end, finalized=True)
         shift.max_orders_per_user = 15
         self.assertRaises(ValidationError, shift._clean)
 
     def test_shift__clean_finalized_not_done_shift(self):
         start = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=12, minute=15))
         end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=13, minute=30))
-        shift = models.Shift.objects.create(venue=self.order_venue, start_date=start, end_date=end)
+        shift = models.Shift.objects.create(venue=self.order_venue, start=start, end=end)
         models.Order.objects.create(user=self.normal_user, product=self.product, shift=shift)
         shift.finalized = True
         self.assertRaises(ValidationError, shift._clean)
 
-    def test_shift__clean_end_date_before_start_date(self, *args):
+    def test_shift__clean_end_before_start(self, *args):
         start = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=12, minute=15))
         end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=13, minute=30))
-        shift = models.Shift.objects.create(venue=self.order_venue, start_date=start, end_date=end)
-        shift.end_date = start - timedelta(hours=1)
+        shift = models.Shift.objects.create(venue=self.order_venue, start=start, end=end)
+        shift.end = start - timedelta(hours=1)
         self.assertRaises(ValidationError, shift._clean)
 
     def test_shift__clean_overlapping_shifts(self):
@@ -383,7 +379,7 @@ class OrderModelTests(TestCase):
         order_venue_2 = models.OrderVenue.objects.create(venue=venue_2)
         start = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=12, minute=15))
         end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=13, minute=30))
-        models.Shift.objects.create(venue=self.order_venue, start_date=start, end_date=end)
+        models.Shift.objects.create(venue=self.order_venue, start=start, end=end)
 
         with self.subTest("Shift inside other shift"):
             start_shift_inside_other_shift = timezone.make_aware(
@@ -393,7 +389,7 @@ class OrderModelTests(TestCase):
                 datetime.datetime(year=2022, month=3, day=2, hour=13, minute=15)
             )
             shift_inside_other_shift = models.Shift.objects.create(
-                venue=order_venue_2, start_date=start_shift_inside_other_shift, end_date=end_shift_inside_other_shift
+                venue=order_venue_2, start=start_shift_inside_other_shift, end=end_shift_inside_other_shift
             )
             shift_inside_other_shift.venue = self.order_venue
             self.assertRaises(ValidationError, shift_inside_other_shift._clean)
@@ -407,7 +403,7 @@ class OrderModelTests(TestCase):
                 datetime.datetime(year=2022, month=3, day=2, hour=12, minute=45)
             )
             shift_before_other_shift = models.Shift.objects.create(
-                venue=order_venue_2, start_date=start_shift_before_other_shift, end_date=end_shift_before_other_shift
+                venue=order_venue_2, start=start_shift_before_other_shift, end=end_shift_before_other_shift
             )
             shift_before_other_shift.venue = self.order_venue
             self.assertRaises(ValidationError, shift_before_other_shift._clean)
@@ -421,7 +417,7 @@ class OrderModelTests(TestCase):
                 datetime.datetime(year=2022, month=3, day=2, hour=14, minute=45)
             )
             shift_after_other_shift = models.Shift.objects.create(
-                venue=order_venue_2, start_date=start_shift_after_other_shift, end_date=end_shift_after_other_shift
+                venue=order_venue_2, start=start_shift_after_other_shift, end=end_shift_after_other_shift
             )
             shift_after_other_shift.venue = self.order_venue
             self.assertRaises(ValidationError, shift_before_other_shift._clean)
@@ -434,7 +430,7 @@ class OrderModelTests(TestCase):
     def test_shift_save_m2m(self):
         start = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=12, minute=15))
         end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=13, minute=30))
-        shift = models.Shift.objects.create(venue=self.order_venue, start_date=start, end_date=end)
+        shift = models.Shift.objects.create(venue=self.order_venue, start=start, end=end)
 
         with self.subTest("User with shift admin permissions"):
             shift.assignees.add(User_models.objects.get(pk=self.admin_user.pk))
@@ -448,9 +444,7 @@ class OrderModelTests(TestCase):
     def test_shift_user_can_order_amount(self):
         start = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=12, minute=15))
         end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=13, minute=30))
-        shift = models.Shift.objects.create(
-            venue=self.order_venue, start_date=start, end_date=end, max_orders_per_user=None
-        )
+        shift = models.Shift.objects.create(venue=self.order_venue, start=start, end=end, max_orders_per_user=None)
         self.assertTrue(shift.user_can_order_amount(self.normal_user, 15))
         shift.max_orders_per_user = 2
         shift.save()
@@ -463,9 +457,7 @@ class OrderModelTests(TestCase):
     def test_shift_max_order_amount(self):
         start = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=12, minute=15))
         end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=13, minute=30))
-        shift = models.Shift.objects.create(
-            venue=self.order_venue, start_date=start, end_date=end, max_orders_per_user=None
-        )
+        shift = models.Shift.objects.create(venue=self.order_venue, start=start, end=end, max_orders_per_user=None)
         self.assertIsNone(shift.user_max_order_amount(self.normal_user))
         shift.max_orders_per_user = 2
         shift.save()
@@ -493,9 +485,7 @@ class OrderModelTests(TestCase):
     def test_order_save(self, *args):
         start = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=12, minute=15))
         end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=13, minute=30))
-        shift = models.Shift.objects.create(
-            venue=self.order_venue, start_date=start, end_date=end, max_orders_per_user=None
-        )
+        shift = models.Shift.objects.create(venue=self.order_venue, start=start, end=end, max_orders_per_user=None)
         order = models.Order.objects.create(
             user=self.normal_user, shift=shift, product=self.product, paid=True, ready=True
         )

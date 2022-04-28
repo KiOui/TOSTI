@@ -190,42 +190,6 @@ class ShiftAdminView(PermissionRequiredMixin, TemplateView):
         return self.kwargs.get("shift")
 
 
-class PlaceOrderView(PermissionRequiredMixin, TemplateView):
-    """Order view."""
-
-    template_name = "orders/place_order.html"
-
-    permission_required = "orders.can_order_in_venue"
-    return_403 = True
-    accept_global_perms = True
-
-    def get(self, request, **kwargs):
-        """
-        GET request for PlaceOrderView.
-
-        :param request: the request
-        :param kwargs: keyword arguments
-        :return: the product view with all ordered items of the user and all items that the user can order for this
-        shift
-        """
-        shift = kwargs.get("shift")
-
-        return render(
-            request,
-            self.template_name,
-            {"shift": shift},
-        )
-
-    def get_permission_object(self):
-        """Get the object to check permissions for."""
-        obj = self.get_object()
-        return obj.venue
-
-    def get_object(self):
-        """Get the object for this view."""
-        return self.kwargs.get("shift")
-
-
 class ExplainerView(TemplateView):
     """Explainer view."""
 

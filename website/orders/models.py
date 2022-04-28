@@ -238,8 +238,8 @@ class Shift(models.Model):
         OrderVenue, related_name="shifts", on_delete=models.PROTECT, validators=[active_venue_validator]
     )
 
-    start_date = models.DateTimeField(default=get_default_start_time_shift)
-    end_date = models.DateTimeField(default=get_default_end_time_shift)
+    start = models.DateTimeField(default=get_default_start_time_shift)
+    end = models.DateTimeField(default=get_default_end_time_shift)
 
     can_order = models.BooleanField(
         verbose_name="Orders allowed",
@@ -278,7 +278,7 @@ class Shift(models.Model):
     class Meta:
         """Meta class."""
 
-        ordering = ["start_date", "end_date"]
+        ordering = ["-start", "-end"]
 
     def __str__(self):
         """
@@ -349,11 +349,11 @@ class Shift(models.Model):
         """
         Check if a shift is currently active.
 
-        :return: True if the current time is between the start_date and end_date of this shift
+        :return: True if the current time is between the start and end of this shift
         """
         timezone = pytz.timezone(settings.TIME_ZONE)
         current_time = timezone.localize(datetime.now())
-        return self.start_date < current_time < self.end_date
+        return self.start < current_time < self.end
 
     @property
     def date(self):
@@ -362,9 +362,9 @@ class Shift(models.Model):
 
         :return: the date of this object in string format
         """
-        if self.start_date.date() == self.end_date.date():
-            return f"{self.start_date.strftime(self.DATE_FORMAT)}"
-        return f"{self.start_date.strftime(self.DATE_FORMAT)} - {self.end_date.strftime(self.DATE_FORMAT)}"
+        if self.start.date() == self.end.date():
+            return f"{self.start.strftime(self.DATE_FORMAT)}"
+        return f"{self.start.strftime(self.DATE_FORMAT)} - {self.end.strftime(self.DATE_FORMAT)}"
 
     @property
     def start_time(self):
@@ -374,7 +374,7 @@ class Shift(models.Model):
         :return: the start time of this object in string format
         """
         timezone = pytz.timezone(settings.TIME_ZONE)
-        localized = datetime.fromtimestamp(self.start_date.timestamp(), tz=timezone)
+        localized = datetime.fromtimestamp(self.start.timestamp(), tz=timezone)
         return f"{localized.strftime(self.TIME_FORMAT)}"
 
     @property
@@ -385,25 +385,25 @@ class Shift(models.Model):
         :return: the end time of this object in string format
         """
         timezone = pytz.timezone(settings.TIME_ZONE)
-        localized = datetime.fromtimestamp(self.end_date.timestamp(), tz=timezone)
+        localized = datetime.fromtimestamp(self.end.timestamp(), tz=timezone)
         return f"{localized.strftime(self.TIME_FORMAT)}"
 
     @property
     def human_readable_start_end_time(self):
         """Get the start and and time in a human readable format."""
         timezone = pytz.timezone(settings.TIME_ZONE)
-        start_time = datetime.fromtimestamp(self.start_date.timestamp(), tz=timezone)
-        end_date = datetime.fromtimestamp(self.end_date.timestamp(), tz=timezone)
+        start_time = datetime.fromtimestamp(self.start.timestamp(), tz=timezone)
+        end_time = datetime.fromtimestamp(self.end.timestamp(), tz=timezone)
 
-        if start_time.date() == end_date.date():
+        if start_time.date() == end_time.date():
             if start_time.date() == datetime.today().date():
                 return f"{self.start_time} until {self.end_time}"
-            return f"{self.start_date.strftime(self.HUMAN_DATE_FORMAT)}, {self.start_time} until {self.end_time}"
+            return f"{self.start.strftime(self.HUMAN_DATE_FORMAT)}, {self.start_time} until {self.end_time}"
         if start_time.date() == datetime.today().date():
-            return f"{self.start_time} until {self.end_date.strftime(self.HUMAN_DATE_FORMAT)}, {self.end_time}"
+            return f"{self.start_time} until {self.end.strftime(self.HUMAN_DATE_FORMAT)}, {self.end_time}"
         return (
-            f"{self.start_date.strftime(self.HUMAN_DATE_FORMAT)}, {self.start_time} until "
-            f"{self.end_date.strftime(self.HUMAN_DATE_FORMAT)}, {self.end_time}"
+            f"{self.start.strftime(self.HUMAN_DATE_FORMAT)}, {self.start_time} until "
+            f"{self.end.strftime(self.HUMAN_DATE_FORMAT)}, {self.end_time}"
         )
 
     def get_users_with_change_perms(self):
@@ -419,7 +419,7 @@ class Shift(models.Model):
     def _make_finalized(self):
         """Make this Shift ready to be finalized."""
         timezone = pytz.timezone(settings.TIME_ZONE)
-        self.end_date = timezone.localize(datetime.now())
+        self.end = timezone.localize(datetime.now())
         self.can_order = False
 
     @property
@@ -457,15 +457,15 @@ class Shift(models.Model):
             if not self.shift_done:
                 raise ValidationError({"finalized": "Shift can't be finalized if not all Orders are paid and ready"})
 
-        if self.end_date <= self.start_date:
-            raise ValidationError({"end_date": "End date cannot be before start date."})
+        if self.end <= self.start:
+            raise ValidationError({"end": "End date cannot be before start date."})
 
         overlapping_shifts = (
             Shift.objects.filter(venue=self.venue)
             .filter(
-                Q(start_date__lte=self.start_date, end_date__gt=self.start_date)
-                | Q(start_date__lt=self.end_date, end_date__gte=self.end_date)
-                | Q(start_date__gte=self.start_date, end_date__lte=self.end_date)
+                Q(start__lte=self.start, end__gt=self.start)
+                | Q(start__lt=self.end, end__gte=self.end)
+                | Q(start__gte=self.start, end__lte=self.end)
             )
             .exclude(pk=self.pk)
             .exists()

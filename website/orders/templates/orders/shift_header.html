@@ -5,7 +5,7 @@
         <template v-if="shift.assignees && shift.assignees.length > 0">
             At your service:
             <template v-for="(assignee, index) in shift.assignees">
-                <% assignee %>
+                <% assignee.full_name %>
                 <template v-if="index !== shift.assignees.length-1">, </template>
             </template>
         </template>
@@ -16,54 +16,42 @@
     <p v-if="shift.finalized" class="alert alert-danger"><i class="far fa-hand-paper"></i> This shift is closed.</p>
     <p v-else-if="!shift.can_order" class="alert alert-danger"><i class="far fa-hand-paper"></i> This shift does not accept orders at this moment.</p>
     <p v-else-if="!shift.is_active" class="alert alert-danger"><i class="far fa-hand-paper"></i> This shift is not active.</p>
-    {% if include_order_button %}
-        {% if not has_order_permissions %}
-            <p v-if="shift.finalized" class="alert alert-warning"><i class="fas fa-ban"></i> You don't have permission to place orders.</p>
-        {% else %}
-            <a v-if="!shift.finalized && shift.can_order && shift.is_active" href="{% url "orders:order" shift=shift %}">
-                <div class="btn-ml btn-on">
-                    <h4>Place your order</h4>
-                    <p class="btn-note">Click to order items</p>
-                </div>
-            </a>
-        {% endif %}
-    {% endif %}
 </div>
 
 <script>
     let shift_header_{{ shift.id }}_vue = new Vue({
-    el: '#shift-header-container-{{ shift.id }}',
-    delimiters: ['<%', '%>'],
-    data: {
-        shift: {}
-    },
-    computed: {
-        start_end_time: function() {
-            if (this.shift.start_date) {
-                const start_date = new Date(this.shift.start_date);
-                const end_date = new Date(this.shift.end_date);
-                const today_date = new Date();
-                if (start_date.getDate() === end_date.getDate() && start_date.getFullYear() === end_date.getFullYear() && start_date.getMonth() === end_date.getMonth()) {
-                    if (start_date.getDate() === today_date.getDate() && start_date.getFullYear() === today_date.getFullYear() && start_date.getMonth() === today_date.getMonth()) {
-                        return `${start_date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} until ${end_date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-                    }
-                    return `${start_date.toLocaleDateString()}, ${start_date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} until ${end_date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-                }
-                if (start_date.getDate() === today_date.getDate() && start_date.getFullYear() === today_date.getFullYear() && start_date.getMonth() === today_date.getMonth()) {
-                    return `${start_date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} until ${end_date.toLocaleDateString()}, ${end_date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-                }
-                return `${start_date.toLocaleDateString()}, ${start_date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} until ${end_date.toLocaleDateString()}, ${end_date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-            }
-            return "";
+        el: '#shift-header-container-{{ shift.id }}',
+        delimiters: ['<%', '%>'],
+        data: {
+            shift: {}
         },
-    },
-    created() {
-         fetch('{% url "v1:shift_retrieveupdate" pk=shift.id %}')
-            .then(response => response.json())
-            .then(json => {
-                this.shift = json;
-            });
-        }
-    });
+        computed: {
+            start_end_time: function() {
+                if (this.shift.start) {
+                    const start = new Date(this.shift.start);
+                    const end = new Date(this.shift.end);
+                    const today_date = new Date();
+                    if (start.getDate() === end.getDate() && start.getFullYear() === end.getFullYear() && start.getMonth() === end.getMonth()) {
+                        if (start.getDate() === today_date.getDate() && start.getFullYear() === today_date.getFullYear() && start.getMonth() === today_date.getMonth()) {
+                            return `${start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} until ${end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+                        }
+                        return `${start.toLocaleDateString()}, ${start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} until ${end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+                    }
+                    if (start.getDate() === today_date.getDate() && start.getFullYear() === today_date.getFullYear() && start.getMonth() === today_date.getMonth()) {
+                        return `${start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} until ${end.toLocaleDateString()}, ${end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+                    }
+                    return `${start.toLocaleDateString()}, ${start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} until ${end.toLocaleDateString()}, ${end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+                }
+                return "";
+            },
+        },
+        created() {
+             fetch('{% url "v1:shift_retrieveupdate" pk=shift.id %}')
+                .then(response => response.json())
+                .then(json => {
+                    this.shift = json;
+                });
+            }
+        });
     add_refresh_url("{% url "v1:shift_retrieveupdate" pk=shift.id %}", function(data) {shift_header_{{ shift.id }}_vue.shift = data});
 </script>

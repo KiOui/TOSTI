@@ -3,7 +3,7 @@
         <a href="{% url 'orders:shift_overview' shift=shift %}">
             <div class="btn-ml btn-on my-2">
                 <h4>Order at {{ shift.venue }}</h4>
-                <p class="btn-note">order until {{ shift.end_date|date:"g:iA" }} or capacity reached
+                <p class="btn-note">order until {{ shift.end|date:"g:iA" }} or capacity reached
                 ({{ shift.number_of_restricted_orders }}/{{ shift.max_orders_total }})</p>
             </div>
         </a>

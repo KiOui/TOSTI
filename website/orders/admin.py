@@ -80,17 +80,9 @@ class ProductAdmin(admin.ModelAdmin):
 
 
 class OrderInline(admin.TabularInline):
-    """Inline form for Registration."""
+    """Inline form for orders."""
 
     model = Order
-    readonly_fields = [
-        "user",
-        "product",
-        "order_price",
-        "created",
-        "paid_at",
-        "ready_at",
-    ]
     extra = 0
 
 
@@ -134,7 +126,7 @@ class ShiftAdmin(GuardedModelAdmin, ImportExportModelAdmin):
     """Custom admin for shifts."""
 
     form = ShiftAdminForm
-    date_hierarchy = "start_date"
+    date_hierarchy = "start"
 
     list_display = [
         "date",
@@ -150,7 +142,7 @@ class ShiftAdmin(GuardedModelAdmin, ImportExportModelAdmin):
     list_filter = ["venue", "can_order", "finalized"]
     inlines = [OrderInline]
 
-    search_fields = ["start_date", "venue__venue__name"]
+    search_fields = ["start", "venue__venue__name"]
 
     actions = ["close_shift"]
 

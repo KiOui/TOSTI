@@ -15,22 +15,13 @@ def render_order_now_button(context, shift=None, venue=None):
         return {"venue": venue, "request": context.get("request")}
 
 
-@register.inclusion_tag("orders/place_order_button.html", takes_context=True)
-def render_place_order_button(context, shift):
-    """Render order now button."""
-    has_order_perm = context[
-        "request"
-    ].user in shift.venue.get_users_with_order_perms() and shift.user_can_order_amount(context["request"].user, 1)
-    return {"shift": shift, "has_order_perm": has_order_perm}
-
-
 @register.inclusion_tag("orders/order_now_buttons_shifts.html", takes_context=True)
 def render_order_now_buttons_active_shifts(context, shifts=None):
     """Render order now buttons for all active shifts."""
     if shifts is None:
-        shifts = Shift.objects.filter(
-            start_date__lte=timezone.now(), end_date__gte=timezone.now(), finalized=False
-        ).order_by("start_date", "venue__venue__name")
+        shifts = Shift.objects.filter(start__lte=timezone.now(), end__gte=timezone.now(), finalized=False).order_by(
+            "start", "venue__venue__name"
+        )
 
     buttons = [{"shift": x} for x in shifts]
 
@@ -40,9 +31,9 @@ def render_order_now_buttons_active_shifts(context, shifts=None):
 @register.inclusion_tag("orders/order_now_buttons_shifts.html", takes_context=True)
 def render_order_now_buttons_can_order(context):
     """Render order now buttons for all shifts accepting orders."""
-    shifts = Shift.objects.filter(
-        start_date__lte=timezone.now(), end_date__gte=timezone.now(), can_order=True
-    ).order_by("start_date", "venue__venue__name")
+    shifts = Shift.objects.filter(start__lte=timezone.now(), end__gte=timezone.now(), can_order=True).order_by(
+        "start", "venue__venue__name"
+    )
 
     buttons = [{"shift": x} for x in shifts]
 

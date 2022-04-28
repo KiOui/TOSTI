@@ -1,5 +1,5 @@
 from thaliedje.services import player_currently_playing
-from users.api.v1.serializers import UserRelatedField
+from users.api.v1.serializers import UserSerializer
 from rest_framework import serializers
 from thaliedje import models
 
@@ -24,7 +24,7 @@ class QueueItemSerializer(serializers.ModelSerializer):
     """Queue Item Serializer."""
 
     track = TrackSerializer(many=False, read_only=True)
-    requested_by = UserRelatedField(many=False)
+    requested_by = UserSerializer(many=False)
 
     class Meta:
         """Meta class."""

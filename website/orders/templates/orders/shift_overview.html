@@ -2,8 +2,8 @@
 {% load static order_now %}
 
 {% block page %}
-    {% include 'orders/shift_header.html' with shift=shift include_order_button=True %}
-    {% include 'orders/order_list.html' with shift=shift admin=False user=user %}
+    {% include 'orders/shift_header.html' with shift=shift %}
+    {% include 'orders/order_list.html' with shift=shift admin=False user=user show_order_buttons=True %}
     <div class="container pt-5 pb-5"></div>
 {% endblock %}
 
