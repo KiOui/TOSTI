@@ -1,0 +1,22 @@
+[
+  {
+    "model": "venues.venue",
+    "pk": 1,
+    "fields": {
+      "name": "Noordkantine",
+      "slug": "noordkantine",
+      "active": true,
+      "can_be_reserved": true
+    }
+  },
+  {
+    "model": "venues.venue",
+    "pk": 2,
+    "fields": {
+      "name": "Zuidkantine",
+      "slug": "zuidkantine",
+      "active": true,
+      "can_be_reserved": true
+    }
+  }
+]

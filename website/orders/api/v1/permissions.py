@@ -7,4 +7,4 @@ class IsOnBakersList(BasePermission):
     def has_permission(self, request, view):
         """Check if a user has a certain object permissions."""
         shift = view.get_shift()
-        return request.user in shift.get_assignees()
+        return request.user in shift.assignees.all()
