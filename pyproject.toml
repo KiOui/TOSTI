@@ -7,7 +7,7 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-django = "^3.2.12"
+django = "^3.2.13"
 Pillow = "^9.0.0"
 django-admin-autocomplete-filter = "^0.5"
 django-import-export = "^2.0.2"
@@ -29,8 +29,9 @@ django-filter = "^21.1"
 
 [tool.poetry.dev-dependencies]
 pydocstyle = "^5.0.2"
-black = "^21.7b0"
 flake8 = "^3.7.9"
+freezegun = "^1.2.1"
+black = "^22.3.0"
 
 [tool.black]
 line-length = 119

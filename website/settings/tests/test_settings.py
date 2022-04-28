@@ -33,25 +33,19 @@ class SettingsTest(TestCase):
         self.assertEqual(self.settings.get_value("test-setting"), "Bla")
 
     def test_add_setting_wrong_type_value(self):
-        def call_add_setting():
-            self.settings.register_setting("test-setting", Setting.TYPE_INT, False, default_value="Bla")
-
-        self.assertRaises(TypeError, call_add_setting)
+        self.assertRaises(
+            TypeError, self.settings.register_setting, "test-setting", Setting.TYPE_INT, False, default_value="Bla"
+        )
 
     def test_add_setting_twice(self):
         self.settings.register_setting("test-setting", Setting.TYPE_INT, False, default_value=1)
-
-        def add_setting_second_time():
-            self.settings.register_setting("test-setting", Setting.TYPE_INT, False, default_value=2)
-
-        self.assertRaises(Exception, add_setting_second_time)
+        self.assertRaises(
+            Exception, self.settings.register_setting, "test-setting", Setting.TYPE_INT, False, default_value=2
+        )
         self.assertEqual(self.settings.get_value("test-setting"), 1)
 
     def test_add_setting_non_nullable_no_default_value(self):
-        def add_setting_non_nullable():
-            self.settings.register_setting("test-setting", Setting.TYPE_INT, False)
-
-        self.assertRaises(Exception, add_setting_non_nullable)
+        self.assertRaises(Exception, self.settings.register_setting, "test-setting", Setting.TYPE_INT, False)
         self.assertFalse(Setting.objects.filter(slug="test-setting").exists())
 
     def test_add_setting_already_in_db(self):
@@ -89,22 +83,14 @@ class SettingsTest(TestCase):
 
     def test_set_value_wrong_type(self):
         self.settings.register_setting("test-setting", Setting.TYPE_FLOAT, False, default_value=12345.6789)
-
-        def set_value_wrong_type():
-            self.settings.set_value("test-setting", 9876)
-
-        self.assertRaises(TypeError, set_value_wrong_type)
+        self.assertRaises(TypeError, self.settings.set_value, "test-setting", 9876)
 
     def test_setting_not_registered(self):
-        def not_registered_setting():
-            self.settings.get_setting("not-registered")
-
-        self.assertRaises(ValueError, not_registered_setting)
+        self.assertRaises(ValueError, self.settings.get_setting, "not-registered")
 
     def test_forcefully_removed_setting_recreated(self):
         self.settings.register_setting("forcefully-removed", Setting.TYPE_INT, False, default_value=123)
         self.assertEqual(self.settings.get_value("forcefully-removed"), 123)
-
         Setting.objects.get(slug="forcefully-removed").delete()
         self.assertEqual(self.settings.get_value("forcefully-removed"), 123)
 
@@ -113,3 +99,7 @@ class SettingsTest(TestCase):
         Setting.objects.create(slug="not-registered", type=Setting.TYPE_INT, nullable=False, value=123)
         self.assertTrue(self.settings.is_registered("registered"))
         self.assertFalse(self.settings.is_registered("not-registered"))
+
+    def test_typeerror_on_creation(self):
+        self.assertRaises(TypeError, self.settings._create_setting, "type-error", Setting.TYPE_INT, False, "bla")
+        self.assertFalse(Setting.objects.filter(slug="type-error").exists())

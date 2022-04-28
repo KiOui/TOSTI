@@ -11,7 +11,6 @@ from guardian.shortcuts import get_objects_for_user
 
 from associations.models import Association
 from venues.models import Venue
-from itertools import chain
 
 from users.models import User
 
@@ -190,22 +189,6 @@ class Product(models.Model):
         """
         return self.name
 
-    def to_json(self):
-        """
-        Convert this object to JSON.
-
-        :return: a to JSON convertable dictionary of properties.
-        """
-        return {
-            "name": self.name,
-            "icon": self.icon,
-            "price": self.current_price,
-            "max_per_shift": self.max_allowed_per_shift,
-            "available": self.available,
-            "id": self.pk,
-            "ignore_shift_restriction": self.ignore_shift_restrictions,
-        }
-
     def user_can_order_amount(self, user, shift, amount=1):
         """
         Test if a user can order the specified amount of this Product in a specific shift.
@@ -230,8 +213,6 @@ class Product(models.Model):
         :return: None if the user can order unlimited of the product, the maximum allowed to still order otherwise
         """
         if self.max_allowed_per_shift is not None:
-            if not user.is_authenticated:
-                return 0  # Non logged-in users can never order items
             user_order_amount_product = Order.objects.filter(user=user, shift=shift, product=self).count()
             return max(0, self.max_allowed_per_shift - user_order_amount_product)
         else:
@@ -315,79 +296,15 @@ class Shift(models.Model):
         except Shift.DoesNotExist:
             old_instance = None
 
-        if old_instance is not None and not old_instance.finalized and self.finalized:
-            # Shift was not finalized yet but will be made finalized now
+        if (
+            (old_instance is not None and not old_instance.finalized and self.finalized)
+            or old_instance is None
+            and self.finalized
+        ):
+            # Shift was not finalized yet but will be made finalized now or was created finalized.
             self._make_finalized()
 
         return super(Shift, self).save(*args, **kwargs)
-
-    @property
-    def orders_sorted_staff_first(self):
-        """
-        Get the orders of this shift with the staff orders first.
-
-        :return: a chain object with all the orders of this shift.
-        """
-        staff_users = self.venue.get_users_with_shift_admin_perms()
-        ordered_staff_orders = Order.objects.filter(shift=self, user__in=staff_users).order_by("created")
-        ordered_normal_orders = Order.objects.filter(shift=self).exclude(user__in=staff_users).order_by("created")
-        ordered_orders = chain(ordered_staff_orders, ordered_normal_orders)
-        return list(ordered_orders)
-
-    @property
-    def orders_ordered_type_only(self):
-        """
-        Get the orders with type Ordered of this shift.
-
-        :return: a chain object with the ordered orders of this shift.
-        """
-        staff_users = self.venue.get_users_with_shift_admin_perms()
-        ordered_staff_orders = Order.objects.filter(
-            shift=self, user__in=staff_users, type=Order.TYPE_ORDERED
-        ).order_by("created")
-        ordered_normal_orders = (
-            Order.objects.filter(shift=self, type=Order.TYPE_ORDERED).exclude(user__in=staff_users).order_by("created")
-        )
-        ordered_orders = chain(ordered_staff_orders, ordered_normal_orders)
-        return list(ordered_orders)
-
-    @property
-    def products_open(self):
-        """
-        Get a list with all products and amounts that are not ready.
-
-        :return: a list of products with a amount object variable indicating the products and amounts that are not
-        ready for this shift
-        """
-        distinct_ordered_items = Product.objects.filter(order__shift_id=self, order__ready=False).distinct()
-        for item in distinct_ordered_items:
-            item.amount = Order.objects.filter(product=item, ready=False, shift=self).count()
-        return distinct_ordered_items
-
-    @property
-    def products_closed(self):
-        """
-        Get a list with all products and amounts that are ready.
-
-        :return: a list of products with a amount object variable indicating the products and amounts that are ready
-        for this shift
-        """
-        distinct_ordered_items = Product.objects.filter(order__shift_id=self, order__ready=True).distinct()
-        for item in distinct_ordered_items:
-            item.amount = Order.objects.filter(product=item, ready=True, shift=self).count()
-        return distinct_ordered_items
-
-    @property
-    def products_total(self):
-        """
-        Get a list with all products and amounts.
-
-        :return: a list of products with a amount object variable indicating the products and amounts for this shift
-        """
-        distinct_ordered_items = Product.objects.filter(order__shift_id=self).distinct()
-        for item in distinct_ordered_items:
-            item.amount = Order.objects.filter(product=item, shift=self).count()
-        return distinct_ordered_items
 
     @property
     def number_of_restricted_orders(self):
@@ -415,7 +332,7 @@ class Shift(models.Model):
         :return: the maximum amount of orders in string format
         """
         if self.max_orders_total:
-            return self.max_orders_total
+            return str(self.max_orders_total)
         return "∞"
 
     @property
@@ -489,14 +406,6 @@ class Shift(models.Model):
             f"{self.end.strftime(self.HUMAN_DATE_FORMAT)}, {self.end_time}"
         )
 
-    def get_assignees(self):
-        """
-        Get assignees of this shift.
-
-        :return: a QuerySet with User objects of assignees of this shift
-        """
-        return self.assignees.all()
-
     def get_users_with_change_perms(self):
         """Get users that my change this shift."""
         users = []
@@ -534,6 +443,9 @@ class Shift(models.Model):
         except Shift.DoesNotExist:
             old_instance = None
 
+        if self.venue_id is None:
+            raise ValidationError({"venue": "Venue is None"})
+
         if old_instance is not None and old_instance.finalized and not self.finalized:
             # Shift was already finalized so can't be un-finalized
             raise ValidationError({"finalized": "A finalized shift can not be un-finalized."})
@@ -548,25 +460,17 @@ class Shift(models.Model):
         if self.end <= self.start:
             raise ValidationError({"end": "End date cannot be before start date."})
 
-        overlapping_start = (
-            Shift.objects.filter(
-                start__gte=self.start,
-                start__lte=self.end,
-                venue=self.venue,
+        overlapping_shifts = (
+            Shift.objects.filter(venue=self.venue)
+            .filter(
+                Q(start_date__lte=self.start, end_date__gt=self.start)
+                | Q(start_date__lt=self.end, end_date__gte=self.end)
+                | Q(start_date__gte=self.start, end_date__lte=self.end)
             )
             .exclude(pk=self.pk)
-            .count()
+            .exists()
         )
-        overlapping_end = (
-            Shift.objects.filter(
-                end__gte=self.start,
-                end__lte=self.end,
-                venue=self.venue,
-            )
-            .exclude(pk=self.pk)
-            .count()
-        )
-        if overlapping_start > 0 or overlapping_end > 0:
+        if overlapping_shifts:
             raise ValidationError("Overlapping shifts for the same venue are not allowed.")
 
     def clean(self):
@@ -604,8 +508,6 @@ class Shift(models.Model):
         :return: the maximum of orders a user can still place in this shift, None if there is no maximum specified
         """
         if self.max_orders_per_user is not None:
-            if not user.is_authenticated:
-                return 0  # Non logged-in users can never order items
             user_order_amount = Order.objects.filter(
                 user=user, shift=self, product__ignore_shift_restrictions=False
             ).count()
@@ -687,23 +589,8 @@ class Order(models.Model):
 
         super(Order, self).save(*args, **kwargs)
 
-    def to_json(self):
-        """
-        Convert this object to JSON.
-
-        :return: a to JSON convertable dictionary of properties.
-        """
-        return {
-            "id": self.pk,
-            "user": self.user.username,
-            "product": self.product.to_json(),
-            "price": self.order_price,
-            "paid": self.paid,
-            "ready": self.ready,
-        }
-
     @property
-    def get_venue(self):
+    def venue(self):
         """
         Get the venue of this Order.
 

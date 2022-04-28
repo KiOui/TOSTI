@@ -79,7 +79,7 @@ class OrderListCreateAPIView(ListCreateAPIView):
         shift = self.kwargs.get("shift")
         if (
             self.request.user.has_perm("orders.can_manage_shift_in_venue", shift.venue)
-            and self.request.user in shift.get_assignees()
+            and self.request.user in shift.assignees.all()
         ):
             # Save the order as it was passed to the API as the user has permission to save orders for all users in
             # the shift
@@ -122,7 +122,7 @@ class OrderRetrieveDestroyAPIView(RetrieveDestroyAPIView):
         """
         if (
             self.request.user.has_perm("orders.can_manage_shift_in_venue", self.kwargs.get("shift").venue)
-            and request.user in self.kwargs.get("shift").get_assignees()
+            and request.user in self.kwargs.get("shift").assignees.all()
         ):
             return super().destroy(request, *args, **kwargs)
         else:
@@ -212,7 +212,7 @@ class ShiftRetrieveUpdateAPIView(RetrieveUpdateAPIView):
         venue = request.data.get("venue")
         if (
             request.user.has_perm("orders.can_manage_shift_in_venue", venue)
-            and request.user in self.get_object().get_assignees()
+            and request.user in self.get_object().assignees.all()
         ):
             return super().update(request, *args, **kwargs)
         else:
