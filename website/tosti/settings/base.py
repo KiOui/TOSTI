@@ -13,7 +13,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "settings",
+    "constance",
     "sp",
     "django_bootstrap5",
     "autocompletefilter",
@@ -160,3 +160,17 @@ MESSAGE_TAGS = {
     messages.WARNING: 'alert-warning warning',
     messages.ERROR: 'alert-danger danger',
 }
+
+
+CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
+
+CONSTANCE_CONFIG = {
+    'TANTALUS_ENDPOINT_URL': ('', 'Endpoint for Tantalus integration', str),
+    'TANTALUS_USERNAME': ('', 'Username for Tantalus integration', str),
+    'TANTALUS_PASSWORD': ('', 'Password for Tantalus integration', str),
+}
+
+CONSTANCE_CONFIG_FIELDSETS = {
+    'Tantalus settings': ('TANTALUS_ENDPOINT_URL', 'TANTALUS_USERNAME', "TANTALUS_PASSWORD",),
+}
+
