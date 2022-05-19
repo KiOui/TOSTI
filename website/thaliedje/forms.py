@@ -28,9 +28,7 @@ class PlayerAdminForm(forms.ModelForm):
             try:
                 devices = instance.spotify.devices()
                 choices = [(x["id"], x["name"]) for x in devices["devices"]]
-                if instance.playback_device_id is not None and instance.playback_device_id not in [
-                    x for (x, _) in choices
-                ]:
+                if instance.playback_device_id != "" and instance.playback_device_id not in [x for (x, _) in choices]:
                     choices.append(
                         (
                             instance.playback_device_id,
@@ -40,6 +38,8 @@ class PlayerAdminForm(forms.ModelForm):
                     self.fields[
                         "playback_device_id"
                     ].help_text = "The currently selected device appears to be offline."
+                if len(choices) == 0 and instance.playback_device_id == "":
+                    self.fields["playback_device_id"].help_text = "No online Spotify clients were found."
                 choices = [("", "----------")] + choices
                 self.fields["playback_device_id"].choices = choices
             except Exception:
@@ -55,18 +55,6 @@ class PlayerAdminForm(forms.ModelForm):
         else:
             self.__original_playback_device_id = None
 
-    def clean_playback_device_id(self):
-        """
-        Clean playback device id.
-
-        :return: the device id, or None if the device id is empty
-        """
-        device_id = self.cleaned_data.get("playback_device_id")
-        if device_id == "":
-            return None
-        else:
-            return device_id
-
     def save(self, commit=True):
         """
         Save this form.
@@ -75,7 +63,7 @@ class PlayerAdminForm(forms.ModelForm):
         :return: an object of type Player
         """
         obj = super(PlayerAdminForm, self).save(commit=False)
-        if obj.playback_device_id is not None and self.__original_playback_device_id != obj.playback_device_id:
+        if obj.playback_device_id != "" and self.__original_playback_device_id != obj.playback_device_id:
             devices = {x["id"]: x["name"] for x in obj.spotify.devices()["devices"]}
             if obj.playback_device_id not in devices.keys():
                 raise forms.ValidationError(
@@ -83,8 +71,8 @@ class PlayerAdminForm(forms.ModelForm):
                 )
             else:
                 obj.playback_device_name = devices[obj.playback_device_id]
-        elif obj.playback_device_id is None:
-            obj.playback_device_name = None
+        elif obj.playback_device_id == "":
+            obj.playback_device_name = ""
         if commit:
             obj.save()
         return obj
