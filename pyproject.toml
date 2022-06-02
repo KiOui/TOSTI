@@ -8,7 +8,7 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = "^3.10"
 django = "^3.2.13"
-Pillow = "^9.0.0"
+Pillow = "^9.1.1"
 django-admin-autocomplete-filter = "^0.5"
 django-import-export = "^2.0.2"
 requests = "^2.23.0"
