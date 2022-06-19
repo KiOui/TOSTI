@@ -126,7 +126,6 @@ class ShiftAdmin(GuardedModelAdmin, ImportExportModelAdmin):
     """Custom admin for shifts."""
 
     form = ShiftAdminForm
-    date_hierarchy = "start"
 
     list_display = [
         "date",
@@ -225,8 +224,6 @@ class OrderAdmin(AutocompleteFilterMixin, ImportExportModelAdmin):
     """Custom admin for orders."""
 
     form = OrderAdminForm
-
-    date_hierarchy = "created"
 
     readonly_fields = ["order_price", "created", "ready_at", "paid_at"]
     list_display = [
