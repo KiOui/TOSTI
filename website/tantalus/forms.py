@@ -2,7 +2,7 @@ import logging
 
 from django import forms
 
-from tantalus.services import get_tantalus_client, TantalusException
+from tantalus.services import get_tantalus_client, TantalusException, TantalusClient
 
 
 class TantalusProductAdminForm(forms.ModelForm):
@@ -13,6 +13,8 @@ class TantalusProductAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         """Initialize Tantalus Product Admin Form by getting product data from Tantalus."""
         super(TantalusProductAdminForm, self).__init__(*args, **kwargs)
+        if not TantalusClient.can_create_client():
+            return
         try:
             tantalus_client = get_tantalus_client()
             choices = [(x["id"], x["name"]) for x in tantalus_client.get_products()]
