@@ -65,6 +65,8 @@ class Cache:
         if check_cache:
             hit, cache_value = self.check_cache(cache_id)
             if hit:
+                if reset_cache:
+                    self.reset()
                 return cache_value
         result = method()
         if reset_cache:
