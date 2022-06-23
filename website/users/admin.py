@@ -99,11 +99,6 @@ class UserAdmin(BaseUserAdmin):
 class GroupAdminForm(forms.ModelForm):
     """Custom AdminForm for Groups."""
 
-    permissions = forms.ModelMultipleChoiceField(
-        Permission.objects.all(),
-        required=False,
-        widget=FilteredSelectMultiple("permissions", False),
-    )
     users = forms.ModelMultipleChoiceField(
         queryset=get_user_model().objects.all(),
         required=False,
@@ -149,6 +144,8 @@ class GroupAdmin(BaseGroupAdmin):
 
     form = GroupAdminForm
 
+    filter_horizontal = ("permissions",)
+
     list_display = [
         "name",
         "get_count_members",
@@ -173,7 +170,7 @@ class GroupAdmin(BaseGroupAdmin):
 
     def get_members(self, obj):
         """Get the members of a group."""
-        return list(obj.user_set.all())
+        return ",".join(obj.user_set.values_list("name", flat=True))
 
     get_members.short_description = "Members"
 

@@ -8,6 +8,6 @@ User = get_user_model()
 
 @receiver(post_save, sender=User)
 def join_autojoin_groups(sender, instance, created, **kwargs):
-    """Makes a User join the auto-join-groups whenever a User is created."""
+    """Make a User join the auto-join-groups whenever a User is created."""
     if created:
         join_auto_join_groups(instance)
