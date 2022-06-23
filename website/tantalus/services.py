@@ -95,7 +95,12 @@ class TantalusClient:
 
 def get_tantalus_client() -> TantalusClient:
     """Get the default Tantalus client (with the login credentials in the Django settings file)."""
-    return TantalusClient(config.TANTALUS_ENDPOINT_URL, config.TANTALUS_USERNAME, config.TANTALUS_PASSWORD)
+    if TantalusClient.can_create_client():
+        return TantalusClient(config.TANTALUS_ENDPOINT_URL, config.TANTALUS_USERNAME, config.TANTALUS_PASSWORD)
+    else:
+        raise TantalusException(
+            "TantalusClient could not be created, please provide valid settings for Tantalus to function."
+        )
 
 
 def sort_orders_by_product(orders):

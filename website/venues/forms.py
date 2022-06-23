@@ -28,18 +28,31 @@ class ReservationForm(forms.ModelForm):
             raise ValidationError("Reservation should be in the future")
         return start
 
+    def clean_end(self):
+        """Validate the end field."""
+        start = self.cleaned_data.get("start", None)
+        end = self.cleaned_data.get("end")
+        if start is not None and end <= start:
+            raise ValidationError("The end of the reservation should be after the start of the reservation")
+        return end
+
     def clean(self):
         """
         Clean data.
 
         Check whether there is no overlapping Reservation.
         """
-        if self.cleaned_data.get("start") is not None and self.cleaned_data.get("end") is not None:
+        venue = self.cleaned_data.get("venue", None)
+        if (
+            self.cleaned_data.get("start", None) is not None
+            and self.cleaned_data.get("end", None) is not None
+            and venue is not None
+        ):
             start = self.cleaned_data.get("start").astimezone(timezone.get_current_timezone())
             end = self.cleaned_data.get("end").astimezone(timezone.get_current_timezone())
 
             if (
-                Reservation.objects.filter(venue=self.cleaned_data.get("venue"))
+                Reservation.objects.filter(venue=venue)
                 .filter(accepted=True)
                 .filter(
                     Q(start__lte=start, end__gt=start)
