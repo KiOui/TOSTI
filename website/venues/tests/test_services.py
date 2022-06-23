@@ -88,13 +88,15 @@ class VenueServicesTests(TestCase):
         )
 
     def test_add_overlapping_reservation(self):
-        services.add_reservation(
+        reservation = services.add_reservation(
             self.user,
             self.venue_1,
             timezone.now() + timedelta(hours=3),
             timezone.now() + timedelta(hours=5),
             "Test reservation 1",
         )
+        reservation.accepted = True
+        reservation.save()
         self.assertRaises(
             ValueError,
             services.add_reservation,

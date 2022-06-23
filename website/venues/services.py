@@ -15,6 +15,7 @@ def add_reservation(user: User, venue: Venue, start, end, title):
         raise ValueError("Reservation start date should be before end date.")
     elif (
         Reservation.objects.filter(venue=venue)
+        .filter(accepted=True)
         .filter(
             Q(start__lte=start, end__gt=start) | Q(start__lt=end, end__gte=end) | Q(start__gte=start, end__lte=end)
         )

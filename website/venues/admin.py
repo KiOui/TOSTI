@@ -61,7 +61,6 @@ class ReservationAdmin(admin.ModelAdmin):
         """Display warning for overlapping reservations."""
         if object_id:
             obj = self.get_object(request, object_id)
-            print(obj)
             if (
                 Reservation.objects.filter(venue=obj.venue)
                 .filter(
