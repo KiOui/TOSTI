@@ -11,6 +11,8 @@ def add_reservation(user: User, venue: Venue, start, end, title):
     """Add a reservation with a start and end time."""
     if start < timezone.now():
         raise ValueError("Reservation start date should be in the future.")
+    elif end <= start:
+        raise ValueError("Reservation start date should be before end date.")
     elif (
         Reservation.objects.filter(venue=venue)
         .filter(
@@ -20,14 +22,11 @@ def add_reservation(user: User, venue: Venue, start, end, title):
     ):
         raise ValueError("Can not create an overlapping reservation for the same venue.")
 
-    if user.profile.association is not None:
-        return Reservation.objects.create(
-            user=user,
-            association=user.profile.association,
-            venue=venue,
-            start=start,
-            end=end,
-            title=title,
-        )
-    else:
-        return Reservation.objects.create(user=user, venue=venue, start=start, end=end)
+    return Reservation.objects.create(
+        user=user,
+        association=user.profile.association,
+        venue=venue,
+        start=start,
+        end=end,
+        title=title,
+    )
