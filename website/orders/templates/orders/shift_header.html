@@ -5,7 +5,7 @@
         <template v-if="shift.assignees && shift.assignees.length > 0">
             At your service:
             <template v-for="(assignee, index) in shift.assignees">
-                <% assignee.full_name %>
+                <% assignee.name %>
                 <template v-if="index !== shift.assignees.length-1">, </template>
             </template>
         </template>

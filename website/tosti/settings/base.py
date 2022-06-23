@@ -32,6 +32,8 @@ INSTALLED_APPS = [
     "corsheaders",
 ]
 
+AUTH_USER_MODEL = 'users.User'
+
 ANONYMOUS_USER_NAME = None
 
 GUARDIAN_RAISE_403 = True

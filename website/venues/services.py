@@ -20,10 +20,10 @@ def add_reservation(user: User, venue: Venue, start, end, title):
     ):
         raise ValueError("Can not create an overlapping reservation for the same venue.")
 
-    if user.profile.association is not None:
+    if user.association is not None:
         return Reservation.objects.create(
             user=user,
-            association=user.profile.association,
+            association=user.association,
             venue=venue,
             start=start,
             end=end,

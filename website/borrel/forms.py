@@ -24,8 +24,8 @@ class BorrelReservationForm(forms.ModelForm):
         self.user = request.user
         super().__init__(*args, **kwargs)
         # Automatically set association to user association
-        if request is not None and request.user.is_authenticated and request.user.profile.association is not None:
-            self.fields["association"].initial = self.user.profile.association
+        if request is not None and request.user.is_authenticated and request.user.association is not None:
+            self.fields["association"].initial = self.user.association
 
     def clean_venue(self):
         """Validate the venue field."""

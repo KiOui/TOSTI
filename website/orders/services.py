@@ -109,7 +109,7 @@ def add_user_order(product: Product, shift: Shift, user: User) -> Order:
         shift=shift,
         type=Order.TYPE_ORDERED,
         user=user,
-        user_association=user.profile.association,
+        user_association=user.association,
     )
 
 

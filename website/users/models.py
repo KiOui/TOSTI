@@ -1,9 +1,8 @@
 from django.contrib.auth.base_user import BaseUserManager
-from django.contrib.auth.models import User as BaseUser, Group as BaseGroup
+from django.contrib.auth.models import User as BaseUser, Group as BaseGroup, AbstractUser
 from django.db import models
 from django.db.models import CASCADE
 from associations.models import Association
-from django.conf import settings
 
 
 class UserManager(BaseUserManager):
@@ -47,19 +46,22 @@ class UserManager(BaseUserManager):
         return self._create_user(username, **kwargs)
 
 
-class User(BaseUser):
+class User(AbstractUser):
     """User object."""
 
     objects = UserManager()
 
     USERNAME_FIELD = "username"
 
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ["name", "email"]
 
-    class Meta:
-        """Meta class for Users."""
+    username = models.CharField(max_length=8, unique=True)
+    email = models.EmailField(unique=True)
+    name = models.CharField(max_length=100)
 
-        proxy = True
+    association = models.ForeignKey(
+        Association, related_name="users", null=True, blank=True, on_delete=models.SET_NULL
+    )
 
     def __str__(self):
         """
@@ -67,36 +69,7 @@ class User(BaseUser):
 
         :return: the username of the user
         """
-        try:
-            profile = Profile.objects.get(user=self)
-            if profile.association:
-                return "{} ({})".format(
-                    self.get_full_name() if self.first_name else self.username, profile.association
-                )
-        except Profile.DoesNotExist:
-            pass
-        return self.get_full_name() if self.first_name else self.username
-
-    def get_short_name(self):
-        """
-        Get the short name of a User object.
-
-        :return: first name if it exists, otherwise username
-        """
-        return self.first_name if self.first_name else self.username
-
-
-class Profile(models.Model):
-    """Profile model."""
-
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    association = models.ForeignKey(
-        Association, related_name="profiles", null=True, blank=True, on_delete=models.SET_NULL
-    )
-
-    def __str__(self):
-        """Convert this object to string."""
-        return "Profile for {}".format(self.user)
+        return f"{self.name} ({self.association}" if self.name and self.association else self.username
 
 
 class GroupSettings(models.Model):
