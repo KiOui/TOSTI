@@ -10,33 +10,33 @@
                 <template v-if="!shift.finalized">
                     <div class="col expand-mobile">
                         <div v-if="shift.can_order" :id="`shift-status-${shift.id}`"
-                             class="h-100 btn-ml m-auto cursor-pointer bg-success"
+                             class="h-100 btn btn-success btn-ml m-auto"
                              v-on:click="adjust_can_order(false)">
                             <p class="font-footer flex-fixed footer-button-icon"><i class="far fa-hand-paper"></i></p>
                             <p class="font-footer footer-button-text">Allow/disallow</p>
                         </div>
-                        <div v-else :id="`shift-status-${shift.id}`" class="h-100 btn-ml m-auto cursor-pointer bg-danger"
+                        <div v-else :id="`shift-status-${shift.id}`" class="h-100 btn btn-ml m-auto btn-danger"
                              v-on:click="adjust_can_order(true)">
                             <p class="font-footer flex-fixed footer-button-icon"><i class="far fa-hand-paper"></i></p>
                             <p class="font-footer footer-button-text">Allow/disallow</p>
                         </div>
                     </div>
                     <div class="col expand-mobile">
-                        <div class="h-100 btn-ml btn-on m-auto"
+                        <div class="h-100 btn btn-ml btn-on m-auto"
                              v-on:click="add_time()">
                             <p class="font-footer flex-fixed footer-button-icon"><i class="far fa-clock"></i> + 5</p>
                             <p class="font-footer footer-button-text">Extend time</p>
                         </div>
                     </div>
                     <div class="col expand-mobile">
-                        <div class="h-100 btn-ml btn-on m-auto"
+                        <div class="h-100 btn btn-ml btn-on m-auto"
                              v-on:click="add_capacity()">
                             <p class="font-footer flex-fixed footer-button-icon"><i class="fas fa-list"></i> + 5</p>
                             <p class="font-footer footer-button-text">Add orders</p>
                         </div>
                     </div>
                     <div class="col expand-mobile">
-                        <div class="h-100 btn-ml btn-on m-auto" data-bs-toggle="modal" data-bs-target="#scanner-popup">
+                        <div class="h-100 btn btn-ml btn-on m-auto" data-bs-toggle="modal" data-bs-target="#scanner-popup">
                             <p class="font-footer flex-fixed footer-button-icon"><i class="fas fa-barcode"></i></p>
                             <p class="font-footer footer-button-text">Barcode scanner</p>
                         </div>
@@ -44,7 +44,7 @@
                 </template>
                 <div class="col expand-mobile">
                     <a href="{% url "orders:shift_overview" shift=shift %}">
-                        <div class="h-100 btn-ml btn-on m-auto w-100">
+                        <div class="h-100 btn btn-ml btn-on m-auto w-100">
                             <p class="font-footer flex-fixed footer-button-icon"><i class="fas fa-users"></i></p>
                             <p class="font-footer footer-button-text">Order page</p>
                         </div>
@@ -52,14 +52,14 @@
                 </div>
                 <div class="col expand-mobile">
                     <a href="{% url "admin:orders_shift_change" shift.id %}">
-                        <div class="h-100 btn-ml btn-on m-auto w-100">
+                        <div class="h-100 btn btn-ml btn-on m-auto w-100">
                             <p class="font-footer flex-fixed footer-button-icon"><i class="fas fa-cog"></i></p>
                             <p class="font-footer footer-button-text">Settings</p>
                         </div>
                     </a>
                 </div>
                 <div v-if="!shift.finalized" class="col expand-mobile">
-                    <div class="h-100 btn-ml m-auto cursor-pointer bg-danger"
+                    <div class="h-100 btn btn-ml m-auto btn-danger" style="cursor: pointer"
                          v-on:click="finalize_shift()">
                         <p class="font-footer flex-fixed footer-button-icon"><i class="fas fa-times-circle"></i></p>
                         <p class="font-footer footer-button-text">Finalize shift</p>

@@ -1,7 +1,6 @@
 from datetime import timedelta
 
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Group
 from django.utils import timezone
 from sp.utils import login
 
@@ -15,25 +14,15 @@ def post_login(request, user, idp, saml):
     return login(request, user, idp, saml)
 
 
-def join_auto_join_groups(user):
-    """Let new users join groups that are set for auto-joining."""
-    auto_join_groups = Group.objects.filter(groupsettings__is_auto_join_group=True)
-    for group in auto_join_groups:
-        user.groups.add(group)
-
-
 def update_user_name(user):
     """
-    Update the user's first and last name.
-
-    This is based on the displayName attribute provided via SAML,
-    which is expected to be mapped to first_name.
+    Update the user's first and last name based on their display name.
     """
-    if user.first_name and not user.last_name:
-        first_name = user.first_name[user.first_name.find("(") + 1 : user.first_name.find(")")]  # noqa: E203
-        last_name = user.first_name.split(",")[0]
+    if user.full_name and not user.first_name and not user.last_name:
+        first_name = user.full_name[user.full_name.find("(") + 1 : user.full_name.find(")")]  # noqa: E203
+        last_name = user.full_name.split(",")[0]
 
-        insert = user.first_name[user.first_name.rfind(".") + 1 : user.first_name.find("(")].strip()  # noqa: E203
+        insert = user.full_name[user.full_name.rfind(".") + 1 : user.full_name.find("(")].strip()  # noqa: E203
         if len(insert) > 0:
             last_name = insert + " " + last_name
 

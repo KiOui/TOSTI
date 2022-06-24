@@ -9,7 +9,7 @@ from django.utils import timezone
 from guardian.shortcuts import assign_perm
 
 from orders.models import Shift, OrderVenue
-from orders.services import add_user_to_assignees_of_shift
+from orders.services import add_user_to_assignees_of_shift, user_is_blacklisted
 from venues.models import Venue
 
 
@@ -99,8 +99,7 @@ class OrderViewTests(TestCase):
 
     def test_shift_view(self):
         self.assertTrue(self.client.login(username=self.normal_user.username, password="temporary"))
-        assign_perm("orders.can_order_in_venue", self.normal_user, self.order_venue_1)
-        self.assertTrue(self.normal_user.has_perm("orders.can_order_in_venue", self.order_venue_1))
+        self.assertFalse(user_is_blacklisted(self.normal_user))
         response = self.client.get(reverse("orders:shift_overview", kwargs={"shift": self.shift}))
         self.assertEqual(response.status_code, 200)
 

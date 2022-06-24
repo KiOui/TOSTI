@@ -53,11 +53,11 @@ class User(AbstractUser):
 
     USERNAME_FIELD = "username"
 
-    REQUIRED_FIELDS = ["name", "email"]
+    REQUIRED_FIELDS = ["email"]
 
     username = models.CharField(max_length=8, unique=True)
     email = models.EmailField(unique=True)
-    name = models.CharField(max_length=100)
+    full_name = models.CharField(max_length=100)
 
     association = models.ForeignKey(
         Association, related_name="users", null=True, blank=True, on_delete=models.SET_NULL
@@ -69,16 +69,19 @@ class User(AbstractUser):
 
         :return: the username of the user
         """
-        return f"{self.name} ({self.association}" if self.name and self.association else self.username
+        if self.first_name and self.last_name and self.association:
+            return f"{self.first_name} {self.last_name} ({self.association}"
+        elif self.first_name and self.last_name:
+            return f"{self.first_name} {self.last_name}"
+        elif self.full_name:
+            return self.full_name
+        return self.username
 
 
 class GroupSettings(models.Model):
     """Extra settings for a Django Group."""
 
     group = models.OneToOneField(BaseGroup, on_delete=CASCADE, primary_key=True)
-    is_auto_join_group = models.BooleanField(
-        default=False, help_text="If enabled, new users will automatically join this group."
-    )
     gets_staff_permissions = models.BooleanField(
         default=False,
         help_text=(

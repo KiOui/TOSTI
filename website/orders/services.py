@@ -4,11 +4,15 @@ import logging
 from django.utils import timezone
 
 from orders.exceptions import OrderException
-from orders.models import Order, Product, Shift
+from orders.models import Order, Product, Shift, OrderBlacklistedUser
 from users.models import User
 
 
 logger = logging.getLogger(__name__)
+
+
+def user_is_blacklisted(user):
+    return user.pk in OrderBlacklistedUser.objects.values_list("user__pk", flat=True)
 
 
 def execute_data_minimisation(dry_run=False):
@@ -74,8 +78,8 @@ def add_user_order(product: Product, shift: Shift, user: User) -> Order:
     :return: The created Order
     """
     # Check order permissions
-    if not user.has_perm("orders.can_order_in_venue", shift.venue):
-        raise OrderException("User has no order permission for this Venue.")
+    if user_is_blacklisted(user):
+        raise OrderException("User is blacklisted.")
 
     # Check if Shift is not finalized
     if shift.finalized:

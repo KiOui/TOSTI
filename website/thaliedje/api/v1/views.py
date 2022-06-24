@@ -12,6 +12,7 @@ from thaliedje.api.v1.filters import PlayerFilter
 from thaliedje.api.v1.pagination import StandardResultsSetPagination
 from thaliedje.api.v1.serializers import PlayerSerializer, QueueItemSerializer
 from thaliedje.models import Player, SpotifyQueueItem
+from thaliedje.services import user_is_blacklisted
 from tosti.api.openapi import CustomAutoSchema
 from tosti.api.permissions import HasPermissionOnObject
 
@@ -92,22 +93,18 @@ class PlayerTrackSearchAPIView(APIView):
             },
         },
     )
-    permission_required = "thaliedje.can_request"
-    permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
+    permission_classes = [IsAuthenticatedOrTokenHasScope]
     required_scopes = ["thaliedje:request"]
-
-    def get_permission_object(self):
-        """Get the object to check permissions for."""
-        return self.kwargs.get("player")
 
     def get(self, request, **kwargs):
         """
         Search for a Spotify track.
 
-        Permission required: thaliedje.can_request
-
         Use this endpoint to search for a Spotify Track. Tracks can be searched via their Spotify id.
         """
+        if user_is_blacklisted(self.request.user):
+            return Response(status=status.HTTP_403_FORBIDDEN, data="You are blacklisted.")
+
         player = kwargs.get("player")
         query = request.GET.get("query", "")
         try:
@@ -128,32 +125,28 @@ class PlayerTrackAddAPIView(APIView):
     schema = CustomAutoSchema(
         request_schema={"type": "object", "properties": {"id": {"type": "string", "example": "string"}}}
     )
-    permission_required = "thaliedje.can_request"
-    permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
+    permission_classes = [IsAuthenticatedOrTokenHasScope]
     required_scopes = ["thaliedje:request"]
-
-    def get_permission_object(self):
-        """Get the object to check permissions for."""
-        return self.kwargs.get("player")
 
     def post(self, request, **kwargs):
         """
         Add a Spotify Track to the queue.
 
-        Permission required: thaliedje.can_request
-
         Use this endpoint to add a spotify track to the queue.
         """
+        if user_is_blacklisted(self.request.user):
+            return Response(status=status.HTTP_403_FORBIDDEN, data="You are blacklisted.")
+
         player = kwargs.get("player")
         track_id = request.data.get("id", None)
-        if track_id is not None:
-            try:
-                services.request_song(request.user, player, track_id)
-            except spotipy.SpotifyException:
-                return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
-            return Response(status=status.HTTP_200_OK)
-        else:
+        if track_id is None:
             raise ValidationError("A track id is required.")
+
+        try:
+            services.request_song(request.user, player, track_id)
+        except spotipy.SpotifyException:
+            return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        return Response(status=status.HTTP_200_OK)
 
 
 class PlayerPlayAPIView(APIView):

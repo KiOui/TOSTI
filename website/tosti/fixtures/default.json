@@ -123,25 +123,7 @@
 },
 {
     "model": "auth.permission",
-    "pk": 50,
-    "fields": {
-        "name": "Can request songs",
-        "content_type": 12,
-        "codename": "can_request"
-    }
-},
-{
-    "model": "auth.permission",
     "pk": 67,
-    "fields": {
-        "name": "Can order products during shifts in this venue",
-        "content_type": 16,
-        "codename": "can_order_in_venue"
-    }
-},
-{
-    "model": "auth.permission",
-    "pk": 68,
     "fields": {
         "name": "Can manage shifts in this venue",
         "content_type": 16,
@@ -165,46 +147,10 @@
     }
 },
 {
-    "model": "auth.group",
-    "pk": 3,
-    "fields": {
-        "name": "Request music",
-        "permissions": []
-    }
-},
-{
-    "model": "auth.group",
-    "pk": 4,
-    "fields": {
-        "name": "Order",
-        "permissions": []
-    }
-},
-{
-    "model": "guardian.groupobjectpermission",
-    "pk": 1,
-    "fields": {
-        "permission": 67,
-        "content_type": 16,
-        "object_pk": "1",
-        "group": 4
-    }
-},
-{
-    "model": "guardian.groupobjectpermission",
-    "pk": 2,
-    "fields": {
-        "permission": 67,
-        "content_type": 16,
-        "object_pk": "2",
-        "group": 4
-    }
-},
-{
     "model": "guardian.groupobjectpermission",
     "pk": 3,
     "fields": {
-        "permission": 68,
+        "permission": 67,
         "content_type": 16,
         "object_pk": "1",
         "group": 1
@@ -214,7 +160,7 @@
     "model": "guardian.groupobjectpermission",
     "pk": 4,
     "fields": {
-        "permission": 68,
+        "permission": 67,
         "content_type": 16,
         "object_pk": "2",
         "group": 2
@@ -224,7 +170,6 @@
     "model": "users.groupsettings",
     "pk": 1,
     "fields": {
-        "is_auto_join_group": false,
         "gets_staff_permissions": true
     }
 },
@@ -232,24 +177,7 @@
     "model": "users.groupsettings",
     "pk": 2,
     "fields": {
-        "is_auto_join_group": false,
         "gets_staff_permissions": true
-    }
-},
-{
-    "model": "users.groupsettings",
-    "pk": 3,
-    "fields": {
-        "is_auto_join_group": true,
-        "gets_staff_permissions": false
-    }
-},
-{
-    "model": "users.groupsettings",
-    "pk": 4,
-    "fields": {
-        "is_auto_join_group": true,
-        "gets_staff_permissions": false
     }
 }
 ]

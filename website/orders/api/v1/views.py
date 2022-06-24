@@ -31,15 +31,12 @@ class OrderListCreateAPIView(ListCreateAPIView):
     """
     Order List Create API View.
 
-    Permission required: None
-
     Use this API view to list all Orders within a Shift. Order objects can also be created individually using a POST
     to this API view.
     """
 
     serializer_class = OrderSerializer
-    permission_required = "orders.can_order_in_venue"
-    permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScopeForMethod]
+    permission_classes = [IsAuthenticatedOrTokenHasScopeForMethod]
     required_scopes_for_method = {
         "GET": ["orders:order"],
         "POST": ["orders:manage"],
@@ -53,11 +50,6 @@ class OrderListCreateAPIView(ListCreateAPIView):
     def get_queryset(self):
         """Get the queryset."""
         return self.queryset.filter(shift=self.kwargs.get("shift"))
-
-    def get_permission_object(self):
-        """Get the object to check permissions for."""
-        obj = self.kwargs.get("shift")
-        return obj.venue
 
     def get_serializer_context(self):
         """Add shift to serializer context."""
@@ -100,13 +92,10 @@ class OrderListCreateAPIView(ListCreateAPIView):
 class OrderRetrieveDestroyAPIView(RetrieveDestroyAPIView):
     """
     Order Retrieve Destroy API View.
-
-    Permission required: orders.can_order_in_venue
     """
 
     serializer_class = OrderSerializer
-    permission_required = "orders.can_order_in_venue"
-    permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScopeForMethod]
+    permission_classes = [IsAuthenticatedOrTokenHasScopeForMethod]
     required_scopes_for_method = {
         "GET": ["orders:order"],
         "DELETE": ["orders:manage"],

@@ -41,7 +41,9 @@ class UserAdmin(BaseUserAdmin):
 
     search_fields = [
         "username",
-        "name",
+        "full_name",
+        "first_name",
+        "last_name",
         "email",
     ]
     fieldsets = (
@@ -50,7 +52,9 @@ class UserAdmin(BaseUserAdmin):
             {
                 "fields": (
                     "username",
-                    "name",
+                    "full_name",
+                    "first_name",
+                    "last_name",
                     "email",
                     "association",
                 )
@@ -73,7 +77,9 @@ class UserAdmin(BaseUserAdmin):
     )
     list_display = [
         "username",
-        "name",
+        "first_name",
+        "last_name",
+        "full_name",
         "email",
         "association",
         "date_joined",
@@ -133,7 +139,6 @@ class GroupSettingsInline(admin.StackedInline):
 
     model = GroupSettings
     fields = [
-        "is_auto_join_group",
         "gets_staff_permissions",
     ]
     extra = 1
@@ -150,7 +155,6 @@ class GroupAdmin(BaseGroupAdmin):
         "name",
         "get_count_members",
         "get_members",
-        "get_autojoin",
     ]
 
     inlines = [GroupSettingsInline]
@@ -160,13 +164,6 @@ class GroupAdmin(BaseGroupAdmin):
         return obj.user_set.count()
 
     get_count_members.short_description = "Number of users"
-
-    def get_autojoin(self, obj):
-        """Get whether group is an auto_join group."""
-        return True if obj.groupsettings.is_auto_join_group else False
-
-    get_autojoin.short_description = "Auto join new members"
-    get_autojoin.boolean = True
 
     def get_members(self, obj):
         """Get the members of a group."""

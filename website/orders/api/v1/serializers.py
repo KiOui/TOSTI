@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
 from orders import models
-from orders.exceptions import OrderException
 from orders.models import Order, Product
 from orders.services import add_user_order, add_scanned_order
 from users.api.v1.serializers import UserSerializer
@@ -71,13 +70,10 @@ class OrderSerializer(serializers.ModelSerializer):
         :param validated_data: validated serialized data
         :return: an Order if the Order could be successfully added, a ValidationError otherwise
         """
-        try:
-            if validated_data["type"] == Order.TYPE_ORDERED:
-                return add_user_order(validated_data["product"], validated_data["shift"], validated_data["user"])
-            else:
-                return add_scanned_order(validated_data["product"], validated_data["shift"])
-        except OrderException as e:
-            raise serializers.ValidationError({"detail": e.__str__()})
+        if validated_data["type"] == Order.TYPE_ORDERED:
+            return add_user_order(validated_data["product"], validated_data["shift"], validated_data["user"])
+        else:
+            return add_scanned_order(validated_data["product"], validated_data["shift"])
 
     class Meta:
         """Meta class."""

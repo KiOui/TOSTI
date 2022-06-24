@@ -6,6 +6,7 @@ User = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):
     """Serializers for Users."""
+    display_name = serializers.CharField(source="__str__")
 
     class Meta:
         """Meta class."""
@@ -13,7 +14,10 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             "id",
-            "name",
+            "first_name",
+            "last_name",
+            "full_name",
+            "display_name",
             "association",
         ]
-        read_only_fields = ["id", "name", "association"]
+        read_only_fields = ["id", "first_name", "last_name", "full_name", "display_name", "association"]

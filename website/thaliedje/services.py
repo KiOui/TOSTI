@@ -11,7 +11,12 @@ from thaliedje.models import (
     SpotifyArtist,
     SpotifyTrack,
     SpotifyQueueItem,
+    ThaliedjeBlacklistedUser,
 )
+
+
+def user_is_blacklisted(user):
+    return user.pk in ThaliedjeBlacklistedUser.objects.values_list("user__pk", flat=True)
 
 
 def create_track_database_information(track_info):

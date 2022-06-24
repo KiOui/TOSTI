@@ -8,7 +8,7 @@
         Current people with access:
         <ul>
             {% for user in object.users_access.all %}
-                <li>{{ user.name }}</li>
+                <li>{{ user }}</li>
             {% endfor %}
         </ul>
     </div>

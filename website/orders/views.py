@@ -7,14 +7,14 @@ from orders import services
 from django.shortcuts import render, redirect
 from .models import Order
 from .forms import CreateShiftForm
+from .services import user_is_blacklisted
 
 
-class ShiftOverviewView(PermissionRequiredMixin, TemplateView):
+class ShiftOverviewView(TemplateView):
     """Shift overview page."""
 
     template_name = "orders/shift_overview.html"
 
-    permission_required = "orders.can_order_in_venue"
     return_403 = True
     accept_global_perms = True
 
@@ -34,7 +34,7 @@ class ShiftOverviewView(PermissionRequiredMixin, TemplateView):
             {
                 "shift": shift,
                 "can_manage_shift": request.user in shift.venue.get_users_with_shift_admin_perms(),
-                "has_order_permissions": request.user in shift.venue.get_users_with_order_perms(),
+                "has_order_permissions": not user_is_blacklisted(request.user),
             },
         )
 

@@ -54,7 +54,6 @@ class Player(models.Model):
 
         permissions = [
             ("can_control", "Can control music players"),
-            ("can_request", "Can request songs"),
         ]
 
     def __str__(self):
@@ -132,16 +131,6 @@ class Player(models.Model):
             self.save()
         return self.display_name
 
-    def get_users_with_request_permissions(self):
-        """Get users that have the permission to request songs for this player."""
-        users = []
-        for user in User.objects.all():
-            if self in get_objects_for_user(
-                user, "thaliedje.can_request", accept_global_perms=True, with_superuser=True
-            ):
-                users.append(user)
-        return users
-
     def get_users_with_control_permissions(self):
         """Get users that have the permission to control this player."""
         users = []
@@ -210,3 +199,15 @@ class SpotifyQueueItem(models.Model):
         """Meta class."""
 
         ordering = ["-added"]
+
+
+class ThaliedjeBlacklistedUser(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.user} blacklisted for requesting songs"
+
+    class Meta:
+        """Meta class for ThaliedjeBlacklistedUser."""
+
+        verbose_name = "blacklisted user"

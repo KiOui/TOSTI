@@ -4,6 +4,7 @@ from django.template.loader import render_to_string
 from django.views.generic import TemplateView
 
 from .models import Player, SpotifyQueueItem
+from .services import user_is_blacklisted
 
 COOKIE_CLIENT_ID = "client_id"
 
@@ -37,7 +38,7 @@ class NowPlayingView(TemplateView):
                 "disabled": False,
                 "venue": venue,
                 "player": player,
-                "can_request": request.user in player.get_users_with_request_permissions(),
+                "can_request": not user_is_blacklisted(request.user),
             },
         )
 

@@ -4,7 +4,9 @@
     "pk": 1,
     "fields": {
       "username": "test",
-      "name": "Superuser",
+      "full_name": "Superuser",
+      "first_name": "Superuser",
+      "last_name": "van Superuser",
       "email": "test@test.com",
       "association": null,
       "password": "unusable",
@@ -22,7 +24,9 @@
     "pk": 2,
     "fields": {
       "username": "test2",
-      "name": "",
+      "full_name": "",
+      "first_name": "",
+      "last_name": "",
       "email": "test2@test.com",
       "association": null,
       "password": "unusable",
