@@ -77,4 +77,6 @@ class PlayerAdmin(GuardedModelAdmin):
 
 @admin.register(ThaliedjeBlacklistedUser)
 class ThaliedjeBlacklistedUserAdmin(admin.ModelAdmin):
+    """Admin for blacklisted users."""
+
     pass

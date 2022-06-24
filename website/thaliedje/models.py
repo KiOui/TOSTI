@@ -202,9 +202,12 @@ class SpotifyQueueItem(models.Model):
 
 
 class ThaliedjeBlacklistedUser(models.Model):
+    """Model for blacklisted users."""
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     def __str__(self):
+        """Print object as a string."""
         return f"{self.user} blacklisted for requesting songs"
 
     class Meta:

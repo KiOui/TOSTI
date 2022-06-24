@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def user_is_blacklisted(user):
+    """Return if the user is on the blacklist."""
     return user.pk in OrderBlacklistedUser.objects.values_list("user__pk", flat=True)
 
 

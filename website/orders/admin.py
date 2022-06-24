@@ -296,4 +296,6 @@ class OrderAdmin(AutocompleteFilterMixin, ImportExportModelAdmin):
 
 @admin.register(OrderBlacklistedUser)
 class OrderBlacklistedUserAdmin(admin.ModelAdmin):
+    """Admin for blacklisted users."""
+
     pass

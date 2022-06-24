@@ -15,9 +15,7 @@ def post_login(request, user, idp, saml):
 
 
 def update_user_name(user):
-    """
-    Update the user's first and last name based on their display name.
-    """
+    """Update the user's first and last name based on their display name."""
     if user.full_name and not user.first_name and not user.last_name:
         first_name = user.full_name[user.full_name.find("(") + 1 : user.full_name.find(")")]  # noqa: E203
         last_name = user.full_name.split(",")[0]

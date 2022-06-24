@@ -580,9 +580,12 @@ class Order(models.Model):
 
 
 class OrderBlacklistedUser(models.Model):
+    """Model for blacklisted users."""
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     def __str__(self):
+        """Print object as a string."""
         return f"{self.user} blacklisted for orders"
 
     class Meta:

@@ -90,9 +90,7 @@ class OrderListCreateAPIView(ListCreateAPIView):
 
 
 class OrderRetrieveDestroyAPIView(RetrieveDestroyAPIView):
-    """
-    Order Retrieve Destroy API View.
-    """
+    """Order Retrieve Destroy API View."""
 
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticatedOrTokenHasScopeForMethod]
