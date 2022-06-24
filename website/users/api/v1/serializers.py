@@ -6,6 +6,7 @@ User = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):
     """Serializers for Users."""
+
     display_name = serializers.CharField(source="__str__")
 
     class Meta:
