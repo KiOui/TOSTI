@@ -1,11 +1,11 @@
 from django import forms
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 from django.forms import models, DateTimeInput
 from django.utils import timezone
 
 from borrel.models import BorrelReservation, ReservationItem
-from venues.models import Venue
-from venues.services import add_reservation
+from venues.models import Venue, Reservation
 
 
 class BorrelReservationForm(forms.ModelForm):
@@ -27,11 +27,29 @@ class BorrelReservationForm(forms.ModelForm):
         if request is not None and request.user.is_authenticated and request.user.association is not None:
             self.fields["association"].initial = self.user.association
 
+    def clean(self):
+        """Validate whether a Reservation for the venue already exists."""
+        venue = self.cleaned_data.get("venue", None)
+        start = self.cleaned_data.get("start", None)
+        end = self.cleaned_data.get("end", None)
+        if venue is not None and start is not None and end is not None:
+            if (
+                Reservation.objects.filter(venue=venue)
+                .filter(accepted=True)
+                .filter(
+                    Q(start__lte=start, end__gt=start)
+                    | Q(start__lt=end, end__gte=end)
+                    | Q(start__gte=start, end__lte=end)
+                )
+                .exists()
+            ):
+                raise ValidationError("There is already another overlapping reservation for this venue.")
+
     def clean_venue(self):
         """Validate the venue field."""
         venue = self.cleaned_data["venue"]
-        if venue and not self.cleaned_data["start"] and self.cleaned_data["end"]:
-            raise ValidationError("To reserve a venue, both end and start time are required ")
+        if venue and self.cleaned_data.get("end", None) is None:
+            raise ValidationError("To reserve a venue, an end time is required")
         return venue
 
     def clean_start(self):
@@ -42,11 +60,23 @@ class BorrelReservationForm(forms.ModelForm):
             raise ValidationError("Reservation should be in the future")
         return start
 
+    def clean_end(self):
+        """Validate end field."""
+        end = self.cleaned_data.get("end", None)
+        start = self.cleaned_data.get("start", None)
+        if start is not None and end is not None and end <= start:
+            raise ValidationError("End date should be after start date")
+        return end
+
     def save(self, commit=True):
         """Save the form."""
         value = super().save(commit)
-        if commit and self.cleaned_data["venue"] and self.cleaned_data["start"] and self.cleaned_data["end"]:
-            reservation = add_reservation(
+        if (
+            commit
+            and self.cleaned_data.get("venue", None) is not None
+            and self.cleaned_data.get("end", None) is not None
+        ):
+            reservation = Reservation.objects.create(
                 user=self.user,
                 venue=self.cleaned_data["venue"],
                 start=self.cleaned_data["start"],

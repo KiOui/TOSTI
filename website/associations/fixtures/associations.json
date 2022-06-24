@@ -1,0 +1,51 @@
+[
+  {
+    "model": "associations.association",
+    "pk": 1,
+    "fields": {
+      "name": "BeeVee"
+    }
+  },
+  {
+    "model": "associations.association",
+    "pk": 2,
+    "fields": {
+      "name": "CognAC"
+    }
+  },
+  {
+    "model": "associations.association",
+    "pk": 3,
+    "fields": {
+      "name": "Desda"
+    }
+  },
+  {
+    "model": "associations.association",
+    "pk": 4,
+    "fields": {
+      "name": "Leonardo Da Vinci"
+    }
+  },
+  {
+    "model": "associations.association",
+    "pk": 5,
+    "fields": {
+      "name": "Marie-Curie"
+    }
+  },
+  {
+    "model": "associations.association",
+    "pk": 6,
+    "fields": {
+      "name": "Sigma"
+    }
+  },
+  {
+    "model": "associations.association",
+    "pk": 7,
+    "fields": {
+      "name": "Thalia"
+    }
+  }
+]

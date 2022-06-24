@@ -47,11 +47,6 @@ class RequestReservationView(FormView):
         messages.success(self.request, "Venue reservation request added successfully.")
         return redirect(reverse("venues:add_reservation"))
 
-    def get_context_data(self, **kwargs):
-        """Get the context data for rendering the template."""
-        context = super(RequestReservationView, self).get_context_data(**kwargs)
-        return context
-
 
 @method_decorator(login_required, name="dispatch")
 class ListReservationsView(ListView):
