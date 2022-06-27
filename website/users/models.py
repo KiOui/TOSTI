@@ -66,6 +66,24 @@ class User(AbstractUser):
         Association, related_name="users", null=True, blank=True, on_delete=models.SET_NULL
     )
 
+    def extract_first_and_last_name_from_username(self):
+        """Update the user's first and last name based on their display name."""
+        if self.full_name and not self.first_name and not self.last_name:
+            first_name = self.full_name[self.full_name.find("(") + 1 : self.full_name.find(")")]  # noqa: E203
+            last_name = self.full_name.split(",")[0]
+
+            insert = self.full_name[self.full_name.rfind(".") + 1 : self.full_name.find("(")].strip()  # noqa: E203
+            if len(insert) > 0:
+                last_name = insert + " " + last_name
+
+            self.first_name = first_name
+            self.last_name = last_name
+
+    def save(self, *args, **kwargs):
+        """Override save method."""
+        self.extract_first_and_last_name_from_username()
+        return super(User, self).save(*args, **kwargs)
+
     def __str__(self):
         """
         Convert user to string.
