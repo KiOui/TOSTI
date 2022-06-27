@@ -14,7 +14,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "constance",
-    "sp",
+    "tosti.sp_app_config.CustomSPAppConfig",
     "django_bootstrap5",
     "autocompletefilter",
     "import_export",
@@ -31,6 +31,8 @@ INSTALLED_APPS = [
     "oauth2_provider",
     "corsheaders",
 ]
+
+AUTH_USER_MODEL = 'users.User'
 
 ANONYMOUS_USER_NAME = None
 
@@ -173,4 +175,3 @@ CONSTANCE_CONFIG = {
 CONSTANCE_CONFIG_FIELDSETS = {
     'Tantalus settings': ('TANTALUS_ENDPOINT_URL', 'TANTALUS_USERNAME', "TANTALUS_PASSWORD",),
 }
-

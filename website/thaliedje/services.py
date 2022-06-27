@@ -11,7 +11,13 @@ from thaliedje.models import (
     SpotifyArtist,
     SpotifyTrack,
     SpotifyQueueItem,
+    ThaliedjeBlacklistedUser,
 )
+
+
+def user_is_blacklisted(user):
+    """Return if the user is on the blacklist."""
+    return ThaliedjeBlacklistedUser.objects.filter(user=user).exists()
 
 
 def create_track_database_information(track_info):

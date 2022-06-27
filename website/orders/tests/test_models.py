@@ -81,27 +81,6 @@ class OrderModelTests(TestCase):
         self.assertEqual(len(users_with_admin_perms), 2)
         self.assertTrue(self.normal_user in users_with_admin_perms)
 
-    def test_order_venue_users_shift_admin_perms_queryset(self):
-        self.assertEqual(len(self.order_venue.get_users_with_shift_admin_perms_queryset()), 1)
-        assign_perm("orders.can_manage_shift_in_venue", self.normal_user, self.order_venue)
-        users_with_admin_perms = self.order_venue.get_users_with_shift_admin_perms_queryset()
-        self.assertEqual(len(users_with_admin_perms), 2)
-        self.assertTrue(self.normal_user in users_with_admin_perms)
-
-    def test_order_venue_users_shift_order_perms(self):
-        self.assertEqual(len(self.order_venue.get_users_with_order_perms()), 1)
-        assign_perm("orders.can_order_in_venue", self.normal_user, self.order_venue)
-        users_with_order_perms = self.order_venue.get_users_with_order_perms()
-        self.assertEqual(len(users_with_order_perms), 2)
-        self.assertTrue(self.normal_user in users_with_order_perms)
-
-    def test_order_venue_users_shift_order_perms_queryset(self):
-        self.assertEqual(len(self.order_venue.get_users_with_order_perms_queryset()), 1)
-        assign_perm("orders.can_order_in_venue", self.normal_user, self.order_venue)
-        users_with_order_perms = self.order_venue.get_users_with_order_perms_queryset()
-        self.assertEqual(len(users_with_order_perms), 2)
-        self.assertTrue(self.normal_user in users_with_order_perms)
-
     def test_product_str(self):
         self.assertEqual(self.product.__str__(), "Test product")
 

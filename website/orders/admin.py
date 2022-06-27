@@ -11,7 +11,7 @@ from django.urls import reverse
 from guardian.admin import GuardedModelAdmin
 from import_export.admin import ImportExportModelAdmin
 
-from orders.models import Product, Order, Shift, OrderVenue
+from orders.models import Product, Order, Shift, OrderVenue, OrderBlacklistedUser
 
 from users.models import User
 
@@ -292,3 +292,10 @@ class OrderAdmin(AutocompleteFilterMixin, ImportExportModelAdmin):
 
     class Media:
         """Necessary to use AutocompleteFilter."""
+
+
+@admin.register(OrderBlacklistedUser)
+class OrderBlacklistedUserAdmin(admin.ModelAdmin):
+    """Admin for blacklisted users."""
+
+    pass

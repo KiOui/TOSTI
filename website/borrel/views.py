@@ -93,7 +93,7 @@ class BorrelReservationBaseView(FormView):
             key=lambda x: (
                 x.initial["product"].category.id
                 if x.initial["product"].category
-                else (ProductCategory.objects.latest("pk").pk + 1 if ProductCategory.objects.all().count() > 0 else 1),
+                else (ProductCategory.objects.latest("pk").pk + 1 if ProductCategory.objects.count() > 0 else 1),
                 x.initial["product"].name,
             )
         )

@@ -25,11 +25,12 @@ class AccountView(LoginRequiredMixin, TemplateView):
         """
         form = AccountForm(
             initial={
+                "full_name": request.user.full_name,
                 "first_name": request.user.first_name,
                 "last_name": request.user.last_name,
                 "username": request.user.username,
                 "email": request.user.email,
-                "association": request.user.profile.association,
+                "association": request.user.association,
             }
         )
         active = request.GET.get("active", "users")
@@ -53,8 +54,8 @@ class AccountView(LoginRequiredMixin, TemplateView):
         form = AccountForm(request.POST)
         tabs = self.user_data_tabs.do_filter([])
         if form.is_valid():
-            request.user.profile.association = form.cleaned_data.get("association")
-            request.user.profile.save()
+            request.user.association = form.cleaned_data.get("association")
+            request.user.save()
             messages.add_message(self.request, messages.SUCCESS, "Your profile has been saved.")
         return render(
             request, self.template_name, {"form": form, "active": "users", "tabs": tabs, "rendered_tab": None}

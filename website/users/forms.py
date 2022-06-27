@@ -17,6 +17,9 @@ class AccountForm(forms.Form):
     last_name = forms.CharField(
         label="Last name", widget=forms.TextInput(attrs={"readonly": "readonly"}), required=False
     )
+    full_name = forms.CharField(
+        label="Full name", widget=forms.TextInput(attrs={"readonly": "readonly"}), required=False
+    )
     email = forms.EmailField(
         label="Email address", widget=forms.TextInput(attrs={"readonly": "readonly"}), required=False
     )

@@ -4,15 +4,17 @@
     "pk": 1,
     "fields": {
       "username": "test",
+      "full_name": "Superuser",
+      "first_name": "Superuser",
+      "last_name": "van Superuser",
+      "email": "test@test.com",
+      "association": null,
       "password": "unusable",
       "last_login": "2022-01-07T10:07:02Z",
       "is_superuser": true,
-      "first_name": "Superuser",
-      "last_name": "van Superuser",
       "is_staff": true,
       "is_active": true,
       "date_joined": "2022-01-07T10:06:57Z",
-      "email": "test@test.com",
       "groups": [],
       "user_permissions": []
     }
@@ -22,33 +24,19 @@
     "pk": 2,
     "fields": {
       "username": "test2",
+      "full_name": "",
+      "first_name": "",
+      "last_name": "",
+      "email": "test2@test.com",
+      "association": null,
       "password": "unusable",
       "last_login": null,
       "is_superuser": false,
-      "first_name": "",
-      "last_name": "",
       "is_staff": false,
       "is_active": true,
       "date_joined": "2022-01-07T11:53:05.526Z",
-      "email": "test2@test.com",
       "groups": [],
       "user_permissions": []
-    }
-  },
-  {
-    "model": "users.profile",
-    "pk": 1,
-    "fields": {
-      "user": 1,
-      "association": null
-    }
-  },
-  {
-    "model": "users.profile",
-    "pk": 2,
-    "fields": {
-      "user": 2,
-      "association": null
     }
   }
 ]

@@ -122,7 +122,7 @@ To login, we use SAML. This needs to be configured. The SAML metadata for the CN
 
 For our `url_params` we use: `{"idp_slug": "science"}`, base url `https://tosti.science.ru.nl` and entity id `tosti.science.ru.nl` (!).
 
-The attributes returned are: `uid`, which is the `NameID` and should be mapped to the `username` field. The `displayName` is expected to be mapped to `first_name` initially (and not updated afterwards).
+The attributes returned are: `uid`, which is the `NameID` and should be mapped to the `username` field. The `displayName` is expected to be mapped to `display_name` and some custom code will extract first name and last name from it.
 
 Moreover, we use the following settings:
 

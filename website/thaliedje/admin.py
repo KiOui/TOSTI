@@ -9,7 +9,7 @@ from thaliedje.admin_views import (
     SpotifyTokenView,
     SpotifyAuthorizeSucceededView,
 )
-from .models import Player
+from .models import Player, ThaliedjeBlacklistedUser
 from .forms import PlayerAdminForm
 
 
@@ -73,3 +73,10 @@ class PlayerAdmin(GuardedModelAdmin):
             ),
         ]
         return custom_urls + urls
+
+
+@admin.register(ThaliedjeBlacklistedUser)
+class ThaliedjeBlacklistedUserAdmin(admin.ModelAdmin):
+    """Admin for blacklisted users."""
+
+    pass

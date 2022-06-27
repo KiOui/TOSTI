@@ -3,6 +3,7 @@ from decimal import Decimal
 
 from django.conf import settings
 import pytz
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
@@ -12,7 +13,7 @@ from guardian.shortcuts import get_objects_for_user
 from associations.models import Association
 from venues.models import Venue
 
-from users.models import User
+User = get_user_model()
 
 
 def validate_barcode(value):
@@ -82,7 +83,6 @@ class OrderVenue(models.Model):
         ordering = ["venue__name"]
 
         permissions = [
-            ("can_order_in_venue", "Can order products during shifts in this venue"),
             ("can_manage_shift_in_venue", "Can manage shifts in this venue"),
         ]
 
@@ -99,36 +99,6 @@ class OrderVenue(models.Model):
             ):
                 users.append(user)
         return users
-
-    def get_users_with_shift_admin_perms_queryset(self):
-        """Get users with permissions to manage shifts in this venue as queryset."""
-        users_ids = []
-        for user in User.objects.all():
-            if self in get_objects_for_user(
-                user, "orders.can_manage_shift_in_venue", accept_global_perms=True, with_superuser=True
-            ):
-                users_ids.append(user.pk)
-        return User.objects.filter(pk__in=users_ids)
-
-    def get_users_with_order_perms(self):
-        """Get users with permissions to manage shifts in this venue."""
-        users = []
-        for user in User.objects.all():
-            if self in get_objects_for_user(
-                user, "orders.can_order_in_venue", accept_global_perms=True, with_superuser=True
-            ):
-                users.append(user)
-        return users
-
-    def get_users_with_order_perms_queryset(self):
-        """Get users with permissions to manage shifts in this venue as queryset."""
-        users_ids = []
-        for user in User.objects.all():
-            if self in get_objects_for_user(
-                user, "orders.can_order_in_venue", accept_global_perms=True, with_superuser=True
-            ):
-                users_ids.append(user.pk)
-        return User.objects.filter(pk__in=users_ids)
 
 
 class Product(models.Model):
@@ -607,3 +577,18 @@ class Order(models.Model):
         :rtype: boolean
         """
         return self.paid and self.ready
+
+
+class OrderBlacklistedUser(models.Model):
+    """Model for blacklisted users."""
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        """Print object as a string."""
+        return f"{self.user} blacklisted for orders"
+
+    class Meta:
+        """Meta class for OrderBlacklistedUser."""
+
+        verbose_name = "blacklisted user"

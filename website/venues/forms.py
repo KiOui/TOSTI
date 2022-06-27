@@ -17,8 +17,8 @@ class ReservationForm(forms.ModelForm):
         super(ReservationForm, self).__init__(*args, **kwargs)
 
         self.fields["venue"].queryset = Venue.objects.filter(can_be_reserved=True)
-        if request is not None and request.user.is_authenticated and request.user.profile.association is not None:
-            self.fields["association"].initial = request.user.profile.association
+        if request is not None and request.user.is_authenticated and request.user.association is not None:
+            self.fields["association"].initial = request.user.association
 
     def clean_start(self):
         """Validate the start field."""

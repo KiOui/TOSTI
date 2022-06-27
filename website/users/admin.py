@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import (
     UserAdmin as BaseUserAdmin,
     GroupAdmin as BaseGroupAdmin,
@@ -8,15 +8,9 @@ from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.auth.models import Group, Permission
 from django import forms
 
-from .models import GroupSettings, Profile
+from .models import GroupSettings
 
-
-class ProfileInline(admin.StackedInline):
-    """Profile inline."""
-
-    model = Profile
-    verbose_name_plural = "Profiles"
-    can_delete = False
+User = get_user_model()
 
 
 class UserAdminForm(forms.ModelForm):
@@ -47,11 +41,25 @@ class UserAdmin(BaseUserAdmin):
 
     search_fields = [
         "username",
+        "full_name",
         "first_name",
         "last_name",
+        "email",
     ]
     fieldsets = (
-        ("User", {"fields": ("username", "first_name", "last_name", "email")}),
+        (
+            "User",
+            {
+                "fields": (
+                    "username",
+                    "full_name",
+                    "first_name",
+                    "last_name",
+                    "email",
+                    "association",
+                )
+            },
+        ),
         (
             "Details",
             {
@@ -69,7 +77,11 @@ class UserAdmin(BaseUserAdmin):
     )
     list_display = [
         "username",
-        "get_full_name",
+        "first_name",
+        "last_name",
+        "full_name",
+        "email",
+        "association",
         "date_joined",
         "last_login",
         "is_active",
@@ -78,13 +90,13 @@ class UserAdmin(BaseUserAdmin):
     ]
 
     list_filter = [
+        "association",
         "is_active",
         "is_staff",
         "is_superuser",
         "is_staff",
     ]
     model = User
-    inlines = (ProfileInline,)
 
     class Meta:
         """Meta class for the UserAdmin model."""
@@ -93,13 +105,8 @@ class UserAdmin(BaseUserAdmin):
 class GroupAdminForm(forms.ModelForm):
     """Custom AdminForm for Groups."""
 
-    permissions = forms.ModelMultipleChoiceField(
-        Permission.objects.all(),
-        required=False,
-        widget=FilteredSelectMultiple("permissions", False),
-    )
     users = forms.ModelMultipleChoiceField(
-        queryset=User.objects.all(),
+        queryset=get_user_model().objects.all(),
         required=False,
         widget=FilteredSelectMultiple("users", False),
     )
@@ -132,7 +139,6 @@ class GroupSettingsInline(admin.StackedInline):
 
     model = GroupSettings
     fields = [
-        "is_auto_join_group",
         "gets_staff_permissions",
     ]
     extra = 1
@@ -143,11 +149,12 @@ class GroupAdmin(BaseGroupAdmin):
 
     form = GroupAdminForm
 
+    filter_horizontal = ("permissions",)
+
     list_display = [
         "name",
         "get_count_members",
         "get_members",
-        "get_autojoin",
     ]
 
     inlines = [GroupSettingsInline]
@@ -158,16 +165,9 @@ class GroupAdmin(BaseGroupAdmin):
 
     get_count_members.short_description = "Number of users"
 
-    def get_autojoin(self, obj):
-        """Get whether group is an auto_join group."""
-        return True if obj.groupsettings.is_auto_join_group else False
-
-    get_autojoin.short_description = "Auto join new members"
-    get_autojoin.boolean = True
-
     def get_members(self, obj):
         """Get the members of a group."""
-        return list(obj.user_set.all())
+        return ",".join(obj.user_set.values_list("name", flat=True))
 
     get_members.short_description = "Members"
 
@@ -175,7 +175,6 @@ class GroupAdmin(BaseGroupAdmin):
         """Meta class for the GroupAdmin."""
 
 
-admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 
 admin.site.unregister(Group)

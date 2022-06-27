@@ -1,9 +1,8 @@
 from django.contrib.auth.base_user import BaseUserManager
-from django.contrib.auth.models import User as BaseUser, Group as BaseGroup
+from django.contrib.auth.models import Group as BaseGroup, AbstractUser
 from django.db import models
 from django.db.models import CASCADE
 from associations.models import Association
-from django.conf import settings
 
 
 class UserManager(BaseUserManager):
@@ -18,7 +17,10 @@ class UserManager(BaseUserManager):
         :return: a new User object
         """
         user = self.model(username=username, **kwargs)
-        user.set_unusable_password()
+        if "password" in kwargs.keys():
+            user.set_password(kwargs.pop("password"))
+        else:
+            user.set_unusable_password()
         user.save(using=self._db)
         return user
 
@@ -47,19 +49,40 @@ class UserManager(BaseUserManager):
         return self._create_user(username, **kwargs)
 
 
-class User(BaseUser):
+class User(AbstractUser):
     """User object."""
 
     objects = UserManager()
 
     USERNAME_FIELD = "username"
 
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ["email"]
 
-    class Meta:
-        """Meta class for Users."""
+    username = models.CharField(max_length=8, unique=True)
+    email = models.EmailField(unique=True)
+    full_name = models.CharField(max_length=100)
 
-        proxy = True
+    association = models.ForeignKey(
+        Association, related_name="users", null=True, blank=True, on_delete=models.SET_NULL
+    )
+
+    def extract_first_and_last_name_from_username(self):
+        """Update the user's first and last name based on their display name."""
+        if self.full_name and not self.first_name and not self.last_name:
+            first_name = self.full_name[self.full_name.find("(") + 1 : self.full_name.find(")")]  # noqa: E203
+            last_name = self.full_name.split(",")[0]
+
+            insert = self.full_name[self.full_name.rfind(".") + 1 : self.full_name.find("(")].strip()  # noqa: E203
+            if len(insert) > 0:
+                last_name = insert + " " + last_name
+
+            self.first_name = first_name
+            self.last_name = last_name
+
+    def save(self, *args, **kwargs):
+        """Override save method."""
+        self.extract_first_and_last_name_from_username()
+        return super(User, self).save(*args, **kwargs)
 
     def __str__(self):
         """
@@ -67,45 +90,28 @@ class User(BaseUser):
 
         :return: the username of the user
         """
-        try:
-            profile = Profile.objects.get(user=self)
-            if profile.association:
-                return "{} ({})".format(
-                    self.get_full_name() if self.first_name else self.username, profile.association
-                )
-        except Profile.DoesNotExist:
-            pass
-        return self.get_full_name() if self.first_name else self.username
+        if self.first_name and self.last_name and self.association:
+            return f"{self.first_name} {self.last_name} ({self.association})"
+        elif self.first_name and self.last_name:
+            return f"{self.first_name} {self.last_name}"
+        elif self.full_name:
+            return self.full_name
+        return self.username
 
     def get_short_name(self):
-        """
-        Get the short name of a User object.
-
-        :return: first name if it exists, otherwise username
-        """
-        return self.first_name if self.first_name else self.username
-
-
-class Profile(models.Model):
-    """Profile model."""
-
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    association = models.ForeignKey(
-        Association, related_name="profiles", null=True, blank=True, on_delete=models.SET_NULL
-    )
-
-    def __str__(self):
-        """Convert this object to string."""
-        return "Profile for {}".format(self.user)
+        """Get short name."""
+        if self.first_name:
+            return self.first_name
+        elif self.full_name:
+            return self.full_name
+        else:
+            return self.username
 
 
 class GroupSettings(models.Model):
     """Extra settings for a Django Group."""
 
     group = models.OneToOneField(BaseGroup, on_delete=CASCADE, primary_key=True)
-    is_auto_join_group = models.BooleanField(
-        default=False, help_text="If enabled, new users will automatically join this group."
-    )
     gets_staff_permissions = models.BooleanField(
         default=False,
         help_text=(
