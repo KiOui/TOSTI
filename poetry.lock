@@ -221,6 +221,9 @@ category = "main"
 optional = false
 python-versions = ">=3.6"
 
+[package.dependencies]
+django-picklefield = {version = "*", optional = true, markers = "extra == \"database\""}
+
 [package.extras]
 database = ["django-picklefield"]
 redis = ["redis"]
@@ -314,7 +317,7 @@ python3-saml = "*"
 
 [package.source]
 type = "git"
-url = "git@github.com:imsweb/django-saml-sp.git"
+url = "https://github.com/imsweb/django-saml-sp.git"
 reference = "master"
 resolved_reference = "2a0a9db0f6ca4eec1d69988f8b9f3c5155c391db"
 
@@ -827,7 +830,7 @@ lxml = ">=3.8"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "865f3c8652fbfad596a3115232f7bc41f7431d5c1de825d0c71a1238358abf2b"
+content-hash = "9d680de58879a89acdcdf5509ac4b9bfd9717d861519f34eeca12f3800bb2415"
 
 [metadata.files]
 asgiref = [

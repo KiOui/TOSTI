@@ -14,6 +14,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "constance",
+    "constance.backends.database",
     "tosti.sp_app_config.CustomSPAppConfig",
     "django_bootstrap5",
     "autocompletefilter",
