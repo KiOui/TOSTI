@@ -24,6 +24,8 @@ def render_player(context, player):
 def render_venue_player(context, venue):
     """Render queue."""
     player = Player.get_player(venue)
+    if player is None:
+        return None
     return {
         "player": player,
         "controls": context["request"].user in player.get_users_with_control_permissions(),

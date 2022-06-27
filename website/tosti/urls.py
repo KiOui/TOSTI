@@ -43,6 +43,10 @@ urlpatterns = [
         "thaliedje/",
         include(("thaliedje.urls", "thaliedje"), namespace="thaliedje"),
     ),
+    path(
+        "screen/",
+        include(("status_screen.urls", "status_screen"), namespace="status_screens"),
+    ),
     path("api/", include("tosti.api.urls")),
     path("sso/<idp_slug>/", include("sp.urls")),
     path(
