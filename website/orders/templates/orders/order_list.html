@@ -65,7 +65,7 @@
                         <i v-if="order.user !== null && {{ user.id }} === order.user.id"
                            class="fas fa-user user-icon"></i>
                         <p v-if="order.type === 0" class="item-username">
-                            <template v-if="order.user !== null"><% order.user. %></template>
+                            <template v-if="order.user !== null"><% order.user.first_name %></template>
                         </p>
                         <i v-else class="item-username fas fa-desktop"></i>
                     </div>

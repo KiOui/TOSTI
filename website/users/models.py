@@ -17,7 +17,10 @@ class UserManager(BaseUserManager):
         :return: a new User object
         """
         user = self.model(username=username, **kwargs)
-        user.set_unusable_password()
+        if "password" in kwargs.keys():
+            user.set_password(kwargs.pop("password"))
+        else:
+            user.set_unusable_password()
         user.save(using=self._db)
         return user
 
@@ -70,12 +73,21 @@ class User(AbstractUser):
         :return: the username of the user
         """
         if self.first_name and self.last_name and self.association:
-            return f"{self.first_name} {self.last_name} ({self.association}"
+            return f"{self.first_name} {self.last_name} ({self.association})"
         elif self.first_name and self.last_name:
             return f"{self.first_name} {self.last_name}"
         elif self.full_name:
             return self.full_name
         return self.username
+
+    def get_short_name(self):
+        """Get short name."""
+        if self.first_name:
+            return self.first_name
+        elif self.full_name:
+            return self.full_name
+        else:
+            return self.username
 
 
 class GroupSettings(models.Model):

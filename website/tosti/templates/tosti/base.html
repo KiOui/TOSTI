@@ -82,7 +82,7 @@
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink"
                                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    {{ user }}
+                                    {{ user.get_short_name }}
                                 </a>
                                 <div class="dropdown-menu p-2" aria-labelledby="navbarDropdownMenuLink">
                                     <a class="nav-link text-dark" href="{% url "venues:calendar" %}">
