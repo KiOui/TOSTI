@@ -17,7 +17,7 @@ from thaliedje.models import (
 
 def user_is_blacklisted(user):
     """Return if the user is on the blacklist."""
-    return user.pk in ThaliedjeBlacklistedUser.objects.values_list("user__pk", flat=True)
+    return ThaliedjeBlacklistedUser.objects.filter(user=user).exists()
 
 
 def create_track_database_information(track_info):
