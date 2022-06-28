@@ -34,7 +34,7 @@ class ShiftOverviewView(TemplateView):
             {
                 "shift": shift,
                 "can_manage_shift": request.user in shift.venue.get_users_with_shift_admin_perms(),
-                "has_order_permissions": not user_is_blacklisted(request.user),
+                "has_order_permissions": request.user.is_authenticated and not user_is_blacklisted(request.user),
             },
         )
 
