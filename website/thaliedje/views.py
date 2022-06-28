@@ -38,7 +38,7 @@ class NowPlayingView(TemplateView):
                 "disabled": False,
                 "venue": venue,
                 "player": player,
-                "can_request": not user_is_blacklisted(request.user),
+                "can_request": request.user.is_authenticated and not user_is_blacklisted(request.user),
             },
         )
 
