@@ -3,11 +3,10 @@
 
 {% block page %}
     <div class="container">
-        <div class="calendar-wrapper">
+        <div class="calendar-wrapper pb-5">
             <div id="calendar-all"></div>
         </div>
     </div>
-    <div class="pb-5"></div>
 {% endblock %}
 {% block footer %}
     <footer class="page-footer navbar navbar-expand-md fixed-bottom">
@@ -59,6 +58,9 @@
                         minute: '2-digit',
                         hour12: false,
                     },
+                    slotMinTime: "08:00:00",
+                    slotMaxTime: "21:30:00",
+                    scrollTime: "16:00:00",
                     slotDuration: '00:30:00',
                     eventTimeFormat: {
                         hour: '2-digit',
@@ -66,7 +68,8 @@
                         hour12: false,
                     },
                     slotEventOverlap: false,
-                    height: 800,
+                    height: 600,
+                    contentHeight: "100%",
                     timeZone: 'local',
                     allDaySlot: false,
                     nowIndicator: true,
