@@ -28,6 +28,7 @@ sentry-sdk = "^1.5.7"
 django-filter = "^21.1"
 django-constance = {extras = ["database"], version = "^2.9.0"}
 html2text = "^2020.1.16"
+django-ical = "^1.8.3"
 
 [tool.poetry.dev-dependencies]
 pydocstyle = "^5.0.2"
