@@ -1,14 +1,9 @@
-import logging
-
 from constance import config
 from django.contrib.sites.models import Site
 from django.template.loader import get_template
 
 from tosti.services import send_email
 from venues import models
-
-
-logger = logging.getLogger(__name__)
 
 
 def send_reservation_request_email(reservation: models.Reservation):

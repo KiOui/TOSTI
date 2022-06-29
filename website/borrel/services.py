@@ -1,13 +1,9 @@
-import logging
-
 from constance import config
 from django.contrib.sites.models import Site
 from django.template.loader import get_template
 
 from borrel import models
 from tosti.services import send_email
-
-logger = logging.getLogger(__name__)
 
 
 def send_borrel_reservation_request_email(borrel_reservation: models.BorrelReservation):
