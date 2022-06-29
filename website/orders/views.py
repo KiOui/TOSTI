@@ -1,11 +1,12 @@
 from django.core.paginator import Paginator
 from django.template.loader import render_to_string
-from django.views.generic import TemplateView
+from django.urls import reverse
+from django.views.generic import TemplateView, CreateView
 from guardian.mixins import PermissionRequiredMixin
 
 from orders import services
 from django.shortcuts import render, redirect
-from .models import Order
+from .models import Order, Shift
 from .forms import CreateShiftForm
 from .services import user_is_blacklisted
 
@@ -48,7 +49,7 @@ class ShiftOverviewView(TemplateView):
         return self.kwargs.get("shift")
 
 
-class CreateShiftView(PermissionRequiredMixin, TemplateView):
+class CreateShiftView(PermissionRequiredMixin, CreateView):
     """Create shift view."""
 
     template_name = "orders/create_shift.html"
@@ -56,43 +57,38 @@ class CreateShiftView(PermissionRequiredMixin, TemplateView):
     permission_required = "orders.can_manage_shift_in_venue"
     return_403 = True
     accept_global_perms = True
+    form_class = CreateShiftForm
+    model = Shift
 
-    def get(self, request, **kwargs):
-        """
-        GET request for CreateShiftView.
+    def get_success_url(self):
+        """Get the success URL."""
+        return reverse("orders:shift_admin", kwargs={"shift": self.object})
 
-        :param request: the request
-        :param kwargs: keyword arguments
-        :return: a page with all current shifts and a form for starting a new shift
-        """
-        venue = kwargs.get("venue")
+    def form_valid(self, form):
+        """Form valid."""
+        response = super(CreateShiftView, self).form_valid(form)
+        self.object.assignees.add(self.request.user.id)
+        self.object.save()
+        return response
 
-        form = CreateShiftForm(venue=venue, user=request.user)
+    def get_form_kwargs(self):
+        """Get form kwargs."""
+        kwargs = super(CreateShiftView, self).get_form_kwargs()
+        extra_kwargs = {
+            "venue": self.kwargs.get("venue"),
+            "user": self.request.user,
+        }
+        return {**kwargs, **extra_kwargs}
 
-        return render(request, self.template_name, {"venue": venue, "form": form})
+    def get_context_data(self, **kwargs):
+        """Get context data."""
+        kwargs = super(CreateShiftView, self).get_context_data(**kwargs)
+        extra_kwargs = {
+            "venue": kwargs.get("venue"),
+        }
+        return {**kwargs, **extra_kwargs}
 
-    def post(self, request, **kwargs):
-        """
-        POST request for CreateShiftView.
-
-        :param request: the request
-        :param kwargs: keyword arguments
-        :return: a page with all current shifts and a form for starting a new shift, if the form was filled in
-        correctly a new shift is started.
-        """
-        venue = kwargs.get("venue")
-
-        form = CreateShiftForm(request.POST, user=request.user)
-
-        if form.is_valid():
-            shift = form.save()
-            shift.assignees.add(request.user.id)
-            shift.save()
-            return redirect("orders:shift_admin", shift=shift)
-
-        return render(request, self.template_name, {"venue": venue, "form": form})
-
-    def get_object(self):
+    def get_object(self, queryset=None):
         """Get the object for this view."""
         return self.kwargs.get("venue")
 
