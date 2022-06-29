@@ -11,6 +11,7 @@ class BorrelConfig(AppConfig):
     def ready(self):
         """Ready method."""
         from venues.views import VenueCalendarView
+        from borrel import signals  # noqa
 
         def filter_reservation_button(reservation_buttons: list):
             reservation_buttons.append(

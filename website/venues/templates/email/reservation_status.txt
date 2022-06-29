@@ -1,0 +1,12 @@
+Reservation {% if reservation.title %}{{ reservation.title }}{% else %}{{ reservation.venue }} ({{ reservation.start }}){% endif %}
+
+Dear {{ reservation.user.get_short_name }},
+
+The status of your reservation has changed.
+
+Reservation:
+{% if reservation.title %}{{ reservation.title }}{% else %}{{ reservation.venue }} ({{ reservation.start }}){% endif %}
+Status:
+{% if reservation.accepted is None %}Unknown{% elif reservation.accepted %}Accepted{% else %}Denied{% endif %}
+
+To see your reservations, visit https://{{ domain }}{% url 'venues:list_reservations' %}.

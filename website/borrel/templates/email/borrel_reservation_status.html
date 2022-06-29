@@ -1,0 +1,22 @@
+{% extends "email/email.html" %}
+
+{% block title %}Borrel Reservation status change{% endblock %}
+
+{% block content %}
+    <div class="flex-column" style="max-width: 400px;min-width: 300px;justify-content: space-between;padding: 5px;flex: 1;">
+        <strong>Borrel Reservation {{ borrel_reservation.title }}</strong> <br>
+        <p>
+            Dear {{ borrel_reservation.user_created.get_short_name }},
+        </p>
+        <p>
+            The status of your borrel reservation has changed.
+        </p>
+        <strong>Borrel Reservation:</strong> <br>
+        <p>{{ borrel_reservation.title }}</p>
+        <strong>Status:</strong> <br>
+        <p>{% if borrel_reservation.accepted is None %}Unknown{% elif borrel_reservation.accepted %}Accepted{% else %}Denied{% endif %}</p>
+        <p>
+            To see your reservations, visit <a href="https://{{ domain }}{% url 'borrel:list_reservations' %}">https://{{ domain }}{% url 'borrel:list_reservations' %}</a>.
+        </p>
+    </div>
+{% endblock %}

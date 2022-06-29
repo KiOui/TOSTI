@@ -39,3 +39,31 @@ def send_borrel_reservation_request_email(borrel_reservation: models.BorrelReser
     except SMTPException as e:
         logger.error(e)
         return False
+
+
+def send_borrel_reservation_status_change_email(borrel_reservation: models.BorrelReservation):
+    """Construct and send a borrel reservation status change email."""
+    template = get_template("email/borrel_reservation_status.html")
+    template_text = get_template("email/borrel_reservation_status.txt")
+
+    context = {
+        "borrel_reservation": borrel_reservation,
+        "domain": Site.objects.get_current().domain,
+    }
+
+    html_content = template.render(context)
+    text_content = template_text.render(context)
+
+    msg = EmailMultiAlternatives(
+        "TOSTI: Borrel Reservation status change",
+        text_content,
+        settings.EMAIL_HOST_USER,
+        [borrel_reservation.user_created.email],
+    )
+    msg.attach_alternative(html_content, "text/html")
+
+    try:
+        return msg.send()
+    except SMTPException as e:
+        logger.error(e)
+        return False

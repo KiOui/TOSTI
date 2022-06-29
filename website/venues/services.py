@@ -39,3 +39,31 @@ def send_reservation_request_email(reservation: models.Reservation):
     except SMTPException as e:
         logger.error(e)
         return False
+
+
+def send_reservation_status_change_email(reservation: models.Reservation):
+    """Construct and send a reservation status change email."""
+    template = get_template("email/reservation_status.html")
+    template_text = get_template("email/reservation_status.txt")
+
+    context = {
+        "reservation": reservation,
+        "domain": Site.objects.get_current().domain,
+    }
+
+    html_content = template.render(context)
+    text_content = template_text.render(context)
+
+    msg = EmailMultiAlternatives(
+        "TOSTI: Reservation status change",
+        text_content,
+        settings.EMAIL_HOST_USER,
+        [reservation.user.email],
+    )
+    msg.attach_alternative(html_content, "text/html")
+
+    try:
+        return msg.send()
+    except SMTPException as e:
+        logger.error(e)
+        return False
