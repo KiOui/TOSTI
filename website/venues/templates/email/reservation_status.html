@@ -1,0 +1,24 @@
+{% extends "email/email.html" %}
+
+{% url "venues:list_reservations" as change_url %}
+
+{% block title %}Reservation status change{% endblock %}
+
+{% block content %}
+    <div class="flex-column" style="max-width: 400px;min-width: 300px;justify-content: space-between;padding: 5px;flex: 1;">
+        <strong>Reservation {% if reservation.title %}{{ reservation.title }}{% else %}{{ reservation.venue }} ({{ reservation.start }}){% endif %}</strong> <br>
+        <p>
+            Dear {{ reservation.user.get_short_name }},
+        </p>
+        <p>
+            The status of your reservation has changed.
+        </p>
+        <strong>Reservation:</strong> <br>
+        <p>{% if reservation.title %}{{ reservation.title }}{% else %}{{ reservation.venue }} ({{ reservation.start }}){% endif %}</p>
+        <strong>Status:</strong> <br>
+        <p><p>{{ reservation.accepted|yesno:"Accepted,Denied,Unknown" }}</p></p>
+        <p>
+            To see your reservations, visit <a href="https://{{ domain }}{{ change_url }}">https://{{ domain }}{{ change_url }}</a>.
+        </p>
+    </div>
+{% endblock %}

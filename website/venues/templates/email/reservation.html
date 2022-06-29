@@ -1,0 +1,30 @@
+{% extends "email/email.html" %}
+
+{% url "admin:venues_reservation_change" object_id=reservation.id as change_url %}
+
+{% block title %}Reservation{% endblock %}
+
+{% block content %}
+    <div class="flex-column" style="max-width: 400px;min-width: 300px;justify-content: space-between;padding: 5px;flex: 1;">
+        <strong>Reservation request {{ reservation.venue }}</strong> <br>
+        <p>{{ reservation.user.get_short_name }} has requested to reserve {{ reservation.venue }} from {{ reservation.start }} until {{ reservation.end }}. The details are below:
+        </p>
+        <strong>Name user:</strong> <br>
+        <p>{{ reservation.user }}</p>
+        {% if reservation.association %}<strong>Association:</strong> <br>
+        <p>{{ reservation.association }}</p>{% endif %}
+        <strong>Title reservation:</strong> <br>
+        <p>{{ reservation.title }}</p>
+        <strong>Venue:</strong> <br>
+        <p>{{ reservation.venue }}</p>
+        <strong>Start:</strong> <br>
+        <p>{{ reservation.start }}</p>
+        <strong>End:</strong> <br>
+        <p>{{ reservation.end }}</p>
+        {% if reservation.comment %}<strong>Comment:</strong> <br>
+        <p>{{ reservation.comment }}</p>{% endif %}
+        <p>
+            To accept or reject this reservation, visit <a href="https://{{ domain }}{{ change_url }}">https://{{ domain }}{{ change_url }}</a>.
+        </p>
+    </div>
+{% endblock %}
