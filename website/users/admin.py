@@ -167,7 +167,7 @@ class GroupAdmin(BaseGroupAdmin):
 
     def get_members(self, obj):
         """Get the members of a group."""
-        return ",".join(str(u) for u in list(obj.user_set.all()))
+        return ", ".join(str(u) for u in list(obj.user_set.all()))
 
     get_members.short_description = "Members"
 
