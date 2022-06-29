@@ -1,5 +1,7 @@
 {% extends "email/email.html" %}
 
+{% url "admin:venues_reservation_change" object_id=reservation.id as change_url %}
+
 {% block title %}Reservation{% endblock %}
 
 {% block content %}
@@ -22,7 +24,7 @@
         {% if reservation.comment %}<strong>Comment:</strong> <br>
         <p>{{ reservation.comment }}</p>{% endif %}
         <p>
-            To accept or reject this reservation, visit <a href="https://{{ domain }}{% url 'admin:venues_reservation_change' object_id=reservation.id %}">https://{{ domain }}{% url 'admin:venues_reservation_change' object_id=reservation.id %}</a>.
+            To accept or reject this reservation, visit <a href="https://{{ domain }}{{ change_url }}">https://{{ domain }}{{ change_url }}</a>.
         </p>
     </div>
 {% endblock %}
