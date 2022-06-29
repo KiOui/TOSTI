@@ -22,7 +22,7 @@ def send_reservation_request_email(reservation: models.Reservation):
 
     html_content = template.render(context)
 
-    return send_email("TOSTI: Reservation request", html_content, [config.SEND_EMAIL_TO])
+    return send_email("TOSTI: Reservation request", html_content, [config.VENUES_SEND_RESERVATION_REQUEST_EMAILS_TO])
 
 
 def send_reservation_status_change_email(reservation: models.Reservation):

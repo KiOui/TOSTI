@@ -83,7 +83,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "tosti.wsgi.application"
 
-
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
@@ -102,12 +101,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
@@ -165,14 +162,16 @@ MESSAGE_TAGS = {
     messages.ERROR: 'alert-danger danger',
 }
 
-
 CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 
 CONSTANCE_CONFIG = {
     'TANTALUS_ENDPOINT_URL': ('', 'Endpoint for Tantalus integration', str),
     'TANTALUS_USERNAME': ('', 'Username for Tantalus integration', str),
     'TANTALUS_PASSWORD': ('', 'Password for Tantalus integration', str),
-    'SEND_EMAIL_TO': ('noreply@example.com', 'Where to send e-mail notifications to', str),
+    'BORREL_SEND_BORREL_RESERVATION_REQUEST_EMAILS_TO': (
+        'noreply@example.com', 'Where to send borrel reservation request notifications to (e-mail address)', str),
+    'VENUES_SEND_RESERVATION_REQUEST_EMAILS_TO': (
+        'noreply@example.com', 'Where to send venue reservation request notifications to (e-mail address)', str),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = {

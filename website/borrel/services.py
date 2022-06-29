@@ -21,7 +21,9 @@ def send_borrel_reservation_request_email(borrel_reservation: models.BorrelReser
 
     html_content = template.render(context)
 
-    return send_email("TOSTI: Borrel Reservation request", html_content, [config.SEND_EMAIL_TO])
+    return send_email(
+        "TOSTI: Borrel Reservation request", html_content, [config.BORREL_SEND_BORREL_RESERVATION_REQUEST_EMAILS_TO]
+    )
 
 
 def send_borrel_reservation_status_change_email(borrel_reservation: models.BorrelReservation):
