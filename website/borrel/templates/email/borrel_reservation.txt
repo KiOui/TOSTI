@@ -1,0 +1,18 @@
+Borrel Reservation request
+
+{{ borrel_reservation.user_created.get_short_name }} has created a borrel reservation for {{ borrel_reservation.start }}. The details are below:
+
+Name user:
+{{ borrel_reservation.user_created }}
+{% if borrel_reservation.association %}Association:
+{{ borrel_reservation.association }}{% endif %}
+Title reservation:
+{{ borrel_reservation.title }}
+Start:
+{{ borrel_reservation.start }}
+{% if borrel_reservation.end %}End:
+{{ borrel_reservation.end }}{% endif %}
+{% if borrel_reservation.comments %}Comments:
+{{ borrel_reservation.comments }}{% endif %}
+
+To view details, accept or reject this reservation, visit https://{{ domain }}{% url 'admin:borrel_borrelreservation_change' object_id=borrel_reservation.id %}.

@@ -1,0 +1,26 @@
+{% extends "email/email.html" %}
+
+{% block title %}Borrel Reservation{% endblock %}
+
+{% block content %}
+    <div class="flex-column" style="max-width: 400px;min-width: 300px;justify-content: space-between;padding: 5px;flex: 1;">
+        <strong>Borrel Reservation request</strong> <br>
+        <p>{{ borrel_reservation.user_created.get_short_name }} has created a borrel reservation for {{ borrel_reservation.start }}. The details are below:
+        </p>
+        <strong>Name user:</strong> <br>
+        <p>{{ borrel_reservation.user_created }}</p>
+        {% if borrel_reservation.association %}<strong>Association:</strong> <br>
+        <p>{{ borrel_reservation.association }}</p>{% endif %}
+        <strong>Title reservation:</strong> <br>
+        <p>{{ borrel_reservation.title }}</p>
+        <strong>Start:</strong> <br>
+        <p>{{ borrel_reservation.start }}</p>
+        {% if borrel_reservation.end %}<strong>End:</strong> <br>
+        <p>{{ borrel_reservation.end }}</p>{% endif %}
+        {% if borrel_reservation.comments %}<strong>Comments:</strong> <br>
+        <p>{{ borrel_reservation.comments }}</p>{% endif %}
+        <p>
+            To accept or reject this reservation, visit <a href="https://{{ domain }}{% url 'admin:borrel_borrelreservation_change' object_id=borrel_reservation.id %}">https://{{ domain }}{% url 'admin:borrel_borrelreservation_change' object_id=borrel_reservation.id %}</a>.
+        </p>
+    </div>
+{% endblock %}

@@ -13,6 +13,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",
     "constance",
     "constance.backends.database",
     "tosti.sp_app_config.CustomSPAppConfig",
@@ -171,8 +172,13 @@ CONSTANCE_CONFIG = {
     'TANTALUS_ENDPOINT_URL': ('', 'Endpoint for Tantalus integration', str),
     'TANTALUS_USERNAME': ('', 'Username for Tantalus integration', str),
     'TANTALUS_PASSWORD': ('', 'Password for Tantalus integration', str),
+    'SEND_EMAIL_TO': ('noreply@example.com', 'Where to send e-mail notifications to', str),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = {
     'Tantalus settings': ('TANTALUS_ENDPOINT_URL', 'TANTALUS_USERNAME', "TANTALUS_PASSWORD",),
+    'E-mail settings': ('SEND_EMAIL_TO',),
 }
+
+# Sites app
+SITE_ID = 1

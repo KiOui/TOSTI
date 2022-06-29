@@ -19,6 +19,8 @@ from borrel.forms import (
 )
 from borrel.mixins import BasicBorrelBrevetRequiredMixin
 from borrel.models import Product, BorrelReservation, ReservationItem, ProductCategory
+from borrel.services import send_borrel_reservation_request_email
+from venues.services import send_reservation_request_email
 
 
 class BorrelReservationBaseView(FormView):
@@ -142,6 +144,9 @@ class BorrelReservationCreateView(BasicBorrelBrevetRequiredMixin, BorrelReservat
             items.instance = obj
             items.save()
             messages.add_message(self.request, messages.SUCCESS, "Your borrel reservation has been placed.")
+            send_borrel_reservation_request_email(obj)
+            if obj.venue_reservation is not None:
+                send_reservation_request_email(obj.venue_reservation)
             return HttpResponseRedirect(reverse("borrel:list_reservations"))
         else:
             messages.add_message(self.request, messages.ERROR, "Something went wrong.")

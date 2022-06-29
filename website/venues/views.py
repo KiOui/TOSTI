@@ -6,6 +6,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView, FormView, ListView
 
 from tosti.filter import Filter
+from venues import services
 from venues.forms import ReservationForm
 from venues.models import Reservation
 
@@ -45,6 +46,7 @@ class RequestReservationView(FormView):
         instance.user = self.request.user
         instance.save()
         messages.success(self.request, "Venue reservation request added successfully.")
+        services.send_reservation_request_email(instance)
         return redirect(reverse("venues:add_reservation"))
 
 

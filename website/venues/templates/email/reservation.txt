@@ -1,0 +1,20 @@
+Reservation request {{ reservation.venue }}
+
+{{ reservation.user.get_short_name }} has requested to reserve {{ reservation.venue }} from {{ reservation.start }} until {{ reservation.end }}. The details are below:
+
+Name user:
+{{ reservation.user }}
+{% if reservation.association %}Association:
+{{ reservation.association }}{% endif %}
+Title reservation:
+{{ reservation.title }}
+Venue:
+{{ reservation.venue }}
+Start:
+{{ reservation.start }}
+End:
+{{ reservation.end }}
+{% if reservation.comment %}Comment:
+{{ reservation.comment }}{% endif %}
+
+To accept or reject this reservation, visit https://{{ domain }}{% url 'admin:venues_reservation_change' object_id=reservation.id %}.
