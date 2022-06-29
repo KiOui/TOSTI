@@ -6,6 +6,8 @@ from guardian.mixins import PermissionRequiredMixin
 
 from orders import services
 from django.shortcuts import render, redirect
+
+from tosti.filter import Filter
 from .models import Order, Shift
 from .forms import CreateShiftForm
 from .services import user_is_blacklisted
@@ -187,9 +189,22 @@ class ShiftAdminView(PermissionRequiredMixin, TemplateView):
 
 
 class ExplainerView(TemplateView):
-    """Explainer view."""
+    """Explainer page."""
 
     template_name = "orders/explainer.html"
+    explainer_tabs = Filter()
+
+    def get(self, request, **kwargs):
+        """GET request."""
+        active = request.GET.get("active", 'how-to-order')
+        tabs = self.explainer_tabs.do_filter([])
+        rendered_tab = None
+        for tab in tabs:
+            if active == tab["slug"]:
+                rendered_tab = tab["renderer"](request, tab, reverse("users:account"))
+        return render(
+            request, self.template_name, {"form": form, "active": active, "tabs": tabs, "rendered_tab": rendered_tab}
+        )
 
 
 class AdminExplainerView(TemplateView):
