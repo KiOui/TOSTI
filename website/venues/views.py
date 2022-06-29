@@ -67,9 +67,9 @@ class ListReservationsView(ListView):
 class ReservationFeed(ICalFeed):
     """Output an iCal feed containing all reservations."""
 
-    def product_id(self):
+    def product_id(self, obj):
         """Get product ID."""
-        return f"-//{Site.objects.get_current().domain}//EventCalendar//EN"
+        return f"-//{Site.objects.get_current().domain}//ReservationCalendar"
 
     def title(self, obj):
         """Get calendar title."""
@@ -116,6 +116,10 @@ class ReservationFeed(ICalFeed):
 
 class ReservationVenueFeed(ReservationFeed):
     """Output an iCal feed containing reservations for a venue."""
+
+    def product_id(self, obj):
+        """Get product ID."""
+        return f"-//{Site.objects.get_current().domain}//ReservationCalendar//{obj.name}"
 
     def get_object(self, request, *args, **kwargs):
         """Get the object."""
