@@ -16,7 +16,7 @@
         <strong>Reservation:</strong> <br>
         <p>{% if reservation.title %}{{ reservation.title }}{% else %}{{ reservation.venue }} ({{ reservation.start }}){% endif %}</p>
         <strong>Status:</strong> <br>
-        <p>{% if reservation.accepted is None %}Unknown{% elif reservation.accepted %}Accepted{% else %}Denied{% endif %}</p>
+        <p><p>{{ reservation.accepted|yesno:"Accepted,Denied,Unknown" }}</p></p>
         <p>
             To see your reservations, visit <a href="https://{{ domain }}{{ change_url }}">https://{{ domain }}{{ change_url }}</a>.
         </p>

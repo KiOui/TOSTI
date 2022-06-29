@@ -16,7 +16,7 @@
         <strong>Borrel Reservation:</strong> <br>
         <p>{{ borrel_reservation.title }}</p>
         <strong>Status:</strong> <br>
-        <p>{% if borrel_reservation.accepted is None %}Unknown{% elif borrel_reservation.accepted %}Accepted{% else %}Denied{% endif %}</p>
+        <p>{{ borrel_reservation.accepted|yesno:"Accepted,Denied,Unknown" }}</p>
         <p>
             To see your reservations, visit <a href="https://{{ domain }}{{ change_url }}">https://{{ domain }}{{ change_url }}</a>.
         </p>
