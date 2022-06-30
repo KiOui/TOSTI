@@ -3,6 +3,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.views.generic import TemplateView, CreateView
 from guardian.mixins import PermissionRequiredMixin
+from guardian.shortcuts import get_objects_for_user
 
 from orders import services
 from django.shortcuts import render, redirect
@@ -205,4 +206,10 @@ def explainer_page_how_to_order_tab(request, item):
 
 def explainer_page_how_to_manage_shift_tab(request, item):
     """Render the explainer how to manage shift tab."""
-    return render_to_string("orders/explainer_admin.html", context={"request": request, "item": item})
+    if (
+        request.user.is_authenticated
+        and get_objects_for_user(request.user, "orders.can_manage_shift_in_venue").exists()
+    ):
+        return render_to_string("orders/explainer_admin.html", context={"request": request, "item": item})
+    else:
+        return None

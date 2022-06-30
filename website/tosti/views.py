@@ -49,7 +49,9 @@ class ExplainerView(TemplateView):
         tabs = self.explainer_tabs.do_filter([])
         rendered_tabs = []
         for tab in tabs:
-            rendered_tabs.append({"name": tab["name"], "slug": tab["slug"], "content": tab["renderer"](request, tab)})
+            tab_rendered = tab["renderer"](request, tab)
+            if tab_rendered is not None:
+                rendered_tabs.append({"name": tab["name"], "slug": tab["slug"], "content": tab_rendered})
         return render(request, self.template_name, {"rendered_tabs": rendered_tabs})
 
 
