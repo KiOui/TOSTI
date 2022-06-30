@@ -37,14 +37,6 @@ class OrderViewTests(TestCase):
         self.normal_user.set_password("temporary")
         self.normal_user.save()
 
-    def test_explainer_view(self):
-        response = self.client.get(reverse("orders:explainer"), follow=True)
-        self.assertEqual(response.status_code, 200)
-
-    def test_explainer_admin_view(self):
-        response = self.client.get(reverse("orders:explainer_admin"), follow=True)
-        self.assertEqual(response.status_code, 200)
-
     def test_create_shift_view(self):
         self.assertTrue(self.client.login(username=self.normal_user.username, password="temporary"))
         assign_perm("orders.can_manage_shift_in_venue", self.normal_user, self.order_venue_1)

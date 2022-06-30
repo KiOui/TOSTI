@@ -187,12 +187,6 @@ class ShiftAdminView(PermissionRequiredMixin, TemplateView):
         return self.kwargs.get("shift")
 
 
-class AdminExplainerView(TemplateView):
-    """Admin Explainer view."""
-
-    template_name = "orders/explainer_admin.html"
-
-
 def render_ordered_items_tab(request, item, current_page_url):
     """Render the ordered items tab on the user page."""
     ordered_items = Order.objects.filter(user=request.user).order_by("-created")
