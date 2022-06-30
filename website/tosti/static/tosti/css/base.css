@@ -21,22 +21,17 @@ a.no-color {
     color: var(--nav-link-color);
 }
 
-.navbar-expand-md .navbar-nav .nav-link {
+.site-header .navbar-nav .nav-link {
     color: var(--nav-link-color);
 }
 
-.navbar-expand-md .navbar-nav .nav-link:hover {
+.site-header .navbar-nav .nav-link:hover {
     color: var(--nav-link-hover-color);
 }
 
 .navbar-toggler {
     border-color: #ffffff;
 }
-
-.navbar-toggler-icon {
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3e%3cpath stroke='#ffffff' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
-}
-
 
 .nav-item {
     text-transform: uppercase;
@@ -98,7 +93,7 @@ p.btn-note {
 
 .drop-out-header {
     position: absolute;
-    margin-top: 20px;
+    margin-top: -20px;
     margin-left: -60px;
 }
 
