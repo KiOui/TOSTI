@@ -1,68 +1,55 @@
-{% extends "tosti/base.html" %}
 {% load static %}
 
-{% block title %}
-    TOSTI: How to order
-{% endblock %}
+<link rel="stylesheet" href="{% static 'orders/css/item-list.css' %}"/>
 
-{% block styles %}
-    <link rel="stylesheet" href="{% static 'orders/css/item-list.css' %}"/>
-{% endblock %}
-
-{% block page %}
-    <div class="container">
-        <div class="container mt-5 mb-5 text-center">
-            <h1>How to order via T.O.S.T.I.?</h1>
-            <h6>Enjoy your meal in 5 simple steps</h6>
-        </div>
-        <hr>
-        <h3><i class="fas fa-sign-in-alt"></i><br>1. Log in</h3>
-        <p>
-            Before you can start ordering, first <a href="{% url "login" %}?next={{request.path}}">login using your
-            RU account</a>.
-        </p>
-        <hr>
-        <h3><i class="fas fa-map-marker-alt"></i><br>2. Choose your venue</h3>
-        <p>
-            On the <a href="{% url "index" %}">home page</a>, there is an overview of all venues where you can place
-            orders. Is your favourite venue not available to order? Too bad, you can only wait...
-        </p>
-        <hr>
-        <h3><i class="fas fa-cart-plus"></i><br>3. Place your order</h3>
-        <p>
-            Check out the queue of orders and decide whether you want to place an order. Hit the 'place your order'
-            button and pick the products you want to order. After placing your order, you will be added to the queue
-            and your orders will be prepared with love.
-        </p>
-        <p>
-            Note that you can not order an unlimited amount of products, there are restrictions on how many items you
-            can order in total and of a specific kind of product.
-        </p>
-        <hr>
-        <h3><i class="far fa-clock"></i><br>4. Wait...</h3>
-        <p>
-            After placing your order, all you can do is wait. In the queue of the venue, you can see how things are
-            going. Orders with a <i class="fas fa-user"></i>-icon are your own orders.
-        </p>
-        <p>You may notice that your orders are displaying a
-            <i class="status-button bg-danger text-white" style="font-style: normal; font-size: 1rem;">Not paid</i>
-            label. If you already paid for your order, but it is not ready yet, this label will become
-            <i class="status-button bg-warning text-white" style="font-style: normal; font-size: 1rem;">Processing</i>.
-            It is not required to pay upfront, you can also pay when your order is ready.
-        </p>
-        <hr>
-        <h3><i class="fas fa-check-circle"></i><br>5. Ready!</h3>
-        <p>
-            When your order is finally ready, the label will turn into
-            <i class="status-button bg-warning text-white" style="font-style: normal; font-size: 1rem;">Done</i> (if you still need to pay) or
-            <i class="status-button bg-success text-white" style="font-style: normal; font-size: 1rem;">Done</i>.
-            Make sure to be present in the venue, because this is the time your name will be called and you can pick up
-            your order!
-        </p>
-        <p>
-            Bon appetit!
-        </p>
-        <hr>
-        <p>Are you a baker and want to know how things work for you? Check out <a href="{% url "orders:explainer_admin" %}">this explainer</a>.</p>
-    </div>
-{% endblock %}
+<div class="container mt-5 mb-5 text-center">
+    <h2>How to order via T.O.S.T.I.?</h2>
+    <h6>Enjoy your meal in 5 simple steps</h6>
+</div>
+<hr>
+<h3><i class="fas fa-sign-in-alt"></i><br>1. Log in</h3>
+<p>
+    Before you can start ordering, first <a href="{% url "login" %}?next={{request.path}}">login using your
+    RU account</a>.
+</p>
+<hr>
+<h3><i class="fas fa-map-marker-alt"></i><br>2. Choose your venue</h3>
+<p>
+    On the <a href="{% url "index" %}">home page</a>, there is an overview of all venues where you can place
+    orders. Is your favourite venue not available to order? Too bad, you can only wait...
+</p>
+<hr>
+<h3><i class="fas fa-cart-plus"></i><br>3. Place your order</h3>
+<p>
+    Check out the queue of orders and decide whether you want to place an order. Hit the 'place your order'
+    button and pick the products you want to order. After placing your order, you will be added to the queue
+    and your orders will be prepared with love.
+</p>
+<p>
+    Note that you can not order an unlimited amount of products, there are restrictions on how many items you
+    can order in total and of a specific kind of product.
+</p>
+<hr>
+<h3><i class="far fa-clock"></i><br>4. Wait...</h3>
+<p>
+    After placing your order, all you can do is wait. In the queue of the venue, you can see how things are
+    going. Orders with a <i class="fas fa-user"></i>-icon are your own orders.
+</p>
+<p>You may notice that your orders are displaying a
+    <i class="status-button bg-danger text-white" style="font-style: normal; font-size: 1rem;">Not paid</i>
+    label. If you already paid for your order, but it is not ready yet, this label will become
+    <i class="status-button bg-warning text-white" style="font-style: normal; font-size: 1rem;">Processing</i>.
+    It is not required to pay upfront, you can also pay when your order is ready.
+</p>
+<hr>
+<h3><i class="fas fa-check-circle"></i><br>5. Ready!</h3>
+<p>
+    When your order is finally ready, the label will turn into
+    <i class="status-button bg-warning text-white" style="font-style: normal; font-size: 1rem;">Done</i> (if you still need to pay) or
+    <i class="status-button bg-success text-white" style="font-style: normal; font-size: 1rem;">Done</i>.
+    Make sure to be present in the venue, because this is the time your name will be called and you can pick up
+    your order!
+</p>
+<p>
+    Bon appetit!
+</p>

@@ -3,9 +3,11 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.views.generic import TemplateView, CreateView
 from guardian.mixins import PermissionRequiredMixin
+from guardian.shortcuts import get_objects_for_user
 
 from orders import services
 from django.shortcuts import render, redirect
+
 from .models import Order, Shift
 from .forms import CreateShiftForm
 from .services import user_is_blacklisted
@@ -186,18 +188,6 @@ class ShiftAdminView(PermissionRequiredMixin, TemplateView):
         return self.kwargs.get("shift")
 
 
-class ExplainerView(TemplateView):
-    """Explainer view."""
-
-    template_name = "orders/explainer.html"
-
-
-class AdminExplainerView(TemplateView):
-    """Admin Explainer view."""
-
-    template_name = "orders/explainer_admin.html"
-
-
 def render_ordered_items_tab(request, item, current_page_url):
     """Render the ordered items tab on the user page."""
     ordered_items = Order.objects.filter(user=request.user).order_by("-created")
@@ -207,3 +197,19 @@ def render_ordered_items_tab(request, item, current_page_url):
         "orders/account_history.html",
         context={"page_obj": paginator.get_page(page), "current_page_url": current_page_url, "item": item},
     )
+
+
+def explainer_page_how_to_order_tab(request, item):
+    """Render the explainer how to order tab."""
+    return render_to_string("orders/explainer.html", context={"request": request, "item": item})
+
+
+def explainer_page_how_to_manage_shift_tab(request, item):
+    """Render the explainer how to manage shift tab."""
+    if (
+        request.user.is_authenticated
+        and get_objects_for_user(request.user, "orders.can_manage_shift_in_venue").exists()
+    ):
+        return render_to_string("orders/explainer_admin.html", context={"request": request, "item": item})
+    else:
+        return None
