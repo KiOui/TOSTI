@@ -1,0 +1,26 @@
+{% extends "tosti/base.html" %}
+{% load static %}
+
+{% block title %}
+    TOSTI: Explainers
+{% endblock %}
+
+{% block page %}
+    <div class="container">
+        <h1>Explainers</h1>
+        <ul class="nav nav-tabs justify-content-center" role="tablist">
+            {% for tab in rendered_tabs %}
+                <li class="nav-item" style="padding-bottom: 0;"  role="presentation">
+                    <a style="cursor: pointer;" class="nav-link {% if forloop.first %}active{% endif %}" id="nav-{{ tab.slug }}-tab" data-bs-toggle="tab" data-bs-target="#nav-{{ tab.slug }}" role="tab" aria-controls="nav-{{ tab.slug }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">{{ tab.name }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+        <div class="tab-content" id="nav-tab-content">
+            {% for tab in rendered_tabs %}
+                <div class="tab-pane fade show {% if forloop.first %}active{% endif %}" id="nav-{{ tab.slug }}" role="tabpanel" aria-labelledby="nav-{{ tab.slug }}-tab">
+                    {{ tab.content }}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

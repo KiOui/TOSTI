@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
 
+from tosti.filter import Filter
+
 
 class IndexView(TemplateView):
     """Index view."""
@@ -34,6 +36,21 @@ class DocumentationView(TemplateView):
     """Documentation page."""
 
     template_name = "tosti/documentation.html"
+
+
+class ExplainerView(TemplateView):
+    """Explainer page."""
+
+    template_name = "tosti/explainers.html"
+    explainer_tabs = Filter()
+
+    def get(self, request, **kwargs):
+        """GET request."""
+        tabs = self.explainer_tabs.do_filter([])
+        rendered_tabs = []
+        for tab in tabs:
+            rendered_tabs.append({"name": tab["name"], "slug": tab["slug"], "content": tab["renderer"](request, tab)})
+        return render(request, self.template_name, {"rendered_tabs": rendered_tabs})
 
 
 def handler403(request, exception):

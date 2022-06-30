@@ -7,7 +7,6 @@ from guardian.mixins import PermissionRequiredMixin
 from orders import services
 from django.shortcuts import render, redirect
 
-from tosti.filter import Filter
 from .models import Order, Shift
 from .forms import CreateShiftForm
 from .services import user_is_blacklisted
@@ -188,25 +187,6 @@ class ShiftAdminView(PermissionRequiredMixin, TemplateView):
         return self.kwargs.get("shift")
 
 
-class ExplainerView(TemplateView):
-    """Explainer page."""
-
-    template_name = "orders/explainer.html"
-    explainer_tabs = Filter()
-
-    def get(self, request, **kwargs):
-        """GET request."""
-        active = request.GET.get("active", 'how-to-order')
-        tabs = self.explainer_tabs.do_filter([])
-        rendered_tab = None
-        for tab in tabs:
-            if active == tab["slug"]:
-                rendered_tab = tab["renderer"](request, tab, reverse("users:account"))
-        return render(
-            request, self.template_name, {"form": form, "active": active, "tabs": tabs, "rendered_tab": rendered_tab}
-        )
-
-
 class AdminExplainerView(TemplateView):
     """Admin Explainer view."""
 
@@ -222,3 +202,13 @@ def render_ordered_items_tab(request, item, current_page_url):
         "orders/account_history.html",
         context={"page_obj": paginator.get_page(page), "current_page_url": current_page_url, "item": item},
     )
+
+
+def explainer_page_how_to_order_tab(request, item):
+    """Render the explainer how to order tab."""
+    return render_to_string("orders/explainer.html", context={"request": request, "item": item})
+
+
+def explainer_page_how_to_manage_shift_tab(request, item):
+    """Render the explainer how to manage shift tab."""
+    return render_to_string("orders/explainer_admin.html", context={"request": request, "item": item})
