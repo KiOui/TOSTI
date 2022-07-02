@@ -2,6 +2,9 @@ from django.contrib import admin
 from django.contrib.admin import EmptyFieldListFilter
 from django.db import models
 from django.forms import Textarea
+from import_export import resources
+from import_export.admin import ExportMixin, ImportExportModelAdmin
+from import_export.fields import Field
 
 from .models import (
     BasicBorrelBrevet,
@@ -12,19 +15,90 @@ from .models import (
 )
 
 
+class BasicBorrelBrevetResource(resources.ModelResource):
+    """Basic Borrel Brevet Resource."""
+
+    user__full_name = Field(attribute='user__full_name', column_name='full_name')
+    user__first_name = Field(attribute='user__first_name', column_name='first_name')
+    user__last_name = Field(attribute='user__last_name', column_name='last_name')
+    user__username = Field(attribute='user__username', column_name='username')
+    user__email = Field(attribute='user__email', column_name='email')
+
+    class Meta:
+        """Meta class."""
+
+        model = BasicBorrelBrevet
+        fields = [
+            "user__full_name",
+            "user__first_name",
+            "user__last_name",
+            "user__username",
+            "user__email",
+            "registered_on",
+        ]
+        export_order = [
+            "user__full_name",
+            "user__first_name",
+            "user__last_name",
+            "user__username",
+            "user__email",
+            "registered_on",
+        ]
+
+
 @admin.register(BasicBorrelBrevet)
-class BasicBorrelBrevetAdmin(admin.ModelAdmin):
+class BasicBorrelBrevetAdmin(ExportMixin, admin.ModelAdmin):
     """Custom admin for basic borrel brevet."""
 
+    resource_class = BasicBorrelBrevetResource
     list_display = ["user", "registered_on"]
     search_fields = ["user"]
     readonly_fields = ["registered_on"]
 
 
+class ProductResource(resources.ModelResource):
+    """Product Resource."""
+
+    category = Field(attribute='category', column_name='category')
+
+    def before_import_row(self, row, row_number=None, **kwargs):
+        """Create a new category when an import is being run with a non-existing category."""
+        category_name = row.get('category', None)
+        if category_name is None:
+            return
+
+        try:
+            row['category'], _ = ProductCategory.objects.get_or_create(name=category_name)
+        except ProductCategory.MultipleObjectsReturned:
+            return
+
+    class Meta:
+        """Meta class."""
+
+        model = Product
+        fields = [
+            "id",
+            "name",
+            "active",
+            "price",
+            "category",
+            "description",
+        ]
+        export_order = [
+            "id",
+            "name",
+            "active",
+            "price",
+            "category",
+            "description",
+        ]
+
+
 @admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
+class ProductAdmin(ImportExportModelAdmin):
     """Custom admin for borrel inventory products."""
 
+    resource_class = ProductResource
     search_fields = ["name", "category"]
     list_display = [
         "name",
@@ -40,7 +114,7 @@ class ProductAdmin(admin.ModelAdmin):
 
 
 @admin.register(ProductCategory)
-class CategoryAdmin(admin.ModelAdmin):
+class CategoryAdmin(ImportExportModelAdmin):
     """Custom admin for borrel inventory categories."""
 
     list_display = [
@@ -74,10 +148,58 @@ class ReservationItemInline(admin.TabularInline):
     )
 
 
+class BorrelReservationResource(resources.ModelResource):
+    """Borrel Reservation Resource."""
+
+    user_created__full_name = Field(attribute='user_created__full_name', column_name='user_created')
+    user_updated__full_name = Field(attribute='user_updated__full_name', column_name='user_updated')
+    user_submitted__full_name = Field(attribute='user_submitted__full_name', column_name='user_submitted')
+    venue_reservation__venue__name = Field(attribute='venue_reservation__venue__name', column_name='venue')
+    association__name = Field(attribute='association__name', column_name='association')
+
+    def __init__(self):
+        """Initialize by creating a field for each product."""
+        super(BorrelReservationResource, self).__init__()
+        print(self.fields)
+        for product in ReservationItem.objects.values_list('product_name'):
+            self.fields[product.name] = Field(column_name=product.name)
+        print(self.fields)
+
+    class Meta:
+        """Meta class."""
+
+        model = BorrelReservation
+        fields = [
+            "title",
+            "start",
+            "end",
+            "user_created__full_name",
+            "user_updated__full_name",
+            "user_submitted__full_name",
+            "association__name",
+            "comments",
+            "accepted",
+            "venue_reservation__venue__name",
+        ]
+        export_order = [
+            "title",
+            "start",
+            "end",
+            "user_created__full_name",
+            "user_updated__full_name",
+            "user_submitted__full_name",
+            "association__name",
+            "comments",
+            "accepted",
+            "venue_reservation__venue__name",
+        ]
+
+
 @admin.register(BorrelReservation)
-class BorrelReservationAdmin(admin.ModelAdmin):
+class BorrelReservationAdmin(ExportMixin, admin.ModelAdmin):
     """Custom admin for borrel reservations."""
 
+    resource_class = BorrelReservationResource
     list_display = ["title", "association", "user_created", "start", "end", "accepted", "submitted"]
     search_fields = ["title", "user_created"]
     inlines = [ReservationItemInline]
