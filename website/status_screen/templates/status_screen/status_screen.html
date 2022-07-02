@@ -5,6 +5,22 @@
     {{ venue }}
 {% endblock %}
 
+{% block styles %}
+    <style>
+        :root, html, body {
+            height: 100vh;
+            max-height: 100vh;
+        }
+        #page-container, .page {
+            height: 100%;
+            max-height: 100%;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+    </style>
+{% endblock %}
+
 {% block header %}
     <nav class="navbar navbar-expand-md sticky-top site-header mb-5 navbar-dark">
         <div class="container">
@@ -37,41 +53,59 @@
 {% endblock %}
 
 {% block page %}
-<div class="container">
     <h1>{{ venue }}</h1>
-    <div class="row mt-5">
-        <div class="col-6">
-            {% if player %}
-                {% render_player player %}
-            {% endif %}
+    <div class="flex-grow-1 d-flex flex-column justify-content-between px-5" style="">
+
+        <div class="row align-content-center mt-5 flex-grow-1">
+            <div class="col-6">
+                {% if player %}
+                    {% render_player player %}
+                {% endif %}
+            </div>
+            <div class="col-6">
+                {% render_queue_list player %}
+            </div>
         </div>
-        <div class="col-6">
-            {% render_queue_list player %}
-        </div>
-    <div class="row mt-5">
-        <div class="col-4">
-            <h4>Buienradar:</h4>
-            <iframe src="https://gadgets.buienradar.nl/gadget/zoommap/?lat=51.82451&lng=5.87011&overname=2&zoom=13&naam=6525EC&size=2b&voor=1" scrolling=no width=100% height=330 frameborder=no></iframe>
-        </div>
-        <div class="col-4">
-            <h4>Nieuws:</h4>
-            <iframe src="https://nu.nl" width=100% height=330 frameborder=no></iframe>
-        </div>
-        <div class="col-4">
-            <h4>Klok:</h4>
-            <iframe width='100%' height="100%" style='padding:0!important;margin:0!important;border:none!important;background:none!important;background:transparent!important' marginheight='0' marginwidth='0' frameborder='0' scrolling='no' comment='/*defined*/' src='https://dayspedia.com/if/digit/?v=1&iframe=eyJ3LTEyIjpmYWxzZSwidy0xMSI6dHJ1ZSwidy0xMyI6dHJ1ZSwidy0xNCI6dHJ1ZSwidy0xNSI6ZmFsc2UsInctMTEwIjpmYWxzZSwidy13aWR0aC0wIjpmYWxzZSwidy13aWR0aC0xIjp0cnVlLCJ3LXdpZHRoLTIiOmZhbHNlLCJ3LTE2IjoiMjRweCIsInctMTkiOiI2NCIsInctMTciOiIxNiIsInctMjEiOnRydWUsImJnaW1hZ2UiOi0yLCJiZ2ltYWdlU2V0IjpmYWxzZSwidy0yMWMwIjoiI2ZmZmZmZiIsInctMCI6dHJ1ZSwidy0zIjp0cnVlLCJ3LTNjMCI6IiMzNDM0MzQiLCJ3LTNiMCI6IjEiLCJ3LTYiOiIjMzQzNDM0Iiwidy0yMCI6dHJ1ZSwidy00IjoiIzAwN2RiZiIsInctMTgiOmZhbHNlLCJ3LXdpZHRoLTJjLTAiOiIzMDAiLCJ3LTExNSI6ZmFsc2V9&lang=nl&cityid=2771'></iframe>
-        </div>
-    </div>
-    <div class="row mt-5">
+
         {% if next_event %}
-            <div class="alert alert-secondary" role="alert">
-                Next event in {{ next_event.venue }}:<hr><h4>{{ next_event.title}}</h4><br><h5>{{ next_event.start }} until {{ next_event.end }}{% if next_event.association %} organized by {{ next_event.association }}{% endif %}!</h5>
+            <div class="row align-content-center mt-5 flex-grow-1">
+                <div class="alert alert-secondary" role="alert">
+                    Next event in {{ next_event.venue }}:<hr><h4>{{ next_event.title}}</h4><br><h5>{{ next_event.start }} until {{ next_event.end }}{% if next_event.association %} organized by {{ next_event.association }}{% endif %}!</h5>
+                </div>
             </div>
         {% endif %}
+
+        {% if shift %}
+            <div class="row align-content-center mt-5 flex-grow-1">
+                <h1>Current Orders</h1>
+                {% if shift.can_order %}
+                    <div class="alert alert-success mt-2" role="alert">
+                        <h4>Accepting orders until {{ shift.end_time }}. Place your order via tosti.science.ru.nl.</h4>
+                    </div>
+                {% else %}
+                    <div class="alert alert-danger mt-2" role="alert">
+                        <h4>You cannot order right now</h4>
+                    </div>
+                {% endif %}
+                {% include 'orders/order_list.html' with shift=shift admin=False %}
+                <hr>
+            </div>
+        {% endif %}
+
+        <div class="row align-content-center mt-5 flex-grow-1">
+            <div class="col-4">
+                <h4>Buienradar:</h4>
+                <iframe src="https://gadgets.buienradar.nl/gadget/zoommap/?lat=51.82451&lng=5.87011&overname=2&zoom=13&naam=6525EC&size=2b&voor=1" scrolling=no width=100% height=330 frameborder=no></iframe>
+            </div>
+            <div class="col-4">
+                <h4>Nieuws:</h4>
+                <iframe src="https://nu.nl" width=100% height=330 frameborder=no></iframe>
+            </div>
+            <div class="col-4">
+                <h4>Klok:</h4>
+                <iframe width='100%' height="100%" style='padding:0!important;margin:0!important;border:none!important;background:none!important;background:transparent!important' marginheight='0' marginwidth='0' frameborder='0' scrolling='no' comment='/*defined*/' src='https://dayspedia.com/if/digit/?v=1&iframe=eyJ3LTEyIjpmYWxzZSwidy0xMSI6dHJ1ZSwidy0xMyI6dHJ1ZSwidy0xNCI6dHJ1ZSwidy0xNSI6ZmFsc2UsInctMTEwIjpmYWxzZSwidy13aWR0aC0wIjpmYWxzZSwidy13aWR0aC0xIjp0cnVlLCJ3LXdpZHRoLTIiOmZhbHNlLCJ3LTE2IjoiMjRweCIsInctMTkiOiI2NCIsInctMTciOiIxNiIsInctMjEiOnRydWUsImJnaW1hZ2UiOi0yLCJiZ2ltYWdlU2V0IjpmYWxzZSwidy0yMWMwIjoiI2ZmZmZmZiIsInctMCI6dHJ1ZSwidy0zIjp0cnVlLCJ3LTNjMCI6IiMzNDM0MzQiLCJ3LTNiMCI6IjEiLCJ3LTYiOiIjMzQzNDM0Iiwidy0yMCI6dHJ1ZSwidy00IjoiIzAwN2RiZiIsInctMTgiOmZhbHNlLCJ3LXdpZHRoLTJjLTAiOiIzMDAiLCJ3LTExNSI6ZmFsc2V9&lang=nl&cityid=2771'></iframe>
+            </div>
+        </div>
+
     </div>
-    {% if shift %}
-        {% include 'orders/order_list.html' with shift=shift admin=False %}
-    {% endif %}
-    </div>
-</div>
 {% endblock %}
