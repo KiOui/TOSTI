@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -13,13 +14,10 @@ from .forms import CreateShiftForm
 from .services import user_is_blacklisted
 
 
-class ShiftOverviewView(TemplateView):
+class ShiftOverviewView(LoginRequiredMixin, TemplateView):
     """Shift overview page."""
 
     template_name = "orders/shift_overview.html"
-
-    return_403 = True
-    accept_global_perms = True
 
     def get(self, request, **kwargs):
         """
