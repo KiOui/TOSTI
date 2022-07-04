@@ -2,7 +2,7 @@
 {% load static players %}
 
 {% block page %}
-    <div class="container-sm">
+    <div class="container-sm mt-5">
         <h1 class="mb-5"><i class="fab fa-spotify"></i> {{ player }}</h1>
         {% if disabled %}
             <p class="alert alert-warning">There is no player specified for {{ venue.name }}. Contact an administrator
