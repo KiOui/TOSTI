@@ -1,5 +1,4 @@
 from django.core.paginator import Paginator
-from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.views.generic import TemplateView
 
@@ -14,33 +13,26 @@ class IndexView(TemplateView):
 
     template_name = "thaliedje/index.html"
 
-    def get(self, request, **kwargs):
-        """GET an overview of all players."""
-        return render(request, self.template_name)
-
 
 class NowPlayingView(TemplateView):
     """Now playing view with the player for a venue."""
 
     template_name = "thaliedje/now_playing.html"
 
-    def get(self, request, *args, **kwargs):
-        """GET the player for a venue."""
+    def get_context_data(self, **kwargs):
+        """Get the context data for the view."""
+        context = super().get_context_data(**kwargs)
         venue = kwargs.get("venue")
+        context["venue"] = venue
+
         player = Player.get_player(venue)
         if player is None or not player.configured:
-            return render(request, self.template_name, {"disabled": True, "venue": venue})
+            context["disabled"] = True
+            return context
 
-        return render(
-            request,
-            self.template_name,
-            {
-                "disabled": False,
-                "venue": venue,
-                "player": player,
-                "can_request": request.user.is_authenticated and not user_is_blacklisted(request.user),
-            },
-        )
+        context["player"] = player
+        context["can_request"] = self.request.user.is_authenticated and not user_is_blacklisted(self.request.user)
+        return context
 
 
 def render_account_history_tab(request, item, current_page_url):
