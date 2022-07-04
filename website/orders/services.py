@@ -11,6 +11,16 @@ from users.models import User
 logger = logging.getLogger(__name__)
 
 
+def user_can_manage_shift(user, shift):
+    """Return if the user can manage this shift."""
+    return user_can_manage_shifts_in_venue(user, shift.venue) and user in shift.assignees.all()
+
+
+def user_can_manage_shifts_in_venue(user, venue):
+    """Return if the user can manage this shift."""
+    return user.has_perm("orders.can_manage_shift_in_venue", venue)
+
+
 def user_is_blacklisted(user):
     """Return if the user is on the blacklist."""
     return OrderBlacklistedUser.objects.filter(user=user).exists()
@@ -120,11 +130,12 @@ def add_user_order(product: Product, shift: Shift, user: User) -> Order:
 
 def add_user_to_assignees_of_shift(user, shift: Shift):
     """Add a user to the list of assignees for the shift."""
-    if user not in shift.assignees.all():
-        if user not in shift.venue.get_users_with_shift_admin_perms():
-            raise PermissionError("User does not have permissions to manage shifts in this venue.")
-        shift.assignees.add(User.objects.get(pk=user.pk))
-        shift.save()
+    if user in shift.assignees.all():
+        return
+    if not user_can_manage_shifts_in_venue(user, shift.venue):
+        raise PermissionError("User does not have permissions to manage shifts in this venue.")
+    shift.assignees.add(User.objects.get(pk=user.pk))
+    shift.save()
 
 
 def set_shift_active(shift, value):
@@ -135,14 +146,14 @@ def set_shift_active(shift, value):
 
 
 def set_order_ready(order, value):
-    """Set a order's 'ready' value."""
+    """Set an order's 'ready' value."""
     order.ready = value
     order.save()
     return order
 
 
 def set_order_paid(order, value):
-    """Set a order's 'paid' value."""
+    """Set an order's 'paid' value."""
     order.paid = value
     order.save()
     return order

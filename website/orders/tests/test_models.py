@@ -10,11 +10,9 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.utils import timezone
 from django.conf import settings
-from guardian.shortcuts import assign_perm
 
 from orders import models
 from venues.models import Venue
-from users.models import User as User_models
 
 
 User = get_user_model()
@@ -73,13 +71,6 @@ class OrderModelTests(TestCase):
 
     def test_order_venue_str(self):
         self.assertEqual(self.order_venue.__str__(), "Noordkantine")
-
-    def test_order_venue_users_shift_admin_perms(self):
-        self.assertEqual(len(self.order_venue.get_users_with_shift_admin_perms()), 1)
-        assign_perm("orders.can_manage_shift_in_venue", self.normal_user, self.order_venue)
-        users_with_admin_perms = self.order_venue.get_users_with_shift_admin_perms()
-        self.assertEqual(len(users_with_admin_perms), 2)
-        self.assertTrue(self.normal_user in users_with_admin_perms)
 
     def test_product_str(self):
         self.assertEqual(self.product.__str__(), "Test product")
@@ -283,15 +274,6 @@ class OrderModelTests(TestCase):
                 ),
             )
 
-    def test_shift_get_users_with_change_perms(self):
-        start = timezone.make_aware(datetime.datetime(year=2022, month=3, day=4, hour=12, minute=15))
-        end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=4, hour=13, minute=30))
-        shift = models.Shift.objects.create(venue=self.order_venue, start=start, end=end)
-        self.assertEqual(len(shift.get_users_with_change_perms()), 1)
-        self.assertFalse(self.normal_user in shift.get_users_with_change_perms())
-        assign_perm("orders.change_shift", self.normal_user, shift)
-        self.assertTrue(self.normal_user in shift.get_users_with_change_perms())
-
     @freeze_time("2022-04-03")
     def test_shift__make_finalized(self):
         start = timezone.make_aware(datetime.datetime(year=2022, month=4, day=2, hour=12, minute=15))
@@ -405,20 +387,6 @@ class OrderModelTests(TestCase):
     def test_shift_clean(self, _clean_mock: MagicMock):
         self.shift.clean()
         _clean_mock.assert_called()
-
-    def test_shift_save_m2m(self):
-        start = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=12, minute=15))
-        end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=13, minute=30))
-        shift = models.Shift.objects.create(venue=self.order_venue, start=start, end=end)
-
-        with self.subTest("User with shift admin permissions"):
-            shift.assignees.add(User_models.objects.get(pk=self.admin_user.pk))
-            shift.save_m2m()
-
-        with self.subTest("User without shift admin permissions"):
-            normal_user_copy = self.normal_user
-            shift.assignees.add(User_models.objects.get(pk=normal_user_copy.pk))
-            self.assertRaises(ValueError, shift.save_m2m)
 
     def test_shift_user_can_order_amount(self):
         start = timezone.make_aware(datetime.datetime(year=2022, month=3, day=2, hour=12, minute=15))

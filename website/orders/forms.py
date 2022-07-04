@@ -7,6 +7,8 @@ from guardian.shortcuts import get_objects_for_user
 from .models import Shift, get_default_end_time_shift, get_default_start_time_shift
 from datetime import datetime, timedelta
 
+from .services import user_can_manage_shifts_in_venue
+
 
 class CreateShiftForm(forms.ModelForm):
     """Shift creation form."""
@@ -33,7 +35,7 @@ class CreateShiftForm(forms.ModelForm):
     def clean_venue(self):
         """Check whether venue is has an accepted value."""
         venue = self.cleaned_data.get("venue")
-        if self.user not in venue.get_users_with_shift_admin_perms():
+        if not user_can_manage_shifts_in_venue(self.user, venue):
             raise forms.ValidationError("You don't have permissions to start a shift in this venue!")
         return venue
 
