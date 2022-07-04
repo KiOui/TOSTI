@@ -1,7 +1,5 @@
 {% extends "email/email.html" %}
 
-{% url "admin:borrel_borrelreservation_change" object_id=borrel_reservation.id as change_url %}
-
 {% block title %}Borrel Reservation{% endblock %}
 
 {% block content %}
@@ -22,7 +20,7 @@
         {% if borrel_reservation.comments %}<strong>Comments:</strong> <br>
         <p>{{ borrel_reservation.comments }}</p>{% endif %}
         <p>
-            To accept or reject this reservation, visit <a href="https://{{ domain }}{{ change_url }}">https://{{ domain }}{{ change_url }}</a>.
+            To accept or reject this reservation, visit <a href="https://{{ domain }}{% url "admin:borrel_borrelreservation_change" object_id=borrel_reservation.id %}">https://{{ domain }}{% url "admin:borrel_borrelreservation_change" object_id=borrel_reservation.id %}</a>.
         </p>
     </div>
 {% endblock %}

@@ -1,7 +1,5 @@
 {% extends "email/email.html" %}
 
-{% url "venues:list_reservations" as change_url %}
-
 {% block title %}Reservation status change{% endblock %}
 
 {% block content %}
@@ -16,9 +14,9 @@
         <strong>Reservation:</strong> <br>
         <p>{% if reservation.title %}{{ reservation.title }}{% else %}{{ reservation.venue }} ({{ reservation.start }}){% endif %}</p>
         <strong>Status:</strong> <br>
-        <p><p>{{ reservation.accepted|yesno:"Accepted,Denied,Unknown" }}</p></p>
+        <p>{{ reservation.accepted|yesno:"Accepted,Denied,Unknown" }}</p>
         <p>
-            To see your reservations, visit <a href="https://{{ domain }}{{ change_url }}">https://{{ domain }}{{ change_url }}</a>.
+            To see your reservations, visit <a href="https://{{ domain }}{% url "venues:list_reservations" %}">https://{{ domain }}{% url "venues:list_reservations" %}</a>.
         </p>
     </div>
 {% endblock %}
