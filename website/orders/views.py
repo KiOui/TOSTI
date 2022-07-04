@@ -1,8 +1,9 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.views.generic import TemplateView, CreateView
-from guardian.mixins import PermissionRequiredMixin
 from guardian.shortcuts import get_objects_for_user
 
 from orders import services
@@ -10,71 +11,72 @@ from django.shortcuts import render, redirect
 
 from .models import Order, Shift
 from .forms import CreateShiftForm
-from .services import user_is_blacklisted
+from .services import user_is_blacklisted, user_can_manage_shift, user_can_manage_shifts_in_venue
 
 
-class ShiftOverviewView(TemplateView):
-    """Shift overview page."""
+class ShiftView(LoginRequiredMixin, TemplateView):
+    """Overview page of a shift for regular users that also allows placing orders."""
 
     template_name = "orders/shift_overview.html"
 
-    return_403 = True
-    accept_global_perms = True
-
-    def get(self, request, **kwargs):
-        """
-        GET request of shift overview page.
-
-        :param request: the request
-        :param kwargs: keyword arguments
-        :return: a render of the shift overview page
-        """
+    def get_context_data(self, **kwargs):
+        """Get context data."""
+        context = super(ShiftView, self).get_context_data(**kwargs)
         shift = kwargs.get("shift")
-
-        return render(
-            request,
-            self.template_name,
+        context.update(
             {
                 "shift": shift,
-                "can_manage_shift": request.user in shift.venue.get_users_with_shift_admin_perms(),
-                "has_order_permissions": request.user.is_authenticated and not user_is_blacklisted(request.user),
+                "can_manage_shift": self.request.user.is_authenticated
+                and user_can_manage_shift(self.request.user, shift),
+                "has_order_permissions": self.request.user.is_authenticated
+                and not user_is_blacklisted(self.request.user),
             },
         )
-
-    def get_permission_object(self):
-        """Get the object to check permissions for."""
-        obj = self.get_object()
-        return obj.venue
-
-    def get_object(self):
-        """Get the object for this view."""
-        return self.kwargs.get("shift")
+        return context
 
 
-class CreateShiftView(PermissionRequiredMixin, CreateView):
+class ShiftManagementView(LoginRequiredMixin, TemplateView):
+    """View for managing shifts."""
+
+    template_name = "orders/shift_admin.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        """Redirect users that haven't joined the shift to the join page."""
+        shift = kwargs.get("shift")
+        if not user_can_manage_shift(request.user, shift):
+            return redirect("orders:shift_join", shift=shift)
+        return super(ShiftManagementView, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        """Get context data."""
+        context = super(ShiftManagementView, self).get_context_data(**kwargs)
+        shift = kwargs.get("shift")
+        context.update(
+            {"shift": shift, "has_change_order_permissions": user_can_manage_shift(self.request.user, shift)},
+        )
+        return context
+
+
+class CreateShiftView(LoginRequiredMixin, CreateView):
     """Create shift view."""
 
     template_name = "orders/create_shift.html"
-
-    permission_required = "orders.can_manage_shift_in_venue"
-    return_403 = True
-    accept_global_perms = True
     form_class = CreateShiftForm
     model = Shift
 
+    def dispatch(self, request, *args, **kwargs):
+        """Only allow users that can manage the venue to create shifts."""
+        venue = kwargs.get("venue")
+        if not user_can_manage_shifts_in_venue(request.user, venue):
+            raise PermissionDenied
+        return super(CreateShiftView, self).dispatch(request, *args, **kwargs)
+
     def get_success_url(self):
-        """Get the success URL."""
+        """Return to the shift admin after creating the shift."""
         return reverse("orders:shift_admin", kwargs={"shift": self.object})
 
-    def form_valid(self, form):
-        """Form valid."""
-        response = super(CreateShiftView, self).form_valid(form)
-        self.object.assignees.add(self.request.user.id)
-        self.object.save()
-        return response
-
     def get_form_kwargs(self):
-        """Get form kwargs."""
+        """Pass the selected venue and user to the form."""
         kwargs = super(CreateShiftView, self).get_form_kwargs()
         extra_kwargs = {
             "venue": self.kwargs.get("venue"),
@@ -84,52 +86,39 @@ class CreateShiftView(PermissionRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         """Get context data."""
-        kwargs = super(CreateShiftView, self).get_context_data(**kwargs)
-        extra_kwargs = {
-            "venue": kwargs.get("venue"),
-        }
-        return {**kwargs, **extra_kwargs}
+        context = super(CreateShiftView, self).get_context_data(**kwargs)
+        context.update(
+            {
+                "venue": kwargs.get("venue"),
+            }
+        )
+        return context
 
-    def get_object(self, queryset=None):
-        """Get the object for this view."""
-        return self.kwargs.get("venue")
+    def form_valid(self, form):
+        """Add user to the assignees list after creating the shift."""
+        response = super(CreateShiftView, self).form_valid(form)
+        self.object.assignees.add(self.request.user.id)
+        self.object.save()
+        return response
 
 
-class JoinShiftView(PermissionRequiredMixin, TemplateView):
+class JoinShiftView(LoginRequiredMixin, TemplateView):
     """Join shift view."""
 
     template_name = "orders/join_shift.html"
 
-    permission_required = "orders.can_manage_shift_in_venue"
-    return_403 = True
-    accept_global_perms = True
-
-    def get(self, request, **kwargs):
-        """
-        GET request for JoinShiftView.
-
-        :param request: the request
-        :param kwargs: keyword arguments
-        :return: the Join shift view page for asking the user whether or not to join the shift
-        """
+    def dispatch(self, request, *args, **kwargs):
+        """Redirect already joined users to the management page and disallow for users without permissions."""
         shift = kwargs.get("shift")
-
         assignees = shift.assignees.all()
-
-        if request.user not in assignees:
-            return render(request, self.template_name, {"shift": shift})
-        else:
+        if request.user in assignees:
             return redirect("orders:shift_admin", shift=shift)
+        if not user_can_manage_shifts_in_venue(request.user, shift.venue):
+            raise PermissionDenied
+        return super(JoinShiftView, self).dispatch(request, *args, **kwargs)
 
     def post(self, request, **kwargs):
-        """
-        POST request for JoinShiftView.
-
-        :param request: the request
-        :param kwargs: keyword arguments
-        :return: the Join shift view page for asking the user whether or not to join the shift, if they agree this view
-        will redirect to the shift admin page, otherwise it will redirect to the index page
-        """
+        """Make users join the shift on POST."""
         shift = kwargs.get("shift")
 
         confirm = request.POST.get("confirm", None)
@@ -140,52 +129,6 @@ class JoinShiftView(PermissionRequiredMixin, TemplateView):
             return redirect("index")
         else:
             return render(request, self.template_name, {"shift": shift})
-
-    def get_permission_object(self):
-        """Get the object to check permissions for."""
-        obj = self.get_object()
-        return obj.venue
-
-    def get_object(self):
-        """Get the object for this view."""
-        return self.kwargs.get("shift")
-
-
-class ShiftAdminView(PermissionRequiredMixin, TemplateView):
-    """Admin view for starting shifts."""
-
-    template_name = "orders/shift_admin.html"
-
-    permission_required = "orders.can_manage_shift_in_venue"
-    return_403 = True
-    accept_global_perms = True
-
-    def get(self, request, **kwargs):
-        """
-        GET request for ShiftAdminView.
-
-        :param request: the request
-        :param kwargs: keyword arguments
-        :return: the Shift admin view page for seeing the current orders of a shift and modifying it
-        """
-        shift = kwargs.get("shift")
-        if request.user not in shift.assignees.all():
-            return redirect("orders:shift_join", shift=shift)
-
-        return render(
-            request,
-            self.template_name,
-            {"shift": shift, "has_change_order_permissions": request.user in shift.get_users_with_change_perms()},
-        )
-
-    def get_permission_object(self):
-        """Get the object to check permissions for."""
-        obj = self.get_object()
-        return obj.venue
-
-    def get_object(self):
-        """Get the object for this view."""
-        return self.kwargs.get("shift")
 
 
 def render_ordered_items_tab(request, item, current_page_url):

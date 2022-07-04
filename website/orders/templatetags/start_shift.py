@@ -4,6 +4,7 @@ from django.conf import settings
 from django.utils.datetime_safe import datetime
 
 from orders.models import OrderVenue
+from orders.services import user_can_manage_shifts_in_venue
 
 register = template.Library()
 
@@ -14,7 +15,7 @@ def render_start_shift_buttons(context, venues=None):
     if venues is None:
         venues = OrderVenue.objects.filter(venue__active=True).order_by("venue__name")
 
-    buttons = [{"venue": x} for x in venues if context["request"].user in x.get_users_with_shift_admin_perms()]
+    buttons = [{"venue": venue} for venue in venues if user_can_manage_shifts_in_venue(context["request"].user, venue)]
 
     return {"venues": buttons}
 

@@ -8,7 +8,6 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Q
-from guardian.shortcuts import get_objects_for_user
 
 from associations.models import Association
 from venues.models import Venue
@@ -89,16 +88,6 @@ class OrderVenue(models.Model):
     def __str__(self):
         """Representation by venue."""
         return str(self.venue)
-
-    def get_users_with_shift_admin_perms(self):
-        """Get users with permissions to manage shifts in this venue."""
-        users = []
-        for user in User.objects.all():
-            if self in get_objects_for_user(
-                user, "orders.can_manage_shift_in_venue", accept_global_perms=True, with_superuser=True
-            ):
-                users.append(user)
-        return users
 
 
 class Product(models.Model):
@@ -376,16 +365,6 @@ class Shift(models.Model):
             f"{self.end.strftime(self.HUMAN_DATE_FORMAT)}, {self.end_time}"
         )
 
-    def get_users_with_change_perms(self):
-        """Get users that my change this shift."""
-        users = []
-        for user in User.objects.all():
-            if self in get_objects_for_user(
-                user, "orders.change_shift", accept_global_perms=True, with_superuser=True
-            ):
-                users.append(user)
-        return users
-
     def _make_finalized(self):
         """Make this Shift ready to be finalized."""
         timezone = pytz.timezone(settings.TIME_ZONE)
@@ -447,12 +426,6 @@ class Shift(models.Model):
         """Clean a Shift."""
         self._clean()
         return super(Shift, self).clean()
-
-    def save_m2m(self):
-        """Save assignees m2m."""
-        for assignee in self.assignees.all():
-            if assignee not in self.venue.get_users_with_shift_admin_perms():
-                raise ValueError(f"{assignee} is not allowed to manage this shift.")
 
     def user_can_order_amount(self, user, amount=1):
         """

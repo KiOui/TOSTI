@@ -168,4 +168,4 @@ class OrderViewTests(TestCase):
         self.assertTrue(self.client.login(username=self.normal_user.username, password="temporary"))
         self.assertFalse(self.normal_user.has_perm("orders.can_manage_shift_in_venue", self.order_venue_1))
         response = self.client.get(reverse("orders:shift_admin", kwargs={"shift": self.shift}))
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 302)
