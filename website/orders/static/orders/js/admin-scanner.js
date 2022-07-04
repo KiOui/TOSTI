@@ -106,7 +106,8 @@ function add_product_from_barcode(result) {
             if (typeof (update_refresh_list) !== 'undefined') {
                 update_refresh_list();
             }
-            document.getElementById(POPUP_MODAL_ID).modal('hide');
+            let modal = bootstrap.Modal.getInstance(document.getElementById(POPUP_MODAL_ID));
+            modal.hide();
         }).catch(error => {
             console.log(error);
             console.log("No product data for barcode " + barcode + " .");
