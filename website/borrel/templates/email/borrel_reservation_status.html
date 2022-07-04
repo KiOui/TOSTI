@@ -1,7 +1,5 @@
 {% extends "email/email.html" %}
 
-{% url "borrel:list_reservations" as change_url %}
-
 {% block title %}Borrel Reservation status change{% endblock %}
 
 {% block content %}
@@ -18,7 +16,7 @@
         <strong>Status:</strong> <br>
         <p>{{ borrel_reservation.accepted|yesno:"Accepted,Denied,Unknown" }}</p>
         <p>
-            To see your reservations, visit <a href="https://{{ domain }}{{ change_url }}">https://{{ domain }}{{ change_url }}</a>.
+            To see your reservations, visit <a href="https://{{ domain }}{% url "borrel:list_reservations" %}">https://{{ domain }}{% url "borrel:list_reservations" %}</a>.
         </p>
     </div>
 {% endblock %}
