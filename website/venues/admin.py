@@ -54,6 +54,7 @@ class ReservationAdmin(admin.ModelAdmin):
         "start",
     ]
     search_fields = ["title"]
+    autocomplete_fields = ["user"]
     # date_hierarchy = "start"
     form = ReservationAdminForm
 

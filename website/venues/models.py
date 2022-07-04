@@ -81,3 +81,8 @@ class Reservation(models.Model):
                 f"{self.start:%Y-%m-%d %H:%M} - {self.end:%Y-%m-%d %H:%M})"
             )
         return f"Reservation {self.venue} - {self.title} ({self.start:%Y-%m-%d %H:%M} - {self.end:%Y-%m-%d %H:%M})"
+
+    class Meta:
+        """Meta class."""
+
+        ordering = ["-start", "-end", "title"]

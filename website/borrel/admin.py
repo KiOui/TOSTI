@@ -80,6 +80,7 @@ class BorrelReservationAdmin(admin.ModelAdmin):
 
     list_display = ["title", "association", "user_created", "start", "end", "accepted", "submitted"]
     search_fields = ["title", "user_created"]
+    autocomplete_fields = ["venue_reservation"]
     inlines = [ReservationItemInline]
     readonly_fields = (
         "created_at",
