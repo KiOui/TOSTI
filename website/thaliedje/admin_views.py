@@ -6,7 +6,8 @@ from django.views.generic import TemplateView
 
 from thaliedje.forms import SpotifyTokenForm
 from thaliedje.models import Player
-from thaliedje.views import COOKIE_CLIENT_ID
+
+COOKIE_CLIENT_ID = "client_id"
 
 
 class SpofityAuthorizeView(PermissionRequiredMixin, TemplateView):
