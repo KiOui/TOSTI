@@ -5,8 +5,6 @@ from django.views.generic import TemplateView
 from .models import Player, SpotifyQueueItem
 from .services import user_is_blacklisted
 
-COOKIE_CLIENT_ID = "client_id"
-
 
 class IndexView(TemplateView):
     """Index view for thaliedje."""
