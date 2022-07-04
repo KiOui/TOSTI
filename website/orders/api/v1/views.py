@@ -12,6 +12,7 @@ from rest_framework.generics import (
     ListAPIView,
     RetrieveUpdateAPIView,
     RetrieveDestroyAPIView,
+    get_object_or_404,
 )
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -196,10 +197,10 @@ class ShiftRetrieveUpdateAPIView(RetrieveUpdateAPIView):
         :return: super method or PermissionDenied when 'venue' POST data is None or when user does not have permission
         in indicated venue
         """
-        venue = request.data.get("venue")
+        shift = get_object_or_404(Shift.objects.get(pk=self.kwargs.get("pk")))
         if (
-            request.user.has_perm("orders.can_manage_shift_in_venue", venue)
-            and request.user in self.get_object().assignees.all()
+            request.user.has_perm("orders.can_manage_shift_in_venue", shift.venue)
+            and request.user in shift.assignees.all()
         ):
             return super().update(request, *args, **kwargs)
         else:
