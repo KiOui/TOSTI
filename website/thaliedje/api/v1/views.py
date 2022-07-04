@@ -18,13 +18,7 @@ from tosti.api.permissions import HasPermissionOnObject
 
 
 class PlayerListAPIView(ListAPIView):
-    """
-    Player List API View.
-
-    Permissions required: None
-
-    Use this endpoint to get a list of all installed Spotify Players.
-    """
+    """Get an overview of all players."""
 
     serializer_class = PlayerSerializer
     queryset = Player.objects.all()
@@ -37,27 +31,14 @@ class PlayerListAPIView(ListAPIView):
 
 
 class PlayerRetrieveAPIView(RetrieveAPIView):
-    """
-    Player Retrieve API View.
-
-    Permissions required: None
-
-    Use this endpoint to get the details of an installed Spotify Players.
-    """
+    """Get the current player."""
 
     serializer_class = PlayerSerializer
     queryset = Player.objects.all()
 
 
 class PlayerQueueListAPIView(ListAPIView):
-    """
-    Player Queue List API View.
-
-    Permissions required: None
-
-    Use this endpoint to get a list of tracks that are in the queue of the Spotify Player. Tracks are sorted on the
-    time that they were added, the track that was added last will appear first in the list.
-    """
+    """Get the current player's queue."""
 
     serializer_class = QueueItemSerializer
     queryset = SpotifyQueueItem.objects.all()
@@ -69,7 +50,7 @@ class PlayerQueueListAPIView(ListAPIView):
 
 
 class PlayerTrackSearchAPIView(APIView):
-    """Player Track Search API View."""
+    """API view to add tracks to search for tacks."""
 
     schema = CustomAutoSchema(
         manual_operations=[
@@ -97,11 +78,7 @@ class PlayerTrackSearchAPIView(APIView):
     required_scopes = ["thaliedje:request"]
 
     def get(self, request, **kwargs):
-        """
-        Search for a Spotify track.
-
-        Use this endpoint to search for a Spotify Track. Tracks can be searched via their Spotify id.
-        """
+        """Search for a track."""
         if user_is_blacklisted(self.request.user):
             return Response(status=status.HTTP_403_FORBIDDEN, data="You are blacklisted.")
 
@@ -120,7 +97,7 @@ class PlayerTrackSearchAPIView(APIView):
 
 
 class PlayerTrackAddAPIView(APIView):
-    """Player Track Add API View."""
+    """API view to add tracks to the player's queue."""
 
     schema = CustomAutoSchema(
         request_schema={"type": "object", "properties": {"id": {"type": "string", "example": "string"}}}
@@ -129,11 +106,7 @@ class PlayerTrackAddAPIView(APIView):
     required_scopes = ["thaliedje:request"]
 
     def post(self, request, **kwargs):
-        """
-        Add a Spotify Track to the queue.
-
-        Use this endpoint to add a spotify track to the queue.
-        """
+        """Add a track to the queue."""
         if user_is_blacklisted(self.request.user):
             return Response(status=status.HTTP_403_FORBIDDEN, data="You are blacklisted.")
 
@@ -150,24 +123,18 @@ class PlayerTrackAddAPIView(APIView):
 
 
 class PlayerPlayAPIView(APIView):
-    """Player Play API View."""
+    """API view to make player play."""
 
     permission_required = "thaliedje.can_control"
     permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
     required_scopes = ["thaliedje:manage"]
 
     def get_permission_object(self):
-        """Get the object to check permissions for."""
+        """Get the player to check permissions for."""
         return self.kwargs.get("player")
 
     def patch(self, request, **kwargs):
-        """
-        Player Play API View.
-
-        Permission required: thaliedje.can_control
-
-        Start playback on a Player.
-        """
+        """Make player play."""
         player = kwargs.get("player")
         try:
             services.player_start(player)
@@ -180,24 +147,18 @@ class PlayerPlayAPIView(APIView):
 
 
 class PlayerPauseAPIView(APIView):
-    """Player Pause API View."""
+    """API view to make player pause."""
 
     permission_required = "thaliedje.can_control"
     permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
     required_scopes = ["thaliedje:manage"]
 
     def get_permission_object(self):
-        """Get the object to check permissions for."""
+        """Get the player to check permissions for."""
         return self.kwargs.get("player")
 
     def patch(self, request, **kwargs):
-        """
-        Player Pause API View.
-
-        Permission required: thaliedje.can_control
-
-        Start playback on a Player.
-        """
+        """Make player pause."""
         player = kwargs.get("player")
         try:
             services.player_pause(player)
@@ -210,24 +171,18 @@ class PlayerPauseAPIView(APIView):
 
 
 class PlayerNextAPIView(APIView):
-    """Player Next API View."""
+    """API view to make player go to next song."""
 
     permission_required = "thaliedje.can_control"
     permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
     required_scopes = ["thaliedje:manage"]
 
     def get_permission_object(self):
-        """Get the object to check permissions for."""
+        """Get the player to check permissions for."""
         return self.kwargs.get("player")
 
     def patch(self, request, **kwargs):
-        """
-        Player Play API View.
-
-        Permission required: thaliedje.can_control
-
-        Start playback on a Player.
-        """
+        """Make player go to the next song."""
         player = kwargs.get("player")
         try:
             services.player_next(player)
@@ -240,24 +195,18 @@ class PlayerNextAPIView(APIView):
 
 
 class PlayerPreviousAPIView(APIView):
-    """Player Previous API View."""
+    """API view to make player go to previous song."""
 
     permission_required = "thaliedje.can_control"
     permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
     required_scopes = ["thaliedje:manage"]
 
     def get_permission_object(self):
-        """Get the object to check permissions for."""
+        """Get the player to check permissions for."""
         return self.kwargs.get("player")
 
     def patch(self, request, **kwargs):
-        """
-        Player Previous API View.
-
-        Permission required: thaliedje.can_control
-
-        Start playback on a Player.
-        """
+        """Make player go to the previous song."""
         player = kwargs.get("player")
         try:
             services.player_previous(player)
