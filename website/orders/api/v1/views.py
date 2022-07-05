@@ -52,7 +52,7 @@ class OrderListCreateAPIView(ListCreateAPIView):
 
     def get_queryset(self):
         """Get the queryset."""
-        return self.queryset.filter(shift=self.kwargs.get("shift")).order_by("created")
+        return self.queryset.filter(shift=self.kwargs.get("shift")).order_by("-prioritize", "created")
 
     def get_serializer_context(self):
         """Add shift to serializer context."""
