@@ -70,4 +70,5 @@ class PlayerSerializer(serializers.ModelSerializer):
             "venue",
             "track",
             "is_playing",
+            "current_volume",
         ]

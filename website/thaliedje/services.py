@@ -183,6 +183,24 @@ def player_previous(player):
         raise e
 
 
+def player_volume(player, volume_percent):
+    """
+    Set the volume of a Player.
+
+    :param player: the player
+    :param volume_percent: the volume percentage
+    :return: Nothing
+    :raises: SpotifyException on failure
+    """
+    try:
+        player.spotify.volume(volume_percent, device_id=player.playback_device_id)
+        player.current_volume = volume_percent
+        player.save()
+    except SpotifyException as e:
+        logging.error(e)
+        raise e
+
+
 def player_currently_playing(player):
     """
     Get currently playing music information.
