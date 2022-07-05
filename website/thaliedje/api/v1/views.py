@@ -199,7 +199,7 @@ class PlayerVolumeAPIView(APIView):
         player = kwargs.get("player")
         volume = int(request.data.get("volume"))
         try:
-            services.player_volume(player, volume)
+            services.set_player_volume(player, volume)
         except spotipy.SpotifyException as e:
             if e.http_status == 403:
                 return Response(status=status.HTTP_403_FORBIDDEN)

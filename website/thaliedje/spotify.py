@@ -46,6 +46,22 @@ class SpotifyCache:
             store_cache,
         )
 
+    def current_playback(self, player: Player, check_cache=True, store_cache=True):
+        """
+        Get the currently playback information.
+
+        :param player: the player object to retrieve track information for
+        :param check_cache: whether to check the cache for cached data first
+        :param store_cache: whether to store retrieved data to cache
+        :return a dictionary with information about the current playback
+        """
+        return self.cache.call_method_cached(
+            player.spotify.current_playback,
+            "{}_{}".format(player.id, inspect.currentframe().f_code.co_name),
+            check_cache,
+            store_cache,
+        )
+
     def pause_playback(self, player: Player, check_cache=True, store_cache=True):
         """Pause playback."""
         return self.cache.call_method_cached(

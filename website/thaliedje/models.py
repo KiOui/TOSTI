@@ -46,7 +46,6 @@ class Player(models.Model):
     client_secret = models.CharField(max_length=255)
     redirect_uri = models.CharField(max_length=255)
     venue = models.OneToOneField(Venue, on_delete=models.SET_NULL, null=True, blank=True)
-    current_volume = models.PositiveSmallIntegerField(null=True, blank=True, validators=[MaxValueValidator(100)])
 
     class Meta:
         """Meta class."""

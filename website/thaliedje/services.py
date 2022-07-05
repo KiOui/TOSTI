@@ -183,7 +183,22 @@ def player_previous(player):
         raise e
 
 
-def player_volume(player, volume_percent):
+def get_player_volume(player):
+    """
+    Get the volume of a player.
+
+    :param player: the player
+    :return: the volume
+    :raises: SpotifyException on failure
+    """
+    try:
+        return SpotifyCache.instance(player.id).current_playback(player)["device"]["volume_percent"]
+    except SpotifyException as e:
+        logging.error(e)
+        raise e
+
+
+def set_player_volume(player, volume_percent):
     """
     Set the volume of a Player.
 
@@ -194,8 +209,6 @@ def player_volume(player, volume_percent):
     """
     try:
         player.spotify.volume(volume_percent, device_id=player.playback_device_id)
-        player.current_volume = volume_percent
-        player.save()
     except SpotifyException as e:
         logging.error(e)
         raise e

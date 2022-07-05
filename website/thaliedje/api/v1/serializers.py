@@ -1,4 +1,4 @@
-from thaliedje.services import player_currently_playing
+from thaliedje.services import player_currently_playing, get_player_volume
 from users.api.v1.serializers import UserSerializer
 from rest_framework import serializers
 from thaliedje import models
@@ -42,6 +42,7 @@ class PlayerSerializer(serializers.ModelSerializer):
 
     is_playing = serializers.SerializerMethodField()
     track = serializers.SerializerMethodField()
+    current_volume = serializers.SerializerMethodField()
 
     def get_track(self, instance):
         """Get track as a dict."""
@@ -59,6 +60,10 @@ class PlayerSerializer(serializers.ModelSerializer):
         """Get if the player is playing."""
         currently_playing = player_currently_playing(instance)
         return currently_playing is not False and currently_playing["is_playing"]
+
+    def get_current_volume(self, instance):
+        """Get current volume."""
+        return get_player_volume(instance)
 
     class Meta:
         """Meta class."""

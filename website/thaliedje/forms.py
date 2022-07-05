@@ -81,4 +81,4 @@ class PlayerAdminForm(forms.ModelForm):
         """Meta class."""
 
         model = Player
-        exclude = ["playback_device_name", "current_volume"]
+        exclude = ["playback_device_name"]
