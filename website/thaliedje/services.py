@@ -192,7 +192,8 @@ def get_player_volume(player):
     :raises: SpotifyException on failure
     """
     try:
-        return SpotifyCache.instance(player.id).current_playback(player)["device"]["volume_percent"]
+        current_playback = SpotifyCache.instance(player.id).current_playback(player)
+        return current_playback["device"]["volume_percent"] if current_playback is not None else None
     except SpotifyException as e:
         logging.error(e)
         raise e
