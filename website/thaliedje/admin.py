@@ -31,10 +31,6 @@ class PlayerAdmin(GuardedModelAdmin):
     form = PlayerAdminForm
     view_on_site = True
 
-    exclude = [
-        "current_volume",
-    ]
-
     def get_configured(self, obj):
         """Get whether a Player  is configured."""
         return obj.configured

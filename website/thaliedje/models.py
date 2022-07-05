@@ -38,7 +38,7 @@ class Player(models.Model):
         blank=True,
         help_text=(
             "When configuring this Spotify account for the first time, make sure to have"
-            " the Spotify accounnt active on at least one playback device to complete"
+            " the Spotify account active on at least one playback device to complete"
             " configuration."
         ),
     )

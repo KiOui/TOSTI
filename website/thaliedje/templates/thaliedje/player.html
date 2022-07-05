@@ -66,6 +66,7 @@
         methods: {
             play() {
                 this.doing_call = true;
+                clearTimeout(this.refresh_timer);
                 fetch(
                     '{% url "v1:player_play" player=player %}',
                     {
@@ -77,7 +78,7 @@
                     }
                 ).then(response => {
                     if (response.status === 200) {
-                        return response;
+                        return response.json();
                     } else {
                         throw response;
                     }
@@ -96,6 +97,7 @@
             },
             pause() {
                 this.doing_call = true;
+                clearTimeout(this.refresh_timer);
                 fetch(
                     '{% url "v1:player_pause" player=player %}',
                     {
@@ -107,7 +109,7 @@
                     }
                 ).then(response => {
                     if (response.status === 200) {
-                        return response;
+                        return response.json();
                     } else {
                         throw response;
                     }
@@ -126,6 +128,7 @@
             },
             forward() {
                 this.doing_call = true;
+                clearTimeout(this.refresh_timer);
                 fetch(
                     '{% url "v1:player_next" player=player %}',
                     {
@@ -137,7 +140,7 @@
                     }
                 ).then(response => {
                     if (response.status === 200) {
-                        return response;
+                        return response.json();
                     } else {
                         throw response;
                     }
@@ -156,6 +159,7 @@
             },
             backward() {
                 this.doing_call = true;
+                clearTimeout(this.refresh_timer);
                 fetch(
                     '{% url "v1:player_previous" player=player %}',
                     {
@@ -167,7 +171,7 @@
                     }
                 ).then(response => {
                     if (response.status === 200) {
-                        return response;
+                        return response.json();
                     } else {
                         throw response;
                     }
@@ -185,7 +189,7 @@
                 });
             },
             setVolume(value) {
-                this.doing_call = true;
+                clearTimeout(this.refresh_timer);
                 fetch(
                     '{% url "v1:player_volume" player=player %}',
                     {
@@ -201,7 +205,7 @@
                     }
                 ).then(response => {
                     if (response.status === 200) {
-                        return response;
+                        return response.json();
                     } else {
                         throw response;
                     }
@@ -214,12 +218,11 @@
                         show_error_from_api(error);
                     }
                 }).finally(() => {
-                    this.doing_call = false;
                     this.refresh_timer = setTimeout(this.refresh, 5000);
                 });
             },
             refresh() {
-                clearTimeout(update_timer);
+                clearTimeout(this.refresh_timer);
                 return fetch(
                     "{% url "v1:player_retrieve" pk=player.id %}",
                     {
