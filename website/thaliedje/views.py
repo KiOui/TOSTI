@@ -20,15 +20,15 @@ class NowPlayingView(TemplateView):
     def get_context_data(self, **kwargs):
         """Get the context data for the view."""
         context = super().get_context_data(**kwargs)
-        venue = kwargs.get("venue")
-        context["venue"] = venue
+        player = kwargs.get("player")
+        context["player"] = player
 
-        player = Player.get_player(venue)
-        if player is None or not player.configured:
+        if not player.configured:
             context["disabled"] = True
             return context
 
-        context["player"] = player
+        context["venue"] = player.venue
+
         context["can_request"] = self.request.user.is_authenticated and not user_is_blacklisted(self.request.user)
         return context
 

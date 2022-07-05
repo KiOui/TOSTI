@@ -3,7 +3,7 @@
 <div class="player" id="player-container-{{ player.id }}">
 <template v-if="player_data.track !== null">
     <div class="w-50 mx-auto mb-2">
-        <a href="{% url "thaliedje:now_playing" venue=player.venue %}">
+        <a href="{% url "thaliedje:now_playing" player=player %}">
             <img class="w-100" :src="player_data.track.image"/>
         </a>
     </div>

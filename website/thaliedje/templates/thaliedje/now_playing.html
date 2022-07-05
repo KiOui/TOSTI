@@ -5,8 +5,7 @@
     <div class="container-sm mt-5">
         <h1 class="mb-5"><i class="fab fa-spotify"></i> {{ player }}</h1>
         {% if disabled %}
-            <p class="alert alert-warning">There is no player specified for {{ venue.name }}. Contact an administrator
-            to specify one for this venue.</p>
+            <p class="alert alert-warning">Player is disabled.</p>
         {% else %}
             <div class="row flex-row-reverse">
                 <div class="col-md-5">

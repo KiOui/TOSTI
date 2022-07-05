@@ -31,6 +31,7 @@ class Player(models.Model):
     )  # The required Spotify API permissions
 
     display_name = models.CharField(max_length=255, default="", blank=True)
+    slug = models.SlugField(unique=True, max_length=100)
     playback_device_id = models.CharField(max_length=255, default="", blank=True)
     playback_device_name = models.CharField(
         max_length=255,
@@ -70,7 +71,11 @@ class Player(models.Model):
 
     def get_absolute_url(self):
         """Get the front-end url for a Player."""
-        return reverse("thaliedje:now_playing", args=[self.venue])
+        return (
+            reverse("thaliedje:now_playing", args=[self.venue])
+            if self.venue
+            else reverse("thaliedje:now_playing", args=[self])
+        )
 
     @staticmethod
     def get_player(venue):

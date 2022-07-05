@@ -30,6 +30,7 @@ class PlayerAdmin(GuardedModelAdmin):
     ]
     form = PlayerAdminForm
     view_on_site = True
+    prepopulated_fields = {"slug": ("display_name",)}
 
     def get_configured(self, obj):
         """Get whether a Player  is configured."""

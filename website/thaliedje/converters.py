@@ -1,19 +1,19 @@
-from django.urls.converters import IntConverter
+from django.urls.converters import SlugConverter
 from .models import Player
 
 
-class PlayerConverter(IntConverter):
+class PlayerConverter(SlugConverter):
     """Converter for Player model."""
 
     def to_python(self, value):
         """
-        Cast integer to Player.
+        Cast slug to Player.
 
-        :param value: the primary key of the Player
+        :param value: the slug of the Player
         :return: a Player or ValueError
         """
         try:
-            return Player.objects.get(id=int(value))
+            return Player.objects.get(slug=value)
         except Player.DoesNotExist:
             raise ValueError
 
@@ -22,6 +22,6 @@ class PlayerConverter(IntConverter):
         Cast an object of Player to a string.
 
         :param obj: the Player object
-        :return: the primary key of the Player object in string format
+        :return: the slug of the Player object
         """
-        return str(obj.pk)
+        return obj.slug
