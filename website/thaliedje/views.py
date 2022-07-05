@@ -2,7 +2,7 @@ from django.core.paginator import Paginator
 from django.template.loader import render_to_string
 from django.views.generic import TemplateView
 
-from .models import Player, SpotifyQueueItem
+from .models import SpotifyQueueItem
 from .services import user_is_blacklisted
 
 

@@ -1,6 +1,5 @@
 import os
 
-from django.core.validators import MaxValueValidator
 from django.db import models
 from django.conf import settings
 from django.urls import reverse
