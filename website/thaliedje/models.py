@@ -1,5 +1,6 @@
 import os
 
+from django.core.validators import MaxValueValidator
 from django.db import models
 from django.conf import settings
 from django.urls import reverse
@@ -37,7 +38,7 @@ class Player(models.Model):
         blank=True,
         help_text=(
             "When configuring this Spotify account for the first time, make sure to have"
-            " the Spotify accounnt active on at least one playback device to complete"
+            " the Spotify account active on at least one playback device to complete"
             " configuration."
         ),
     )
@@ -45,6 +46,7 @@ class Player(models.Model):
     client_secret = models.CharField(max_length=255)
     redirect_uri = models.CharField(max_length=255)
     venue = models.OneToOneField(Venue, on_delete=models.SET_NULL, null=True, blank=True)
+    current_volume = models.PositiveSmallIntegerField(null=True, blank=True, validators=[MaxValueValidator(100)])
 
     class Meta:
         """Meta class."""

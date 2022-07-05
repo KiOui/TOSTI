@@ -125,6 +125,7 @@ class PlayerTrackAddAPIView(APIView):
 class PlayerPlayAPIView(APIView):
     """API view to make player play."""
 
+    serializer_class = PlayerSerializer
     permission_required = "thaliedje.can_control"
     permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
     required_scopes = ["thaliedje:manage"]
@@ -143,12 +144,15 @@ class PlayerPlayAPIView(APIView):
                 return Response(status=status.HTTP_403_FORBIDDEN)
             else:
                 return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
-        return Response(status=status.HTTP_200_OK)
+        return Response(
+            status=status.HTTP_200_OK, data=self.serializer_class(player, context={"request": request}).data
+        )
 
 
 class PlayerPauseAPIView(APIView):
     """API view to make player pause."""
 
+    serializer_class = PlayerSerializer
     permission_required = "thaliedje.can_control"
     permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
     required_scopes = ["thaliedje:manage"]
@@ -167,12 +171,49 @@ class PlayerPauseAPIView(APIView):
                 return Response(status=status.HTTP_403_FORBIDDEN)
             else:
                 return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
-        return Response(status=status.HTTP_200_OK)
+        return Response(
+            status=status.HTTP_200_OK, data=self.serializer_class(player, context={"request": request}).data
+        )
+
+
+class PlayerVolumeAPIView(APIView):
+    """API view to change the player volume."""
+
+    serializer_class = PlayerSerializer
+    schema = CustomAutoSchema(
+        request_schema={
+            "type": "object",
+            "properties": {"volume_percent": {"type": "integer", "minimum": 0, "maximum": 100, "example": 75}},
+        }
+    )
+    permission_required = "thaliedje.can_control"
+    permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
+    required_scopes = ["thaliedje:manage"]
+
+    def get_permission_object(self):
+        """Get the player to check permissions for."""
+        return self.kwargs.get("player")
+
+    def patch(self, request, **kwargs):
+        """Make player pause."""
+        player = kwargs.get("player")
+        volume = int(request.data.get("volume"))
+        try:
+            services.player_volume(player, volume)
+        except spotipy.SpotifyException as e:
+            if e.http_status == 403:
+                return Response(status=status.HTTP_403_FORBIDDEN)
+            else:
+                return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        return Response(
+            status=status.HTTP_200_OK, data=self.serializer_class(player, context={"request": request}).data
+        )
 
 
 class PlayerNextAPIView(APIView):
     """API view to make player go to next song."""
 
+    serializer_class = PlayerSerializer
     permission_required = "thaliedje.can_control"
     permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
     required_scopes = ["thaliedje:manage"]
@@ -191,12 +232,15 @@ class PlayerNextAPIView(APIView):
                 return Response(status=status.HTTP_403_FORBIDDEN)
             else:
                 return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
-        return Response(status=status.HTTP_200_OK)
+        return Response(
+            status=status.HTTP_200_OK, data=self.serializer_class(player, context={"request": request}).data
+        )
 
 
 class PlayerPreviousAPIView(APIView):
     """API view to make player go to previous song."""
 
+    serializer_class = PlayerSerializer
     permission_required = "thaliedje.can_control"
     permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
     required_scopes = ["thaliedje:manage"]
@@ -215,4 +259,6 @@ class PlayerPreviousAPIView(APIView):
                 return Response(status=status.HTTP_403_FORBIDDEN)
             else:
                 return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
-        return Response(status=status.HTTP_200_OK)
+        return Response(
+            status=status.HTTP_200_OK, data=self.serializer_class(player, context={"request": request}).data
+        )
