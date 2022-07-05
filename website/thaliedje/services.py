@@ -209,6 +209,7 @@ def set_player_volume(player, volume_percent):
     """
     try:
         player.spotify.volume(volume_percent, device_id=player.playback_device_id)
+        SpotifyCache.instance(player.id).reset()
     except SpotifyException as e:
         logging.error(e)
         raise e
