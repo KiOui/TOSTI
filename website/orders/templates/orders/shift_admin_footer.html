@@ -12,32 +12,32 @@
                         <div v-if="shift.can_order" :id="`shift-status-${shift.id}`"
                              class="h-100 btn btn-success btn-ml m-auto"
                              v-on:click="adjust_can_order(false)">
-                            <p class="font-footer flex-fixed footer-button-icon"><i class="far fa-hand-paper"></i></p>
+                            <p class="font-footer flex-fixed footer-button-icon"><i class="fa-solid fa-hand"></i></p>
                             <p class="font-footer footer-button-text">Allow/disallow</p>
                         </div>
                         <div v-else :id="`shift-status-${shift.id}`" class="h-100 btn btn-ml m-auto btn-danger"
                              v-on:click="adjust_can_order(true)">
-                            <p class="font-footer flex-fixed footer-button-icon"><i class="far fa-hand-paper"></i></p>
+                            <p class="font-footer flex-fixed footer-button-icon"><i class="fa-solid fa-hand"></i></p>
                             <p class="font-footer footer-button-text">Allow/disallow</p>
                         </div>
                     </div>
                     <div class="col expand-mobile">
                         <div class="h-100 btn btn-ml btn-on m-auto"
                              v-on:click="add_time()">
-                            <p class="font-footer flex-fixed footer-button-icon"><i class="far fa-clock"></i> + 5</p>
+                            <p class="font-footer flex-fixed footer-button-icon"><i class="fa-solid fa-clock"></i> + 5</p>
                             <p class="font-footer footer-button-text">Extend time</p>
                         </div>
                     </div>
                     <div class="col expand-mobile">
                         <div class="h-100 btn btn-ml btn-on m-auto"
                              v-on:click="add_capacity()">
-                            <p class="font-footer flex-fixed footer-button-icon"><i class="fas fa-list"></i> + 5</p>
+                            <p class="font-footer flex-fixed footer-button-icon"><i class="fa-solid fa-list"></i> + 5</p>
                             <p class="font-footer footer-button-text">Add orders</p>
                         </div>
                     </div>
                     <div class="col expand-mobile">
                         <div class="h-100 btn btn-ml btn-on m-auto" data-bs-toggle="modal" data-bs-target="#scanner-popup">
-                            <p class="font-footer flex-fixed footer-button-icon"><i class="fas fa-barcode"></i></p>
+                            <p class="font-footer flex-fixed footer-button-icon"><i class="fa-solid fa-barcode"></i></p>
                             <p class="font-footer footer-button-text">Barcode scanner</p>
                         </div>
                     </div>
@@ -45,7 +45,7 @@
                 <div class="col expand-mobile">
                     <a href="{% url "orders:shift_overview" shift=shift %}">
                         <div class="h-100 btn btn-ml btn-on m-auto w-100">
-                            <p class="font-footer flex-fixed footer-button-icon"><i class="fas fa-users"></i></p>
+                            <p class="font-footer flex-fixed footer-button-icon"><i class="fa-solid fa-users"></i></p>
                             <p class="font-footer footer-button-text">Order page</p>
                         </div>
                     </a>
@@ -53,7 +53,7 @@
                 <div class="col expand-mobile">
                     <a href="{% url "admin:orders_shift_change" shift.id %}">
                         <div class="h-100 btn btn-ml btn-on m-auto w-100">
-                            <p class="font-footer flex-fixed footer-button-icon"><i class="fas fa-cog"></i></p>
+                            <p class="font-footer flex-fixed footer-button-icon"><i class="fa-solid fa-cog"></i></p>
                             <p class="font-footer footer-button-text">Settings</p>
                         </div>
                     </a>
@@ -61,7 +61,7 @@
                 <div v-if="!shift.finalized" class="col expand-mobile">
                     <div class="h-100 btn btn-ml m-auto btn-danger" style="cursor: pointer"
                          v-on:click="finalize_shift()">
-                        <p class="font-footer flex-fixed footer-button-icon"><i class="fas fa-times-circle"></i></p>
+                        <p class="font-footer flex-fixed footer-button-icon"><i class="fa-solid fa-times-circle"></i></p>
                         <p class="font-footer footer-button-text">Finalize shift</p>
                     </div>
                 </div>
@@ -69,7 +69,7 @@
             <button id="footer-toggler" class="navbar-toggler m-auto" style="border: 0" type="button"
                     data-bs-toggle="collapse"
                     data-bs-target="#footer-menu">
-                <i class="fas fa-caret-up text-white"></i>
+                <i class="fa-solid fa-caret-up text-white"></i>
             </button>
         </div>
     </footer>

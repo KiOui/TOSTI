@@ -12,9 +12,9 @@
             No assignees
         </template>
     </p>
-    <p v-if="shift.finalized" class="alert alert-danger"><i class="far fa-hand-paper"></i> This shift is closed.</p>
-    <p v-else-if="!shift.can_order" class="alert alert-danger"><i class="far fa-hand-paper"></i> This shift does not accept orders at this moment.</p>
-    <p v-else-if="!shift.is_active" class="alert alert-danger"><i class="far fa-hand-paper"></i> This shift is not active.</p>
+    <p v-if="shift.finalized" class="alert alert-danger"><i class="fa-solid fa-hand"></i> This shift is closed.</p>
+    <p v-else-if="!shift.can_order" class="alert alert-danger"><i class="fa-solid fa-hand"></i> This shift does not accept orders at this moment.</p>
+    <p v-else-if="!shift.is_active" class="alert alert-danger"><i class="fa-solid fa-hand"></i> This shift is not active.</p>
 </div>
 
 <script>

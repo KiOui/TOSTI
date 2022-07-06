@@ -380,6 +380,14 @@ pycodestyle = ">=2.7.0,<2.8.0"
 pyflakes = ">=2.3.0,<2.4.0"
 
 [[package]]
+name = "fontawesomefree"
+version = "6.1.1"
+description = "Font Awesome Free"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "freezegun"
 version = "1.2.1"
 description = "Let your Python tests travel through time"
@@ -875,7 +883,7 @@ lxml = ">=3.8"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "a46b335fa55c5a0feb8700428dc3cc887fdc0d810272f17cae2f92a325e0383f"
+content-hash = "0da2e1d8299094e704fe681819d0b6c77b2c79cf827f8057d191b7c4268a1e41"
 
 [metadata.files]
 asgiref = [
@@ -1137,6 +1145,9 @@ et-xmlfile = [
 flake8 = [
     {file = "flake8-3.9.2-py2.py3-none-any.whl", hash = "sha256:bf8fd333346d844f616e8d47905ef3a3384edae6b4e9beb0c5101e25e3110907"},
     {file = "flake8-3.9.2.tar.gz", hash = "sha256:07528381786f2a6237b061f6e96610a4167b226cb926e2aa2b6b1d78057c576b"},
+]
+fontawesomefree = [
+    {file = "fontawesomefree-6.1.1-py3-none-any.whl", hash = "sha256:b077739369c013e8c8cf5edd59cb7fca3a5b16803d632cd466a62fd2e28937cb"},
 ]
 freezegun = [
     {file = "freezegun-1.2.1-py3-none-any.whl", hash = "sha256:15103a67dfa868ad809a8f508146e396be2995172d25f927e48ce51c0bf5cb09"},
