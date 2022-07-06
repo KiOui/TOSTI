@@ -506,7 +506,7 @@ class Order(models.Model):
     class Meta:
         """Meta class."""
 
-        ordering = ["created"]
+        ordering = ["-created"]
 
     def __str__(self):
         """

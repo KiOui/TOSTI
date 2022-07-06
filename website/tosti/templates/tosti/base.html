@@ -1,6 +1,6 @@
 {% load static django_bootstrap5 %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-100">
 <head>
     <meta charset="UTF-8">
     <title>
@@ -38,7 +38,7 @@
     <!-- TaTa.js notifications -->
     <script src="{% static 'tosti/js/tata.js' %}"></script>
 </head>
-<body>
+<body class="d-flex flex-column h-100">
 <div id="page-container">
     {% block header %}
         <nav class="navbar navbar-expand-lg site-header sticky-top navbar-dark">
@@ -135,9 +135,9 @@
     <div class="page">
         {% block page %}{% endblock %}
     </div>
-    {% block footer %}
-    {% endblock %}
 </div>
+{% block footer %}
+{% endblock %}
 {% bootstrap_javascript %}
 {% block js %}{% endblock %}
 </body>

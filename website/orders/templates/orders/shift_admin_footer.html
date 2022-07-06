@@ -2,73 +2,82 @@
 
 <link rel="stylesheet" href="{% static 'orders/css/admin-footer.css' %}"/>
 
-<div id="admin-footer-wrapper-{{ shift.id }}">
+<div id="admin-footer-wrapper-{{ shift.id }}" class="mt-auto page-footer">
     <!-- Admin footer -->
-    <footer v-on:click="stop_propagation" class="page-footer navbar navbar-expand-md fixed-bottom" id="footer-container">
+    <footer class="navbar navbar-expand-md" id="footer-container">
         <div class="container text-center">
-            <div class="row flex-grow-1 navbar-collapse collapse" id="footer-menu" ref="footer_menu">
-                <template v-if="!shift.finalized">
-                    <div class="col expand-mobile">
-                        <div v-if="shift.can_order" :id="`shift-status-${shift.id}`"
-                             class="h-100 btn btn-success btn-ml m-auto"
-                             v-on:click="adjust_can_order(false)">
-                            <p class="font-footer flex-fixed footer-button-icon"><i class="fa-solid fa-hand"></i></p>
-                            <p class="font-footer footer-button-text">Allow/disallow</p>
-                        </div>
-                        <div v-else :id="`shift-status-${shift.id}`" class="h-100 btn btn-ml m-auto btn-danger"
-                             v-on:click="adjust_can_order(true)">
-                            <p class="font-footer flex-fixed footer-button-icon"><i class="fa-solid fa-hand"></i></p>
-                            <p class="font-footer footer-button-text">Allow/disallow</p>
-                        </div>
-                    </div>
-                    <div class="col expand-mobile">
-                        <div class="h-100 btn btn-ml btn-on m-auto"
-                             v-on:click="add_time()">
-                            <p class="font-footer flex-fixed footer-button-icon"><i class="fa-solid fa-clock"></i> + 5</p>
-                            <p class="font-footer footer-button-text">Extend time</p>
-                        </div>
-                    </div>
-                    <div class="col expand-mobile">
-                        <div class="h-100 btn btn-ml btn-on m-auto"
-                             v-on:click="add_capacity()">
-                            <p class="font-footer flex-fixed footer-button-icon"><i class="fa-solid fa-list"></i> + 5</p>
-                            <p class="font-footer footer-button-text">Add orders</p>
-                        </div>
-                    </div>
-                    <div class="col expand-mobile">
-                        <div class="h-100 btn btn-ml btn-on m-auto" data-bs-toggle="modal" data-bs-target="#scanner-popup">
-                            <p class="font-footer flex-fixed footer-button-icon"><i class="fa-solid fa-barcode"></i></p>
-                            <p class="font-footer footer-button-text">Barcode scanner</p>
-                        </div>
-                    </div>
-                </template>
-                <div class="col expand-mobile">
-                    <a href="{% url "orders:shift_overview" shift=shift %}">
-                        <div class="h-100 btn btn-ml btn-on m-auto w-100">
-                            <p class="font-footer flex-fixed footer-button-icon"><i class="fa-solid fa-users"></i></p>
-                            <p class="font-footer footer-button-text">Order page</p>
-                        </div>
-                    </a>
+            <div class="offcanvas offcanvas-bottom" tabindex="-1" id="footer-menu" aria-labelledby="footer-menu-label">
+                <div class="offcanvas-header" style="background-color: var(--nav-background-color);">
+                        <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="offcanvas"
+                                aria-label="Close"></button>
                 </div>
-                <div class="col expand-mobile">
-                    <a href="{% url "admin:orders_shift_change" shift.id %}">
-                        <div class="h-100 btn btn-ml btn-on m-auto w-100">
-                            <p class="font-footer flex-fixed footer-button-icon"><i class="fa-solid fa-cog"></i></p>
-                            <p class="font-footer footer-button-text">Settings</p>
+                <div class="offcanvas-body" style="background-color: var(--nav-background-color);">
+                    <div class="row flex-grow-1">
+                        <template v-if="!shift.finalized">
+                            <div class="col expand-mobile">
+                                <div v-if="shift.can_order" :id="`shift-status-${shift.id}`"
+                                     class="h-100 btn btn-success btn-ml m-auto"
+                                     v-on:click="adjust_can_order(false)">
+                                    <p class="font-footer flex-fixed footer-button-icon"><i class="fa-solid fa-hand"></i></p>
+                                    <p class="font-footer footer-button-text">Allow/disallow</p>
+                                </div>
+                                <div v-else :id="`shift-status-${shift.id}`" class="h-100 btn btn-ml m-auto btn-danger"
+                                     v-on:click="adjust_can_order(true)">
+                                    <p class="font-footer flex-fixed footer-button-icon"><i class="fa-solid fa-hand"></i></p>
+                                    <p class="font-footer footer-button-text">Allow/disallow</p>
+                                </div>
+                            </div>
+                            <div class="col expand-mobile">
+                                <div class="h-100 btn btn-ml btn-on m-auto"
+                                     v-on:click="add_time()">
+                                    <p class="font-footer flex-fixed footer-button-icon"><i class="fa-solid fa-clock"></i> + 5</p>
+                                    <p class="font-footer footer-button-text">Extend time</p>
+                                </div>
+                            </div>
+                            <div class="col expand-mobile">
+                                <div class="h-100 btn btn-ml btn-on m-auto"
+                                     v-on:click="add_capacity()">
+                                    <p class="font-footer flex-fixed footer-button-icon"><i class="fa-solid fa-list"></i> + 5</p>
+                                    <p class="font-footer footer-button-text">Add orders</p>
+                                </div>
+                            </div>
+                            <div class="col expand-mobile">
+                                <div class="h-100 btn btn-ml btn-on m-auto" data-bs-toggle="modal" data-bs-target="#scanner-popup">
+                                    <p class="font-footer flex-fixed footer-button-icon"><i class="fa-solid fa-barcode"></i></p>
+                                    <p class="font-footer footer-button-text">Barcode scanner</p>
+                                </div>
+                            </div>
+                        </template>
+                        <div class="col expand-mobile">
+                            <a href="{% url "orders:shift_overview" shift=shift %}">
+                                <div class="h-100 btn btn-ml btn-on m-auto w-100">
+                                    <p class="font-footer flex-fixed footer-button-icon"><i class="fa-solid fa-users"></i></p>
+                                    <p class="font-footer footer-button-text">Order page</p>
+                                </div>
+                            </a>
                         </div>
-                    </a>
-                </div>
-                <div v-if="!shift.finalized" class="col expand-mobile">
-                    <div class="h-100 btn btn-ml m-auto btn-danger" style="cursor: pointer"
-                         v-on:click="finalize_shift()">
-                        <p class="font-footer flex-fixed footer-button-icon"><i class="fa-solid fa-times-circle"></i></p>
-                        <p class="font-footer footer-button-text">Finalize shift</p>
+                        <div class="col expand-mobile">
+                            <a href="{% url "admin:orders_shift_change" shift.id %}">
+                                <div class="h-100 btn btn-ml btn-on m-auto w-100">
+                                    <p class="font-footer flex-fixed footer-button-icon"><i class="fa-solid fa-cog"></i></p>
+                                    <p class="font-footer footer-button-text">Settings</p>
+                                </div>
+                            </a>
+                        </div>
+                        <div v-if="!shift.finalized" class="col expand-mobile">
+                            <div class="h-100 btn btn-ml m-auto btn-danger" style="cursor: pointer"
+                                 v-on:click="finalize_shift()">
+                                <p class="font-footer flex-fixed footer-button-icon"><i class="fa-solid fa-times-circle"></i></p>
+                                <p class="font-footer footer-button-text">Finalize shift</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
             <button id="footer-toggler" class="navbar-toggler m-auto" style="border: 0" type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#footer-menu">
+                    data-bs-toggle="offcanvas"
+                    data-bs-target="#footer-menu"
+                    aria-controls="footer-menu">
                 <i class="fa-solid fa-caret-up text-white"></i>
             </button>
         </div>
@@ -94,22 +103,8 @@
                 .then(json => {
                     this.shift = json;
                 });
-            // Close mobile footer automatically upon pressing out of the footer
-            window.addEventListener('click', () => {
-                if (document.getElementById('footer-menu').classList.contains('show') &&
-                    window.getComputedStyle(document.getElementById('footer-toggler')).display !== "none") {
-                    document.getElementById('footer-toggler').click();
-                }
-            });
         },
         methods: {
-            // Stop propagating the click event if pressed inside the mobile footer
-            stop_propagation(event) {
-                if (!(get_parents(event.target).filter((element) => {return element.id === 'footer-toggler'}).length > 0 || event.target.id === "footer-toggler") &&
-                    !(get_parents(event.target).filter((element) => {return element.id === 'overview-button'}).length > 0 || event.target.id === "overview-button")) {
-                    event.stopPropagation();
-                }
-            },
             adjust_can_order(can_order) {
                 fetch(
                     '{% url "v1:shift_retrieveupdate" pk=shift.pk %}',
