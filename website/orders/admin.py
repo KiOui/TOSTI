@@ -241,7 +241,14 @@ class OrderAdmin(AutocompleteFilterMixin, ImportExportModelAdmin):
         "paid",
         "shift__venue",
     ]
-    search_fields = ["user", "shift"]
+    search_fields = [
+        "user__first_name",
+        "user__last_name",
+        "user__full_name",
+        "user__email",
+        "user__username",
+        "user_association__name",
+    ]
 
     actions = ["set_ready", "set_paid"]
 
