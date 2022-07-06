@@ -49,7 +49,7 @@
                         center: 'title',
                         right: 'prev,next today'
                     },
-                    initialView: 'timeGridWeek',
+                    initialView: window.innerWidth < 767 ? 'timeGridDay':'timeGridWeek',
                     weekNumbers: true,
                     weekends: true,
                     firstDay: 1,
