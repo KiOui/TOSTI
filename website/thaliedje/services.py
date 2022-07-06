@@ -130,6 +130,10 @@ def player_start(player):
     :raises: SpotifyException on failure
     """
     try:
+        if SpotifyCache.instance(player.id).current_playback(player) is None:
+            # If the playback device is not active, make it active
+            player.spotify.transfer_playback(player.playback_device_id)
+
         SpotifyCache.instance(player.id).start_playback(player)
     except SpotifyException as e:
         logging.error(e)
