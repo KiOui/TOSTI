@@ -4,9 +4,13 @@
 
 <div id="admin-footer-wrapper-{{ shift.id }}">
     <!-- Admin footer -->
-    <footer v-on:click="stop_propagation" class="page-footer navbar navbar-expand-md fixed-bottom" id="footer-container">
+    <footer v-on:click="stop_propagation" class="page-footer navbar navbar-expand-md" id="footer-container">
         <div class="container text-center">
-            <div class="row flex-grow-1 navbar-collapse collapse" id="footer-menu" ref="footer_menu">
+            <div class="row flex-grow-1 offcanvas offcanvas-end" tabindex="-1" id="footer-menu" aria-labelledby="footer-menu-label" ref="footer_menu">
+                <div class="offcanvas-header" style="background-color: var(--nav-background-color);">
+                        <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="offcanvas"
+                                aria-label="Close"></button>
+                    </div>
                 <template v-if="!shift.finalized">
                     <div class="col expand-mobile">
                         <div v-if="shift.can_order" :id="`shift-status-${shift.id}`"
@@ -67,8 +71,9 @@
                 </div>
             </div>
             <button id="footer-toggler" class="navbar-toggler m-auto" style="border: 0" type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#footer-menu">
+                    data-bs-toggle="offcanvas"
+                    data-bs-target="#footer-menu"
+                    aria-controls="footer-menu">
                 <i class="fas fa-caret-up text-white"></i>
             </button>
         </div>
