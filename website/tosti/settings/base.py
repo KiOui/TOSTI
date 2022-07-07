@@ -18,6 +18,7 @@ INSTALLED_APPS = [
     "constance.backends.database",
     "tosti.sp_app_config.CustomSPAppConfig",
     "django_bootstrap5",
+    "fontawesomefree",
     "autocompletefilter",
     "import_export",
     "guardian",

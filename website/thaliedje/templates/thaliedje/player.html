@@ -32,14 +32,14 @@
     </template>
     <template v-else>
         <div class="player-controls mt-3 mb-3">
-            <i class="fas fa-backward" v-on:click="backward()"></i>
+            <i class="fa-solid fa-backward" v-on:click="backward()"></i>
             <template v-if="player_data.is_playing">
-                <i class="fas fa-pause" v-on:click="pause()"></i>
+                <i class="fa-solid fa-pause" v-on:click="pause()"></i>
             </template>
             <template v-else>
-                <i class="fas fa-play" v-on:click="play()"></i>
+                <i class="fa-solid fa-play" v-on:click="play()"></i>
             </template>
-            <i class="fas fa-forward" v-on:click="forward()"></i>
+            <i class="fa-solid fa-forward" v-on:click="forward()"></i>
         </div>
         <div class="player-controls">
             <input type="range" class="volume w-100" v-on:change="setVolume(player_data.current_volume)" min="0" max="100" step="5" v-model="player_data.current_volume">

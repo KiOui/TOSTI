@@ -14,7 +14,7 @@
                             :class="{ disabled: addingOrder || orders.length >= shift.max_orders_total || user_orders_with_shift_restrictions.length >= shift.max_orders_per_user && !product.ignore_shift_restrictions || product.max_allowed_per_shift !== null && user_orders_with_product_id(product.id).length >= product.max_allowed_per_shift }"
                             v-on:click="add_order(product)"
                         >
-                            <span :class="{ invisible: addingOrder }"><i v-if="product.icon !== null" :class="`fas fa-${product.icon} me-2`"></i></span>
+                            <span :class="{ invisible: addingOrder }"><i v-if="product.icon !== null" :class="`fa-solid fa-${product.icon} me-2`"></i></span>
                             <span :class="{ invisible: addingOrder }">Order <% product.name %></span>
                             <span class="small" :class="{ invisible: addingOrder }">€<% product.current_price.toFixed(2) %></span>
                         </button>
@@ -45,7 +45,7 @@
             <div class="d-flex align-items-center justify-content-center me-3 cursor-pointer"
                  id="overview-button-{{ shift.id }}" data-bs-toggle="modal"
                  data-bs-target="#order-overview-popup-{{ shift.id }}">
-                <i style="color: grey;" class="fas fa-tasks"></i>
+                <i style="color: grey;" class="fa-solid fa-tasks"></i>
             </div>
         {% endif %}
     </div>
@@ -60,14 +60,14 @@
                         <p class="item-counter"><% index + 1 %>.</p>
                         <p class="item-name"><% order.product.name %> (€<% (Math.round(order.order_price * 100) /
                             100).toFixed(2) %>)</p>
-                        <i v-if="order.product.icon !== null" :class="`fas fa-${order.product.icon} item-icon`"></i>
+                        <i v-if="order.product.icon !== null" :class="`fa-solid fa-${order.product.icon} item-icon`"></i>
                         <div class="flex-divider"></div>
                         <i v-if="order.user !== null && {{ user.id }} === order.user.id"
-                           class="fas fa-user user-icon"></i>
+                           class="fa-solid fa-user user-icon"></i>
                         <p v-if="order.type === 0" class="item-username">
                             <template v-if="order.user !== null"><% order.user.first_name %></template>
                         </p>
-                        <i v-else class="item-username fas fa-desktop"></i>
+                        <i v-else class="item-username fa-solid fa-desktop"></i>
                     </div>
                     {% if admin %}
                         <div v-if="!shift.finalized" class="ms-2 button-row">
@@ -133,7 +133,7 @@
                         <h3>Orders to make</h3>
                         <template v-if="Object.keys(orders_to_make).length > 0">
                             <p v-for="(product_dict, product_name) in orders_to_make" class="mb-2" style="font-size: 1em;">
-                                <% product_dict.product.name %> <i :class="`fas fa-${product_dict.product.icon}`"></i>
+                                <% product_dict.product.name %> <i :class="`fa-solid fa-${product_dict.product.icon}`"></i>
                                 &times; <% product_dict.amount %></p>
                         </template>
                         <template v-else>
@@ -143,7 +143,7 @@
                         <h3 class="mt-3">Orders made</h3>
                         <template v-if="Object.keys(orders_made).length > 0">
                             <p v-for="(product_dict, product_name) in orders_made" class="mb-2" style="font-size: 1em;"><%
-                                product_dict.product.name %> <i :class="`fas fa-${product_dict.product.icon}`"></i> &times;
+                                product_dict.product.name %> <i :class="`fa-solid fa-${product_dict.product.icon}`"></i> &times;
                                 <% product_dict.amount %></p>
                         </template>
                         <template v-else>
@@ -153,7 +153,7 @@
                         <h3 class="mt-3">Orders total</h3>
                         <template v-if="Object.keys(orders_total).length > 0">
                             <p v-for="(product_dict, product_name) in orders_total" class="mb-2" style="font-size: 1em;"><%
-                                product_dict.product.name %> <i :class="`fas fa-${product_dict.product.icon}`"></i> &times;
+                                product_dict.product.name %> <i :class="`fa-solid fa-${product_dict.product.icon}`"></i> &times;
                                 <% product_dict.amount %></p>
                         </template>
                         <template v-else>
