@@ -126,10 +126,10 @@ The attributes returned are: `uid`, which is the `NameID` and should be mapped t
 
 Moreover, we use the following settings:
 
-- User default values: `is_staff` is `True` so every user can actually see the (empty) admin page.
 - `NameID is case sensitive` is `False`
 - `Create users that do not already exist` is `True`
 - `Associate existing users with this IdP by username` is `True` (this is a vulnerability for username spoofing but with only 1 IdP this is no problem)
 - `Respect IdP session expiration` is `True` (!)
 - `Logout triggers SLO` is `True` as well
+- `Redirect after login` is set to `/after-login/`
 
