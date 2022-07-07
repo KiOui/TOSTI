@@ -26,7 +26,7 @@ class SpotifyCache:
         else:
             return SpotifyCache._instances[identifier]
 
-    def currently_playing(self, player: Player, check_cache=True, store_cache=True):
+    def currently_playing(self, player: Player, check_cache=True, store_cache=True, *args, **kwargs):
         """
         Get the currently playing track information.
 
@@ -44,9 +44,11 @@ class SpotifyCache:
             "{}_{}".format(player.id, inspect.currentframe().f_code.co_name),
             check_cache,
             store_cache,
+            *args,
+            **kwargs,
         )
 
-    def current_playback(self, player: Player, check_cache=True, store_cache=True):
+    def current_playback(self, player: Player, check_cache=True, store_cache=True, *args, **kwargs):
         """
         Get the currently playback information.
 
@@ -60,9 +62,11 @@ class SpotifyCache:
             "{}_{}".format(player.id, inspect.currentframe().f_code.co_name),
             check_cache,
             store_cache,
+            *args,
+            **kwargs,
         )
 
-    def pause_playback(self, player: Player, check_cache=True, store_cache=True):
+    def pause_playback(self, player: Player, check_cache=True, store_cache=True, *args, **kwargs):
         """Pause playback."""
         return self.cache.call_method_cached(
             player.spotify.pause_playback,
@@ -71,9 +75,11 @@ class SpotifyCache:
             store_cache,
             valid_ms=1000,
             reset_cache=True,
+            *args,
+            **kwargs,
         )
 
-    def start_playback(self, player: Player, check_cache=True, store_cache=True):
+    def start_playback(self, player: Player, check_cache=True, store_cache=True, *args, **kwargs):
         """Start playback."""
         return self.cache.call_method_cached(
             player.spotify.start_playback,
@@ -82,4 +88,6 @@ class SpotifyCache:
             store_cache,
             valid_ms=1000,
             reset_cache=True,
+            *args,
+            **kwargs,
         )

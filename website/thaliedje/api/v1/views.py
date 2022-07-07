@@ -68,6 +68,7 @@ class PlayerTrackSearchAPIView(APIView):
                         "properties": {
                             "name": {"type": "string", "example": "string"},
                             "artists": {"type": "array", "items": {"type": "string", "example": "string"}},
+                            "id": {"type": "string", "example": "6tcCTgpI1JWsgReB9ttSUD"},
                         },
                     },
                 },
@@ -89,8 +90,13 @@ class PlayerTrackSearchAPIView(APIView):
         except ValueError:
             maximum = 5
 
+        type_to_search = "track"
+
+        if request.user.has_perm("can_request_playlists_and_albums", player):
+            type_to_search = "album,playlist,track"
+
         if query != "":
-            results = services.search_tracks(query, player, maximum)
+            results = services.search_tracks(query, player, maximum, type=type_to_search)
         else:
             results = []
         return Response(status=status.HTTP_200_OK, data={"query": query, "results": results})
@@ -125,6 +131,12 @@ class PlayerTrackAddAPIView(APIView):
 class PlayerPlayAPIView(APIView):
     """API view to make player play."""
 
+    schema = CustomAutoSchema(
+        request_schema={
+            "type": "object",
+            "properties": {"context_uri": {"type": "string", "example": "spotify:album:1Je1IMUlBXcx1Fz0WE7oPT"}},
+        }
+    )
     serializer_class = PlayerSerializer
     permission_required = "thaliedje.can_control"
     permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
@@ -138,7 +150,11 @@ class PlayerPlayAPIView(APIView):
         """Make player play."""
         player = kwargs.get("player")
         try:
-            services.player_start(player)
+            context_uri = request.data.get("context_uri", None)
+            if context_uri is not None:
+                services.player_start(player, context_uri=context_uri)
+            else:
+                services.player_start(player)
         except spotipy.SpotifyException as e:
             if e.http_status == 403:
                 return Response(status=status.HTTP_403_FORBIDDEN)

@@ -2,10 +2,11 @@
 
 <link rel="stylesheet" href="{% static 'thaliedje/css/search.css' %}"/>
 <div id="player-search-container-{{ player.id }}">
-    <input v-model="query" id="search" type="text" maxlength="100" placeholder="Search a track" class="container-fluid form-control"/>
+    <input v-model="query" id="search" type="text" maxlength="100" placeholder="Search for something to play" class="container-fluid form-control mb-3"/>
     <div id="results" class="px-3 search-list">
         <div class="d-flex flex-column">
             <template v-if="tracks.length > 0 && query !== ''">
+                <h3>Tracks</h3>
                 <template v-for="(track, index) in tracks">
                     <div class="d-flex my-2">
                         <div class="flex-equal-width"><% track.name %></div>
@@ -21,6 +22,36 @@
                     </template>
                 </template>
             </template>
+            <template v-if="playlists.length > 0 && query !== ''">
+                <h3>Playlists</h3>
+                <template v-for="(playlist, index) in playlists">
+                    <div class="d-flex my-2">
+                        <div class="flex-equal-width"><% playlist.name %></div>
+                        <div class="flex-equal-width"><% playlist.owner.display_name %></div>
+                        <input type="button" value="Start" class="btn btn-success" style="height: 40px" v-on:click="start_with_context(playlist.uri)"/>
+                    </div>
+                    <template v-if="index !== tracks.length -1">
+                        <div class="border"></div>
+                    </template>
+                </template>
+            </template>
+            <template v-if="albums.length > 0 && query !== ''">
+                <h3>Albums</h3>
+                <template v-for="(album, index) in albums">
+                    <div class="d-flex my-2">
+                        <div class="flex-equal-width"><% album.name %></div>
+                        <div class="flex-equal-width">
+                            <template v-for="(artist, art_index) in album.artists">
+                                <% artist %><template v-if="art_index !== album.artists.length - 1">, </template>
+                            </template>
+                        </div>
+                        <input type="button" value="Start" class="btn btn-success" style="height: 40px" v-on:click="start_with_context(album.uri)"/>
+                    </div>
+                    <template v-if="index !== albums.length -1">
+                        <div class="border"></div>
+                    </template>
+                </template>
+            </template>
         </div>
     </div>
 </div>
@@ -32,6 +63,8 @@
         data: {
             query: "",
             tracks: [],
+            albums: [],
+            playlists: [],
             typing_timer: null,
             current_search_index: 0,
         },
@@ -77,10 +110,43 @@
                     tata.success('', "Track added to queue.");
                     this.query = "";
                     this.tracks = [];
+                    this.albums = [];
+                    this.playlists = [];
                     if (typeof (update_refresh_list) !== 'undefined') {
                         update_refresh_list();
                     }
                 }).catch(error => show_error_from_api(error));
+            },
+            start_with_context(context_uri) {
+                fetch(
+                    '{% url "v1:player_play" player=player %}',
+                    {
+                        method: 'PATCH',
+                        headers: {
+                            "X-CSRFToken": get_csrf_token(),
+                            "Content-Type": 'application/json',
+                            "Accept": 'application/json',
+                        },
+                        body: JSON.stringify({
+                            "context_uri": context_uri,
+                        }),
+                    }
+                ).then(response => {
+                    if (response.status === 200) {
+                        return response.json();
+                    } else {
+                        throw response;
+                    }
+                }).then(data => {
+                    tata.success('', "Playing selected list of tracks.");
+                    this.query = "";
+                    this.tracks = [];
+                    this.albums = [];
+                    this.playlists = [];
+                    if (typeof (update_refresh_list) !== 'undefined') {
+                        update_refresh_list();
+                    }
+                });
             },
             search() {
                 this.current_search_index = this.current_search_index + 1;
@@ -102,7 +168,13 @@
                     }
                 }).then(data => {
                     if (this_search_index === this.current_search_index && this.query === data.query) {
-                        this.tracks = data.results;
+                        this.tracks = data.results.tracks;
+                        if (data.results.albums !== undefined) {
+                            this.albums = data.results.albums;
+                        }
+                        if (data.results.playlists !== undefined) {
+                            this.playlists = data.results.playlists;
+                        }
                     }
                 }).catch(error => show_error_from_api(error));
             },

@@ -14,14 +14,6 @@
                     <hr class="my-5 d-md-none"/>
                 </div>
                 <div class="col-md">
-                    {% if can_request %}
-                    <div class="mb-5">
-                        <h2>Add a song</h2>
-                        <p class="my-0" style="font-size: 1rem;">Search a track below and add it to the queue.</p>
-                        {% include 'thaliedje/search.html' with player=player refresh=False %}
-                    </div>
-                    <hr class="my-5"/>
-                    {% endif %}
                     <div class="mb-5">
                         {% render_queue_list player %}
                     </div>
@@ -29,4 +21,41 @@
             </div>
         {% endif %}
     </div>
+{% endblock %}
+
+{% block footer %}
+    {% if can_request %}
+        <div id="song-request-wrapper">
+            <div class="modal" id="song-request-popup">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2 class="modal-title">Request a song</h2>
+                            <button type="button" class="close btn btn-default" data-bs-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="container">
+                                <p>Search a track below and add it to the queue.</p>
+                                {% include 'thaliedje/search.html' with player=player refresh=False %}
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="page-footer navbar navbar-expand-md mt-auto footer">
+            <div class="container text-center">
+                <div class="row flex-grow-1">
+                    <div class="col">
+                        <div class="btn-ml m-auto cursor-pointer btn-on" data-bs-toggle="modal" data-bs-target="#song-request-popup">
+                            <p class="font-footer"><i class="fa-solid fa-table-list"></i> Request a song</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    {% endif %}
 {% endblock %}

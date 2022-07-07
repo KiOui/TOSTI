@@ -55,6 +55,7 @@ class Player(models.Model):
 
         permissions = [
             ("can_control", "Can control music players"),
+            ("can_request_playlists_and_albums", "Can request playlists and albums"),
         ]
 
     def __str__(self):
