@@ -179,7 +179,7 @@ class ReservationItem(models.Model):
     class Meta:
         """Meta class for the model."""
 
-        unique_together = ["reservation", "product"]
+        unique_together = ["reservation", "product_name"]
 
     def __str__(self):
         """Convert this object to string."""
