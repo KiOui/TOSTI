@@ -6,12 +6,12 @@ from django.views.generic import RedirectView
 from .views import (
     IndexView,
     PrivacyView,
-    WelcomeView,
     handler403 as custom_handler403,
     handler404 as custom_handler404,
     handler500 as custom_handler500,
     DocumentationView,
     ExplainerView,
+    AfterLoginRedirectView,
 )
 
 handler403 = custom_handler403
@@ -21,7 +21,6 @@ handler500 = custom_handler500
 urlpatterns = [
     path("", IndexView.as_view(), name="index"),
     path("oauth/", include("oauth2_provider.urls", namespace="oauth2_provider")),
-    path("welcome", WelcomeView.as_view(), name="welcome"),
     path("privacy/", PrivacyView.as_view(), name="privacy"),
     path("documentation/", DocumentationView.as_view(), name="documentation"),
     path("explainers/", ExplainerView.as_view(), name="explainers"),
@@ -61,6 +60,7 @@ urlpatterns = [
     path("admin/logout/", RedirectView.as_view(url="/logout", query_string=True), name="logout-redirect"),
     path("admin-login/", admin.site.login, name="admin-login"),
     path("admin-logout/", admin.site.logout, name="admin-logout"),
+    path("after-login/", AfterLoginRedirectView.as_view(), name="after-login"),
     path("admin/doc/", include("django.contrib.admindocs.urls")),
     path("admin/", admin.site.urls),
 ]

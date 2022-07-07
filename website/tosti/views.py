@@ -1,5 +1,7 @@
+from django.contrib import messages
 from django.shortcuts import render, redirect
-from django.views.generic import TemplateView
+from django.urls import reverse
+from django.views.generic import TemplateView, RedirectView
 
 from tosti.filter import Filter
 
@@ -26,10 +28,19 @@ class PrivacyView(TemplateView):
     template_name = "tosti/privacy.html"
 
 
-class WelcomeView(TemplateView):
-    """Welcome page."""
+class AfterLoginRedirectView(RedirectView):
+    """Redirect view to redirect users to the welcome page after first login."""
 
-    template_name = "tosti/welcome.html"
+    def get_redirect_url(self, *args, **kwargs):
+        next_url = self.request.GET.get("next")
+        if self.request.user.is_authenticated and not self.request.user.association:
+            messages.add_message(
+                self.request, messages.INFO, "Welcome to TOSTI! Please complete your account profile below."
+            )
+            return reverse("users:account")
+        if next_url:
+            return next_url
+        return reverse("index")
 
 
 class DocumentationView(TemplateView):
