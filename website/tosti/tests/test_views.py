@@ -27,10 +27,6 @@ class TostiViewTests(TestCase):
         response = self.client.get(reverse("privacy"))
         self.assertEqual(response.status_code, 200)
 
-    def test_welcome_view(self):
-        response = self.client.get(reverse("welcome"))
-        self.assertEqual(response.status_code, 200)
-
     def test_documentation_view(self):
         response = self.client.get(reverse("documentation"))
         self.assertEqual(response.status_code, 200)
