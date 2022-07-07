@@ -82,6 +82,7 @@ class BorrelReservationForm(forms.ModelForm):
                 start=self.cleaned_data["start"],
                 end=self.cleaned_data["end"],
                 title=self.cleaned_data["title"],
+                association=self.cleaned_data["association"],
             )
             value.venue_reservation = reservation
             value.save()
