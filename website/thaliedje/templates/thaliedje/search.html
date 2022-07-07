@@ -57,7 +57,7 @@
 </div>
 
 <script>
-    let player_search_vue = new Vue({
+    let player_{{ player.id }}_search_vue = new Vue({
         el: '#player-search-container-{{ player.id }}',
         delimiters: ['<%', '%>'],
         data: {
@@ -143,7 +143,10 @@
                     this.tracks = [];
                     this.albums = [];
                     this.playlists = [];
-                    if (typeof (update_refresh_list) !== 'undefined') {
+                    if (typeof(player_{{ player.id }}_vue) !== 'undefined') {
+                        player_{{ player.id }}_vue.player_data = data;
+                    }
+                    if (typeof(update_refresh_list) !== 'undefined') {
                         update_refresh_list();
                     }
                 });

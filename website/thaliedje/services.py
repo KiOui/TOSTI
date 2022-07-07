@@ -20,6 +20,11 @@ def user_is_blacklisted(user):
     return ThaliedjeBlacklistedUser.objects.filter(user=user).exists()
 
 
+def has_album_playlist_request_permission(user, player):
+    """Check if a user has album and playlist request permissions."""
+    return user.has_perm("thaliedje.can_request_playlists_and_albums", player)
+
+
 def create_track_database_information(track_info):
     """
     Get and create database information for tracks.

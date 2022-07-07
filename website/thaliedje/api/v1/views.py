@@ -12,7 +12,7 @@ from thaliedje.api.v1.filters import PlayerFilter
 from thaliedje.api.v1.pagination import StandardResultsSetPagination
 from thaliedje.api.v1.serializers import PlayerSerializer, QueueItemSerializer
 from thaliedje.models import Player, SpotifyQueueItem
-from thaliedje.services import user_is_blacklisted
+from thaliedje.services import user_is_blacklisted, has_album_playlist_request_permission
 from tosti.api.openapi import CustomAutoSchema
 from tosti.api.permissions import HasPermissionOnObject
 
@@ -92,7 +92,7 @@ class PlayerTrackSearchAPIView(APIView):
 
         type_to_search = "track"
 
-        if request.user.has_perm("can_request_playlists_and_albums", player):
+        if has_album_playlist_request_permission(request.user, player):
             type_to_search = "album,playlist,track"
 
         if query != "":
@@ -151,7 +151,7 @@ class PlayerPlayAPIView(APIView):
         player = kwargs.get("player")
         try:
             context_uri = request.data.get("context_uri", None)
-            if context_uri is not None:
+            if has_album_playlist_request_permission(request.user, player) and context_uri is not None:
                 services.player_start(player, context_uri=context_uri)
             else:
                 services.player_start(player)
