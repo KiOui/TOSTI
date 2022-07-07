@@ -80,4 +80,4 @@ class PlayerAdmin(GuardedModelAdmin):
 class ThaliedjeBlacklistedUserAdmin(admin.ModelAdmin):
     """Admin for blacklisted users."""
 
-    pass
+    autocomplete_fields = ["user"]
