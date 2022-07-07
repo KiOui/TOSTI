@@ -29,9 +29,10 @@ class PrivacyView(TemplateView):
 
 
 class AfterLoginRedirectView(RedirectView):
-    """Redirect view to redirect users to the welcome page after first login."""
+    """Redirect users to the welcome page after first login."""
 
     def get_redirect_url(self, *args, **kwargs):
+        """Get the url to redirect to."""
         next_url = self.request.GET.get("next")
         if self.request.user.is_authenticated and not self.request.user.association:
             messages.add_message(
