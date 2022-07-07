@@ -305,4 +305,4 @@ class OrderAdmin(AutocompleteFilterMixin, ImportExportModelAdmin):
 class OrderBlacklistedUserAdmin(admin.ModelAdmin):
     """Admin for blacklisted users."""
 
-    pass
+    autocomplete_fields = ["user"]

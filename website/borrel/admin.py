@@ -19,6 +19,7 @@ class BasicBorrelBrevetAdmin(admin.ModelAdmin):
     list_display = ["user", "registered_on"]
     search_fields = ["user"]
     readonly_fields = ["registered_on"]
+    autocomplete_fields = ["user"]
 
 
 @admin.register(Product)
