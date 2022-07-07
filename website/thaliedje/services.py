@@ -20,6 +20,11 @@ def user_is_blacklisted(user):
     return ThaliedjeBlacklistedUser.objects.filter(user=user).exists()
 
 
+def has_album_playlist_request_permission(user, player):
+    """Check if a user has album and playlist request permissions."""
+    return user.has_perm("thaliedje.can_request_playlists_and_albums", player)
+
+
 def create_track_database_information(track_info):
     """
     Get and create database information for tracks.
@@ -74,26 +79,59 @@ def create_track_information(track_name, track_id, artist_models):
     return track_model
 
 
-def search_tracks(query, player, maximum=5):
+def search_tracks(query, player, maximum=5, type="track"):
     """
     Search SpotifyTracks for a search query.
 
     :param query: the search query
     :param player: the player
     :param maximum: the maximum number of results to search for
+    :param type: the type of the spotify instance to search
     :return: a list of tracks [{"name": the trackname, "artists": [a list of artist names],
      "id": the Spotify track id}]
     """
     try:
-        result = player.spotify.search(query, limit=maximum, type="track")
+        result = player.spotify.search(query, limit=maximum, type=type)
     except SpotifyException as e:
         logging.error(e)
         raise e
 
-    # Filter out None values as the Spotipy library might return None for data it can't decode
-    result = [x for x in result["tracks"]["items"] if x is not None]
-    result = sorted(result, key=lambda x: -x["popularity"])
-    trimmed_result = [{"name": x["name"], "artists": [y["name"] for y in x["artists"]], "id": x["id"]} for x in result]
+    trimmed_result = dict()
+
+    for key in result.keys():
+        # Filter out None values as the Spotipy library might return None for data it can't decode
+        trimmed_result_for_key = [x for x in result[key]["items"] if x is not None]
+        if key == "tracks":
+            trimmed_result_for_key = sorted(trimmed_result_for_key, key=lambda x: -x["popularity"])
+            trimmed_result_for_key = [
+                {
+                    "type": x["type"],
+                    "name": x["name"],
+                    "artists": [y["name"] for y in x["artists"]],
+                    "id": x["id"],
+                    "uri": x["uri"],
+                }
+                for x in trimmed_result_for_key
+            ]
+            trimmed_result["tracks"] = trimmed_result_for_key
+        elif key == "albums":
+            trimmed_result_for_key = [
+                {
+                    "type": x["type"],
+                    "name": x["name"],
+                    "artists": [y["name"] for y in x["artists"]],
+                    "id": x["id"],
+                    "uri": x["uri"],
+                }
+                for x in trimmed_result_for_key
+            ]
+            trimmed_result["albums"] = trimmed_result_for_key
+        elif key == "playlists":
+            trimmed_result_for_key = [
+                {"type": x["type"], "name": x["name"], "owner": x["owner"], "id": x["id"], "uri": x["uri"]}
+                for x in trimmed_result_for_key
+            ]
+            trimmed_result["playlists"] = trimmed_result_for_key
     return trimmed_result
 
 
@@ -121,7 +159,7 @@ def request_song(user, player, spotify_track_id):
         raise e
 
 
-def player_start(player):
+def player_start(player, *args, **kwargs):
     """
     Start playing on the playback device of a Player.
 
@@ -134,7 +172,7 @@ def player_start(player):
             # If the playback device is not active, make it active
             player.spotify.transfer_playback(player.playback_device_id)
 
-        SpotifyCache.instance(player.id).start_playback(player)
+        SpotifyCache.instance(player.id).start_playback(player, *args, **kwargs)
     except SpotifyException as e:
         logging.error(e)
         raise e

@@ -50,7 +50,15 @@ class Cache:
         self._instance_cache[cache_id] = CacheInstance(value, valid_ms)
 
     def call_method_cached(
-        self, method, cache_id: str, check_cache: bool, store_cache: bool, valid_ms=5000, reset_cache: bool = False
+        self,
+        method,
+        cache_id: str,
+        check_cache: bool,
+        store_cache: bool,
+        valid_ms=5000,
+        reset_cache: bool = False,
+        *args,
+        **kwargs,
     ):
         """
         Call a method and check and store cached data.
@@ -68,7 +76,7 @@ class Cache:
                 if reset_cache:
                     self.reset()
                 return cache_value
-        result = method()
+        result = method(*args, **kwargs)
         if reset_cache:
             self.reset()
         if store_cache:
