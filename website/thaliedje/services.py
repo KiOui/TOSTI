@@ -279,7 +279,11 @@ def player_currently_playing(player):
     except OSError:
         currently_playing = None
 
-    if currently_playing is None or currently_playing["currently_playing_type"] == "unknown":
+    if (
+        currently_playing is None
+        or currently_playing["item"] is None
+        or currently_playing["currently_playing_type"] == "unknown"
+    ):
         return False
 
     image = currently_playing["item"]["album"]["images"][0]["url"]
