@@ -2,6 +2,7 @@ import datetime
 
 import django_filters.rest_framework
 import pytz
+from django.contrib.admin.models import CHANGE, ADDITION
 from django.db.models import Q
 from oauth2_provider.contrib.rest_framework import IsAuthenticatedOrTokenHasScope
 from rest_framework import status, filters
@@ -10,8 +11,6 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import (
     ListCreateAPIView,
     ListAPIView,
-    RetrieveUpdateAPIView,
-    RetrieveDestroyAPIView,
     get_object_or_404,
 )
 from rest_framework.response import Response
@@ -32,6 +31,8 @@ from orders.services import (
 from tosti import settings
 from tosti.api.openapi import CustomAutoSchema
 from tosti.api.permissions import IsAuthenticatedOrTokenHasScopeForMethod
+from tosti.api.views import LoggedRetrieveUpdateAPIView, LoggedListCreateAPIView, LoggedRetrieveDestroyAPIView
+from tosti.utils import log_action
 
 
 class OrderListCreateAPIView(ListCreateAPIView):
@@ -63,11 +64,15 @@ class OrderListCreateAPIView(ListCreateAPIView):
         if user_can_manage_shift(self.request.user, shift):
             # Save the order as it was passed to the API as the user has permission to save orders for all users in
             # the shift
-            serializer.save(shift=shift, user=self.request.user)
+            order = serializer.save(shift=shift, user=self.request.user)
+            log_action(self.request.user, order, CHANGE, "Created order as manager via API.")
         else:
             # Save the order while ignoring the order_type, user, paid and ready argument as the user does not have
             # permissions to save orders for all users in the shift
-            serializer.save(shift=shift, type=Order.TYPE_ORDERED, user=self.request.user, paid=False, ready=False)
+            order = serializer.save(
+                shift=shift, type=Order.TYPE_ORDERED, user=self.request.user, paid=False, ready=False
+            )
+            log_action(self.request.user, order, CHANGE, "Created order via API.")
 
     def create(self, request, *args, **kwargs):
         """Catch the OrderException that might be thrown by creating a new Order."""
@@ -77,7 +82,7 @@ class OrderListCreateAPIView(ListCreateAPIView):
             raise PermissionDenied(detail=e.__str__())
 
 
-class OrderRetrieveDestroyAPIView(RetrieveDestroyAPIView):
+class OrderRetrieveDestroyAPIView(LoggedRetrieveDestroyAPIView):
     """API View to retrieve and destroy orders."""
 
     serializer_class = OrderSerializer
@@ -101,7 +106,7 @@ class OrderRetrieveDestroyAPIView(RetrieveDestroyAPIView):
         return self.queryset.filter(shift=self.kwargs.get("shift"))
 
 
-class ShiftListCreateAPIView(ListCreateAPIView):
+class ShiftListCreateAPIView(LoggedListCreateAPIView):
     """API View to list and create shifts."""
 
     serializer_class = ShiftSerializer
@@ -136,7 +141,7 @@ class ShiftListCreateAPIView(ListCreateAPIView):
         return super().create(request, *args, **kwargs)
 
 
-class ShiftRetrieveUpdateAPIView(RetrieveUpdateAPIView):
+class ShiftRetrieveUpdateAPIView(LoggedRetrieveUpdateAPIView):
     """API View to retrieve and update a shift."""
 
     serializer_class = ShiftSerializer
@@ -203,6 +208,9 @@ class ShiftAddTimeAPIView(APIView):
 
         try:
             increase_shift_time(shift, time_minutes)
+            log_action(
+                self.request.user, shift, CHANGE, f"Extended shift's end time with {time_minutes} minutes via API."
+            )
             return Response(
                 status=status.HTTP_200_OK, data=self.serializer_class(shift, context={"request": request}).data
             )
@@ -230,6 +238,7 @@ class ShiftAddCapacityAPIView(APIView):
 
         try:
             increase_shift_capacity(shift, capacity)
+            log_action(self.request.user, shift, CHANGE, f"Added {capacity} to shift's capacity via API.")
             return Response(
                 status=status.HTTP_200_OK, data=self.serializer_class(shift, context={"request": request}).data
             )
@@ -256,6 +265,7 @@ class ShiftFinalizeAPIView(APIView):
         try:
             shift.finalized = True
             shift.save()
+            log_action(self.request.user, shift, CHANGE, "Finalized shift via API.")
         except DjangoValidationError as e:
             raise PermissionDenied(detail=", ".join(e.messages))
 
@@ -288,6 +298,7 @@ class ShiftScannerAPIView(APIView):
             raise PermissionDenied
 
         order = add_scanned_order(product, shift)
+        log_action(self.request.user, order, ADDITION, "Created scanned order via API.")
 
         return Response(
             status=status.HTTP_200_OK, data=self.serializer_class(order, context={"request": request}).data
@@ -315,6 +326,8 @@ class OrderTogglePaidAPIView(APIView):
 
         order.paid = not order.paid
         order.save()
+        log_action(self.request.user, order, CHANGE, f"Set order paid to {order.paid} via API.")
+
         return Response(
             status=status.HTTP_200_OK,
             data=OrderSerializer(order, many=False, context={"request": request}).data,
@@ -342,6 +355,8 @@ class OrderToggleReadyAPIView(APIView):
 
         order.ready = not order.ready
         order.save()
+        log_action(self.request.user, order, CHANGE, f"Set order ready to {order.ready} via API.")
+
         return Response(
             status=status.HTTP_200_OK,
             data=OrderSerializer(order, many=False, context={"request": request}).data,
@@ -363,6 +378,8 @@ class JoinShiftAPIView(APIView):
             raise PermissionDenied
         try:
             add_user_to_assignees_of_shift(request.user, shift)
+            log_action(self.request.user, shift, CHANGE, "Joined shift via API.")
+
         except PermissionError:
             return Response(status=status.HTTP_403_FORBIDDEN)
         return Response(

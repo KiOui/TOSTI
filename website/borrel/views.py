@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.admin.models import ADDITION, CHANGE, DELETION
 from django.contrib.auth.decorators import login_required
 from django.forms import inlineformset_factory
 from django.http import HttpResponseRedirect
@@ -20,6 +21,7 @@ from borrel.forms import (
 from borrel.mixins import BasicBorrelBrevetRequiredMixin
 from borrel.models import Product, BorrelReservation, ReservationItem, ProductCategory
 from borrel.services import send_borrel_reservation_request_email
+from tosti.utils import log_action
 from venues.services import send_reservation_request_email
 
 
@@ -143,10 +145,13 @@ class BorrelReservationCreateView(BasicBorrelBrevetRequiredMixin, BorrelReservat
             obj.save()
             items.instance = obj
             items.save()
+
+            log_action(self.request.user, obj, ADDITION, "Created reservation via website.")
             messages.add_message(self.request, messages.SUCCESS, "Your borrel reservation has been placed.")
             send_borrel_reservation_request_email(obj)
             if obj.venue_reservation is not None:
                 send_reservation_request_email(obj.venue_reservation)
+
             return HttpResponseRedirect(reverse("borrel:list_reservations"))
         else:
             messages.add_message(self.request, messages.ERROR, "Something went wrong.")
@@ -206,6 +211,8 @@ class BorrelBorrelReservationUpdateView(BasicBorrelBrevetRequiredMixin, BorrelRe
             obj.save()
             items.instance = obj
             items.save()
+
+            log_action(self.request.user, obj, CHANGE, "Updated reservation via website.")
             messages.add_message(self.request, messages.SUCCESS, "Your borrel reservation has been updated.")
             return HttpResponseRedirect(self.get_success_url())
         else:
@@ -230,6 +237,13 @@ class ReservationRequestCancelView(DeleteView):
             )
             return HttpResponseRedirect(self.get_success_url())
         return super().dispatch(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        """Delete the reservation."""
+        obj = self.get_object()
+        log_action(self.request.user, obj, DELETION, "Cancelled reservation via website.")
+        messages.add_message(self.request, messages.SUCCESS, "Your borrel reservation has been cancelled.")
+        return super().delete(request, *args, **kwargs)
 
 
 @method_decorator(login_required, name="dispatch")
@@ -259,6 +273,7 @@ class JoinReservationView(BasicBorrelBrevetRequiredMixin, View):
         if self.request.user not in reservation.users_access.all():
             reservation.users_access.add(self.request.user)
             reservation.save()
+            log_action(self.request.user, reservation, CHANGE, "Joined reservation via website.")
             messages.add_message(self.request, messages.INFO, "You now have access to this reservation.")
 
         return HttpResponseRedirect(reverse("borrel:view_reservation", kwargs={"pk": reservation.pk}))
@@ -321,7 +336,10 @@ class BorrelReservationSubmitView(BasicBorrelBrevetRequiredMixin, BorrelReservat
             obj.save()
             items.instance = obj
             items.save()
+
+            log_action(self.request.user, obj, CHANGE, "Submitted reservation via website.")
             messages.add_message(self.request, messages.SUCCESS, "Your borrel reservation is submitted.")
+
             return HttpResponseRedirect(self.get_success_url())
         else:
             messages.add_message(self.request, messages.ERROR, f"Something went wrong. {items.errors}")

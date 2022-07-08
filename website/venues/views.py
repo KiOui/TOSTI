@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.admin.models import ADDITION
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.models import Site
 from django.shortcuts import redirect, render
@@ -8,6 +9,7 @@ from django.views.generic import TemplateView, FormView, ListView
 from django_ical.views import ICalFeed
 
 from tosti.filter import Filter
+from tosti.utils import log_action
 from venues import services
 from venues.forms import ReservationForm
 from venues.models import Reservation
@@ -47,6 +49,7 @@ class RequestReservationView(FormView):
         instance = form.save(commit=False)
         instance.user = self.request.user
         instance.save()
+        log_action(self.request.user, instance, ADDITION, "Created reservation via website.")
         messages.success(self.request, "Venue reservation request added successfully.")
         services.send_reservation_request_email(instance)
         return redirect(reverse("venues:add_reservation"))

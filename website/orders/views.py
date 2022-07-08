@@ -1,3 +1,4 @@
+from django.contrib.admin.models import ADDITION, CHANGE
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
@@ -9,6 +10,7 @@ from guardian.shortcuts import get_objects_for_user
 from orders import services
 from django.shortcuts import render, redirect
 
+from tosti.utils import log_action
 from .models import Order, Shift
 from .forms import CreateShiftForm
 from .services import user_is_blacklisted, user_can_manage_shift, user_can_manage_shifts_in_venue
@@ -97,6 +99,7 @@ class CreateShiftView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         """Add user to the assignees list after creating the shift."""
         response = super(CreateShiftView, self).form_valid(form)
+        log_action(self.request.user, self.object, ADDITION, "Created shift via website.")
         self.object.assignees.add(self.request.user.id)
         self.object.save()
         return response
@@ -124,6 +127,7 @@ class JoinShiftView(LoginRequiredMixin, TemplateView):
         confirm = request.POST.get("confirm", None)
         if confirm == "Yes":
             services.add_user_to_assignees_of_shift(request.user, shift)
+            log_action(request.user, shift, CHANGE, "Joined shift via website.")
             return redirect("orders:shift_admin", shift=shift)
         elif confirm == "No":
             return redirect("index")
