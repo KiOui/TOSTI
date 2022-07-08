@@ -20,7 +20,7 @@
         <p>
             To use most features of this site, you need a user account. You can log in with your
             <a href="https://www.ru.nl/idm/" target="_blank">Radboud University credentials</a>.
-            When you log in for the first time, your are asked for consent for your username (that is, your student-
+            When you log in for the first time, you are asked for consent for your username (that is, your student-
             or employee number), full name and email address to be shared. This information will then be stored.
         </p>
         <p>
@@ -29,7 +29,7 @@
         </p>
         <p>
             When you use your account for services, such as ordering products or requesting songs, we naturally store
-            this data too.
+            this data too. We also store the last login date and time, and when you joined the system for the first time.
         </p>
         <p>
             The data is stored on the grounds of legitimate interest (when you use the music-control feature) and
@@ -46,7 +46,7 @@
             automatically be removed.
         </p>
         <p>
-            Your song requests and orders will be stored for a year and will be anonymized afterwards.
+            Your song requests and orders will be stored for a year. After this year, they will be anonymized.
         </p>
     </div>
     <div class="container">
@@ -58,12 +58,18 @@
         </p>
     </div>
     <div class="container">
-        <h3>Google Analytics</h3>
-        <p>
-            In addition to the data above, this website also uses <a href="https://analytics.google.com/" target="_blank">Google Analytics</a>
-            for generating visitor statistics. However, this data is collected anonymously and will also not be linked to the account of
-            logged in users.
-        </p>
+        <h3 class="mb-3">Who else has access to your data</h3>
+
+        <h5 class="fw-bold">Radboud University Nijmegen</h5>
+        <p>This site is hosted by the Faculty of Science of the Radboud University, who act as data processor.</p>
+
+        <h5 class="fw-bold">Functional Software, Inc</h5>
+        <p>We use <a href="https://sentry.io/" target="_blank">Sentry</a>, a platform by Functional Software, Inc., for error monitoring. This means that when server errors occur on the website, some data is sent to the Sentry platform. For authenticated users, the username is sent along with an error log. We always try to filter out any personal information from the error logs. Sentry removes this data after 1 month.</p>
+
+        {% if GOOGLE_ANALYTICS_KEY %}
+        <h5 class="fw-bold">Google Ireland Limited</h5>
+        <p>In addition to the data above, this website also uses <a href="https://analytics.google.com/" target="_blank">Google Analytics</a> for generating visitor statistics. However, this data is collected anonymously and will also not be linked to the account of logged-in users.</p>
+        {% endif %}
     </div>
     <div class="container">
         <h3>Data Protection Authority</h3>
