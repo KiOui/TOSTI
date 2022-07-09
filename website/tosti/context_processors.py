@@ -12,3 +12,8 @@ def google_analytics(request):
         return {"GOOGLE_ANALYTICS_KEY": settings.GOOGLE_ANALYTICS_KEY}
     except AttributeError:
         return {}
+
+
+def contributors(request):
+    """Get the contributers as a list."""
+
