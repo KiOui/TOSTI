@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.contrib.admin import EmptyFieldListFilter
 from django.db import models
 from django.forms import Textarea
+from import_export.admin import ExportMixin, ImportExportModelAdmin
 
 from .models import (
     BasicBorrelBrevet,
@@ -10,12 +11,14 @@ from .models import (
     ProductCategory,
     ReservationItem,
 )
+from .resources import BasicBorrelBrevetResource, ProductResource, BorrelReservationResource
 
 
 @admin.register(BasicBorrelBrevet)
-class BasicBorrelBrevetAdmin(admin.ModelAdmin):
+class BasicBorrelBrevetAdmin(ExportMixin, admin.ModelAdmin):
     """Custom admin for basic borrel brevet."""
 
+    resource_class = BasicBorrelBrevetResource
     list_display = ["user", "registered_on"]
     search_fields = ["user"]
     readonly_fields = ["registered_on"]
@@ -23,9 +26,10 @@ class BasicBorrelBrevetAdmin(admin.ModelAdmin):
 
 
 @admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
+class ProductAdmin(ImportExportModelAdmin):
     """Custom admin for borrel inventory products."""
 
+    resource_class = ProductResource
     search_fields = ["name", "category"]
     list_display = [
         "name",
@@ -41,7 +45,7 @@ class ProductAdmin(admin.ModelAdmin):
 
 
 @admin.register(ProductCategory)
-class CategoryAdmin(admin.ModelAdmin):
+class CategoryAdmin(ImportExportModelAdmin):
     """Custom admin for borrel inventory categories."""
 
     list_display = [
@@ -76,9 +80,10 @@ class ReservationItemInline(admin.TabularInline):
 
 
 @admin.register(BorrelReservation)
-class BorrelReservationAdmin(admin.ModelAdmin):
+class BorrelReservationAdmin(ExportMixin, admin.ModelAdmin):
     """Custom admin for borrel reservations."""
 
+    resource_class = BorrelReservationResource
     list_display = ["title", "association", "user_created", "start", "end", "accepted", "submitted"]
     search_fields = ["title", "user_created"]
     autocomplete_fields = ["venue_reservation"]
@@ -136,7 +141,6 @@ class BorrelReservationAdmin(admin.ModelAdmin):
         "association",
         "start",
     )
-    # date_hierarchy = "start"
 
     def submitted(self, obj):
         """Reservation is submitted."""
