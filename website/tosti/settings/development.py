@@ -24,7 +24,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_URLS_REGEX = r"^/(?:api|user/oauth)/.*"
 
 # OAuth configuration
-OAUTH2_PROVIDER["ALLOWED_REDIRECT_URI_SCHEMES"] = ["http", "https"]
+OAUTH2_PROVIDER["ALLOWED_REDIRECT_URI_SCHEMES"] = ["http", "https", "nu.thalia"]
 
 # Email
 # https://docs.djangoproject.com/en/3.2/topics/email/
