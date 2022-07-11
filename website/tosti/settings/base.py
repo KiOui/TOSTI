@@ -138,7 +138,7 @@ CORS_URLS_REGEX = r"^/(?:api|user/oauth)/.*"
 
 # OAUTH
 OAUTH2_PROVIDER = {
-    "ALLOWED_REDIRECT_URI_SCHEMES": ["https"],
+    "ALLOWED_REDIRECT_URI_SCHEMES": ["https", "nu.thalia"],
     "SCOPES": {
         "read": "Authenticated read access to the website",
         "write": "Authenticated write access to the website",
