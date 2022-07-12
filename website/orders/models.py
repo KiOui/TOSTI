@@ -83,6 +83,7 @@ class OrderVenue(models.Model):
 
         permissions = [
             ("can_manage_shift_in_venue", "Can manage shifts in this venue"),
+            ("gets_prioritized_orders_in_venue", "Gets prioritized orders in this venue"),
         ]
 
     def __str__(self):
@@ -502,6 +503,8 @@ class Order(models.Model):
     paid_at = models.DateTimeField(null=True, blank=True)
 
     type = models.PositiveIntegerField(choices=TYPES, default=0)
+
+    prioritize = models.BooleanField(default=False)
 
     class Meta:
         """Meta class."""

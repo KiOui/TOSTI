@@ -2,6 +2,7 @@ import datetime
 import logging
 
 from django.utils import timezone
+from guardian.shortcuts import get_users_with_perms
 
 from orders.exceptions import OrderException
 from orders.models import Order, Product, Shift, OrderBlacklistedUser
@@ -24,6 +25,17 @@ def user_can_manage_shifts_in_venue(user, venue):
 def user_is_blacklisted(user):
     """Return if the user is on the blacklist."""
     return OrderBlacklistedUser.objects.filter(user=user).exists()
+
+
+def user_gets_prioritized_orders(user, shift):
+    """User's order get put first in the queue."""
+    return (
+        get_users_with_perms(
+            shift.venue, only_with_perms_in=["gets_prioritized_orders_in_venue"], with_superusers=False
+        )
+        .filter(pk=user.pk)
+        .exists()
+    )
 
 
 def execute_data_minimisation(dry_run=False):
@@ -125,6 +137,7 @@ def add_user_order(product: Product, shift: Shift, user: User) -> Order:
         type=Order.TYPE_ORDERED,
         user=user,
         user_association=user.association,
+        prioritize=user_gets_prioritized_orders(user, shift),
     )
 
 
