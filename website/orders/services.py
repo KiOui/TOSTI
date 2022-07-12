@@ -29,8 +29,12 @@ def user_is_blacklisted(user):
 
 def user_gets_prioritized_orders(user, shift):
     """User's order get put first in the queue."""
-    return user in get_users_with_perms(
-        shift.venue, only_with_perms_in=["gets_prioritized_orders_in_venue"], with_superusers=False
+    return (
+        get_users_with_perms(
+            shift.venue, only_with_perms_in=["gets_prioritized_orders_in_venue"], with_superusers=False
+        )
+        .filter(pk=user.pk)
+        .exists()
     )
 
 
