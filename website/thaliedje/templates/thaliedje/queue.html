@@ -7,7 +7,9 @@
         <div class="d-flex my-2">
             <div class="flex-equal-width">Track</div>
             <div class="flex-equal-width">Artists</div>
-            <div class="flex-equal-width">Requested by</div>
+            {% if request.user.is_authenticated %}
+                <div class="flex-equal-width">Requested by</div>
+            {% endif %}
             <div class="flex-equal-width">Added at</div>
         </div>
         <div class="border"></div>
@@ -19,7 +21,9 @@
                         <% artist %><template v-if="index !== item.track.track_artists.length - 1">, </template>
                     </template>
                 </div>
-                <div class="flex-equal-width"><% item.requested_by.display_name %></div>
+                {% if request.user.is_authenticated %}
+                    <div class="flex-equal-width"><% item.requested_by.display_name %></div>
+                {% endif %}
                 <div class="flex-equal-width"><% item.added %></div>
             </div>
             <div class="border"></div>

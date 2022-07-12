@@ -20,6 +20,21 @@ class TrackSerializer(serializers.ModelSerializer):
         fields = ["track_id", "track_name", "track_artists"]
 
 
+class AnonymousQueueItemSerializer(serializers.ModelSerializer):
+    """Queue Item Serializer."""
+
+    track = TrackSerializer(many=False, read_only=True)
+
+    class Meta:
+        """Meta class."""
+
+        model = models.SpotifyQueueItem
+        fields = [
+            "track",
+            "added",
+        ]
+
+
 class QueueItemSerializer(serializers.ModelSerializer):
     """Queue Item Serializer."""
 

@@ -1,5 +1,6 @@
 import django_filters
 import spotipy
+from django.utils import timezone
 from oauth2_provider.contrib.rest_framework import IsAuthenticatedOrTokenHasScope
 from rest_framework import status, filters
 from rest_framework.exceptions import ValidationError
@@ -10,7 +11,7 @@ from rest_framework.views import APIView
 from thaliedje import services
 from thaliedje.api.v1.filters import PlayerFilter
 from thaliedje.api.v1.pagination import StandardResultsSetPagination
-from thaliedje.api.v1.serializers import PlayerSerializer, QueueItemSerializer
+from thaliedje.api.v1.serializers import PlayerSerializer, QueueItemSerializer, AnonymousQueueItemSerializer
 from thaliedje.models import Player, SpotifyQueueItem
 from thaliedje.services import user_is_blacklisted, has_album_playlist_request_permission
 from tosti.api.openapi import CustomAutoSchema
@@ -46,7 +47,13 @@ class PlayerQueueListAPIView(ListAPIView):
 
     def get_queryset(self):
         """Get the queryset."""
-        return self.queryset.filter(player=self.kwargs.get("player"))
+        return self.queryset.filter(player=self.kwargs.get("player"), added__day=timezone.now().day)
+
+    def get_serializer_class(self):
+        """Get the serializer class."""
+        if self.request.user.is_authenticated:
+            return QueueItemSerializer
+        return AnonymousQueueItemSerializer
 
 
 class PlayerTrackSearchAPIView(APIView):
