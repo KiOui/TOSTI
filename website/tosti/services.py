@@ -28,6 +28,3 @@ def send_email(email_title: str, html_content: str, to: list, text_content=None)
     except SMTPException as e:
         logger.error(e)
         return False
-
-
-def get_contributors():
