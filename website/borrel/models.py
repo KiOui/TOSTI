@@ -164,6 +164,11 @@ class BorrelReservation(models.Model):
             return f"Borrel reservation {self.title} ({self.start:%Y-%m-%d %H:%M} - {self.end:%Y-%m-%d %H:%M})"
         return f"Borrel reservation {self.title} ({self.start:%Y-%m-%d %H:%M})"
 
+    class Meta:
+        """Meta class."""
+
+        ordering = ["-start", "-end", "title"]
+
 
 class ReservationItem(models.Model):
     """Reservation items model."""

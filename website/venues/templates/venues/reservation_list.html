@@ -7,7 +7,7 @@
     </div>
     <div class="container">
         {% bootstrap_messages %}
-        {% if object_list %}
+        {% if page_obj|length > 0 %}
             <table class="table table-responsive w-100">
                 <thead>
                 <tr>
@@ -20,7 +20,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for reservation in object_list reversed %}
+                {% for reservation in page_obj %}
                     <tr>
                         <th scope="row">{{ reservation.title }}</th>
                         <td>{{ reservation.start }}</td>
@@ -34,8 +34,25 @@
                 {% endfor %}
                 </tbody>
             </table>
+            <div class="pagination">
+                <span class="step-links mx-auto">
+                    {% if page_obj.has_previous %}
+                        <a href="?page=1">&laquo; first</a>
+                        <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                    {% endif %}
+
+                    <span class="current">
+                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                    </span>
+
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}">next</a>
+                        <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
         {% else %}
-            <p>You do not have any reservations</p>
+            <p class="alert alert-warning">You do not have any reservations</p>
         {% endif %}
     </div>
 {% endblock %}
