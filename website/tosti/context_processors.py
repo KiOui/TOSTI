@@ -1,3 +1,4 @@
+from constance import config
 from django.conf import settings  # import the settings file
 
 
@@ -12,3 +13,8 @@ def google_analytics(request):
         return {"GOOGLE_ANALYTICS_KEY": settings.GOOGLE_ANALYTICS_KEY}
     except AttributeError:
         return {}
+
+
+def footer_credits(request):
+    """Get the footer credits as string."""
+    return {"FOOTER_CREDITS_TEXT": config.FOOTER_CREDITS_TEXT}

@@ -77,6 +77,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "tosti.context_processors.google_analytics",
+                "tosti.context_processors.footer_credits",
             ],
         },
     },
@@ -166,6 +167,8 @@ MESSAGE_TAGS = {
 CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 
 CONSTANCE_CONFIG = {
+    'FOOTER_CREDITS_TEXT': ('TOSTI - Tartarus Order System for Take-away Items',
+                            'Text to display in the footer credits', str),
     'TANTALUS_ENDPOINT_URL': ('', 'Endpoint for Tantalus integration', str),
     'TANTALUS_USERNAME': ('', 'Username for Tantalus integration', str),
     'TANTALUS_PASSWORD': ('', 'Password for Tantalus integration', str),
@@ -176,6 +179,7 @@ CONSTANCE_CONFIG = {
 }
 
 CONSTANCE_CONFIG_FIELDSETS = {
+    'General settings': ('FOOTER_CREDITS_TEXT',),
     'Tantalus settings': ('TANTALUS_ENDPOINT_URL', 'TANTALUS_USERNAME', 'TANTALUS_PASSWORD',),
     'E-mail settings': ('BORREL_SEND_BORREL_RESERVATION_REQUEST_EMAILS_TO', 'VENUES_SEND_RESERVATION_REQUEST_EMAILS_TO'),
 }
