@@ -168,7 +168,7 @@ CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 
 CONSTANCE_CONFIG = {
     'FOOTER_CREDITS_TEXT': ('TOSTI - Tartarus Order System for Take-away Items',
-                            'Text to display in the footer credits, specify [year] for the current year', str),
+                            'Text to display in the footer credits', str),
     'TANTALUS_ENDPOINT_URL': ('', 'Endpoint for Tantalus integration', str),
     'TANTALUS_USERNAME': ('', 'Username for Tantalus integration', str),
     'TANTALUS_PASSWORD': ('', 'Password for Tantalus integration', str),
