@@ -86,6 +86,7 @@ class PlayerSerializer(serializers.ModelSerializer):
         model = models.Player
         fields = [
             "id",
+            "slug",
             "display_name",
             "venue",
             "track",
