@@ -10,4 +10,4 @@ class AssociationSerializer(serializers.ModelSerializer):
         """Meta class."""
 
         model = models.Association
-        fields = ["pk", "name"]
+        fields = ["id", "name"]
