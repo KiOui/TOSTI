@@ -139,7 +139,11 @@
 {% block footer %}
     <footer class="mt-auto footer">
         <div class="container text-center">
-            <p class="text-muted mb-1" style="font-size: 1em;">{{ FOOTER_CREDITS_TEXT }}</p>
+            <p class="text-muted mb-3" style="font-size: 1em;">
+                {% autoescape off %}
+                    {{ FOOTER_CREDITS_TEXT }}
+                {% endautoescape %}
+            </p>
         </div>
     </footer>
 {% endblock %}
