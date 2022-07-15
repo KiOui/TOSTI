@@ -1,0 +1,385 @@
+{% load static %}
+
+<div class="container-sm" id="item-orders-{{ shift.id }}">
+    <link rel="stylesheet" href="{% static 'orders/css/item-list.css' %}"/>
+
+    <div class="mt-2">
+
+        <ul class="nav nav-tabs justify-content-center" role="tablist">
+            <li class="nav-item" style="padding-bottom: 0;"  role="presentation">
+                <a style="cursor: pointer;" class="nav-link active" id="nav-orders-to-process-tab" data-bs-toggle="tab" data-bs-target="#nav-orders-to-process" role="tab" aria-controls="nav-orders-to-process" aria-selected="true">Orders to process</a>
+            </li>
+            <li class="nav-item" style="padding-bottom: 0;"  role="presentation">
+                <a style="cursor: pointer;" class="nav-link" id="nav-orders-finished-tab" data-bs-toggle="tab" data-bs-target="#nav-orders-finished" role="tab" aria-controls="nav-orders-finished" aria-selected="true">Orders finished</a>
+            </li>
+            <li class="nav-item" style="padding-bottom: 0;"  role="presentation">
+                <a style="cursor: pointer;" class="nav-link" id="nav-summary-tab" data-bs-toggle="tab" data-bs-target="#nav-summary" role="tab" aria-controls="nav-summary" aria-selected="true">Summary</a>
+            </li>
+        </ul>
+        <div class="tab-content" id="nav-tab-content">
+            <div class="tab-pane show active" id="nav-orders-to-process" role="tabpanel" aria-labelledby="nav-orders-to-process-tab">
+                <ul v-if="orders_to_process.length > 0" class="item-orders">
+                    <template v-for="(order, index) in orders_to_process">
+                        <li class="pt-2 pb-2 item-list">
+                            <div class="information-row">
+                                <p class="item-counter"><% index + 1 %>.</p>
+                                <p class="item-name"><% order.product.name %> (€<% (Math.round(order.order_price * 100) /
+                                    100).toFixed(2) %>)</p>
+                                <i v-if="order.product.icon !== null" :class="`fa-solid fa-${order.product.icon} item-icon`"></i>
+                                <div class="flex-divider"></div>
+                                <i v-if="order.user !== null && {{ user.id }} === order.user.id"
+                                   class="fa-solid fa-user user-icon"></i>
+                                <p v-if="order.type === 0" class="item-username">
+                                    <template v-if="order.user !== null"><% order.user.first_name %></template>
+                                </p>
+                                <i v-else class="item-username fa-solid fa-desktop"></i>
+                            </div>
+                            <div v-if="!shift.finalized" class="ms-2 button-row">
+                                <template v-if="order.type === 0">
+                                    <input v-if="order.paid" type="button" class="checkbox-paid btn me-2 btn-success"
+                                           v-on:click="toggle_paid(order)"
+                                           value="Paid"/>
+                                    <input v-else type="button" class="checkbox-paid btn me-2 btn-danger"
+                                           v-on:click="toggle_paid(order)"
+                                           value="Paid"/>
+                                    <input v-if="order.ready" type="button" class="checkbox-ready btn btn-success"
+                                           v-on:click="toggle_ready(order)"
+                                           value="Ready"/>
+                                    <input v-else type="button" class="checkbox-ready btn btn-danger"
+                                           v-on:click="toggle_ready(order)"
+                                           value="Ready"/>
+                                </template>
+                                <template v-else>
+                                    <input type="button" class="btn btn-danger"
+                                           v-on:click="delete_order(order)"
+                                           value="Remove"/>
+                                </template>
+                            </div>
+                        </li>
+                    </template>
+                </ul>
+                <div v-else id="outer" class="container d-flex align-items-center justify-content-center text-center"
+                     style="height:200px;">
+                    <div id="inner">
+                        No orders yet...
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane" id="nav-orders-finished" role="tabpanel" aria-labelledby="nav-orders-finished">
+                <ul v-if="orders_finished.length > 0" class="item-orders">
+                    <template v-for="(order, index) in orders_finished">
+                        <li class="pt-2 pb-2 item-list">
+                            <div class="information-row">
+                                <p class="item-counter"><% index + 1 %>.</p>
+                                <p class="item-name"><% order.product.name %> (€<% (Math.round(order.order_price * 100) /
+                                    100).toFixed(2) %>)</p>
+                                <i v-if="order.product.icon !== null" :class="`fa-solid fa-${order.product.icon} item-icon`"></i>
+                                <div class="flex-divider"></div>
+                                <i v-if="order.user !== null && {{ user.id }} === order.user.id"
+                                   class="fa-solid fa-user user-icon"></i>
+                                <p v-if="order.type === 0" class="item-username">
+                                    <template v-if="order.user !== null"><% order.user.first_name %></template>
+                                </p>
+                                <i v-else class="item-username fa-solid fa-desktop"></i>
+                            </div>
+                            <div v-if="!shift.finalized" class="ms-2 button-row">
+                                <template v-if="order.type === 0">
+                                    <input v-if="order.paid" type="button" class="checkbox-paid btn me-2 btn-success"
+                                           v-on:click="toggle_paid(order)"
+                                           value="Paid"/>
+                                    <input v-else type="button" class="checkbox-paid btn me-2 btn-danger"
+                                           v-on:click="toggle_paid(order)"
+                                           value="Paid"/>
+                                    <input v-if="order.ready" type="button" class="checkbox-ready btn btn-success"
+                                           v-on:click="toggle_ready(order)"
+                                           value="Ready"/>
+                                    <input v-else type="button" class="checkbox-ready btn btn-danger"
+                                           v-on:click="toggle_ready(order)"
+                                           value="Ready"/>
+                                </template>
+                                <template v-else>
+                                    <input type="button" class="btn btn-danger"
+                                           v-on:click="delete_order(order)"
+                                           value="Remove"/>
+                                </template>
+                            </div>
+                        </li>
+                    </template>
+                </ul>
+                <div v-else id="outer" class="container d-flex align-items-center justify-content-center text-center"
+                     style="height:200px;">
+                    <div id="inner">
+                        No orders yet...
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane mt-4" id="nav-summary" role="tabpanel" aria-labelledby="nav-summary">
+                <div style="max-width: 500px;" class="mx-auto">
+                    <h3>Orders to make</h3>
+                    <template v-if="Object.keys(orders_to_make_grouped).length > 0">
+                        <p v-for="(product_dict, product_name) in orders_to_make_grouped" class="mb-2" style="font-size: 1em;">
+                            <% product_dict.product.name %> <i :class="`fa-solid fa-${product_dict.product.icon}`"></i>
+                            &times; <% product_dict.amount %></p>
+                    </template>
+                    <template v-else>
+                        <p class="mb-2" style="font-size: 1em;">No open products.</p>
+                    </template>
+                    <hr>
+                    <h3 class="mt-3">Orders made</h3>
+                    <template v-if="Object.keys(orders_made_grouped).length > 0">
+                        <p v-for="(product_dict, product_name) in orders_made_grouped" class="mb-2" style="font-size: 1em;"><%
+                            product_dict.product.name %> <i :class="`fa-solid fa-${product_dict.product.icon}`"></i> &times;
+                            <% product_dict.amount %></p>
+                    </template>
+                    <template v-else>
+                        <p class="mb-2" style="font-size: 1em;">No ready products.</p>
+                    </template>
+                    <hr>
+                    <h3 class="mt-3">Orders total</h3>
+                    <template v-if="Object.keys(orders_grouped).length > 0">
+                        <p v-for="(product_dict, product_name) in orders_grouped" class="mb-2" style="font-size: 1em;"><%
+                            product_dict.product.name %> <i :class="`fa-solid fa-${product_dict.product.icon}`"></i> &times;
+                            <% product_dict.amount %></p>
+                    </template>
+                    <template v-else>
+                        <p class="mb-2" style="font-size: 1em;">No products.</p>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let orders_vue_{{ shift.id }} = new Vue({
+        el: '#item-orders-{{ shift.id }}',
+        delimiters: ['<%', '%>'],
+        data: {
+            orders: [],
+            shift: {},
+            products: [],
+            user: null,
+            addingOrder: false,
+        },
+        created() {
+             fetch('{% url "v1:me" %}')
+                .then(response => response.json())
+                .then(json => {
+                    this.user = json;
+                });
+            fetch('{% url "v1:orders_listcreate" shift=shift %}')
+                .then(response => response.json())
+                .then(json => {
+                    {% if not admin %}
+                        json = json.filter(order => order.type === 0);
+                    {% endif %}
+                    this.orders = json;
+                });
+            fetch('{% url "v1:shift_retrieveupdate" pk=shift.id %}')
+                .then(response => response.json())
+                .then(json => {
+                    this.shift = json;
+                });
+            fetch('{% url "v1:product_list" shift=shift %}?orderable=True&available=True')
+                .then(response => response.json())
+                .then(json => {
+                    this.products = json;
+                });
+        },
+        computed: {
+            user_orders: function() {
+                let userCopy = this.user;
+                return this.orders.filter(function(order) {
+                    return userCopy === null || (order.user !== null && order.user.id === userCopy.id);
+                });
+            },
+            user_orders_with_shift_restrictions: function() {
+                let userCopy = this.user;
+                return this.orders.filter(function(order) {
+                    return userCopy === null || (order.user !== null && order.user.id === userCopy.id && !order.product.ignore_shift_restrictions);
+                });
+            },
+            orders_with_shift_restrictions: function() {
+                return this.orders.filter(function(order) {
+                    return !order.product.ignore_shift_restrictions;
+                });
+            },
+            orders_to_make: function() {
+                return this.orders.filter(order => !order.ready);
+            },
+            orders_to_make_grouped: function () {
+                let orders_to_make = {};
+                this.orders_to_make.forEach(order => {
+                    if (order.product.name in orders_to_make) {
+                        orders_to_make[order.product.name].amount += 1;
+                    } else {
+                        orders_to_make[order.product.name] = {"product": order.product, "amount": 1};
+                    }
+                });
+                return orders_to_make;
+            },
+            orders_made: function() {
+                return this.orders.filter(order => order.ready);
+            },
+            orders_made_grouped: function () {
+                let orders_made = {};
+                this.orders_made.forEach(order => {
+                    if (order.product.name in orders_made) {
+                        orders_made[order.product.name].amount += 1;
+                    } else {
+                        orders_made[order.product.name] = {"product": order.product, "amount": 1};
+                    }
+                });
+                return orders_made;
+            },
+            orders_grouped: function () {
+                let orders_total = {};
+                this.orders.forEach(order => {
+                    if (order.product.name in orders_total) {
+                        orders_total[order.product.name].amount += 1;
+                    } else {
+                        orders_total[order.product.name] = {"product": order.product, "amount": 1};
+                    }
+                });
+                return orders_total;
+            },
+            orders_finished: function() {
+                return this.orders.filter(order => order.ready && order.paid);
+            },
+            orders_to_process: function() {
+                return this.orders.filter(order => !order.ready || !order.paid);
+            }
+        },
+        methods: {
+            user_orders_with_product_id(productId) {
+                return this.user_orders.filter(function(order) {
+                    return order.product.id === productId;
+                });
+            },
+            add_order(product) {
+                this.addingOrder = true;
+                fetch('{% url 'v1:orders_listcreate' shift=shift %}', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        'csrfmiddlewaretoken': get_csrf_token(),
+                        'product': product.id,
+                        'type': 0,
+                    }),
+                    headers: {
+                        "X-CSRFToken": get_csrf_token(),
+                        "Accept": 'application/json',
+                        "Content-Type": 'application/json',
+                    }
+                }).then(response => {
+                    if (response.status === 201) {
+                        return response.json();
+                    } else {
+                        throw response;
+                    }
+                }).then(() => {
+                    tata.success('', `${product.name} ordered successfully`);
+                }).catch(() => {
+                    tata.error('', 'Order failed to submit')
+                }).finally(() => {
+                    Promise.all([
+                        fetch('{% url "v1:product_list" shift=shift %}?orderable=True&available=True')
+                            .then(response => response.json())
+                            .then(json => {
+                                this.products = json;
+                            }),
+                        fetch('{% url "v1:shift_retrieveupdate" pk=shift.id %}')
+                            .then(response => response.json())
+                            .then(json => {
+                                this.shift = json;
+                            }),
+                        fetch('{% url "v1:orders_listcreate" shift=shift %}')
+                            .then(response => response.json())
+                            .then(json => {
+                                {% if not admin %}
+                                    json = json.filter(order => order.type === 0);
+                                {% endif %}
+                                this.orders = json;
+                            })
+                    ]).finally(() => {
+                        this.addingOrder = false;
+                    })
+                });
+            },
+            toggle_paid(order) {
+                fetch(
+                    `/api/v1/shifts/{{ shift.id }}/orders/${order.id}/paid/`,
+                    {
+                        method: 'PATCH',
+                        headers: {
+                            "X-CSRFToken": get_csrf_token(),
+                            "Accept": 'application/json',
+                        }
+                    }
+                ).then(response => {
+                    if (response.status === 200) {
+                        return response.json();
+                    } else {
+                        throw response;
+                    }
+                }).then(() => {
+                    if (typeof (update_refresh_list) !== 'undefined') {
+                        update_refresh_list();
+                    }
+                }).catch(error => show_error_from_api(error));
+            },
+            toggle_ready(order) {
+                fetch(
+                    `/api/v1/shifts/{{ shift.id }}/orders/${order.id}/ready/`,
+                    {
+                        method: 'PATCH',
+                        headers: {
+                            "X-CSRFToken": get_csrf_token(),
+                            "Accept": 'application/json',
+                        }
+                    }
+                ).then(response => {
+                    if (response.status === 200) {
+                        return response;
+                    } else {
+                        throw response;
+                    }
+                }).then(() => {
+                    if (typeof (update_refresh_list) !== 'undefined') {
+                        update_refresh_list();
+                    }
+                }).catch(error => show_error_from_api(error));
+            },
+            delete_order(order) {
+                if (window.confirm('Do you want to delete this order?')) {
+                    fetch(
+                        `/api/v1/shifts/{{ shift.id }}/orders/${order.id}/`,
+                        {
+                            method: 'DELETE',
+                            headers: {
+                                "X-CSRFToken": get_csrf_token(),
+                                "Accept": 'application/json',
+                            }
+                        }
+                    ).then(response => {
+                        if (response.status === 204) {
+                            return response;
+                        } else {
+                            throw response;
+                        }
+                    }).then(() => {
+                        if (typeof (update_refresh_list) !== 'undefined') {
+                            update_refresh_list();
+                        }
+                        tata.success('', 'Order has been deleted.');
+                    }).catch(error => show_error_from_api(error));
+                }
+            }
+        }
+    });
+    add_refresh_url("{% url "v1:orders_listcreate" shift=shift %}", function (data) {
+        orders_vue_{{ shift.id }}.orders = data
+    });
+    add_refresh_url("{% url "v1:shift_retrieveupdate" pk=shift.id %}", function (data) {
+        orders_vue_{{ shift.id }}.shift = data
+    });
+</script>

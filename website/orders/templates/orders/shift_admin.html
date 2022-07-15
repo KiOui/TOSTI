@@ -5,7 +5,7 @@
     {% include 'orders/shift_header.html' with shift=shift %}
 
     {% include 'orders/shift_admin_scanner.html' with shift=shift %}
-    {% include 'orders/order_list.html' with shift=shift admin=True user=user %}
+    {% include 'orders/order_admin_list.html' with shift=shift user=user %}
     <div class="container pt-5 pb-5"></div>
 {% endblock %}
 
