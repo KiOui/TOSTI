@@ -211,6 +211,7 @@ class ThaliedjeBlacklistedUser(models.Model):
     """Model for blacklisted users."""
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    explanation = models.TextField(blank=True, null=True)
 
     def __str__(self):
         """Print object as a string."""
