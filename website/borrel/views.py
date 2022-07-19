@@ -67,6 +67,24 @@ class BorrelReservationBaseView(FormView):
             return formset(instance=instance, files=files)
         return formset()
 
+    def _initialize_form(self, item, product):
+        """Initialize a form."""
+        item.initial.update(
+            {
+                "product": product,
+                "product_name": product.name,
+                "product_description": product.description,
+                "product_price_per_unit": product.price,
+            }
+        )
+        if not product.can_be_reserved:
+            item.fields["amount_reserved"].disabled = True
+            item.fields["amount_reserved"].required = False
+
+        if not product.can_be_submitted:
+            item.fields["amount_used"].disabled = True
+            item.fields["amount_used"].required = False
+
     def _initialize_forms(self, forms, products):
         """Fill formset forms with data for products."""
         assert len(forms) == len(products)
@@ -74,14 +92,7 @@ class BorrelReservationBaseView(FormView):
             # Note that this puts the full product object in the product field,
             # not just the pk as would be default behaviour. This is done so that
             # when sorting the formset, the category and immediately be accessed.
-            item.initial.update(
-                {
-                    "product": product,
-                    "product_name": product.name,
-                    "product_description": product.description,
-                    "product_price_per_unit": product.price,
-                }
-            )
+            self._initialize_form(item, product)
 
     def _sort_formset(self, formset):
         """Sort the forms in a formset based on category."""
@@ -303,6 +314,13 @@ class BorrelReservationSubmitView(BasicBorrelBrevetRequiredMixin, BorrelReservat
             self._sort_formset(context["items"])
 
         return context
+
+    def _initialize_form(self, item, product):
+        """Initialize a form."""
+        super(BorrelReservationSubmitView, self)._initialize_form(item, product)
+        if not product.can_be_reserved and product.can_be_submitted:
+            item.fields["amount_used"].disabled = False
+            item.fields["amount_used"].required = True
 
     def dispatch(self, request, *args, **kwargs):
         """Display error messages in certain conditions."""
