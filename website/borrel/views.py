@@ -252,6 +252,7 @@ class ListReservationsView(ListView):
 
     model = BorrelReservation
     template_name = "borrel/borrel_reservation_list.html"
+    paginate_by = 20
 
     def get_queryset(self):
         """Only list reservations you have access to."""
