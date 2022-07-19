@@ -45,7 +45,8 @@ class UserAdmin(BaseUserAdmin):
         "first_name",
         "last_name",
         "override_display_name",
-        "override_short_name" "email",
+        "override_short_name",
+        "email",
     ]
     fieldsets = (
         (
