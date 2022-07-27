@@ -198,6 +198,7 @@ class ReservationItem(models.Model):
         return f"{self.product_name} for {self.reservation}"
 
     def clean(self):
+        """Clean model."""
         if not self.product.can_be_reserved and self.amount_reserved:
             raise ValidationError("Product cannot be reserved.")
         if not self.product.can_be_submitted and self.amount_used:
