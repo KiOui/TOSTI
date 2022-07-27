@@ -8,7 +8,7 @@ register = template.Library()
 def borrel_reservations_to_submit(context):
     """Render borrel reservations to submit."""
     user = context.get("user")
-    if not user:
+    if not user or not user.is_authenticated:
         return
     reservations = user.borrel_reservations_access.filter(
         submitted_at__isnull=True, accepted=True, start__lte=timezone.now()
