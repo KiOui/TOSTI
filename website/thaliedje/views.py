@@ -30,7 +30,7 @@ class NowPlayingView(TemplateView):
         context["venue"] = player.venue
 
         context[
-            "has_override_permission"
+            "can_request_album_playlist"
         ] = self.request.user.is_authenticated and has_album_playlist_request_permission(self.request.user, player)
         context["can_request"] = self.request.user.is_authenticated and not user_is_blacklisted(self.request.user)
         return context
