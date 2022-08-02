@@ -76,6 +76,13 @@ class Product(models.Model):
     )
     description = models.TextField(null=True, blank=True)
     price = models.DecimalField(decimal_places=2, max_digits=6)
+    can_be_reserved = models.BooleanField(default=True)
+    can_be_submitted = models.BooleanField(default=True)
+
+    def clean(self):
+        """Validate product."""
+        if not self.can_be_reserved and not self.can_be_submitted:
+            raise ValidationError("Product must either be reservable or submittable.")
 
     def __str__(self):
         """Convert this object to string."""
@@ -190,6 +197,13 @@ class ReservationItem(models.Model):
         """Convert this object to string."""
         return f"{self.product_name} for {self.reservation}"
 
+    def clean(self):
+        """Clean model."""
+        if not self.product.can_be_reserved and self.amount_reserved:
+            raise ValidationError("Product cannot be reserved.")
+        if not self.product.can_be_submitted and self.amount_used:
+            raise ValidationError("Product cannot be submitted.")
+
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         """Save reservation item."""
         if self.amount_reserved is None:
@@ -207,7 +221,7 @@ class ReservationItem(models.Model):
         if not self.product_description:
             self.product_description = self.product.description
 
-        if self.amount_used and self.amount_used > 0 and not self.amount_reserved:
+        if self.amount_used and self.amount_used > 0 and not self.amount_reserved and self.product.can_be_reserved:
             self.amount_reserved = 0
 
         super().save(force_insert, force_update, using, update_fields)
