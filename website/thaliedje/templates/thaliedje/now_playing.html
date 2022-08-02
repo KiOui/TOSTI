@@ -24,6 +24,23 @@
 {% endblock %}
 
 {% block footer %}
+    <footer class="page-footer navbar navbar-expand-md mt-auto footer">
+        <div class="container text-center">
+            <div class="row flex-grow-1">
+                <div class="col">
+                    {% if can_request %}
+                        <div class="btn-ml m-auto cursor-pointer btn-on" data-bs-toggle="modal" data-bs-target="#song-request-popup">
+                            <p class="font-footer"><i class="fa-solid fa-table-list"></i> Request a song</p>
+                        </div>
+                    {% elif not user.is_authenticated %}
+                        <a class="btn-ml m-auto cursor-pointer btn-on" href="{% url "login" %}?next={% url "thaliedje:now_playing" player %}">
+                            <p class="font-footer">Log in to request a song</p>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </footer>
     {% if can_request %}
         <div id="song-request-wrapper">
             <div class="modal" id="song-request-popup">
@@ -46,16 +63,5 @@
                 </div>
             </div>
         </div>
-        <footer class="page-footer navbar navbar-expand-md mt-auto footer">
-            <div class="container text-center">
-                <div class="row flex-grow-1">
-                    <div class="col">
-                        <div class="btn-ml m-auto cursor-pointer btn-on" data-bs-toggle="modal" data-bs-target="#song-request-popup">
-                            <p class="font-footer"><i class="fa-solid fa-table-list"></i> Request a song</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </footer>
     {% endif %}
 {% endblock %}
