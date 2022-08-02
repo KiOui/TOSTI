@@ -192,6 +192,9 @@ class ReservationItem(models.Model):
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         """Save reservation item."""
+        if self.amount_reserved is None:
+            self.amount_reserved = 0
+
         if self.amount_reserved == 0 and (self.amount_used is None or self.amount_used == 0):
             if self.pk:
                 self.delete()
