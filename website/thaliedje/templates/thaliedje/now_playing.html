@@ -27,7 +27,7 @@
     {% if can_request %}
         <div id="song-request-wrapper">
             <div class="modal" id="song-request-popup">
-                <div class="modal-dialog">
+                <div class="modal-dialog{% if can_request_album_playlist %} modal-xl{% endif %}">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h2 class="modal-title">Request a song</h2>
@@ -36,7 +36,7 @@
                         <div class="modal-body">
                             <div class="container">
                                 <p>Search a track below and add it to the queue.</p>
-                                {% include 'thaliedje/search.html' with player=player refresh=False %}
+                                {% include 'thaliedje/search.html' with player=player refresh=False show_admin_columns=can_request_album_playlist %}
                             </div>
                         </div>
                         <div class="modal-footer">
