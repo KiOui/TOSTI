@@ -100,10 +100,15 @@ class ShiftSerializer(serializers.ModelSerializer):
 
     assignees = UserSerializer(many=True)
     amount_of_orders = serializers.SerializerMethodField()
+    venue_name = serializers.SerializerMethodField()
 
     def get_amount_of_orders(self, instance):
         """Get the amount of orders in the shift."""
         return instance.orders.filter(type=Order.TYPE_ORDERED).count()
+
+    def get_venue_name(self, instance):
+        """Get the name of the venue."""
+        return instance.venue.venue.name
 
     def create(self, validated_data):
         """
@@ -134,6 +139,7 @@ class ShiftSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "venue",
+            "venue_name",
             "start",
             "end",
             "can_order",

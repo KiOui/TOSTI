@@ -110,7 +110,7 @@ class ShiftListCreateAPIView(LoggedListCreateAPIView):
     """API View to list and create shifts."""
 
     serializer_class = ShiftSerializer
-    queryset = Shift.objects.all()
+    queryset = Shift.objects.select_related("venue__venue").prefetch_related("assignees")
     permission_classes = [IsAuthenticatedOrTokenHasScopeForMethod]
     required_scopes_for_method = {
         "GET": ["orders:order"],
