@@ -48,7 +48,7 @@ class OrderListCreateAPIView(ListCreateAPIView):
         django_filters.rest_framework.DjangoFilterBackend,
     ]
     filter_class = OrderFilter
-    queryset = Order.objects.all()
+    queryset = Order.objects.select_related("user", "product")
 
     def get_queryset(self):
         """Get the queryset."""
@@ -92,7 +92,7 @@ class OrderRetrieveDestroyAPIView(LoggedRetrieveDestroyAPIView):
         "DELETE": ["orders:manage"],
     }
 
-    queryset = Order.objects.all()
+    queryset = Order.objects.select_related("user", "product")
 
     def destroy(self, request, *args, **kwargs):
         """Destroy an order."""
@@ -145,7 +145,7 @@ class ShiftRetrieveUpdateAPIView(LoggedRetrieveUpdateAPIView):
     """API View to retrieve and update a shift."""
 
     serializer_class = ShiftSerializer
-    queryset = Shift.objects.all()
+    queryset = Shift.objects.prefetch_related("assignees")
     permission_classes = [IsAuthenticatedOrTokenHasScopeForMethod]
     required_scopes_for_method = {
         "GET": ["orders:order"],
