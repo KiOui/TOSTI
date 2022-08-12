@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     "tantalus",
     "oauth2_provider",
     "corsheaders",
+    "status_screen",
 ]
 
 AUTH_USER_MODEL = 'users.User'
