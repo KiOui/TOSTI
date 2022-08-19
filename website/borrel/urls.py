@@ -13,4 +13,5 @@ urlpatterns = [
     path("reservations/<int:pk>/submit/", views.BorrelReservationSubmitView.as_view(), name="submit_reservation"),
     path("reservations/<int:pk>/delete/", views.ReservationRequestCancelView.as_view(), name="delete_reservation"),
     path("reservations/join/<uuid:code>", views.JoinReservationView.as_view(), name="join_reservation"),
+    path("borrel-reservations.ics", views.BorrelReservationFeed(), name="ical_borrel_reservations"),
 ]
