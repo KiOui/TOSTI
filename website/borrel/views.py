@@ -1,6 +1,9 @@
+from datetime import timedelta
+
 from django.contrib import messages
 from django.contrib.admin.models import ADDITION, CHANGE, DELETION
 from django.contrib.auth.decorators import login_required
+from django.contrib.sites.models import Site
 from django.forms import inlineformset_factory
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
@@ -8,6 +11,7 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic import CreateView, ListView, UpdateView, FormView, DeleteView
+from django_ical.views import ICalFeed
 
 from borrel.forms import (
     BorrelReservationForm,
@@ -363,3 +367,59 @@ class BorrelReservationSubmitView(BasicBorrelBrevetRequiredMixin, BorrelReservat
         else:
             messages.add_message(self.request, messages.ERROR, f"Something went wrong. {items.errors}")
             return self.form_invalid(form)
+
+
+class BorrelReservationFeed(ICalFeed):
+    """Output an iCal feed containing all borrel reservations."""
+
+    def product_id(self, obj):
+        """Get product ID."""
+        return f"-//{Site.objects.get_current().domain}//BorrelReservationCalendar"
+
+    def title(self, obj):
+        """Get calendar title."""
+        return "T.O.S.T.I. Borrel Reservation calendar"
+
+    def items(self, obj):
+        """Get calendar items."""
+        return BorrelReservation.objects.filter(accepted=True).order_by("-start")
+
+    def item_title(self, item):
+        """Get item title."""
+        if item.association is not None:
+            return f"{item.association}: {item.title}"
+        else:
+            return item.title
+
+    def item_description(self, item):
+        """Get item description."""
+        reserved_item_list_str = "".join(
+            [
+                f"{reserved_item.product_name}: {reserved_item.amount_reserved}<br>"
+                for reserved_item in item.items.all()
+            ]
+        )
+        return (
+            f"Title: {item.title}<br>"
+            f"Comments: {item.comments}<br>"
+            f"{reserved_item_list_str}"
+            f'<a href="{self.item_link(item)}">View on T.O.S.T.I.</a>'
+        )
+
+    def item_start_datetime(self, item):
+        """Get start datetime."""
+        return item.start
+
+    def item_end_datetime(self, item):
+        """Get end datetime."""
+        if item.end is not None:
+            return item.end
+        else:
+            return item.start + timedelta(hours=4)
+
+    def item_link(self, item):
+        """Get item link."""
+        return "https://{}{}".format(
+            Site.objects.get_current().domain,
+            reverse("admin:borrel_borrelreservation_change", kwargs={"object_id": item.id}),
+        )
