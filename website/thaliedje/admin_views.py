@@ -56,9 +56,11 @@ class SpofityAuthorizeView(PermissionRequiredMixin, TemplateView):
         """
         form = SpotifyTokenForm(request.POST)
         if form.is_valid():
-            spotify_auth_code, _ = Player.objects.get_or_create(client_id=form.cleaned_data.get("client_id"))
+            spotify_auth_code, created = Player.objects.get_or_create(client_id=form.cleaned_data.get("client_id"))
             spotify_auth_code.client_secret = form.cleaned_data.get("client_secret")
             spotify_auth_code.redirect_uri = request.build_absolute_uri(reverse("admin:add_token"))
+            if created:
+                spotify_auth_code.slug = spotify_auth_code.client_id
             spotify_auth_code.save()
             spotify_oauth = redirect(spotify_auth_code.auth.get_authorize_url())
             spotify_oauth.set_cookie(COOKIE_CLIENT_ID, spotify_auth_code.client_id)
