@@ -3,7 +3,7 @@ from django.shortcuts import redirect
 from django.urls import path, register_converter
 from guardian.admin import GuardedModelAdmin
 
-from thaliedje.converters import PlayerConverter
+from thaliedje.converters import PlayerPKConverter
 from thaliedje.admin_views import (
     SpofityAuthorizeView,
     SpotifyTokenView,
@@ -53,7 +53,7 @@ class PlayerAdmin(GuardedModelAdmin):
 
     def get_urls(self):
         """Get admin urls."""
-        register_converter(PlayerConverter, "spotify")
+        register_converter(PlayerPKConverter, "spotify_pk")
         urls = super().get_urls()
         custom_urls = [
             path(
@@ -62,13 +62,13 @@ class PlayerAdmin(GuardedModelAdmin):
                 name="authorize",
             ),
             path(
-                "authorize/<spotify:spotify>",
+                "authorize/<spotify_pk:spotify>",
                 self.admin_site.admin_view(SpofityAuthorizeView.as_view()),
                 name="reauthorize",
             ),
             path("token/", SpotifyTokenView.as_view(), name="add_token"),
             path(
-                "auth-succeeded/<spotify:spotify>",
+                "auth-succeeded/<spotify_pk:spotify>",
                 SpotifyAuthorizeSucceededView.as_view(),
                 name="authorization_succeeded",
             ),
