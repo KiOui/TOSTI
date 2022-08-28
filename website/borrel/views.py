@@ -358,11 +358,11 @@ class BorrelReservationSubmitView(BasicBorrelBrevetRequiredMixin, BorrelReservat
         items = context["items"]
         if items.is_valid():
             obj = form.save()
+            items.instance = obj
+            items.save()
             obj.user_submitted = self.request.user
             obj.submitted_at = timezone.now()
             obj.save()
-            items.instance = obj
-            items.save()
 
             log_action(self.request.user, obj, CHANGE, "Submitted reservation via website.")
             messages.add_message(self.request, messages.SUCCESS, "Your borrel reservation is submitted.")
