@@ -20,7 +20,14 @@ class BasicBorrelBrevetAdmin(ExportMixin, admin.ModelAdmin):
 
     resource_class = BasicBorrelBrevetResource
     list_display = ["user", "registered_on"]
-    search_fields = ["user"]
+    search_fields = [
+        "user__username",
+        "user__first_name",
+        "user__last_name",
+        "user__full_name",
+        "user__override_display_name",
+        "user__override_short_name",
+    ]
     readonly_fields = ["registered_on"]
     autocomplete_fields = ["user"]
 

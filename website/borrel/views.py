@@ -119,6 +119,8 @@ class BorrelReservationBaseView(FormView):
 
     def get_queryset(self):
         """Only allow access to reservations users have access to."""
+        if not self.request.user.is_authenticated:
+            return super().get_queryset().none()
         return super().get_queryset().filter(pk__in=self.request.user.borrel_reservations_access.values("pk"))
 
     def get_form_kwargs(self):
@@ -271,6 +273,8 @@ class ListReservationsView(ListView):
 
     def get_queryset(self):
         """Only list reservations you have access to."""
+        if not self.request.user.is_authenticated:
+            return super().get_queryset().none()
         return super().get_queryset().filter(pk__in=self.request.user.borrel_reservations_access.values("pk"))
 
 
