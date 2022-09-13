@@ -112,7 +112,7 @@ function update_refresh_list() {
             console.log(`An error occurred while refreshing ${key}. Error: ${error}`)
         });
     }
-    update_timer = setTimeout(update_refresh_list, 5000);
+    update_timer = setTimeout(update_refresh_list, 20000);
 }
 
 function get_csrf_token() {
