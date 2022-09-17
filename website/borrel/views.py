@@ -330,6 +330,9 @@ class BorrelReservationSubmitView(BasicBorrelBrevetRequiredMixin, BorrelReservat
             item.fields["amount_used"].disabled = False
             item.fields["amount_used"].required = True
 
+        if product.can_be_submitted:
+            item.fields["amount_used"].disabled = False
+
     def dispatch(self, request, *args, **kwargs):
         """Display error messages in certain conditions."""
         if self.get_object().submitted:
