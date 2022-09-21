@@ -30,6 +30,8 @@ django-constance = {extras = ["database"], version = "^2.9.0"}
 html2text = "^2020.1.16"
 django-ical = "^1.8.3"
 fontawesomefree = "^6.1.1"
+django-tinymce = "^3.5.0"
+bleach = { extras = ["css"], version = "^5.0.1" }
 
 [tool.poetry.dev-dependencies]
 pydocstyle = "^5.0.2"

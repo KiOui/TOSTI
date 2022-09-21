@@ -1,0 +1,11 @@
+{% load bleach_tags %}
+
+{% for announcement in announcements %}
+    <div class="announcement">
+        <i class="fas fa-{{ announcement.icon }} me-3"></i> {{ announcement.content|bleach }}
+        {% if announcement.closeable %}
+            <button type="button" class="btn-close ms-3" aria-label="Close"
+                    data-announcement-id="{{ announcement.pk }}"></button>
+        {% endif %}
+    </div>
+{% endfor %}

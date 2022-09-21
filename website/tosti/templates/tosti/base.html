@@ -1,4 +1,4 @@
-{% load static django_bootstrap5 %}
+{% load static django_bootstrap5 announcements %}
 <!DOCTYPE html>
 <html lang="en" class="h-100">
 <head>
@@ -37,9 +37,15 @@
 
     <!-- TaTa.js notifications -->
     <script src="{% static 'tosti/js/tata.js' %}"></script>
+
+    <!-- Announcements CSS -->
+    <link rel="stylesheet" href="{% static 'announcements/css/announcements.css' %}" type="text/css">
 </head>
 <body class="d-flex flex-column h-100">
 <div id="page-container">
+    <section id="announcements-alerts">
+        {% render_announcements %}
+    </section>
     {% block header %}
         <nav class="navbar navbar-expand-lg site-header sticky-top navbar-dark">
             <div class="container">
