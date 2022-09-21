@@ -13,8 +13,32 @@
                 {% include "borrel/includes/share_reservation.html" %}
                 {% bootstrap_form form %}
                 {% include "borrel/includes/product_items_table.html" %}
-                {% bootstrap_button button_type="submit" content="Submit" extra_classes="mt-4 mb-3 w-100" %}
+                {% if show_accept_terms %}
+                    <div class="mt-5">
+                        <div class="d-flex justify-content-center">
+                            <input required type="checkbox" class="me-2 mt-1" id="accept-terms">
+                            <label for="accept-terms">
+                                I have cleaned the canteens according to the
+                                {% if terms_url %}
+                                    <a href="{{ terms_url }}">cleaning scheme</a>
+                                {% else %}
+                                    cleaning scheme
+                                {% endif %}
+                                setup by Olympus.
+                            </label>
+                        </div>
+                    </div>
+                {% endif %}
+                {% bootstrap_button button_type="submit" content="Submit" extra_classes="mt-4 mb-3 w-100" id="submit-button" %}
             </form>
         </div>
     </div>
+    <script>
+        let submit_button = document.getElementById('submit-button');
+        submit_button.onclick = function(event) {
+            if (!confirm("Are you sure you want to submit the borrel reservation? This action can not be made undone.")) {
+                event.preventDefault();
+            }
+        }
+    </script>
 {% endblock %}

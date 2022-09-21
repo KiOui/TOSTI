@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+from constance import config
 from django.contrib import messages
 from django.contrib.admin.models import ADDITION, CHANGE, DELETION
 from django.contrib.auth.decorators import login_required
@@ -312,6 +313,13 @@ class BorrelReservationSubmitView(BasicBorrelBrevetRequiredMixin, BorrelReservat
         products = Product.objects.available_products()
         products_reserved = self.get_object().items.values_list("product")
         new_products = products.exclude(id__in=products_reserved)
+
+        if context["borrelreservation"].venue_reservation is not None:
+            context["show_accept_terms"] = True
+        else:
+            context["show_accept_terms"] = False
+
+        context["terms_url"] = config.CLEANING_SCHEME_URL
 
         if self.request.POST:
             context["items"] = self._get_inline_formset(data=self.request.POST, instance=self.get_object())
