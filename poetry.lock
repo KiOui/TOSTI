@@ -439,7 +439,7 @@ six = "*"
 
 [[package]]
 name = "jwcrypto"
-version = "1.3.1"
+version = "1.4"
 description = "Implementation of JOSE Web standards"
 category = "main"
 optional = false
@@ -1170,7 +1170,7 @@ isodate = [
     {file = "isodate-0.6.1.tar.gz", hash = "sha256:48c5881de7e8b0a0d648cb024c8062dc84e7b840ed81e864c7614fd3c127bde9"},
 ]
 jwcrypto = [
-    {file = "jwcrypto-1.3.1.tar.gz", hash = "sha256:54b551b115ffb4d12b1f1ee93b8ba2a71bb8556ba3d85d62f707549613da877c"},
+    {file = "jwcrypto-1.4.tar.gz", hash = "sha256:30bcfc2d199f2f1a52d04558ffa99112ad81d7b787f29e0d9aa4ef499934307e"},
 ]
 lxml = [
     {file = "lxml-4.9.1-cp27-cp27m-macosx_10_15_x86_64.whl", hash = "sha256:98cafc618614d72b02185ac583c6f7796202062c41d2eeecdf07820bad3295ed"},
