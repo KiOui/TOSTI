@@ -47,6 +47,10 @@ class TantalusShiftAdmin(ShiftAdmin):
         extra_context["show_push_to_tantalus"] = obj is not None and obj.finalized
         return super(ShiftAdmin, self).change_view(request, object_id, form_url, extra_context)
 
+    def _should_do_push_to_tantalus(self, obj, request):
+        """Whether a push to tantalus should happen."""
+        return obj and "_pushtotantalus" in request.POST
+
     def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
         """Add extra action to admin post request."""
         try:
@@ -54,7 +58,7 @@ class TantalusShiftAdmin(ShiftAdmin):
         except Shift.DoesNotExist:
             obj = None
 
-        if obj and "_pushtotantalus" in request.POST:
+        if self._should_do_push_to_tantalus(obj, request):
             if synchronize_to_tantalus(obj):
                 self.message_user(request, format_html("Tantalus synchronisation succeeded."), messages.SUCCESS)
                 if not TantalusShiftSynchronization.objects.filter(shift=obj).exists():
@@ -76,8 +80,8 @@ class TantalusShiftAdmin(ShiftAdmin):
 
     def has_change_permission(self, request, obj=None):
         """Don't check change permissions when _pushtotantalus is present in POST parameters."""
-        if obj and "_pushtotantalus" not in request.POST:
-            return super(TantalusShiftAdmin, self).has_change_permission(request, obj=obj)
+        if self._should_do_push_to_tantalus(obj, request):
+            return super(ShiftAdmin, self).has_change_permission(request, obj=obj)
         else:
             return super(TantalusShiftAdmin, self).has_change_permission(request, obj=obj)
 
