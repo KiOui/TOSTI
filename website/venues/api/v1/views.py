@@ -45,7 +45,9 @@ class ReservationListAPIView(ListAPIView):
     """
 
     serializer_class = ReservationSerializer
-    queryset = Reservation.objects.filter(accepted=True)
+    queryset = Reservation.objects.filter(accepted=True).select_related(
+        "venue", "user", "user__association", "association"
+    )
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend, SearchFilter)
     filter_class = ReservationFilter
     search_fields = ["title"]

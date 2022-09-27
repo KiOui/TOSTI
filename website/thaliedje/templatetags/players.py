@@ -14,20 +14,14 @@ def render_queue_list(player):
 @register.inclusion_tag("thaliedje/player.html", takes_context=True)
 def render_player(context, player):
     """Render queue."""
-    return {
-        "player": player,
-        "controls": context["request"].user in player.get_users_with_control_permissions(),
-    }
+    return {"player": player, "controls": context["request"].user.has_perm("thaliedje.can_control", player)}
 
 
 @register.inclusion_tag("thaliedje/player.html", takes_context=True)
 def render_venue_player(context, venue):
     """Render queue."""
     player = Player.get_player(venue)
-    return {
-        "player": player,
-        "controls": context["request"].user in player.get_users_with_control_permissions(),
-    }
+    return {"player": player, "controls": context["request"].user.has_perm("thaliedje.can_control", player)}
 
 
 @register.inclusion_tag("thaliedje/render_players.html", takes_context=True)

@@ -48,8 +48,7 @@
             <li v-for="(order, index) of orders" :key="`orderlist_order_${order.id}`" class="pt-2 pb-2 item-list">
                 <div class="information-row">
                     <p class="item-counter"><% index + 1 %>.</p>
-                    <p class="item-name"><% order.product.name %> (€<% (Math.round(order.order_price * 100) /
-                        100).toFixed(2) %>)</p>
+                    <p class="item-name"><% order.product.name %> (<% format_price(order.order_price) %>)</p>
                     <i v-if="order.product.icon !== null" :class="`fa-solid fa-${order.product.icon} item-icon`"></i>
                     <div class="flex-divider"></div>
                     <i v-if="order.user !== null && {{ user.id }} === order.user.id"
@@ -138,6 +137,13 @@
             },
         },
         methods: {
+            format_price(priceToFormat) {
+                return new Intl.NumberFormat('nl-NL', {
+                    style: 'currency',
+                    currency: 'EUR',
+                    currencyDisplay: "symbol"
+                }).format(priceToFormat).trim();
+            },
             refresh() {
                 return Promise.all([
                     fetch('{% url "v1:product_list" shift=shift %}?orderable=True&available=True')

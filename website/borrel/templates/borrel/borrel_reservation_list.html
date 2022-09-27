@@ -9,7 +9,7 @@
     </div>
     <div class="container">
         {% bootstrap_messages %}
-        {% if object_list %}
+        {% if page_obj|length > 0 %}
             <table class="table table-responsive w-100">
                 <thead>
                 <tr>
@@ -22,7 +22,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for reservation in object_list reversed %}
+                {% for reservation in page_obj %}
                     <tr>
                         <th scope="row">
                             <a href="{% url 'borrel:view_reservation' reservation.pk %}" class="no-color">{{ reservation.title }}</a>
@@ -60,8 +60,9 @@
                 {% endfor %}
                 </tbody>
             </table>
+            {% include "tosti/pagination.html" %}
         {% else %}
-            <p>You do not have any reservations</p>
+            <p class="alert alert-warning">You do not have any reservations</p>
         {% endif %}
     </div>
 {% endblock %}

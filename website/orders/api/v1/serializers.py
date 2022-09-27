@@ -9,9 +9,6 @@ from users.api.v1.serializers import UserSerializer
 class ProductSerializer(serializers.ModelSerializer):
     """Serializer for Product model."""
 
-    # Swagger UI does not know a DecimalField so we have to do it this way
-    current_price = serializers.SerializerMethodField()
-
     def to_internal_value(self, data):
         """Convert a single integer (primary key) to a Product."""
         if type(data) == int:
@@ -21,10 +18,6 @@ class ProductSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError("Product with id {} not found.".format(data))
         else:
             return super(ProductSerializer, self).to_internal_value(data)
-
-    def get_current_price(self, instance):
-        """Get the current price."""
-        return instance.current_price
 
     class Meta:
         """Meta class."""
@@ -41,6 +34,8 @@ class ProductSerializer(serializers.ModelSerializer):
             "max_allowed_per_shift",
             "barcode",
         ]
+
+        read_only_fields = ["current_price"]
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -100,10 +95,15 @@ class ShiftSerializer(serializers.ModelSerializer):
 
     assignees = UserSerializer(many=True)
     amount_of_orders = serializers.SerializerMethodField()
+    venue_name = serializers.SerializerMethodField()
 
     def get_amount_of_orders(self, instance):
         """Get the amount of orders in the shift."""
         return instance.orders.filter(type=Order.TYPE_ORDERED).count()
+
+    def get_venue_name(self, instance):
+        """Get the name of the venue."""
+        return instance.venue.venue.name
 
     def create(self, validated_data):
         """
@@ -134,6 +134,7 @@ class ShiftSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "venue",
+            "venue_name",
             "start",
             "end",
             "can_order",

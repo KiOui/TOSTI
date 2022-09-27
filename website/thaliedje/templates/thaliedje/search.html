@@ -4,16 +4,23 @@
 <div id="player-search-container-{{ player.id }}">
     <input v-model="query" id="search" type="text" maxlength="100" placeholder="Search for something to play" class="container-fluid form-control mb-3"/>
     <div id="results" class="px-3 search-list">
-        <div class="d-flex flex-column">
-            <template v-if="tracks.length > 0 && query !== ''">
+        <div class="row">
+            <div class="{% if show_admin_columns %}col-lg-4{% else %}col{% endif %}" v-if="tracks.length > 0 && query !== ''">
                 <h3>Tracks</h3>
                 <template v-for="(track, index) in tracks">
                     <div class="d-flex my-2">
-                        <div class="flex-equal-width"><% track.name %></div>
-                        <div class="flex-equal-width">
-                            <template v-for="(artist, art_index) in track.artists">
-                                <% artist %><template v-if="art_index !== track.artists.length - 1">, </template>
-                            </template>
+                        <div class="me-2">
+                            <img height="50" v-if="track.image !== null" :src="track.image"/>
+                        </div>
+                        <div class="flex-equal-width d-flex flex-column">
+                            <div>
+                                <% track.name %>
+                            </div>
+                            <div style="font-style: italic;">
+                                <template v-for="(artist, art_index) in track.artists">
+                                    <% artist %><template v-if="art_index !== track.artists.length - 1">, </template>
+                                </template>
+                            </div>
                         </div>
                         <input type="button" value="Add" class="btn btn-primary" style="height: 40px" v-on:click="add_to_queue(track.id)"/>
                     </div>
@@ -21,37 +28,55 @@
                         <div class="border"></div>
                     </template>
                 </template>
-            </template>
-            <template v-if="playlists.length > 0 && query !== ''">
-                <h3>Playlists</h3>
-                <template v-for="(playlist, index) in playlists">
-                    <div class="d-flex my-2">
-                        <div class="flex-equal-width"><% playlist.name %></div>
-                        <div class="flex-equal-width"><% playlist.owner.display_name %></div>
-                        <input type="button" value="Start" class="btn btn-success" style="height: 40px" v-on:click="start_with_context(playlist.uri)"/>
-                    </div>
-                    <template v-if="index !== tracks.length -1">
-                        <div class="border"></div>
-                    </template>
-                </template>
-            </template>
-            <template v-if="albums.length > 0 && query !== ''">
-                <h3>Albums</h3>
-                <template v-for="(album, index) in albums">
-                    <div class="d-flex my-2">
-                        <div class="flex-equal-width"><% album.name %></div>
-                        <div class="flex-equal-width">
-                            <template v-for="(artist, art_index) in album.artists">
-                                <% artist %><template v-if="art_index !== album.artists.length - 1">, </template>
-                            </template>
+            </div>
+            {% if show_admin_columns %}
+                <div class="col-lg-4" v-if="playlists.length > 0 && query !== ''">
+                    <h3>Playlists</h3>
+                    <template v-for="(playlist, index) in playlists">
+                        <div class="d-flex my-2">
+                            <div class="me-1">
+                                <img height="50" v-if="playlist.image !== null" :src="playlist.image"/>
+                            </div>
+                            <div class="flex-equal-width d-flex flex-column">
+                                <div>
+                                    <% playlist.name %>
+                                </div>
+                                <div style="font-style: italic;">
+                                    <% playlist.owner.display_name %>
+                                </div>
+                            </div>
+                            <input type="button" value="Start" class="btn btn-success" style="height: 40px" v-on:click="ask_start_with_context(playlist.uri)"/>
                         </div>
-                        <input type="button" value="Start" class="btn btn-success" style="height: 40px" v-on:click="start_with_context(album.uri)"/>
-                    </div>
-                    <template v-if="index !== albums.length -1">
-                        <div class="border"></div>
+                        <template v-if="index !== tracks.length -1">
+                            <div class="border"></div>
+                        </template>
                     </template>
-                </template>
-            </template>
+                </div>
+                <div class="col-lg-4" v-if="albums.length > 0 && query !== ''">
+                    <h3>Albums</h3>
+                    <template v-for="(album, index) in albums">
+                        <div class="d-flex my-2">
+                            <div class="me-1">
+                                <img height="50" v-if="album.image !== null" :src="album.image"/>
+                            </div>
+                                <div class="flex-equal-width d-flex flex-column">
+                                <div>
+                                    <% album.name %>
+                                </div>
+                                <div style="font-style: italic;">
+                                    <template v-for="(artist, art_index) in album.artists">
+                                        <% artist %><template v-if="art_index !== album.artists.length - 1">, </template>
+                                    </template>
+                                </div>
+                            </div>
+                            <input type="button" value="Start" class="btn btn-success" style="height: 40px" v-on:click="ask_start_with_context(album.uri)"/>
+                        </div>
+                        <template v-if="index !== albums.length -1">
+                            <div class="border"></div>
+                        </template>
+                    </template>
+                </div>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -117,6 +142,12 @@
                     }
                 }).catch(error => show_error_from_api(error));
             },
+            {% if show_admin_columns %}
+            ask_start_with_context(context_uri) {
+                if (confirm("Starting this playlist or album will override the current queue, do you want to continue?")) {
+                    this.start_with_context(context_uri);
+                }
+            },
             start_with_context(context_uri) {
                 fetch(
                     '{% url "v1:player_play" player=player %}',
@@ -149,8 +180,9 @@
                     if (typeof(update_refresh_list) !== 'undefined') {
                         update_refresh_list();
                     }
-                });
+                }).catch(error => show_error_from_api(error));
             },
+            {% endif %}
             search() {
                 this.current_search_index = this.current_search_index + 1;
                 let this_search_index = this.current_search_index;

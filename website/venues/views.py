@@ -61,6 +61,7 @@ class ListReservationsView(ListView):
 
     model = Reservation
     template_name = "venues/reservation_list.html"
+    paginate_by = 20
 
     def get_queryset(self):
         """Only allow access to user's own reservations."""

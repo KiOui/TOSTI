@@ -1,5 +1,5 @@
 {% extends 'tosti/base.html' %}
-{% load static venue_cards django_bootstrap5 %}
+{% load static venue_cards borrel_reservations django_bootstrap5 %}
 
 {% block page %}
     <div class="container my-5 text-center">
@@ -8,6 +8,11 @@
     </div>
     <div class="container">
         {% bootstrap_messages %}
+
+        <div class="mb-5">
+            {% borrel_reservations_to_submit %}
+        </div>
+
         <div class="row-cols-1 row-cols-lg-3 justify-content-center d-flex flex-wrap">
             {% render_venue_cards_venues %}
         </div>

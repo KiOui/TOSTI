@@ -62,6 +62,9 @@ class User(AbstractUser):
     email = models.EmailField(unique=True)
     full_name = models.CharField(max_length=100)
 
+    override_display_name = models.CharField(max_length=100, blank=True, null=True)
+    override_short_name = models.CharField(max_length=50, blank=True, null=True)
+
     association = models.ForeignKey(
         Association, related_name="users", null=True, blank=True, on_delete=models.SET_NULL
     )
@@ -90,6 +93,12 @@ class User(AbstractUser):
 
         :return: the username of the user
         """
+        if self.override_display_name and self.association:
+            return f"{self.override_display_name} ({self.association})"
+
+        if self.override_display_name:
+            return self.override_display_name
+
         if self.first_name and self.last_name and self.association:
             return f"{self.first_name} {self.last_name} ({self.association})"
         elif self.first_name and self.last_name:
@@ -100,6 +109,9 @@ class User(AbstractUser):
 
     def get_short_name(self):
         """Get short name."""
+        if self.override_short_name:
+            return self.override_short_name
+
         if self.first_name:
             return self.first_name
         elif self.full_name:

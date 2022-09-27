@@ -47,7 +47,8 @@ class PlayerQueueListAPIView(ListAPIView):
 
     def get_queryset(self):
         """Get the queryset."""
-        return self.queryset.filter(player=self.kwargs.get("player"), added__day=timezone.now().day)
+        today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        return self.queryset.filter(player=self.kwargs.get("player"), added__gte=today)
 
     def get_serializer_class(self):
         """Get the serializer class."""

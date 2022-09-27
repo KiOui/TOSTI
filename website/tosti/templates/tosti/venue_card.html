@@ -5,14 +5,22 @@
             <h2>{{ venue }}</h2>
         </div>
         {% with venue|currently_active_shift_for_venue as venue_shift %}
-            <div class="card-body">
-                {% if show_player %}
-                    <h5>Currently playing:</h5>
-                    {% render_venue_player venue.venue %}
-                {% else %}
+            {% if venue.venue.player %}
+            <a href="{% url 'thaliedje:now_playing' player=venue.venue.player %}">
+                <div class="card-body">
+                    {% if show_player %}
+                        <h5>Currently playing:</h5>
+                        {% render_venue_player venue.venue %}
+                    {% else %}
+                        <h5>No music player</h5>
+                    {% endif %}
+                </div>
+            </a>
+            {% else %}
+                <div class="card-body">
                     <h5>No music player</h5>
-                {% endif %}
-            </div>
+                </div>
+            {% endif %}
             <div class="card-footer">
                 {% render_order_now_button venue=venue shift=venue_shift %}
                 {% if admin %}

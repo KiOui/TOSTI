@@ -1,6 +1,9 @@
+from datetime import timedelta
+
 from django.contrib import messages
 from django.contrib.admin.models import ADDITION, CHANGE, DELETION
 from django.contrib.auth.decorators import login_required
+from django.contrib.sites.models import Site
 from django.forms import inlineformset_factory
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
@@ -8,6 +11,7 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic import CreateView, ListView, UpdateView, FormView, DeleteView
+from django_ical.views import ICalFeed
 
 from borrel.forms import (
     BorrelReservationForm,
@@ -67,6 +71,24 @@ class BorrelReservationBaseView(FormView):
             return formset(instance=instance, files=files)
         return formset()
 
+    def _initialize_form(self, item, product):
+        """Initialize a form."""
+        item.initial.update(
+            {
+                "product": product,
+                "product_name": product.name,
+                "product_description": product.description,
+                "product_price_per_unit": product.price,
+            }
+        )
+        if not product.can_be_reserved:
+            item.fields["amount_reserved"].disabled = True
+            item.fields["amount_reserved"].required = False
+
+        if not product.can_be_submitted:
+            item.fields["amount_used"].disabled = True
+            item.fields["amount_used"].required = False
+
     def _initialize_forms(self, forms, products):
         """Fill formset forms with data for products."""
         assert len(forms) == len(products)
@@ -74,14 +96,7 @@ class BorrelReservationBaseView(FormView):
             # Note that this puts the full product object in the product field,
             # not just the pk as would be default behaviour. This is done so that
             # when sorting the formset, the category and immediately be accessed.
-            item.initial.update(
-                {
-                    "product": product,
-                    "product_name": product.name,
-                    "product_description": product.description,
-                    "product_price_per_unit": product.price,
-                }
-            )
+            self._initialize_form(item, product)
 
     def _sort_formset(self, formset):
         """Sort the forms in a formset based on category."""
@@ -104,6 +119,8 @@ class BorrelReservationBaseView(FormView):
 
     def get_queryset(self):
         """Only allow access to reservations users have access to."""
+        if not self.request.user.is_authenticated:
+            return super().get_queryset().none()
         return super().get_queryset().filter(pk__in=self.request.user.borrel_reservations_access.values("pk"))
 
     def get_form_kwargs(self):
@@ -252,9 +269,12 @@ class ListReservationsView(ListView):
 
     model = BorrelReservation
     template_name = "borrel/borrel_reservation_list.html"
+    paginate_by = 20
 
     def get_queryset(self):
         """Only list reservations you have access to."""
+        if not self.request.user.is_authenticated:
+            return super().get_queryset().none()
         return super().get_queryset().filter(pk__in=self.request.user.borrel_reservations_access.values("pk"))
 
 
@@ -303,6 +323,16 @@ class BorrelReservationSubmitView(BasicBorrelBrevetRequiredMixin, BorrelReservat
 
         return context
 
+    def _initialize_form(self, item, product):
+        """Initialize a form."""
+        super(BorrelReservationSubmitView, self)._initialize_form(item, product)
+        if not product.can_be_reserved and product.can_be_submitted:
+            item.fields["amount_used"].disabled = False
+            item.fields["amount_used"].required = True
+
+        if product.can_be_submitted:
+            item.fields["amount_used"].disabled = False
+
     def dispatch(self, request, *args, **kwargs):
         """Display error messages in certain conditions."""
         if self.get_object().submitted:
@@ -331,11 +361,11 @@ class BorrelReservationSubmitView(BasicBorrelBrevetRequiredMixin, BorrelReservat
         items = context["items"]
         if items.is_valid():
             obj = form.save()
+            items.instance = obj
+            items.save()
             obj.user_submitted = self.request.user
             obj.submitted_at = timezone.now()
             obj.save()
-            items.instance = obj
-            items.save()
 
             log_action(self.request.user, obj, CHANGE, "Submitted reservation via website.")
             messages.add_message(self.request, messages.SUCCESS, "Your borrel reservation is submitted.")
@@ -344,3 +374,59 @@ class BorrelReservationSubmitView(BasicBorrelBrevetRequiredMixin, BorrelReservat
         else:
             messages.add_message(self.request, messages.ERROR, f"Something went wrong. {items.errors}")
             return self.form_invalid(form)
+
+
+class BorrelReservationFeed(ICalFeed):
+    """Output an iCal feed containing all borrel reservations."""
+
+    def product_id(self, obj):
+        """Get product ID."""
+        return f"-//{Site.objects.get_current().domain}//BorrelReservationCalendar"
+
+    def title(self, obj):
+        """Get calendar title."""
+        return "T.O.S.T.I. Borrel Reservation calendar"
+
+    def items(self, obj):
+        """Get calendar items."""
+        return BorrelReservation.objects.filter(accepted=True).order_by("-start")
+
+    def item_title(self, item):
+        """Get item title."""
+        if item.association is not None:
+            return f"{item.association}: {item.title}"
+        else:
+            return item.title
+
+    def item_description(self, item):
+        """Get item description."""
+        reserved_item_list_str = "".join(
+            [
+                f"{reserved_item.product_name}: {reserved_item.amount_reserved}<br>"
+                for reserved_item in item.items.all()
+            ]
+        )
+        return (
+            f"Title: {item.title}<br>"
+            f"Comments: {item.comments}<br>"
+            f"{reserved_item_list_str}"
+            f'<a href="{self.item_link(item)}">View on T.O.S.T.I.</a>'
+        )
+
+    def item_start_datetime(self, item):
+        """Get start datetime."""
+        return item.start
+
+    def item_end_datetime(self, item):
+        """Get end datetime."""
+        if item.end is not None:
+            return item.end
+        else:
+            return item.start + timedelta(hours=4)
+
+    def item_link(self, item):
+        """Get item link."""
+        return "https://{}{}".format(
+            Site.objects.get_current().domain,
+            reverse("admin:borrel_borrelreservation_change", kwargs={"object_id": item.id}),
+        )

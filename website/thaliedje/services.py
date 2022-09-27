@@ -110,6 +110,7 @@ def search_tracks(query, player, maximum=5, type="track"):
                     "artists": [y["name"] for y in x["artists"]],
                     "id": x["id"],
                     "uri": x["uri"],
+                    "image": x["album"]["images"][0]["url"],
                 }
                 for x in trimmed_result_for_key
             ]
@@ -122,13 +123,21 @@ def search_tracks(query, player, maximum=5, type="track"):
                     "artists": [y["name"] for y in x["artists"]],
                     "id": x["id"],
                     "uri": x["uri"],
+                    "image": x["images"][0]["url"],
                 }
                 for x in trimmed_result_for_key
             ]
             trimmed_result["albums"] = trimmed_result_for_key
         elif key == "playlists":
             trimmed_result_for_key = [
-                {"type": x["type"], "name": x["name"], "owner": x["owner"], "id": x["id"], "uri": x["uri"]}
+                {
+                    "type": x["type"],
+                    "name": x["name"],
+                    "owner": x["owner"],
+                    "id": x["id"],
+                    "uri": x["uri"],
+                    "image": x["images"][0]["url"] if len(x["images"]) > 0 else None,
+                }
                 for x in trimmed_result_for_key
             ]
             trimmed_result["playlists"] = trimmed_result_for_key

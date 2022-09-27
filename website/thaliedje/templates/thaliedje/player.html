@@ -32,17 +32,17 @@
     </template>
     <template v-else>
         <div class="player-controls mt-3 mb-3">
-            <i class="fa-solid fa-backward" v-on:click="backward()"></i>
+            <i class="fa-solid fa-backward" v-on:click="(event) => backward(evemt)" ></i>
             <template v-if="player_data.is_playing">
-                <i class="fa-solid fa-pause" v-on:click="pause()"></i>
+                <i class="fa-solid fa-pause" v-on:click="(event) => pause(event)"></i>
             </template>
             <template v-else>
-                <i class="fa-solid fa-play" v-on:click="play()"></i>
+                <i class="fa-solid fa-play" v-on:click="(event) => play(event)"></i>
             </template>
-            <i class="fa-solid fa-forward" v-on:click="forward()"></i>
+            <i class="fa-solid fa-forward" v-on:click="(event) => forward(event)"></i>
         </div>
         <div class="player-controls">
-            <input type="range" class="volume w-100" v-on:change="setVolume(player_data.current_volume)" min="0" max="100" step="5" v-model="player_data.current_volume">
+            <input type="range" class="volume w-100" v-on:click="(event) => event.preventDefault()" v-on:change="(event) => setVolume(player_data.current_volume, event)" min="0" max="100" step="5" v-model="player_data.current_volume">
         </div>
     </template>
 {% endif %}
@@ -64,7 +64,8 @@
             this.refresh();
         },
         methods: {
-            play() {
+            play(event) {
+                event.preventDefault();
                 this.doing_call = true;
                 clearTimeout(this.refresh_timer);
                 fetch(
@@ -93,10 +94,11 @@
                     }
                 }).finally(() => {
                     this.doing_call = false;
-                    this.refresh_timer = setTimeout(this.refresh, 5000);
+                    this.refresh_timer = setTimeout(this.refresh, 20000);
                 });
             },
-            pause() {
+            pause(event) {
+                event.preventDefault();
                 this.doing_call = true;
                 clearTimeout(this.refresh_timer);
                 fetch(
@@ -125,10 +127,11 @@
                     }
                 }).finally(() => {
                     this.doing_call = false;
-                    this.refresh_timer = setTimeout(this.refresh, 5000);
+                    this.refresh_timer = setTimeout(this.refresh, 20000);
                 });
             },
-            forward() {
+            forward(event) {
+                event.preventDefault();
                 this.doing_call = true;
                 clearTimeout(this.refresh_timer);
                 fetch(
@@ -157,10 +160,11 @@
                     }
                 }).finally(() => {
                     this.doing_call = false;
-                    this.refresh_timer = setTimeout(this.refresh, 5000);
+                    this.refresh_timer = setTimeout(this.refresh, 20000);
                 });
             },
-            backward() {
+            backward(event) {
+                event.preventDefault();
                 this.doing_call = true;
                 clearTimeout(this.refresh_timer);
                 fetch(
@@ -189,10 +193,11 @@
                     }
                 }).finally(() => {
                     this.doing_call = false;
-                    this.refresh_timer = setTimeout(this.refresh, 5000);
+                    this.refresh_timer = setTimeout(this.refresh, 20000);
                 });
             },
-            setVolume(value) {
+            setVolume(value, event) {
+                event.preventDefault();
                 clearTimeout(this.refresh_timer);
                 fetch(
                     '{% url "v1:player_volume" player=player %}',
@@ -223,7 +228,7 @@
                         show_error_from_api(error);
                     }
                 }).finally(() => {
-                    this.refresh_timer = setTimeout(this.refresh, 5000);
+                    this.refresh_timer = setTimeout(this.refresh, 20000);
                 });
             },
             refresh() {
@@ -248,7 +253,7 @@
                 }).catch(error => {
                     console.log(`An error occurred while refreshing player {{ player.id }}. Error: ${error}`)
                 }).finally(() => {
-                    this.refresh_timer = setTimeout(this.refresh, 5000);
+                    this.refresh_timer = setTimeout(this.refresh, 20000);
                 });
             }
         }

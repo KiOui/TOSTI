@@ -22,7 +22,7 @@
                                     <div v-for="product in search_results" class="search-item">
                                         <p class="search-item-name"><% product.name %></p>
                                         <div class="flex-divider"></div>
-                                        <p class="search-item-price">€<% (Math.round(product.current_price * 100) / 100).toFixed(2) %></p>
+                                        <p class="search-item-price"><% format_price(product.current_price) %></p>
                                         <input type="button" class="btn btn-success" v-on:click="add_order(product)" value="Add"/>
                                     </div>
                                 </div>
@@ -94,6 +94,13 @@
             });
         },
         methods: {
+            format_price(priceToFormat) {
+                return new Intl.NumberFormat('nl-NL', {
+                    style: 'currency',
+                    currency: 'EUR',
+                    currencyDisplay: "symbol"
+                }).format(priceToFormat).trim();
+            },
             add_order(product) {
                 fetch(
                     "{% url "v1:orders_listcreate" shift=shift %}",

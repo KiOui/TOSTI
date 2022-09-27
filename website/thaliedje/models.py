@@ -137,16 +137,6 @@ class Player(models.Model):
             self.save()
         return self.display_name
 
-    def get_users_with_control_permissions(self):
-        """Get users that have the permission to control this player."""
-        users = []
-        for user in User.objects.all():
-            if self in get_objects_for_user(
-                user, "thaliedje.can_control", accept_global_perms=True, with_superuser=True
-            ):
-                users.append(user)
-        return users
-
 
 class SpotifyArtist(models.Model):
     """Spotify Artist model."""
@@ -211,6 +201,7 @@ class ThaliedjeBlacklistedUser(models.Model):
     """Model for blacklisted users."""
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    explanation = models.TextField(blank=True, null=True)
 
     def __str__(self):
         """Print object as a string."""

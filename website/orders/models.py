@@ -368,8 +368,9 @@ class Shift(models.Model):
 
     def _make_finalized(self):
         """Make this Shift ready to be finalized."""
-        timezone = pytz.timezone(settings.TIME_ZONE)
-        self.end = timezone.localize(datetime.now())
+        if self.is_active:
+            timezone = pytz.timezone(settings.TIME_ZONE)
+            self.end = timezone.localize(datetime.now())
         self.can_order = False
 
     @property
@@ -559,6 +560,7 @@ class OrderBlacklistedUser(models.Model):
     """Model for blacklisted users."""
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    explanation = models.TextField(blank=True, null=True)
 
     def __str__(self):
         """Print object as a string."""

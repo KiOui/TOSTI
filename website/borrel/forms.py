@@ -199,6 +199,12 @@ class ReservationItemForm(models.ModelForm):
 
         self.fields["amount_used"].disabled = True
 
+        product = self.instance.product
+
+        if product and not product.can_be_reserved:
+            self.fields["amount_reserved"].disabled = True
+            self.fields["amount_reserved"].required = False
+
 
 class ReservationItemSubmissionForm(ReservationItemForm):
     """A reservation item form that only allows changing the amount_used."""
@@ -207,8 +213,11 @@ class ReservationItemSubmissionForm(ReservationItemForm):
         """Init the form."""
         super().__init__(*args, **kwargs)
         self.fields["amount_reserved"].disabled = True
-        self.fields["amount_used"].required = True
-        self.fields["amount_used"].disabled = False
+
+        product = self.instance.product
+        if product and product.can_be_submitted:
+            self.fields["amount_used"].required = True
+            self.fields["amount_used"].disabled = False
 
 
 class ReservationItemDisabledForm(ReservationItemForm):

@@ -44,6 +44,8 @@ class UserAdmin(BaseUserAdmin):
         "full_name",
         "first_name",
         "last_name",
+        "override_display_name",
+        "override_short_name",
         "email",
     ]
     fieldsets = (
@@ -57,6 +59,8 @@ class UserAdmin(BaseUserAdmin):
                     "last_name",
                     "email",
                     "association",
+                    "override_display_name",
+                    "override_short_name",
                 )
             },
         ),
@@ -79,7 +83,7 @@ class UserAdmin(BaseUserAdmin):
         "username",
         "first_name",
         "last_name",
-        "full_name",
+        "__str__",
         "email",
         "association",
         "date_joined",
