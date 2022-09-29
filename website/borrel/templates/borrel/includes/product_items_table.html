@@ -6,7 +6,7 @@
         {% ifchanged form.initial.product.category %}
             <thead>
             <tr>
-                <th colspan="5">
+                <th colspan="6">
                     <h4 class="mb-0 mt-3">{{ form.initial.product.category|default_if_none:"Other" }}</h4>
                 </th>
             </tr>
@@ -15,6 +15,7 @@
                 <th scope="col" class="px-2">Description</th>
                 <th scope="col" class="px-2">Price</th>
                 <th scope="col" class="text-center px-2">Reserved</th>
+                <th scope="col" class="text-center px-2">After</th>
                 <th scope="col" class="text-center px-2">Used</th>
             </tr>
             </thead>
@@ -28,9 +29,22 @@
             <td class="px-2">{{ form.product_description.value }}</td>
             <td class="px-2">{% if form.product_price_per_unit.value != 0 %}{{ form.product_price_per_unit.value }}{% else %}Free{% endif %}</td>
             <td class="px-2"><input class="form-control" type="number" value="{{ form.amount_reserved.value|default_if_none:'' }}" name="{{ form.amount_reserved.html_name }}" min="0" id="{{ form.amount_reserved.id_for_label }}" {% if form.amount_reserved.field.disabled %}disabled{% endif %}></td>
+            <td class="px-2"><input class="form-control" type="number" value="{{ form.amount_after.value|default_if_none:'' }}" name="{{ form.amount_after.html_name }}" min="0" id="{{ form.amount_after.id_for_label }}" {% if form.amount_after.field.disabled %}disabled{% endif %}></td>
             <td class="px-2"><input class="form-control" type="number" value="{{ form.amount_used.value|default_if_none:'' }}" name="{{ form.amount_used.html_name }}" min="0" id="{{ form.amount_used.id_for_label }}" {% if form.amount_used.field.disabled %}disabled{% endif %}></td>
         </tr>
         {% bootstrap_form_errors form %}
+        <script>
+            let after_obj = document.getElementById("{{ form.amount_after.id_for_label }}");
+            if (after_obj !== null){
+                after_obj.addEventListener("change", function(){
+                    let used_obj = document.getElementById("{{ form.amount_used.id_for_label }}");
+                    let reserved_obj = document.getElementById("{{ form.amount_reserved.id_for_label }}");
+                    if (reserved_obj !== null && used_obj !== null && used_obj.value !== null){
+                        used_obj.value = reserved_obj.value - after_obj.value;
+                    }
+                });
+            }
+        </script>
     {% endfor %}
     {% bootstrap_formset_errors items %}
 </table>

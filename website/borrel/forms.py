@@ -174,6 +174,8 @@ class BorrelReservationDisabledForm(BorrelReservationSubmissionForm):
 class ReservationItemForm(models.ModelForm):
     """A reservation item form that allows you to reserve products."""
 
+    amount_after = forms.IntegerField()
+
     class Meta:
         """Meta class for the form."""
 
@@ -197,7 +199,10 @@ class ReservationItemForm(models.ModelForm):
         self.fields["product_description"].disabled = True
         self.fields["product_price_per_unit"].disabled = True
 
+        self.fields["amount_after"].disabled = True
         self.fields["amount_used"].disabled = True
+        self.fields["amount_after"].required = False
+        self.fields["amount_used"].required = False
 
         product = self.instance.product
 
@@ -216,6 +221,8 @@ class ReservationItemSubmissionForm(ReservationItemForm):
 
         product = self.instance.product
         if product and product.can_be_submitted:
+            self.fields["amount_after"].required = True
+            self.fields["amount_after"].disabled = False
             self.fields["amount_used"].required = True
             self.fields["amount_used"].disabled = False
 
@@ -227,4 +234,6 @@ class ReservationItemDisabledForm(ReservationItemForm):
         """Init the form."""
         super().__init__(*args, **kwargs)
         self.fields["amount_reserved"].disabled = True
+        self.fields["amount_after"].disabled = True
         self.fields["amount_used"].disabled = True
+
