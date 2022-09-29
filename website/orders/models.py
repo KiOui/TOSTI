@@ -314,6 +314,28 @@ class Shift(models.Model):
         timezone = pytz.timezone(settings.TIME_ZONE)
         current_time = timezone.localize(datetime.now())
         return self.start < current_time < self.end
+    
+    @property
+    def has_passed(self):
+        """
+        Check if a shift has passed.
+
+        :return: True if the current time is after the end of this shift
+        """
+        timezone = pytz.timezone(settings.TIME_ZONE)
+        current_time = timezone.localize(datetime.now())
+        return current_time > self.end
+    
+    @property
+    def in_future(self):
+        """
+        Check if a shift is in the future.
+
+        :return: True if the current time is before the start of this shift
+        """
+        timezone = pytz.timezone(settings.TIME_ZONE)
+        current_time = timezone.localize(datetime.now())
+        return current_time < self.start
 
     @property
     def date(self):
