@@ -117,25 +117,6 @@
                 });
             this.refresh();
         },
-        computed: {
-            user_orders: function() {
-                let userCopy = this.user;
-                return this.orders.filter(function(order) {
-                    return userCopy === null || (order.user !== null && order.user.id === userCopy.id);
-                });
-            },
-            user_orders_with_shift_restrictions: function() {
-                let userCopy = this.user;
-                return this.orders.filter(function(order) {
-                    return userCopy === null || (order.user !== null && order.user.id === userCopy.id && !order.product.ignore_shift_restrictions);
-                });
-            },
-            orders_with_shift_restrictions: function() {
-                return this.orders.filter(function(order) {
-                    return !order.product.ignore_shift_restrictions;
-                });
-            },
-        },
         methods: {
             format_price(priceToFormat) {
                 return new Intl.NumberFormat('nl-NL', {
