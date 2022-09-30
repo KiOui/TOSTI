@@ -33,7 +33,7 @@
             <td class="px-2"><input class="form-control" type="number" value="{{ form.amount_used.value|default_if_none:'' }}" name="{{ form.amount_used.html_name }}" min="0" id="{{ form.amount_used.id_for_label }}" {% if form.amount_used.field.disabled %}disabled{% endif %}></td>
         </tr>
         {% bootstrap_form_errors form %}
-        <script>
+        <!-- <script>
             let after_obj = document.getElementById("{{ form.amount_after.id_for_label }}");
             if (after_obj !== null){
                 after_obj.addEventListener("change", function(){
@@ -41,6 +41,17 @@
                     let reserved_obj = document.getElementById("{{ form.amount_reserved.id_for_label }}");
                     if (reserved_obj !== null && used_obj !== null && used_obj.value !== null){
                         used_obj.value = reserved_obj.value - after_obj.value;
+                    }
+                });
+            }
+        </script> -->
+        <script>
+            if (document.getElementById("{{ form.amount_after.id_for_label }}") !== null){
+                document.getElementById("{{ form.amount_after.id_for_label }}").addEventListener("change", function(event){
+                    let used_obj = document.getElementById("{{ form.amount_used.id_for_label }}");
+                    let reserved_obj = document.getElementById("{{ form.amount_reserved.id_for_label }}");
+                    if (reserved_obj !== null && used_obj !== null && used_obj.value !== null){
+                        used_obj.value = reserved_obj.value - e.target.value;
                     }
                 });
             }
