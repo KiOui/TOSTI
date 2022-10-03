@@ -51,7 +51,7 @@
                     let used_obj = document.getElementById("{{ form.amount_used.id_for_label }}");
                     let reserved_obj = document.getElementById("{{ form.amount_reserved.id_for_label }}");
                     if (reserved_obj !== null && used_obj !== null && used_obj.value !== null){
-                        used_obj.value = reserved_obj.value - e.target.value;
+                        used_obj.value = reserved_obj.value - event.target.value;
                     }
                 });
             }
