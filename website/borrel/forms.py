@@ -240,4 +240,3 @@ class ReservationItemDisabledForm(ReservationItemForm):
         self.fields["amount_before"].disabled = True
         self.fields["amount_after"].disabled = True
         self.fields["amount_used"].disabled = True
-
