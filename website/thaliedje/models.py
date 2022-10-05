@@ -3,7 +3,6 @@ import os
 from django.db import models
 from django.conf import settings
 from django.urls import reverse
-from guardian.shortcuts import get_objects_for_user
 from spotipy import SpotifyOAuth
 from spotipy.client import Spotify
 from users.models import User
