@@ -15,7 +15,7 @@
                     >
                         <span :class="{ invisible: addingOrder }"><i v-if="product.icon !== null" :class="`fa-solid fa-${product.icon} me-2`"></i></span>
                         <span :class="{ invisible: addingOrder }">Order <% product.name %></span>
-                        <span class="small" :class="{ invisible: addingOrder }">€<% product.current_price.toFixed(2) %></span>
+                        <span class="small" :class="{ invisible: addingOrder }"><% format_price(product.current_price) %></span>
                     </button>
                     <div class="card-footer text-center"
                          v-if="orders.length >= shift.max_orders_total || user_orders_with_shift_restrictions.length >= shift.max_orders_per_user && !product.ignore_shift_restrictions || product.max_allowed_per_shift !== null && user_orders_with_product_id(product.id).length >= product.max_allowed_per_shift"
@@ -117,6 +117,25 @@
                 });
             this.refresh();
         },
+        computed: {
+             user_orders: function() {
+                 let userCopy = this.user;
+                 return this.orders.filter(function(order) {
+                     return userCopy === null || (order.user !== null && order.user.id === userCopy.id);
+                 });
+             },
+             user_orders_with_shift_restrictions: function() {
+                 let userCopy = this.user;
+                 return this.orders.filter(function(order) {
+                     return userCopy === null || (order.user !== null && order.user.id === userCopy.id && !order.product.ignore_shift_restrictions);
+                 });
+             },
+             orders_with_shift_restrictions: function() {
+                 return this.orders.filter(function(order) {
+                     return !order.product.ignore_shift_restrictions;
+                 });
+             },
+         },
         methods: {
             format_price(priceToFormat) {
                 return new Intl.NumberFormat('nl-NL', {
