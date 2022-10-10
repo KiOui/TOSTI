@@ -14,7 +14,7 @@ This project is built using the [Django](https://github.com/django/django) frame
 
 ### Development setup
 
-0. Get at least [Python](https://www.python.org) 3.7 installed on your system.
+0. Get at least [Python](https://www.python.org) 3.8.10 installed on your system.
 1. Clone this repository.
 2. If ```pip3``` is not installed on your system yet, execute ```apt install python3-pip``` on your system.
 3. Also make sure ```python3-dev``` is installed on your system, execute ```apt install python3-dev```. On some systems `xmlsec` or `libxmlsec1-dev` should also be installed at the OS level.
