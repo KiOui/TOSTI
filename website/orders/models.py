@@ -314,7 +314,7 @@ class Shift(models.Model):
         timezone = pytz.timezone(settings.TIME_ZONE)
         current_time = timezone.localize(datetime.now())
         return self.start < current_time < self.end
-    
+
     @property
     def has_passed(self):
         """
@@ -325,7 +325,7 @@ class Shift(models.Model):
         timezone = pytz.timezone(settings.TIME_ZONE)
         current_time = timezone.localize(datetime.now())
         return current_time > self.end
-    
+
     @property
     def in_future(self):
         """
