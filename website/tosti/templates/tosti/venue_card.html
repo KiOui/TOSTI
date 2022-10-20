@@ -32,7 +32,7 @@
                                 </h4>
                             </div>
                         </a>
-                    {% elif venue_shift %}
+                    {% else %}
                         <a href="{% url 'orders:shift_create' venue=venue %}">
                             <div class="btn-ml btn-on my-2">
                                 <h4 class="my-0">
@@ -40,6 +40,8 @@
                                 </h4>
                             </div>
                         </a>
+                    {% endif %}
+                    {% if venue_shift and venue_shift.has_passed %}
                         <a href="{% url 'orders:shift_join' shift=venue_shift %}">
                             <div class="btn-ml btn-on my-2">
                                 <h4 class="my-0">
@@ -47,11 +49,12 @@
                                 </h4>
                             </div>
                         </a>
-                    {% else %}
-                        <a href="{% url 'orders:shift_create' venue=venue %}">
+                    {% endif %}
+                    {% if venue_shift and venue_shift.in_future %}
+                        <a href="{% url 'orders:shift_join' shift=venue_shift %}">
                             <div class="btn-ml btn-on my-2">
                                 <h4 class="my-0">
-                                    Start shift
+                                    Show next shift
                                 </h4>
                             </div>
                         </a>
