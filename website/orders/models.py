@@ -71,7 +71,7 @@ def get_default_end_time_shift():
 def get_default_max_orders_total():
     """
     Get the default max orders total for a Shift object.
-    
+
     :return: the default max orders total for a shift
     """
     return config.SHIFTS_DEFAULT_MAX_ORDERS_TOTAL
