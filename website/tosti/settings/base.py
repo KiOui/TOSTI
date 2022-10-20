@@ -178,12 +178,14 @@ CONSTANCE_CONFIG = {
         'noreply@example.com', 'Where to send borrel reservation request notifications to (e-mail address)', str),
     'VENUES_SEND_RESERVATION_REQUEST_EMAILS_TO': (
         'noreply@example.com', 'Where to send venue reservation request notifications to (e-mail address)', str),
+    'SHIFTS_DEFAULT_MAX_ORDERS_TOTAL': (70, 'Default maximum number of orders per shift', int),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = {
     'General settings': ('FOOTER_CREDITS_TEXT',),
     'Tantalus settings': ('TANTALUS_ENDPOINT_URL', 'TANTALUS_USERNAME', 'TANTALUS_PASSWORD',),
     'E-mail settings': ('BORREL_SEND_BORREL_RESERVATION_REQUEST_EMAILS_TO', 'VENUES_SEND_RESERVATION_REQUEST_EMAILS_TO'),
+    'Shifts settings': ('SHIFTS_DEFAULT_MAX_ORDERS_TOTAL',),
 }
 
 # Sites app

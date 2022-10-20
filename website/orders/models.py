@@ -8,6 +8,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Q
+from constance import config
 
 from associations.models import Association
 from venues.models import Venue
@@ -226,7 +227,7 @@ class Shift(models.Model):
 
     max_orders_total = models.PositiveSmallIntegerField(
         verbose_name="Max. total number of orders",
-        default=50,
+        default=config.SHIFTS_DEFAULT_MAX_ORDERS_TOTAL,
         null=True,
         blank=True,
         help_text="The maximum amount of products that can be ordered during this shift in total. Empty means no "
