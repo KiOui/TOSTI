@@ -68,6 +68,15 @@ def get_default_end_time_shift():
     return timezone.localize(datetime.now()).replace(hour=13, minute=15, second=0, microsecond=0)
 
 
+def get_default_max_orders_total():
+    """
+    Get the default max orders total for a Shift object.
+    
+    :return: the default max orders total for a shift
+    """
+    return config.SHIFTS_DEFAULT_MAX_ORDERS_TOTAL
+
+
 class OrderVenue(models.Model):
     """Venues where Shifts can be created."""
 
@@ -227,7 +236,7 @@ class Shift(models.Model):
 
     max_orders_total = models.PositiveSmallIntegerField(
         verbose_name="Max. total number of orders",
-        default=config.SHIFTS_DEFAULT_MAX_ORDERS_TOTAL,
+        default=get_default_max_orders_total,
         null=True,
         blank=True,
         help_text="The maximum amount of products that can be ordered during this shift in total. Empty means no "
