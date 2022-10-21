@@ -8,6 +8,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Q
+from constance import config
 
 from associations.models import Association
 from venues.models import Venue
@@ -65,6 +66,15 @@ def get_default_end_time_shift():
     """
     timezone = pytz.timezone(settings.TIME_ZONE)
     return timezone.localize(datetime.now()).replace(hour=13, minute=15, second=0, microsecond=0)
+
+
+def get_default_max_orders_total():
+    """
+    Get the default max orders total for a Shift object.
+
+    :return: the default max orders total for a shift
+    """
+    return config.SHIFTS_DEFAULT_MAX_ORDERS_TOTAL
 
 
 class OrderVenue(models.Model):
@@ -226,7 +236,7 @@ class Shift(models.Model):
 
     max_orders_total = models.PositiveSmallIntegerField(
         verbose_name="Max. total number of orders",
-        default=50,
+        default=get_default_max_orders_total,
         null=True,
         blank=True,
         help_text="The maximum amount of products that can be ordered during this shift in total. Empty means no "
