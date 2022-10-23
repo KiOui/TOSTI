@@ -2,8 +2,9 @@ import requests
 import logging
 from constance import config
 
+from borrel.models import BorrelReservation
 from orders.models import Shift, Order
-from tantalus.models import TantalusProduct, TantalusOrderVenue
+from tantalus.models import TantalusOrdersProduct, TantalusOrderVenue
 
 
 logger = logging.getLogger(__name__)
@@ -54,7 +55,7 @@ class TantalusClient:
             raise TantalusException(e)
         return [{"name": x["name"], "id": x["id"]} for x in r.json()["endpoints"]]
 
-    def register_order(self, product: TantalusProduct, amount: int, endpoint_id: int):
+    def register_order(self, product: TantalusOrdersProduct, amount: int, endpoint_id: int):
         """Register order in Tantalus."""
         try:
             r = self._session.post(
@@ -114,7 +115,7 @@ def sort_orders_by_product(orders):
     return sorted_orders
 
 
-def synchronize_to_tantalus(shift: Shift):
+def synchronize_shift_to_tantalus(shift: Shift):
     """
     Synchronize all Orders of a Shift to a Tantalus endpoint.
 
@@ -145,9 +146,9 @@ def synchronize_to_tantalus(shift: Shift):
     orders = Order.objects.filter(shift=shift)
     for product, order_list in sort_orders_by_product(orders).items():
         try:
-            tantalus_product = TantalusProduct.objects.get(product=product)
+            tantalus_product = TantalusOrdersProduct.objects.get(product=product)
             tantalus_client.register_order(tantalus_product, len(order_list), venue.endpoint_id)
-        except TantalusProduct.DoesNotExist:
+        except TantalusOrdersProduct.DoesNotExist:
             logger.warning(
                 "Skipping Tantalus synchronization for Shift {} and Product {} as the Product is not connected"
                 "to any TantalusProduct.".format(shift, product)
@@ -159,3 +160,8 @@ def synchronize_to_tantalus(shift: Shift):
                 )
             )
     return True
+
+
+def synchronize_borrelreservation_to_tantalus(borrel_reservation: BorrelReservation):
+    """Synchronize a Borrel Reservation to Tantalus."""
+    print("Done")

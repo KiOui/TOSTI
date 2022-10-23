@@ -1,12 +1,13 @@
 from django.db import models
 
-from orders.models import Product, OrderVenue, Shift
+from orders.models import Product as OrdersProduct, OrderVenue, Shift
+from borrel.models import Product as BorrelProduct
 
 
-class TantalusProduct(models.Model):
-    """Model for connecting TOSTI Products to Tantalus Products."""
+class TantalusOrdersProduct(models.Model):
+    """Model for connecting Orders Products to Tantalus Products."""
 
-    product = models.OneToOneField(Product, on_delete=models.CASCADE)
+    product = models.OneToOneField(OrdersProduct, on_delete=models.CASCADE)
     tantalus_id = models.PositiveIntegerField()
 
     def __str__(self):
@@ -29,3 +30,14 @@ class TantalusShiftSynchronization(models.Model):
     """Model for indicating whether TOSTI Shifts have been synchronized with Tantalus."""
 
     shift = models.OneToOneField(Shift, on_delete=models.CASCADE)
+
+
+class TantalusBorrelProduct(models.Model):
+    """Model for connecting Borrel Products to Tantalus Products."""
+
+    product = models.OneToOneField(BorrelProduct, on_delete=models.CASCADE)
+    tantalus_id = models.PositiveIntegerField()
+
+    def __str__(self):
+        """Convert to string."""
+        return "Tantalus Product for {} with id {}".format(self.product, self.tantalus_id)

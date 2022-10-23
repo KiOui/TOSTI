@@ -3,7 +3,7 @@ from django.dispatch import receiver
 
 from orders.models import Shift
 from tantalus.models import TantalusShiftSynchronization
-from tantalus.services import synchronize_to_tantalus, TantalusClient
+from tantalus.services import synchronize_shift_to_tantalus, TantalusClient
 
 
 @receiver(post_save, sender=Shift)
@@ -14,5 +14,5 @@ def sync_to_tantalus(sender, instance, **kwargs):
         and TantalusClient.can_create_client()
         and not TantalusShiftSynchronization.objects.filter(shift=instance).exists()
     ):
-        if synchronize_to_tantalus(instance):
+        if synchronize_shift_to_tantalus(instance):
             TantalusShiftSynchronization.objects.create(shift=instance)
