@@ -7,7 +7,7 @@ from tantalus.services import synchronize_shift_to_tantalus, TantalusClient
 
 
 @receiver(post_save, sender=Shift)
-def sync_to_tantalus(sender, instance, **kwargs):
+def sync_shift_to_tantalus(sender, instance, **kwargs):
     """Synchronize Orders to Tantalus if a Shift is made finalized."""
     if (
         instance.finalized

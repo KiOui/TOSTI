@@ -5,19 +5,48 @@ from django import forms
 from tantalus.services import get_tantalus_client, TantalusException, TantalusClient
 
 
-class TantalusProductAdminForm(forms.ModelForm):
-    """Tantalus Product Admin Form."""
+class TantalusOrdersProductAdminForm(forms.ModelForm):
+    """Tantalus Orders Product Admin Form."""
 
     tantalus_id = forms.ChoiceField(required=True)
 
     def __init__(self, *args, **kwargs):
         """Initialize Tantalus Product Admin Form by getting product data from Tantalus."""
-        super(TantalusProductAdminForm, self).__init__(*args, **kwargs)
+        super(TantalusOrdersProductAdminForm, self).__init__(*args, **kwargs)
         if not TantalusClient.can_create_client():
             return
         try:
             tantalus_client = get_tantalus_client()
-            choices = [(x["id"], x["name"]) for x in tantalus_client.get_products()]
+            choices = [(x["id"], x["name"]) for x in tantalus_client.get_pos_products()]
+            self.fields["tantalus_id"].choices = choices
+        except TantalusException as e:
+            logging.error(
+                "The following Exception occurred while trying to access Tantalus on the administration "
+                "dashboard: {}".format(e)
+            )
+            self.fields["tantalus_id"] = forms.IntegerField(
+                min_value=1,
+                help_text="Could not retrieve data from Tantalus, you are still able to enter the Tantalus id "
+                "yourself. Check the logs for more information.",
+            )
+
+
+class TantalusBorrelProductAdminForm(forms.ModelForm):
+    """Tantalus Borrel Product Admin Form."""
+
+    tantalus_id = forms.ChoiceField(required=True)
+
+    def __init__(self, *args, **kwargs):
+        """Initialize Tantalus Product Admin Form by getting product data from Tantalus."""
+        super(TantalusBorrelProductAdminForm, self).__init__(*args, **kwargs)
+        if not TantalusClient.can_create_client():
+            return
+        try:
+            tantalus_client = get_tantalus_client()
+            choices = [
+                (x["id"], "{} (discontinued)".format(x["contenttype"]) if x["discontinued"] else x["contenttype"])
+                for x in tantalus_client.get_products()
+            ]
             self.fields["tantalus_id"].choices = choices
         except TantalusException as e:
             logging.error(
@@ -67,7 +96,7 @@ class TantalusOrderVenueAdminForm(forms.ModelForm):
         super(TantalusOrderVenueAdminForm, self).__init__(*args, **kwargs)
         try:
             tantalus_client = get_tantalus_client()
-            choices = [(x["id"], x["name"]) for x in tantalus_client.get_endpoints()]
+            choices = [(x["id"], x["name"]) for x in tantalus_client.get_pos_endpoints()]
             self.fields["endpoint_id"].choices = choices
         except TantalusException as e:
             logging.error(

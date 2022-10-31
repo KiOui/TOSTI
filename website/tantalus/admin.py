@@ -14,7 +14,12 @@ from tantalus.models import (
     TantalusAssociation,
 )
 from tantalus.services import synchronize_shift_to_tantalus, synchronize_borrelreservation_to_tantalus
-from tantalus.forms import TantalusProductAdminForm, TantalusOrderVenueAdminForm, TantalusAssociationAdminForm
+from tantalus.forms import (
+    TantalusOrdersProductAdminForm,
+    TantalusOrderVenueAdminForm,
+    TantalusAssociationAdminForm,
+    TantalusBorrelProductAdminForm,
+)
 
 
 @admin.register(TantalusOrdersProduct)
@@ -25,7 +30,7 @@ class TantalusOrdersProductAdmin(admin.ModelAdmin):
         "product",
         "tantalus_id",
     ]
-    form = TantalusProductAdminForm
+    form = TantalusOrdersProductAdminForm
 
 
 @admin.register(TantalusAssociation)
@@ -161,7 +166,7 @@ class TantalusBorrelProductAdmin(admin.ModelAdmin):
         "product",
         "tantalus_id",
     ]
-    form = TantalusProductAdminForm
+    form = TantalusBorrelProductAdminForm
 
 
 # Register the Tantalus Shift admin instead of the normal Shift admin.
