@@ -74,10 +74,6 @@ def add_scanned_order(product: Product, shift: Shift, ready=True, paid=True) -> 
     if shift.finalized:
         raise OrderException("Shift is finalized, no Orders can be added anymore")
 
-    # Check if Shift is active
-    if not shift.is_active:
-        raise OrderException("Shift is not active")
-
     # Check Product availability
     if not product.available:
         raise OrderException("This Product is not available")
