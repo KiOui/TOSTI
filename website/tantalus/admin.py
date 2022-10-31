@@ -6,14 +6,15 @@ from borrel.admin import BorrelReservationAdmin
 from borrel.models import BorrelReservation
 from orders.admin import ShiftAdmin
 from orders.models import Shift
-from tantalus.forms import TantalusProductAdminForm, TantalusOrderVenueAdminForm
 from tantalus.models import (
     TantalusOrdersProduct,
     TantalusOrderVenue,
     TantalusShiftSynchronization,
     TantalusBorrelProduct,
+    TantalusAssociation,
 )
 from tantalus.services import synchronize_shift_to_tantalus, synchronize_borrelreservation_to_tantalus
+from tantalus.forms import TantalusProductAdminForm, TantalusOrderVenueAdminForm, TantalusAssociationAdminForm
 
 
 @admin.register(TantalusOrdersProduct)
@@ -25,6 +26,17 @@ class TantalusOrdersProductAdmin(admin.ModelAdmin):
         "tantalus_id",
     ]
     form = TantalusProductAdminForm
+
+
+@admin.register(TantalusAssociation)
+class TantalusAssociationAdmin(admin.ModelAdmin):
+    """Tantalus Association Admin."""
+
+    list_display = [
+        "association",
+        "tantalus_id",
+    ]
+    form = TantalusAssociationAdminForm
 
 
 @admin.register(TantalusOrderVenue)

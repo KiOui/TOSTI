@@ -19,9 +19,10 @@ class TantalusException(Exception):
 class TantalusClient:
     """Tantalus Client."""
 
-    def __init__(self, endpoint_url, username, password):
+    def __init__(self, endpoint_url, api_url, username, password):
         """Initialise Tantalus Client by creating a session."""
         self.endpoint_url = endpoint_url
+        self.api_url = api_url
         session = requests.session()
 
         try:
@@ -55,6 +56,15 @@ class TantalusClient:
             raise TantalusException(e)
         return [{"name": x["name"], "id": x["id"]} for x in r.json()["endpoints"]]
 
+    def get_relations(self):
+        """Get all registered Tantalus relations."""
+        try:
+            r = self._session.get(self.relations_url)
+            r.raise_for_status()
+        except (requests.HTTPError, requests.ConnectionError) as e:
+            raise TantalusException(e)
+        return r.json()["data"]
+
     def register_order(self, product: TantalusOrdersProduct, amount: int, endpoint_id: int):
         """Register order in Tantalus."""
         try:
@@ -73,6 +83,10 @@ class TantalusClient:
         """Get full URL."""
         return "{}{}".format(self.endpoint_url, path)
 
+    def get_api_url(self, path):
+        """Get API URL."""
+        return "{}{}".format(self.api_url, path)
+
     @property
     def login_url(self):
         """Get login URL."""
@@ -89,6 +103,11 @@ class TantalusClient:
         return self.get_full_url("endpoints")
 
     @property
+    def relations_url(self):
+        """Get relations URL."""
+        return self.get_api_url("relation")
+
+    @property
     def sell_url(self):
         """Get sell URL."""
         return self.get_full_url("sell")
@@ -97,7 +116,9 @@ class TantalusClient:
 def get_tantalus_client() -> TantalusClient:
     """Get the default Tantalus client (with the login credentials in the Django settings file)."""
     if TantalusClient.can_create_client():
-        return TantalusClient(config.TANTALUS_ENDPOINT_URL, config.TANTALUS_USERNAME, config.TANTALUS_PASSWORD)
+        return TantalusClient(
+            config.TANTALUS_ENDPOINT_URL, config.TANTALUS_API_URL, config.TANTALUS_USERNAME, config.TANTALUS_PASSWORD
+        )
     else:
         raise TantalusException(
             "TantalusClient could not be created, please provide valid settings for Tantalus to function."

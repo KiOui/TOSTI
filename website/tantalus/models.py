@@ -2,6 +2,7 @@ from django.db import models
 
 from orders.models import Product as OrdersProduct, OrderVenue, Shift
 from borrel.models import Product as BorrelProduct
+from associations.models import Association
 
 
 class TantalusOrdersProduct(models.Model):
@@ -24,6 +25,17 @@ class TantalusOrderVenue(models.Model):
     def __str__(self):
         """Convert to string."""
         return "Tantalus Venue for {} with id {}".format(self.order_venue, self.endpoint_id)
+
+
+class TantalusAssociation(models.Model):
+    """Model for connecting Associations to Tantalus Relations."""
+
+    association = models.OneToOneField(Association, on_delete=models.CASCADE)
+    tantalus_id = models.PositiveIntegerField()
+
+    def __str__(self):
+        """Convert to string."""
+        return "Tantalus Association for {} with id {}".format(self.association, self.tantalus_id)
 
 
 class TantalusShiftSynchronization(models.Model):
