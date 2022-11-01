@@ -264,7 +264,13 @@ def synchronize_borrelreservation_to_tantalus(borrel_reservation: BorrelReservat
         )
 
     reservation_items_to_submit = {}
-    for reservation_item in borrel_reservation.items.all():
+    for reservation_item in borrel_reservation.items.filter(product__can_be_submitted=True):
+        if reservation_item.amount_used is None:
+            raise TantalusException(
+                "The amount used for {} is not filled in yet, please register how much is used for {} and then rerun "
+                "synchronization.".format(reservation_item.product, reservation_item.product)
+            )
+
         if reservation_item.amount_used == 0:
             continue
 
