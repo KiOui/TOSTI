@@ -10,6 +10,18 @@
 {% if show_push_to_tantalus %}
     <input type="submit" value="Push to Tantalus" name="_pushtotantalus" id="push-to-tantalus">
 {% endif %}
+{% if show_force_push_to_tantalus %}
+    <input type="submit" value="Force push to Tantalus" name="_pushtotantalus" id="force-push-to-tantalus">
+    <script>
+        const force_push_button = document.getElementById('force-push-to-tantalus');
+        force_push_button.onclick = function(event) {
+            if (!confirm("Are you sure you want to force push this borrel reservation to Tantalus? TOSTI has already " +
+                "pushed this borrel reservation once so you might create duplicate invoices.")) {
+                event.preventDefault();
+            }
+        }
+    </script>
+{% endif %}
 {% if show_save_as_new %}<input type="submit" value="Save as new" name="_saveasnew">{% endif %}
 {% if show_save_and_add_another %}<input type="submit" value="Save and add another" name="_addanother">{% endif %}
 {% if show_save_and_continue %}<input type="submit" value="{% if can_change %}Save and continue editing{% else %}Save and view{% endif %}" name="_continue">{% endif %}

@@ -12,8 +12,13 @@ from tantalus.models import (
     TantalusShiftSynchronization,
     TantalusBorrelProduct,
     TantalusAssociation,
+    TantalusBorrelReservationSynchronization,
 )
-from tantalus.services import synchronize_shift_to_tantalus, synchronize_borrelreservation_to_tantalus
+from tantalus.services import (
+    synchronize_shift_to_tantalus,
+    synchronize_borrelreservation_to_tantalus,
+    TantalusException,
+)
 from tantalus.forms import (
     TantalusOrdersProductAdminForm,
     TantalusOrderVenueAdminForm,
@@ -113,6 +118,23 @@ class TantalusShiftAdmin(ShiftAdmin):
 class TantalusBorrelReservationAdmin(BorrelReservationAdmin):
     """Add sync to Tantalus button to BorrelReservationAdmin."""
 
+    list_display = [
+        "title",
+        "association",
+        "user_created",
+        "start",
+        "end",
+        "accepted",
+        "submitted",
+        "pushed_to_tantalus",
+    ]
+
+    def pushed_to_tantalus(self, obj):
+        """Reservation is pushed to Tantalus."""
+        return TantalusBorrelReservationSynchronization.objects.filter(borrel_reservation=obj).exists()
+
+    pushed_to_tantalus.boolean = True
+
     def change_view(self, request, object_id, form_url="", extra_context=None):
         """Add context to the extra_context."""
         try:
@@ -123,7 +145,15 @@ class TantalusBorrelReservationAdmin(BorrelReservationAdmin):
         if extra_context is None:
             extra_context = {}
 
-        extra_context["show_push_to_tantalus"] = obj is not None
+        synchronization_already_done = (
+            obj is not None
+            and TantalusBorrelReservationSynchronization.objects.filter(borrel_reservation=obj).exists()
+        )
+
+        extra_context["show_push_to_tantalus"] = obj is not None and obj.submitted and not synchronization_already_done
+        extra_context["show_force_push_to_tantalus"] = (
+            obj is not None and obj.submitted and synchronization_already_done
+        )
         return super(BorrelReservationAdmin, self).change_view(request, object_id, form_url, extra_context)
 
     def _should_do_push_to_tantalus(self, obj, request):
@@ -138,15 +168,16 @@ class TantalusBorrelReservationAdmin(BorrelReservationAdmin):
             obj = None
 
         if self._should_do_push_to_tantalus(obj, request):
-            if synchronize_borrelreservation_to_tantalus(obj):
+            try:
+                synchronize_borrelreservation_to_tantalus(obj)
                 self.message_user(request, format_html("Tantalus synchronisation succeeded."), messages.SUCCESS)
-                """if not TantalusShiftSynchronization.objects.filter(shift=obj).exists():
-                    TantalusShiftSynchronization.objects.create(shift=obj)"""
-            else:
+                if not TantalusBorrelReservationSynchronization.objects.filter(borrel_reservation=obj).exists():
+                    TantalusBorrelReservationSynchronization.objects.create(borrel_reservation=obj)
+            except TantalusException as e:
                 self.message_user(
                     request,
                     format_html(
-                        "Failed to synchronize data to Tantalus, please consult the server logs for more information."
+                        "Failed to synchronize data to Tantalus, the following exception occurred: {}.".format(e)
                     ),
                     level=messages.ERROR,
                 )
