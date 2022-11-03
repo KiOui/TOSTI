@@ -1,8 +1,10 @@
+from constance import config
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.forms import models, DateTimeInput
 from django.utils import timezone
+from django.utils.safestring import mark_safe
 
 from borrel.models import BorrelReservation, ReservationItem
 from venues.models import Venue, Reservation
@@ -139,12 +141,24 @@ class BorrelReservationSubmissionForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         """Init the form."""
         request = kwargs.pop("request", None)
+        add_accept_terms = kwargs.pop("add_accept_terms", False)
         self.user = request.user
         super().__init__(*args, **kwargs)
         self.fields["title"].disabled = True
         self.fields["start"].disabled = True
         self.fields["end"].disabled = True
         self.fields["association"].disabled = True
+
+        if add_accept_terms:
+            self.fields["cleaning_scheme"] = forms.BooleanField(required=True)
+            self.fields["cleaning_scheme"].label = mark_safe(
+                "I have cleaned the canteens according to the {} setup by "
+                "Olympus.".format(
+                    '<a href="{}" target="_blank">cleaning scheme</a>'.format(config.CLEANING_SCHEME_URL)
+                    if config.CLEANING_SCHEME_URL
+                    else "cleaning scheme"
+                )
+            )
 
     class Meta:
         """Meta class for the form."""
