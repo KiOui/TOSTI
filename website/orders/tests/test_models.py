@@ -289,13 +289,14 @@ class OrderModelTests(TestCase):
 
     @freeze_time()
     def test_shift__make_finalized_update_end_time(self):
-        start = timezone.make_aware(datetime.datetime.now() - timedelta(hours=4))
         end = timezone.make_aware(datetime.datetime.now() + timedelta(hours=2))
-        shift = models.Shift.objects.create(venue=self.order_venue, start=start, end=end)
-        self.assertEqual(shift.end, end)
-        shift._make_finalized()
-        self.assertEqual(shift.end.timestamp(), timezone.make_aware(datetime.datetime.now()).timestamp())
-        self.assertFalse(shift.can_order)
+        self.shift.end = end
+        self.assertEqual(self.shift.end, end)
+        self.shift._make_finalized()
+        self.assertEqual(
+            self.shift.end.timestamp(), timezone.make_aware(datetime.datetime.now() + timedelta(hours=2)).timestamp()
+        )
+        self.assertFalse(self.shift.can_order)
 
     def test_shift_shift_done(self):
         self.assertTrue(self.shift.shift_done)
