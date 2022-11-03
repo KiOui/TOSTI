@@ -90,8 +90,7 @@ class TantalusShiftAdmin(ShiftAdmin):
         if self._should_do_push_to_tantalus(obj, request):
             if synchronize_shift_to_tantalus(obj):
                 self.message_user(request, format_html("Tantalus synchronisation succeeded."), messages.SUCCESS)
-                if not TantalusShiftSynchronization.objects.filter(shift=obj).exists():
-                    TantalusShiftSynchronization.objects.create(shift=obj)
+                TantalusShiftSynchronization.objects.get_or_create(shift=obj)
             else:
                 self.message_user(
                     request,
@@ -171,8 +170,7 @@ class TantalusBorrelReservationAdmin(BorrelReservationAdmin):
             try:
                 synchronize_borrelreservation_to_tantalus(obj)
                 self.message_user(request, format_html("Tantalus synchronisation succeeded."), messages.SUCCESS)
-                if not TantalusBorrelReservationSynchronization.objects.filter(borrel_reservation=obj).exists():
-                    TantalusBorrelReservationSynchronization.objects.create(borrel_reservation=obj)
+                TantalusBorrelReservationSynchronization.objects.get_or_create(borrel_reservation=obj)
             except TantalusException as e:
                 self.message_user(
                     request,
