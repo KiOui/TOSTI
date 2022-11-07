@@ -287,7 +287,7 @@ def synchronize_borrelreservation_to_tantalus(borrel_reservation: BorrelReservat
     try:
         tantalus_client.register_transaction(
             tantalus_relation,
-            borrel_reservation.submitted_at,
+            borrel_reservation.start,
             description=borrel_reservation.title,
             sell=[
                 {"id": tantalus_product.tantalus_id, "amount": amount}

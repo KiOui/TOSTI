@@ -84,7 +84,7 @@ class TantalusServicesTests(TestCase):
         services.synchronize_borrelreservation_to_tantalus(self.borrel_reservation)
         tantalus_client_mock.register_transaction.assert_called_with(
             self.tantalus_association,
-            self.borrel_reservation.submitted_at,
+            self.borrel_reservation.start,
             description=self.borrel_reservation.title,
             sell=[
                 {
@@ -163,7 +163,7 @@ class TantalusServicesTests(TestCase):
         services.synchronize_borrelreservation_to_tantalus(self.borrel_reservation)
         tantalus_client_mock.register_transaction.assert_called_with(
             self.tantalus_association,
-            self.borrel_reservation.submitted_at,
+            self.borrel_reservation.start,
             description=self.borrel_reservation.title,
             sell=[
                 {
@@ -210,7 +210,7 @@ class TantalusServicesTests(TestCase):
         services.synchronize_borrelreservation_to_tantalus(self.borrel_reservation)
         tantalus_client_mock.register_transaction.assert_called_with(
             self.tantalus_association,
-            self.borrel_reservation.submitted_at,
+            self.borrel_reservation.start,
             description=self.borrel_reservation.title,
             sell=[
                 {
@@ -246,7 +246,7 @@ class TantalusServicesTests(TestCase):
         services.synchronize_borrelreservation_to_tantalus(self.borrel_reservation)
         tantalus_client_mock.register_transaction.assert_called_with(
             self.tantalus_association,
-            self.borrel_reservation.submitted_at,
+            self.borrel_reservation.start,
             description=self.borrel_reservation.title,
             sell=[
                 {
