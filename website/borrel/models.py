@@ -143,9 +143,6 @@ class BorrelReservation(models.Model):
         super(BorrelReservation, self).clean()
         if self.end is not None and self.start is not None and self.end <= self.start:
             raise ValidationError({"end": "End date cannot be before start date."})
-        if self.start is not None and self.submitted_at is not None:
-            if self.start <= self.submitted_at:
-                raise ValidationError("Cannot be submitted before start.")
         if self.user_submitted is not None and self.submitted_at is None:
             raise ValidationError({"user_submitted": "Cannot have a user submitted if not submitted."})
 

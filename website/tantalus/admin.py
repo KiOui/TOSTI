@@ -1,6 +1,7 @@
 from django.contrib import admin, messages
-from django.http import HttpResponseRedirect
 from django.utils.html import format_html
+from django_easy_admin_object_actions.admin import ObjectActionsMixin
+from django_easy_admin_object_actions.decorators import object_action
 
 from borrel.admin import BorrelReservationAdmin
 from borrel.models import BorrelReservation
@@ -50,7 +51,7 @@ class TantalusAssociationAdmin(admin.ModelAdmin):
 
 
 @admin.register(TantalusOrderVenue)
-class TantalusOrderVenueAdmin(admin.ModelAdmin):
+class TantalusOrderVenueAdmin(ObjectActionsMixin, admin.ModelAdmin):
     """Tantalus Order Venue Admin."""
 
     list_display = [
@@ -63,128 +64,102 @@ class TantalusOrderVenueAdmin(admin.ModelAdmin):
 class TantalusShiftAdmin(ShiftAdmin):
     """Add sync to Tantalus button to ShiftAdmin."""
 
-    def change_view(self, request, object_id, form_url="", extra_context=None):
-        """Add context to the extra_context."""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.list_display.append("pushed_to_tantalus")
+        self.object_actions_after_fieldsets.append("push_to_tantalus")
+
+    @object_action(
+        label="Push to Tantalus",
+        perform_after_saving=True,
+        confirmation="Are you sure you want to push this shift to Tantalus?",
+        condition=lambda _, obj: obj.submitted,
+        display_as_disabled_if_condition_not_met=True,
+        log_message="Pushed to Tantalus",
+    )
+    def push_to_tantalus(self, request, obj):
+        """Push to Tantalus."""
         try:
-            obj = Shift.objects.get(id=object_id)
-        except Shift.DoesNotExist:
-            obj = None
-
-        if extra_context is None:
-            extra_context = {}
-
-        extra_context["show_push_to_tantalus"] = obj is not None and obj.finalized
-        return super(ShiftAdmin, self).change_view(request, object_id, form_url, extra_context)
-
-    def _should_do_push_to_tantalus(self, obj, request):
-        """Whether a push to tantalus should happen."""
-        return obj and "_pushtotantalus" in request.POST
-
-    def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
-        """Add extra action to admin post request."""
-        try:
-            obj = Shift.objects.get(id=object_id)
-        except Shift.DoesNotExist:
-            obj = None
-
-        if self._should_do_push_to_tantalus(obj, request):
-            if synchronize_shift_to_tantalus(obj):
-                self.message_user(request, format_html("Tantalus synchronisation succeeded."), messages.SUCCESS)
-                TantalusShiftSynchronization.objects.get_or_create(shift=obj)
-            else:
-                self.message_user(
-                    request,
-                    format_html(
-                        "Failed to synchronize data to Tantalus, please consult the server logs for more information."
-                    ),
-                    level=messages.ERROR,
-                )
-            redirect_url = request.path
-            return HttpResponseRedirect(redirect_url)
-        else:
-            return super(ShiftAdmin, self).changeform_view(
-                request, object_id=object_id, form_url=form_url, extra_context=extra_context
+            synchronize_shift_to_tantalus(obj)
+            self.message_user(request, format_html(
+                "Tantalus synchronisation succeeded."), messages.SUCCESS)
+            TantalusShiftSynchronization.objects.get_or_create(
+                shift=obj)
+        except TantalusException as e:
+            self.message_user(
+                request,
+                format_html(
+                    "Failed to synchronize data to Tantalus, the following exception occurred: {}.".format(
+                        e)
+                ),
+                level=messages.ERROR,
             )
+        return True
 
-    def has_change_permission(self, request, obj=None):
-        """Don't check change permissions when _pushtotantalus is present in POST parameters."""
-        if self._should_do_push_to_tantalus(obj, request):
-            return super(ShiftAdmin, self).has_change_permission(request, obj=obj)
-        else:
-            return super(TantalusShiftAdmin, self).has_change_permission(request, obj=obj)
+    object_actions_after_fieldsets = ["push_to_tantalus"]
+
+    def pushed_to_tantalus(self, obj):
+        """Shift is pushed to Tantalus."""
+        return TantalusShiftSynchronization.objects.filter(shift=obj).exists()
+
+    pushed_to_tantalus.boolean = True
 
 
 class TantalusBorrelReservationAdmin(BorrelReservationAdmin):
     """Add sync to Tantalus button to BorrelReservationAdmin."""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.list_display.append("pushed_to_tantalus")
+        self.readonly_fields += ("pushed_to_tantalus", )
+        self.fieldsets[0][1]["fields"] += ("pushed_to_tantalus", )
 
-    list_display = [
-        "title",
-        "association",
-        "user_created",
-        "start",
-        "end",
-        "accepted",
-        "submitted",
-        "pushed_to_tantalus",
-    ]
+        self.object_actions_after_fieldsets.append("push_to_tantalus")
+        self.object_actions_after_fieldsets.append("force_push_to_tantalus")
+
+    @object_action(
+        label="Push to Tantalus",
+        perform_after_saving=True,
+        confirmation="Are you sure you want to push this shift to Tantalus?",
+        condition=lambda _, obj: obj.submitted,
+        display_as_disabled_if_condition_not_met=True,
+        log_message="Pushed to Tantalus",
+    )
+    def push_to_tantalus(self, request, obj):
+        """Push to Tantalus."""
+        try:
+            synchronize_borrelreservation_to_tantalus(obj)
+            self.message_user(request, format_html(
+                "Tantalus synchronisation succeeded."), messages.SUCCESS)
+            TantalusBorrelReservationSynchronization.objects.get_or_create(
+                borrel_reservation=obj)
+        except TantalusException as e:
+            self.message_user(
+                request,
+                format_html(
+                    "Failed to synchronize data to Tantalus, the following exception occurred: {}.".format(
+                        e)
+                ),
+                level=messages.ERROR,
+            )
+        return True
+
+    @object_action(
+        label="Force push to Tantalus",
+        perform_after_saving=True,
+        confirmation="This reservation was already pushed to Tantalus. Are you sure you want to push this shift to Tantalus again?",
+        condition=lambda _, obj: self.pushed_to_tantalus(obj),
+        display_as_disabled_if_condition_not_met=True,
+        log_message="Force pushed to Tantalus",
+        include_in_queryset_actions=False,
+    )
+    def force_push_to_tantalus(self, request, obj):
+        self.push_to_tantalus(request, obj)
 
     def pushed_to_tantalus(self, obj):
         """Reservation is pushed to Tantalus."""
         return TantalusBorrelReservationSynchronization.objects.filter(borrel_reservation=obj).exists()
 
     pushed_to_tantalus.boolean = True
-
-    def change_view(self, request, object_id, form_url="", extra_context=None):
-        """Add context to the extra_context."""
-        try:
-            obj = BorrelReservation.objects.get(id=object_id)
-        except BorrelReservation.DoesNotExist:
-            obj = None
-
-        if extra_context is None:
-            extra_context = {}
-
-        synchronization_already_done = (
-            obj is not None
-            and TantalusBorrelReservationSynchronization.objects.filter(borrel_reservation=obj).exists()
-        )
-
-        extra_context["show_push_to_tantalus"] = obj is not None and obj.submitted and not synchronization_already_done
-        extra_context["show_force_push_to_tantalus"] = (
-            obj is not None and obj.submitted and synchronization_already_done
-        )
-        return super(BorrelReservationAdmin, self).change_view(request, object_id, form_url, extra_context)
-
-    def _should_do_push_to_tantalus(self, obj, request):
-        """Whether a push to tantalus should happen."""
-        return obj and "_pushtotantalus" in request.POST
-
-    def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
-        """Add extra action to admin post request."""
-        try:
-            obj = BorrelReservation.objects.get(id=object_id)
-        except BorrelReservation.DoesNotExist:
-            obj = None
-
-        if self._should_do_push_to_tantalus(obj, request):
-            try:
-                synchronize_borrelreservation_to_tantalus(obj)
-                self.message_user(request, format_html("Tantalus synchronisation succeeded."), messages.SUCCESS)
-                TantalusBorrelReservationSynchronization.objects.get_or_create(borrel_reservation=obj)
-            except TantalusException as e:
-                self.message_user(
-                    request,
-                    format_html(
-                        "Failed to synchronize data to Tantalus, the following exception occurred: {}.".format(e)
-                    ),
-                    level=messages.ERROR,
-                )
-            redirect_url = request.path
-            return HttpResponseRedirect(redirect_url)
-        else:
-            return super(BorrelReservationAdmin, self).changeform_view(
-                request, object_id=object_id, form_url=form_url, extra_context=extra_context
-            )
 
 
 @admin.register(TantalusBorrelProduct)

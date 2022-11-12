@@ -2,6 +2,8 @@ from admin_auto_filters.filters import AutocompleteFilter
 from django.contrib import admin, messages
 from django import forms
 from django.db.models import Q
+from django_easy_admin_object_actions.admin import ObjectActionsMixin
+from django_easy_admin_object_actions.decorators import object_action
 
 from venues.models import Venue, Reservation
 
@@ -42,7 +44,7 @@ class ReservationAdminUserFilter(AutocompleteFilter):
 
 
 @admin.register(Reservation)
-class ReservationAdmin(admin.ModelAdmin):
+class ReservationAdmin(ObjectActionsMixin, admin.ModelAdmin):
     """Custom admin for reservations."""
 
     list_display = ["title", "venue", "association", "start", "end", "user", "accepted"]
@@ -57,6 +59,40 @@ class ReservationAdmin(admin.ModelAdmin):
     autocomplete_fields = ["user"]
     # date_hierarchy = "start"
     form = ReservationAdminForm
+
+    readonly_fields = ["accepted"]
+
+    @object_action(
+        label="Accept",
+        perform_after_saving=True,
+        permission="venues.change_reservation",
+        extra_classes="default",
+        condition=lambda _, obj: not obj.accepted == True,
+        display_as_disabled_if_condition_not_met=True,
+        log_message="Accepted",
+    )
+    def accept(self, request, obj):
+        """Accept a reservation."""
+        obj.accepted = True
+        obj.save()
+        return True
+
+    @object_action(
+        label="Reject",
+        perform_after_saving=True,
+        permission="venues.change_reservation",
+        condition=lambda _, obj: not obj.accepted == False,
+        display_as_disabled_if_condition_not_met=True,
+        log_message="Rejected",
+    )
+    def reject(self, request, obj):
+        """Accept a reservation."""
+        obj.accepted = False
+        obj.save()
+        return True
+
+    object_actions_after_related_objects = ["accept", "reject"]
+
 
     def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
         """Display warning for overlapping reservations."""

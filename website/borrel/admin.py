@@ -2,6 +2,9 @@ from django.contrib import admin
 from django.contrib.admin import EmptyFieldListFilter
 from django.db import models
 from django.forms import Textarea
+from django.utils import timezone
+from django_easy_admin_object_actions.admin import ObjectActionsMixin
+from django_easy_admin_object_actions.decorators import object_action
 from import_export.admin import ExportMixin, ImportExportModelAdmin
 
 from .models import (
@@ -87,7 +90,7 @@ class ReservationItemInline(admin.TabularInline):
 
 
 @admin.register(BorrelReservation)
-class BorrelReservationAdmin(ExportMixin, admin.ModelAdmin):
+class BorrelReservationAdmin(ExportMixin, ObjectActionsMixin, admin.ModelAdmin):
     """Custom admin for borrel reservations."""
 
     resource_class = BorrelReservationResource
@@ -154,3 +157,65 @@ class BorrelReservationAdmin(ExportMixin, admin.ModelAdmin):
         return obj.submitted if obj else None
 
     submitted.boolean = True
+
+    @object_action(
+        label="Accept",
+        perform_after_saving=True,
+        permission="venues.change_reservation",
+        extra_classes="default",
+        condition=lambda _, obj: not obj.accepted == True,
+        display_as_disabled_if_condition_not_met=True,
+        log_message="Accepted",
+    )
+    def accept(self, request, obj):
+        """Accept a reservation."""
+        obj.accepted = True
+        obj.save()
+        return True
+
+    @object_action(
+        label="Reject",
+        perform_after_saving=True,
+        permission="venues.change_reservation",
+        condition=lambda _, obj: not obj.accepted == False,
+        display_as_disabled_if_condition_not_met=True,
+        log_message="Rejected",
+    )
+    def reject(self, request, obj):
+        """Reject a reservation."""
+        obj.accepted = False
+        obj.save()
+        return True
+
+    @object_action(
+        label="Submit",
+        perform_after_saving=True,
+        permission="venues.change_reservation",
+        condition=lambda _, obj: obj.accepted and not obj.submitted_at,
+        display_as_disabled_if_condition_not_met=True,
+        log_message="Submitted",
+    )
+    def submit(self, request, obj):
+        """Submit a reservation."""
+        obj.submitted_at = timezone.now()
+        obj.save()
+        return True
+
+
+    @object_action(
+        label="Unsubmit",
+        perform_after_saving=True,
+        permission="venues.change_reservation",
+        condition=lambda _, obj: obj.submitted_at,
+        display_as_disabled_if_condition_not_met=True,
+        log_message="Unsubmitted",
+    )
+    def unsubmit(self, request, obj):
+        """Unsubmit a reservation."""
+        obj.submitted_at = None
+        obj.save()
+        return True
+
+    object_actions_after_fieldsets = ["accept", "reject", "unsubmit", "submit"]
+
+

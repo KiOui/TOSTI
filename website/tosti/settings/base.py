@@ -14,6 +14,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.sites",
+    "django_easy_admin_object_actions",
     "constance",
     "constance.backends.database",
     "tosti.sp_app_config.CustomSPAppConfig",

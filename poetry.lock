@@ -252,6 +252,17 @@ python-versions = ">=3.7"
 Django = ">=3.2"
 
 [[package]]
+name = "django-easy-admin-object-actions"
+version = "1.1.0"
+description = "Django app to easily add actions to an object's admin change form"
+category = "main"
+optional = false
+python-versions = ">=3"
+
+[package.dependencies]
+django = ">=3"
+
+[[package]]
 name = "django-filter"
 version = "21.1"
 description = "Django-filter is a reusable Django application for allowing users to filter querysets dynamically."
@@ -341,7 +352,7 @@ python-dateutil = "*"
 
 [[package]]
 name = "django-saml-sp"
-version = "0.6.0"
+version = "0.5.0"
 description = "A Django application for running one or more SAML service providers (SP)."
 category = "main"
 optional = false
@@ -906,7 +917,7 @@ lxml = ">=3.8"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8.10"
-content-hash = "5cdde5bf15dbe9489a4412996a14ac1758812c06a31b27375f316bdea1cb242c"
+content-hash = "56efee4d6a2bc782979685d64d511902419f3eec38051d89e8e532310c566deb"
 
 [metadata.files]
 asgiref = [
@@ -1161,6 +1172,10 @@ django-constance = [
 django-cors-headers = [
     {file = "django-cors-headers-3.13.0.tar.gz", hash = "sha256:f9dc6b4e3f611c3199700b3e5f3398c28757dcd559c2f82932687f3d0443cfdf"},
     {file = "django_cors_headers-3.13.0-py3-none-any.whl", hash = "sha256:37e42883b5f1f2295df6b4bba96eb2417a14a03270cb24b2a07f021cd4487cf4"},
+]
+django-easy-admin-object-actions = [
+    {file = "django-easy-admin-object-actions-1.1.0.tar.gz", hash = "sha256:a60fd5164c1299a6ed3c174a041c30e9613d9f7c28fe4789068d19cb7aa7cdf2"},
+    {file = "django_easy_admin_object_actions-1.1.0-py3-none-any.whl", hash = "sha256:4bb371e0938af4ab5863b78d6100dbb07f960bd533f9dd9448c944d82fd18394"},
 ]
 django-filter = [
     {file = "django-filter-21.1.tar.gz", hash = "sha256:632a251fa8f1aadb4b8cceff932bb52fe2f826dd7dfe7f3eac40e5c463d6836e"},
