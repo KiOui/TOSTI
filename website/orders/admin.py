@@ -195,9 +195,6 @@ class OrderAdminForm(forms.ModelForm):
         if "product" in self.fields:
             self.fields["product"].queryset = Product.objects.filter(available=True)
 
-        if "shift" in self.fields:
-            self.fields["shift"].queryset = Shift.objects.filter(can_order=True)
-
         if self.instance.pk:
             if "product" in self.fields:
                 self.fields["product"].queryset = Product.objects.filter(
