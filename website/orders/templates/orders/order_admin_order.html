@@ -7,9 +7,12 @@
     </div>
     <div class="col d-inline-flex" style="min-width: 0">
         <div class="ms-auto"></div>
-        <i v-if="order.user !== null && {{ user.id }} === order.user.id"
-        class="fa-solid fa-user user-icon"></i>
-        <p v-if="order.user !== null" class="text-truncate" style="min-width: 0"><% order.user.first_name %> <% order.user.last_name %></p>
+        <p v-if="order.user !== null" class="text-truncate" style="min-width: 0">
+              <i v-if="order.user !== null && {{ user.id }} === order.user.id"
+               class="fa-solid fa-user fa-xs"></i>
+              <% order.user.first_name %> <% order.user.last_name %>
+       </p>
+       <p><a target="_blank" :href="`/admin/orders/order/${order.id}/change/`"><i class="fa-solid fa-pen-to-square fa-xs text-white"></i></a></p>
     </div>
     <div v-if="!shift.finalized" class="col-xs-12 col-md-auto d-inline-flex gap-2">
            <input v-if="order.paid" type="button" class="checkbox-paid btn col btn-success"

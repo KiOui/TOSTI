@@ -1,7 +1,6 @@
 from autocompletefilter.admin import AutocompleteFilterMixin
 from autocompletefilter.filters import AutocompleteListFilter
 from django import forms
-
 from django.contrib import admin, messages
 from django.contrib.admin import widgets
 from django.db import models
@@ -9,12 +8,10 @@ from django.db.models import Q
 from django.forms import CheckboxSelectMultiple
 from django.urls import reverse
 from guardian.admin import GuardedModelAdmin
-from import_export.admin import ImportExportModelAdmin, ExportMixin
-from rangefilter.filters import DateRangeFilter
-
-from orders.models import Product, Order, Shift, OrderVenue, OrderBlacklistedUser
+from import_export.admin import ExportMixin, ImportExportModelAdmin
+from orders.models import Order, OrderBlacklistedUser, OrderVenue, Product, Shift
 from orders.resources import ShiftResource
-
+from rangefilter.filters import DateRangeFilter
 from users.models import User
 
 
@@ -80,13 +77,7 @@ class ProductAdmin(admin.ModelAdmin):
     class Media:
         """Necessary to use AutocompleteFilter."""
 
-
-class OrderInline(admin.TabularInline):
-    """Inline form for orders."""
-
-    model = Order
-    extra = 0
-    autocomplete_fields = ("user",)
+        pass
 
 
 class ShiftAdminForm(forms.ModelForm):
@@ -143,10 +134,7 @@ class ShiftAdmin(ExportMixin, GuardedModelAdmin):
     ]
 
     list_filter = ["venue", "can_order", "finalized", ("start", DateRangeFilter)]
-    inlines = [OrderInline]
-
     search_fields = ["start", "venue__venue__name"]
-
     actions = ["close_shift"]
 
     def view_on_site(self, obj):
