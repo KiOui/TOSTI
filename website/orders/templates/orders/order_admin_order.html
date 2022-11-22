@@ -12,7 +12,7 @@
                class="fa-solid fa-user fa-xs"></i>
               <% order.user.first_name %> <% order.user.last_name %>
        </p>
-       <p><a target="_blank" :href="`/admin/orders/order/${order.id}/change/`"><i class="fa-solid fa-pen-to-square fa-xs text-white"></i></a></p>
+       <p><a target="_blank" :href="`{% url 'admin:orders_order_changelist' %}${order.id}/change/`"><i class="fa-solid fa-pen-to-square fa-xs text-white"></i></a></p>
     </div>
     <div v-if="!shift.finalized" class="col-xs-12 col-md-auto d-inline-flex gap-2">
            <input v-if="order.paid" type="button" class="checkbox-paid btn col btn-success"
