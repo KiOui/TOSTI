@@ -1,4 +1,4 @@
-from django_filters import IsoDateTimeFilter
+from django_filters import BooleanFilter, IsoDateTimeFilter
 from django_filters.rest_framework import FilterSet
 from django.db import models
 
@@ -7,6 +7,13 @@ from venues.models import Reservation, Venue
 
 class VenueFilter(FilterSet):
     """Venue FilterSet."""
+
+    is_ordervenue = BooleanFilter(
+        field_name="ordervenue",
+        lookup_expr="isnull",
+        exclude=True,
+        label="Is OrderVenue",
+    )
 
     class Meta:
         """Meta class."""
