@@ -57,6 +57,23 @@ class ReservationAdmin(admin.ModelAdmin):
     autocomplete_fields = ["user"]
     # date_hierarchy = "start"
     form = ReservationAdminForm
+    actions = ["accept_reservation", "reject_reservation"]
+
+    def accept_reservation(self, request, queryset):
+        """Accept reservations."""
+        self._change_accepted(queryset, True)
+
+    accept_reservation.short_description = "Accept selected reservations"
+
+    def reject_reservation(self, request, queryset):
+        """Reject reservations."""
+        self._change_accepted(queryset, False)
+
+    reject_reservation.short_description = "Reject selected reservations"
+
+    @staticmethod
+    def _change_accepted(queryset, status):
+        queryset.update(accepted=status)
 
     def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
         """Display warning for overlapping reservations."""
