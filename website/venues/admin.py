@@ -62,15 +62,15 @@ class ReservationAdmin(admin.ModelAdmin):
     def accept_reservation(self, request, queryset):
         """Accept reservations."""
         self._change_accepted(queryset, True)
-    
+
     accept_reservation.short_description = "Accept selected reservations"
 
     def reject_reservation(self, request, queryset):
         """Reject reservations."""
         self._change_accepted(queryset, False)
-    
+
     reject_reservation.short_description = "Reject selected reservations"
-    
+
     @staticmethod
     def _change_accepted(queryset, status):
         queryset.update(accepted=status)
