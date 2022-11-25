@@ -2,6 +2,7 @@ from admin_auto_filters.filters import AutocompleteFilter
 from django.contrib import admin, messages
 from django import forms
 from django.db.models import Q
+from rangefilter.filters import DateRangeFilter
 
 from venues.models import Venue, Reservation
 
@@ -46,13 +47,7 @@ class ReservationAdmin(admin.ModelAdmin):
     """Custom admin for reservations."""
 
     list_display = ["title", "venue", "association", "start", "end", "user", "accepted"]
-    list_filter = [
-        "venue",
-        "association",
-        "start",
-        "accepted",
-        "start",
-    ]
+    list_filter = ["venue", "association", ("start", DateRangeFilter), "accepted"]
     search_fields = ["title"]
     autocomplete_fields = ["user"]
     # date_hierarchy = "start"

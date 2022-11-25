@@ -3,6 +3,7 @@ from django.contrib.admin import EmptyFieldListFilter
 from django.db import models
 from django.forms import Textarea
 from import_export.admin import ExportMixin, ImportExportModelAdmin
+from rangefilter.filters import DateRangeFilter
 
 from .models import (
     BasicBorrelBrevet,
@@ -146,7 +147,7 @@ class BorrelReservationAdmin(ExportMixin, admin.ModelAdmin):
         "accepted",
         ("submitted_at", EmptyFieldListFilter),
         "association",
-        "start",
+        ("start", DateRangeFilter),
     )
 
     def submitted(self, obj):

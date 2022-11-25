@@ -9,9 +9,11 @@ from django.db.models import Q
 from django.forms import CheckboxSelectMultiple
 from django.urls import reverse
 from guardian.admin import GuardedModelAdmin
-from import_export.admin import ImportExportModelAdmin
+from import_export.admin import ImportExportModelAdmin, ExportMixin
+from rangefilter.filters import DateRangeFilter
 
 from orders.models import Product, Order, Shift, OrderVenue, OrderBlacklistedUser
+from orders.resources import ShiftResource
 
 from users.models import User
 
@@ -123,10 +125,11 @@ class ShiftAdminForm(forms.ModelForm):
 
 
 @admin.register(Shift)
-class ShiftAdmin(GuardedModelAdmin, ImportExportModelAdmin):
+class ShiftAdmin(ExportMixin, GuardedModelAdmin):
     """Custom admin for shifts."""
 
     form = ShiftAdminForm
+    resource_class = ShiftResource
 
     list_display = [
         "date",
@@ -139,7 +142,7 @@ class ShiftAdmin(GuardedModelAdmin, ImportExportModelAdmin):
         "finalized",
     ]
 
-    list_filter = ["venue", "can_order", "finalized"]
+    list_filter = ["venue", "can_order", "finalized", ("start", DateRangeFilter)]
     inlines = [OrderInline]
 
     search_fields = ["start", "venue__venue__name"]
