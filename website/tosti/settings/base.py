@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     "guardian",
     'rest_framework',
     'django_filters',
+    'rangefilter',
     "users",
     "venues",
     "associations",
