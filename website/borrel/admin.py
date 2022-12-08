@@ -1,3 +1,5 @@
+from autocompletefilter.admin import AutocompleteFilterMixin
+from autocompletefilter.filters import AutocompleteListFilter
 from django.contrib import admin
 from django.contrib.admin import EmptyFieldListFilter
 from django.db import models
@@ -88,12 +90,12 @@ class ReservationItemInline(admin.TabularInline):
 
 
 @admin.register(BorrelReservation)
-class BorrelReservationAdmin(ExportMixin, admin.ModelAdmin):
+class BorrelReservationAdmin(AutocompleteFilterMixin, ExportMixin, admin.ModelAdmin):
     """Custom admin for borrel reservations."""
 
     resource_class = BorrelReservationResource
     list_display = ["title", "association", "user_created", "start", "end", "accepted", "submitted"]
-    search_fields = ["title", "user_created"]
+    search_fields = ["title"]
     autocomplete_fields = ["venue_reservation"]
     inlines = [ReservationItemInline]
     readonly_fields = (
@@ -144,6 +146,7 @@ class BorrelReservationAdmin(ExportMixin, admin.ModelAdmin):
         models.TextField: {"widget": Textarea(attrs={"rows": 4, "cols": 100})},
     }
     list_filter = (
+        ("user_created", AutocompleteListFilter),
         "accepted",
         ("submitted_at", EmptyFieldListFilter),
         "association",
