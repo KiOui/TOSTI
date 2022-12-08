@@ -63,7 +63,8 @@
                         <div v-if="order.ready && order.paid" class="status-button me-2 bg-success text-white">
                             Done
                         </div>
-                        <div v-else-if="order.ready && !order.paid" class="status-button me-2 bg-warning">Done
+                        <div v-else-if="order.ready && !order.paid" class="status-button-processing me-2">
+                            Done
                         </div>
                         <div v-else-if="!order.ready && order.paid" class="status-button me-2 bg-warning">
                             Processing
