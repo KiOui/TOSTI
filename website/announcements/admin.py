@@ -1,8 +1,6 @@
 from django.contrib import admin
-from django.template.defaultfilters import striptags
 
 from announcements.models import Announcement
-from announcements.templatetags.bleach_tags import bleach
 
 
 @admin.register(Announcement)
