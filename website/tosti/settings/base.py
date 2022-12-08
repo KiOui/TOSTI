@@ -59,6 +59,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.contrib.admindocs.middleware.XViewMiddleware",
+    "announcements.middleware.ClosedAnnouncementsMiddleware",
 ]
 
 ROOT_URLCONF = "tosti.urls"
@@ -173,19 +174,23 @@ CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 CONSTANCE_CONFIG = {
     'FOOTER_CREDITS_TEXT': ('TOSTI - Tartarus Order System for Take-away Items',
                             'Text to display in the footer credits', str),
+    'CLEANING_SCHEME_URL': ('', 'URL to the cleaning scheme to be accepted when submitting a borrel form', str),
     'TANTALUS_ENDPOINT_URL': ('', 'Endpoint for Tantalus integration', str),
+    'TANTALUS_API_URL': ('', 'Endpoint for Tantalus API', str),
     'TANTALUS_USERNAME': ('', 'Username for Tantalus integration', str),
     'TANTALUS_PASSWORD': ('', 'Password for Tantalus integration', str),
     'BORREL_SEND_BORREL_RESERVATION_REQUEST_EMAILS_TO': (
         'noreply@example.com', 'Where to send borrel reservation request notifications to (e-mail address)', str),
     'VENUES_SEND_RESERVATION_REQUEST_EMAILS_TO': (
         'noreply@example.com', 'Where to send venue reservation request notifications to (e-mail address)', str),
+    'SHIFTS_DEFAULT_MAX_ORDERS_TOTAL': (70, 'Default maximum number of orders per shift', int),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = {
-    'General settings': ('FOOTER_CREDITS_TEXT',),
-    'Tantalus settings': ('TANTALUS_ENDPOINT_URL', 'TANTALUS_USERNAME', 'TANTALUS_PASSWORD',),
+    'General settings': ('FOOTER_CREDITS_TEXT', 'CLEANING_SCHEME_URL',),
+    'Tantalus settings': ('TANTALUS_ENDPOINT_URL', 'TANTALUS_API_URL', 'TANTALUS_USERNAME', 'TANTALUS_PASSWORD',),
     'E-mail settings': ('BORREL_SEND_BORREL_RESERVATION_REQUEST_EMAILS_TO', 'VENUES_SEND_RESERVATION_REQUEST_EMAILS_TO'),
+    'Shifts settings': ('SHIFTS_DEFAULT_MAX_ORDERS_TOTAL',),
 }
 
 # Sites app

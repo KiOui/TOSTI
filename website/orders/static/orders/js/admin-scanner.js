@@ -106,6 +106,9 @@ function add_product_from_barcode(result) {
             if (typeof (update_refresh_list) !== 'undefined') {
                 update_refresh_list();
             }
+            let tablist = document.querySelector('#nav-orders-scanned-tab');
+            let tab = bootstrap.Tab.getOrCreateInstance(tablist);
+            tab.show();
             let modal = bootstrap.Modal.getInstance(document.getElementById(POPUP_MODAL_ID));
             modal.hide();
         }).catch(error => {

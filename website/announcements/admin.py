@@ -9,11 +9,7 @@ from announcements.templatetags.bleach_tags import bleach
 class AnnouncementAdmin(admin.ModelAdmin):
     """Manage the admin pages for the announcements."""
 
-    list_display = ("content_html", "since", "until", "visible")
-
-    def content_html(self, obj):
-        """Get the content of the object as html."""
-        return bleach(striptags(obj.content))
+    list_display = ("title", "since", "until", "visible")
 
     def visible(self, obj):
         """Is the object visible."""

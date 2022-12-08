@@ -84,6 +84,7 @@ class OrderInline(admin.TabularInline):
 
     model = Order
     extra = 0
+    autocomplete_fields = ("user",)
 
 
 class ShiftAdminForm(forms.ModelForm):
@@ -249,6 +250,7 @@ class OrderAdmin(AutocompleteFilterMixin, ImportExportModelAdmin):
         "user__username",
         "user_association__name",
     ]
+    autocomplete_fields = ["user"]
 
     actions = ["set_ready", "set_paid"]
 

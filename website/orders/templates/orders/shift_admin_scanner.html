@@ -123,6 +123,9 @@
                     if (typeof (update_refresh_list) !== 'undefined') {
                         update_refresh_list();
                     }
+                    let tablist = document.querySelector('#nav-orders-scanned-tab');
+                    let tab = bootstrap.Tab.getOrCreateInstance(tablist);
+                    tab.show();
                     let popupModal = bootstrap.Modal.getOrCreateInstance(document.getElementById(POPUP_MODAL_ID));
                     popupModal.hide();
                     scanner_vue.search_results = [];

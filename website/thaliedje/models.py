@@ -3,7 +3,6 @@ import os
 from django.db import models
 from django.conf import settings
 from django.urls import reverse
-from guardian.shortcuts import get_objects_for_user
 from spotipy import SpotifyOAuth
 from spotipy.client import Spotify
 from users.models import User
@@ -141,8 +140,8 @@ class Player(models.Model):
 class SpotifyArtist(models.Model):
     """Spotify Artist model."""
 
-    artist_name = models.CharField(max_length=255, unique=True)
-    artist_id = models.CharField(max_length=255)
+    artist_name = models.CharField(max_length=255)
+    artist_id = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
         """

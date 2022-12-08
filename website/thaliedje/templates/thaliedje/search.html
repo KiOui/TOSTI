@@ -2,7 +2,10 @@
 
 <link rel="stylesheet" href="{% static 'thaliedje/css/search.css' %}"/>
 <div id="player-search-container-{{ player.id }}">
-    <input v-model="query" id="search" type="text" maxlength="100" placeholder="Search for something to play" class="container-fluid form-control mb-3"/>
+    <form @submit.self.prevent="tryUrl">
+        <input v-model="query" id="search" type="text" maxlength="100" placeholder="Search for something to play" class="container-fluid form-control mb-3"/>
+        <label style="font-size: 0.8em;" for="search">Tip: try pasting a share URL of a Spotify track{% if show_admin_columns %}, playlist or album{% endif %} and pressing RETURN, this will instantly add the track to the queue.</label>
+    </form>
     <div id="results" class="px-3 search-list">
         <div class="row">
             <div class="{% if show_admin_columns %}col-lg-4{% else %}col{% endif %}" v-if="tracks.length > 0 && query !== ''">
@@ -111,6 +114,33 @@
             }
         },
         methods: {
+            tryUrl() {
+                let urlToTry = null;
+                try {
+                    urlToTry = new URL(this.query);
+                } catch (e) {
+                    if (!(e instanceof TypeError)) {
+                        throw e;
+                    }
+                    return;
+                }
+                if (urlToTry.hostname === "open.spotify.com") {
+                    if (urlToTry.pathname.startsWith("/track/")) {
+                        const track_id = urlToTry.pathname.replace("/track/", "");
+                        this.add_to_queue(track_id);
+                    }
+                    {% if show_admin_columns %}
+                        else if (urlToTry.pathname.startsWith("/playlist/")) {
+                            const playlist_id = urlToTry.pathname.replace("/playlist/", "");
+                            this.start_with_context(`spotify:playlist:${playlist_id}`);
+                        }
+                        else if (urlToTry.pathname.startsWith("/album/")) {
+                            const album_id = urlToTry.pathname.replace("/album/", "");
+                            this.start_with_context(`spotify:album:${album_id}`);
+                        }
+                    {% endif %}
+                }
+            },
             add_to_queue(track_id) {
                 fetch(
                     "{% url "v1:player_add" player=player %}",

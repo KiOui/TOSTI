@@ -3,6 +3,7 @@ from django import forms
 from django.conf import settings
 from django.forms import DateTimeInput
 from guardian.shortcuts import get_objects_for_user
+from constance import config
 
 from .models import Shift, get_default_end_time_shift, get_default_start_time_shift
 from datetime import datetime, timedelta
@@ -31,6 +32,7 @@ class CreateShiftForm(forms.ModelForm):
         self.fields["start"].initial = start_time.strftime("%Y-%m-%dT%H:%M:%S")
         if now >= get_default_end_time_shift() or now <= get_default_start_time_shift() - timedelta(minutes=30):
             self.fields["end"].initial = (start_time + timedelta(hours=1)).strftime("%Y-%m-%dT%H:%M:%S")
+        self.fields["max_orders_total"].initial = config.SHIFTS_DEFAULT_MAX_ORDERS_TOTAL
 
     def clean_venue(self):
         """Check whether venue is has an accepted value."""
@@ -47,6 +49,7 @@ class CreateShiftForm(forms.ModelForm):
             "venue",
             "start",
             "end",
+            "max_orders_total",
         ]
         widgets = {
             "start": DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),

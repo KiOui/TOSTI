@@ -7,6 +7,7 @@ from tinymce.models import HTMLField
 class Announcement(models.Model):
     """Announcement model."""
 
+    title = models.CharField(max_length=100, help_text="This is not showed on the announcement but can be used as an identifier in the admin area.")
     content = HTMLField(blank=False, max_length=500)
     since = models.DateTimeField(default=timezone.now)
     until = models.DateTimeField(blank=True, null=True)
@@ -16,7 +17,6 @@ class Announcement(models.Model):
         max_length=150,
         default="bullhorn",
     )
-    closable = models.BooleanField(default=True)
 
     class Meta:
         """Meta class."""
@@ -25,7 +25,7 @@ class Announcement(models.Model):
 
     def __str__(self):
         """Cast this object to string."""
-        return str(self.content)
+        return self.title
 
     @property
     def is_visible(self):
