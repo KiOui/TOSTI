@@ -38,6 +38,9 @@ flake8 = "^3.7.9"
 freezegun = "^1.2.1"
 black = "^22.3.0"
 
+[tool.poetry.group.dev.dependencies]
+tomli = "^2.0.1"
+
 [tool.black]
 line-length = 119
 target-version = ["py310"]
