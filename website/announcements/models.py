@@ -9,7 +9,7 @@ class Announcement(models.Model):
 
     title = models.CharField(
         max_length=100,
-        help_text="This is not showed on the announcement but can be used as an identifier in the admin area.",
+        help_text="This is not shown on the announcement but can be used as an identifier in the admin area.",
     )
     content = HTMLField(blank=False, max_length=500)
     since = models.DateTimeField(default=timezone.now)
