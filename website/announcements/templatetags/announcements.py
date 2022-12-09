@@ -15,10 +15,8 @@ def render_announcements(context):
     closed_announcements = sanitize_closed_announcements(request.COOKIES.get("closed-announcements", None))
 
     return {
-        "announcements": Announcement.objects.filter(
-            (Q(until__gt=timezone.now()) | Q(until=None))
-            & Q(since__lte=timezone.now())
-            & ~Q(id__in=closed_announcements)
+        "announcements": Announcement.objects.visible().filter(
+            ~Q(id__in=closed_announcements)
         ),
         "closed_announcements": closed_announcements,
     }
