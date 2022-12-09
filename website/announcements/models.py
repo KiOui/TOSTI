@@ -10,10 +10,8 @@ class AnnouncementManager(models.Manager):
 
     def visible(self):
         """Get only visible announcements."""
-        return self.get_queryset().filter(
-            (Q(until__gt=timezone.now()) | Q(until=None))
-            & Q(since__lte=timezone.now())
-        )
+        return self.get_queryset().filter((Q(until__gt=timezone.now()) | Q(until=None)) & Q(since__lte=timezone.now()))
+
 
 class Announcement(models.Model):
     """Announcement model."""

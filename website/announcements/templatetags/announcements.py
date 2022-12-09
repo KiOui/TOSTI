@@ -1,6 +1,5 @@
 from django import template
 from django.db.models import Q
-from django.utils import timezone
 
 from announcements.models import Announcement
 from announcements.services import sanitize_closed_announcements
@@ -15,8 +14,6 @@ def render_announcements(context):
     closed_announcements = sanitize_closed_announcements(request.COOKIES.get("closed-announcements", None))
 
     return {
-        "announcements": Announcement.objects.visible().filter(
-            ~Q(id__in=closed_announcements)
-        ),
+        "announcements": Announcement.objects.visible().filter(~Q(id__in=closed_announcements)),
         "closed_announcements": closed_announcements,
     }
