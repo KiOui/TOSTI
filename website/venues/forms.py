@@ -42,6 +42,7 @@ class ReservationForm(forms.ModelForm):
 
         Check whether there is no overlapping Reservation.
         """
+        super(ReservationForm, self).clean()
         venue = self.cleaned_data.get("venue", None)
         if (
             self.cleaned_data.get("start", None) is not None
@@ -67,8 +68,20 @@ class ReservationForm(forms.ModelForm):
         """Meta class."""
 
         model = Reservation
-        fields = ["venue", "association", "start", "end", "title", "comment"]
+        fields = ["venue", "association", "start", "end", "title", "comments"]
         widgets = {
             "start": DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
             "end": DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
         }
+
+
+class ReservationUpdateForm(ReservationForm):
+    """Reservation Update Form."""
+
+    pass
+
+
+class ReservationDisabledForm(ReservationForm):
+    """Reservation Disabled Form."""
+
+    pass

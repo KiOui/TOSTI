@@ -46,10 +46,16 @@ class ReservationAdminUserFilter(AutocompleteFilter):
 class ReservationAdmin(admin.ModelAdmin):
     """Custom admin for reservations."""
 
-    list_display = ["title", "venue", "association", "start", "end", "user", "accepted"]
-    list_filter = ["venue", "association", ("start", DateRangeFilter), "accepted"]
+    list_display = ["title", "venue", "association", "start", "end", "user_created", "accepted"]
+    list_filter = [
+        "venue",
+        "association",
+        "start",
+        "accepted",
+        ("start", DateRangeFilter),
+    ]
     search_fields = ["title"]
-    autocomplete_fields = ["user"]
+    autocomplete_fields = ["user_created"]
     # date_hierarchy = "start"
     form = ReservationAdminForm
     actions = ["accept_reservation", "reject_reservation"]

@@ -1,7 +1,7 @@
 @import "variables.css";
 
 body {
-    font-family: 'Neucha', cursive;
+    font-family: 'Neucha';
     background-color: var(--background-color);
     color: var(--text-color);
 }

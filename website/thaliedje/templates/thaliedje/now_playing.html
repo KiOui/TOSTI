@@ -28,12 +28,22 @@
         <div class="container text-center">
             <div class="row flex-grow-1">
                 <div class="col">
-                    {% if can_request %}
-                        <div class="btn-ml m-auto cursor-pointer btn-on" data-bs-toggle="modal" data-bs-target="#song-request-popup">
-                            <p class="font-footer"><i class="fa-solid fa-table-list"></i> Request a song</p>
+                    {% if current_venue_reservation and not  current_control_event %}
+                        <a class="btn-ml m-auto cursor-pointer btn-on my-2" href="{% url "thaliedje:create-control event" current_venue_reservation.pk %}">
+                            <p class="font-footer"><i class="fa-solid fa-gear me-3"></i>Take controls during {{ current_venue_reservation.title }}</p>
+                        </a>
+                    {% endif %}
+                    {% if current_control_event %}
+                        <a class="btn-ml m-auto cursor-pointer btn-on my-2" href="{% url "thaliedje:event-control" current_control_event.pk %}">
+                            <p class="font-footer"><i class="fa-solid fa-gear me-3"></i>Manage controls</p>
+                        </a>
+                    {% endif %}
+                    {% if can_request_song %}
+                        <div class="btn-ml m-auto cursor-pointer btn-on my-2" data-bs-toggle="modal" data-bs-target="#song-request-popup">
+                            <p class="font-footer"><i class="fa-solid fa-table-list me-3"></i>Request a song</p>
                         </div>
                     {% elif not user.is_authenticated %}
-                        <a class="btn-ml m-auto cursor-pointer btn-on" href="{% url "login" %}?next={% url "thaliedje:now_playing" player %}">
+                        <a class="btn-ml m-auto cursor-pointer btn-on my-2" href="{% url "login" %}?next={% url "thaliedje:now_playing" player %}">
                             <p class="font-footer">Log in to request a song</p>
                         </a>
                     {% endif %}
@@ -41,10 +51,10 @@
             </div>
         </div>
     </footer>
-    {% if can_request %}
+    {% if can_request_song %}
         <div id="song-request-wrapper">
             <div class="modal" id="song-request-popup">
-                <div class="modal-dialog{% if can_request_album_playlist %} modal-xl{% endif %}">
+                <div class="modal-dialog{% if can_request_playlist %} modal-xl{% endif %}">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h2 class="modal-title">Request a song</h2>
@@ -53,7 +63,7 @@
                         <div class="modal-body">
                             <div class="container">
                                 <p>Search a track below and add it to the queue.</p>
-                                {% include 'thaliedje/search.html' with player=player refresh=False show_admin_columns=can_request_album_playlist %}
+                                {% include 'thaliedje/search.html' with player=player refresh=False show_admin_columns=can_request_playlist %}
                             </div>
                         </div>
                         <div class="modal-footer">

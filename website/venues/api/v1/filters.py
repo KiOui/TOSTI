@@ -32,7 +32,7 @@ class ReservationFilter(FilterSet):
 
         model = Reservation
         fields = {
-            "user": ("exact",),
+            "user_created": ("exact",),
             "venue": ("exact",),
             "association": ("exact", "isnull"),
             "start": ("lte", "gte"),
