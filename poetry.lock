@@ -353,6 +353,18 @@ Django = ">=3.2"
 tests = ["tox"]
 
 [[package]]
+name = "django-queryable-properties"
+version = "1.8.3"
+description = "Write Django model properties that can be used in database queries."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+Django = ">=1.4"
+six = ">=1.9"
+
+[[package]]
 name = "django-recurrence"
 version = "1.11.1"
 description = "Django utility wrapping dateutil.rrule"
@@ -366,7 +378,7 @@ python-dateutil = "*"
 
 [[package]]
 name = "django-saml-sp"
-version = "0.6.1"
+version = "0.6.0"
 description = "A Django application for running one or more SAML service providers (SP)."
 category = "main"
 optional = false
@@ -939,7 +951,7 @@ lxml = ">=3.8"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8.10"
-content-hash = "315956c81457eb3241bdb6c7ace84b40453332dca93cd978ddabaab149718cca"
+content-hash = "4b84dd2383274cec1e5be2abccdb3419a2ae1a69b9643d9f5a03eac40476fd8a"
 
 [metadata.files]
 asgiref = [
@@ -1226,6 +1238,10 @@ django-oauth-toolkit = [
 django-picklefield = [
     {file = "django-picklefield-3.1.tar.gz", hash = "sha256:c786cbeda78d6def2b43bff4840d19787809c8909f7ad683961703060398d356"},
     {file = "django_picklefield-3.1-py3-none-any.whl", hash = "sha256:d77c504df7311e8ec14e8b779f10ca6fec74de6c7f8e2c136e1ef60cf955125d"},
+]
+django-queryable-properties = [
+    {file = "django-queryable-properties-1.8.3.tar.gz", hash = "sha256:ededecd103998885b2ef3d4d5a04a3d29f79b3b3c086df89448efb4b3459d7ef"},
+    {file = "django_queryable_properties-1.8.3-py2.py3-none-any.whl", hash = "sha256:8d702a8c8cce65f6505826c4ecc22429dda06f132c952f51ded6b208ed2586b0"},
 ]
 django-recurrence = [
     {file = "django-recurrence-1.11.1.tar.gz", hash = "sha256:9c89444e651a78c587f352c5f63eda48ab2f53996347b9fcdff2d248f4fcff70"},

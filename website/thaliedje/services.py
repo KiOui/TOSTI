@@ -12,6 +12,8 @@ from thaliedje.models import (
     SpotifyTrack,
     SpotifyQueueItem,
     ThaliedjeBlacklistedUser,
+    ThaliedjeControlEvent,
+    PlayerLogEntry,
 )
 
 
@@ -20,9 +22,64 @@ def user_is_blacklisted(user):
     return ThaliedjeBlacklistedUser.objects.filter(user=user).exists()
 
 
-def has_album_playlist_request_permission(user, player):
-    """Check if a user has album and playlist request permissions."""
-    return user.has_perm("thaliedje.can_request_playlists_and_albums", player)
+def active_thaliedje_control_event(player):
+    """
+    Get the active ThaliedjeControlEvent for a Player.
+
+    :param player: the player
+    :return: the active ThaliedjeControlEvent or None
+    """
+    qs = ThaliedjeControlEvent.objects.filter(player=player.id, active=True)
+    if qs.exists():
+        return qs.first()
+    return None
+
+
+def can_request_song(user, player):
+    """Check if a user can request a song."""
+    control_event = active_thaliedje_control_event(player)
+    if control_event is not None:
+        if control_event.respect_blacklist and user_is_blacklisted(user):
+            return False
+        return control_event.can_request_song(user)
+    return not user_is_blacklisted(user)
+
+
+def can_request_playlist(user, player):
+    """Check if a user can request playlists or albums."""
+    control_event = active_thaliedje_control_event(player)
+    if control_event is not None:
+        if control_event.respect_blacklist and user_is_blacklisted(user):
+            return False
+        return control_event.can_request_playlist(user)
+    return user.has_perm("thaliedje.can_request_playlists_and_albums", player) and not user_is_blacklisted(user)
+
+
+def can_control_player(user, player):
+    """Check if a user can control the player."""
+    control_event = active_thaliedje_control_event(player)
+    if control_event is not None:
+        if control_event.respect_blacklist and user_is_blacklisted(user):
+            return False
+        return control_event.can_control_player(user)
+    return user.has_perm("thaliedje.can_control", player) and not user_is_blacklisted(user)
+
+
+def log_player_action(user, player, action, description):
+    """
+    Log a player action.
+
+    :param player: the player
+    :param user: the user
+    :param action: the action
+    :param description: the description
+    """
+    PlayerLogEntry.objects.create(
+        player=player,
+        user=user,
+        action=action,
+        description=description,
+    )
 
 
 def create_track_database_information(track_info):
@@ -144,7 +201,7 @@ def search_tracks(query, player, maximum=5, type="track"):
     return trimmed_result
 
 
-def request_song(user, player, spotify_track_id):
+def request_song(player, spotify_track_id, user):
     """
     Request a track for a player.
 

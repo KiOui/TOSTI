@@ -8,7 +8,7 @@ from venues.models import Reservation
 @receiver(pre_save, sender=Reservation)
 def send_reservation_status_change_email_receiver(sender, instance, **kwargs):
     """Send a status change email when the status of a Reservation has been changed."""
-    if instance.pk is None or instance.user is None:
+    if instance.pk is None or instance.user_created is None:
         return
 
     old_instance = Reservation.objects.get(pk=instance.pk)

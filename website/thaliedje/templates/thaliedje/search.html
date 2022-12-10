@@ -4,7 +4,7 @@
 <div id="player-search-container-{{ player.id }}">
     <form @submit.self.prevent="tryUrl">
         <input v-model="query" id="search" type="text" maxlength="100" placeholder="Search for something to play" class="container-fluid form-control mb-3"/>
-        <label style="font-size: 0.8em;" for="search">Tip: try pasting a share URL of a Spotify track{% if show_admin_columns %}, playlist or album{% endif %} and pressing RETURN, this will instantly add the track to the queue.</label>
+        <label style="font-size: 0.8em;" for="search">Tip: try pasting a share URL of a Spotify track{% if show_admin_columns %}, playlist or album{% endif %} and pressing RETURN, this will instantly add the track to the queue.{% if show_admin_columns %}Queueing a playlist or album will remove the existing queue!{% endif %}</label>
     </form>
     <div id="results" class="px-3 search-list">
         <div class="row">

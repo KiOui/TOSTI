@@ -9,7 +9,7 @@ from thaliedje.admin_views import (
     SpotifyTokenView,
     SpotifyAuthorizeSucceededView,
 )
-from .models import Player, ThaliedjeBlacklistedUser
+from .models import Player, ThaliedjeBlacklistedUser, ThaliedjeControlEvent, PlayerLogEntry
 from .forms import PlayerAdminForm
 
 
@@ -81,3 +81,17 @@ class ThaliedjeBlacklistedUserAdmin(admin.ModelAdmin):
     """Admin for blacklisted users."""
 
     autocomplete_fields = ["user"]
+
+
+@admin.register(ThaliedjeControlEvent)
+class ThaliedjeControlEventAdmin(admin.ModelAdmin):
+    """Admin for control events."""
+
+    filter_horizontal = ["selected_users"]
+
+
+@admin.register(PlayerLogEntry)
+class PlayerLogEntryAdmin(admin.ModelAdmin):
+    """Admin for log entries."""
+
+    pass

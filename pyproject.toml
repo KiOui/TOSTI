@@ -33,6 +33,7 @@ fontawesomefree = "^6.1.1"
 django-tinymce = "^3.5.0"
 bleach = { extras = ["css"], version = "^5.0.1" }
 django-admin-rangefilter = "^0.9.0"
+django-queryable-properties = "^1.8.3"
 
 [tool.poetry.dev-dependencies]
 pydocstyle = "^5.0.2"

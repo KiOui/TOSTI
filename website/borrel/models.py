@@ -1,9 +1,14 @@
+import secrets
 import uuid
 
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from django.core.validators import MinLengthValidator
 from django.db import models
+from django.db.models import Case, When, Value
 from django.utils import timezone
+from queryable_properties.managers import QueryablePropertiesManager
+from queryable_properties.properties import RangeCheckProperty, AnnotationProperty
 
 from associations.models import Association
 from venues.models import Reservation
@@ -121,12 +126,13 @@ class BorrelReservation(models.Model):
         Reservation, on_delete=models.SET_NULL, null=True, blank=True, related_name="borrel_reservations"
     )
 
-    join_code = models.UUIDField(null=False, blank=True, unique=True)
+    join_code = models.CharField(max_length=20, blank=True, null=False, validators=[MinLengthValidator(20)])
 
-    @property
-    def submitted(self):
-        """Borrel reservation is submitted."""
-        return self.submitted_at is not None
+    active = RangeCheckProperty("start", "end", timezone.now)
+
+    submitted = AnnotationProperty(Case(When(submitted_at__isnull=False, then=Value(True)), default=Value(False)))
+
+    objects = QueryablePropertiesManager()
 
     @property
     def can_be_changed(self):
@@ -152,7 +158,7 @@ class BorrelReservation(models.Model):
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         """Save the reservation."""
         if not self.join_code:
-            self.join_code = uuid.uuid4()
+            self.join_code = secrets.token_urlsafe(20)
 
         super().save(force_insert, force_update, using, update_fields)
 

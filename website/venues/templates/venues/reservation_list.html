@@ -17,6 +17,7 @@
                     <th scope="col">Venue</th>
                     <th scope="col">Comments</th>
                     <th scope="col">Status</th>
+                    <th scope="col"></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -29,6 +30,18 @@
                         <td>{{ reservation.comments }}</td>
                         <td>
                             <span class='badge {{ reservation.accepted|yesno:"bg-success,bg-danger,bg-secondary" }}'>{{ reservation.accepted|yesno:"Accepted,Declined,Pending" }}</span>
+                        </td>
+                        <td>
+                            {% if reservation.can_be_changed %}
+                                <div class="d-flex gap-2">
+                                    <a href="{% url 'venues:view_reservation' reservation.pk %}" class="btn btn-primary w-100">Update reservation</a>
+                                    <a href="{% url 'venues:delete_reservation' reservation.pk %}" class="btn btn-danger w-100">Cancel reservation</a>
+                                </div>
+                            {% else %}
+                                <a href="{% url 'venues:view_reservation' reservation.pk %}" class="btn btn-outline-secondary my-1 w-100">
+                                    View details
+                                </a>
+                            {% endif %}
                         </td>
                     </tr>
                 {% endfor %}

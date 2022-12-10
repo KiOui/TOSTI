@@ -1,6 +1,13 @@
+import secrets
+import uuid
+
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from django.core.validators import MinLengthValidator
 from django.db import models
+from django.utils import timezone
+from queryable_properties.managers import QueryablePropertiesManager
+from queryable_properties.properties import RangeCheckProperty
 
 from associations.models import Association
 
@@ -56,22 +63,55 @@ class Venue(models.Model):
 class Reservation(models.Model):
     """Reservation model class."""
 
-    title = models.CharField(max_length=100, null=True, blank=True)
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="reservations")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    submitted_at = models.DateTimeField(null=True, blank=True)
+
+    title = models.CharField(max_length=100, null=False, blank=False)
     association = models.ForeignKey(
         Association, on_delete=models.SET_NULL, null=True, blank=True, related_name="reservations"
     )
     start = models.DateTimeField()
     end = models.DateTimeField()
     venue = models.ForeignKey(Venue, on_delete=models.CASCADE, related_name="reservations")
-    comment = models.TextField(null=True, blank=True)
+    user_created = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True, related_name="reservations_created"
+    )
+    user_updated = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True, related_name="reservations_updated"
+    )
+    users_access = models.ManyToManyField(User, related_name="reservations_access", blank=True)
+
+    comments = models.TextField(null=True, blank=True)
+
     accepted = models.BooleanField(default=None, null=True, blank=True)
+    join_code = models.CharField(
+        max_length=255, blank=True, null=True, unique=True, validators=[MinLengthValidator(20)]
+    )
+
+    active = RangeCheckProperty("start", "end", timezone.now)
+
+    objects = QueryablePropertiesManager()
+
+    @property
+    def can_be_changed(self):
+        return self.accepted is None and self.start > timezone.now()
 
     def clean(self):
         """Clean model."""
         super(Reservation, self).clean()
         if self.end is not None and self.start is not None and self.end <= self.start:
             raise ValidationError({"end_time": "End date cannot be before start date."})
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        """Save the reservation."""
+        if not self.join_code:
+            self.join_code = secrets.token_urlsafe(20)
+
+        super().save(force_insert, force_update, using, update_fields)
+
+        if self.user_created and self.user_created not in self.users_access.all():
+            self.users_access.add(self.user_created)
 
     def __str__(self):
         """Convert this object to string."""

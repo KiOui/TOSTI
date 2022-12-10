@@ -1,9 +1,20 @@
+from django.contrib import messages
+from django.contrib.admin.models import CHANGE, ADDITION
+from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.http import HttpResponseRedirect
 from django.template.loader import render_to_string
-from django.views.generic import TemplateView
+from django.urls import reverse
+from django.utils import timezone
+from django.utils.decorators import method_decorator
+from django.views import View
+from django.views.generic import TemplateView, UpdateView
 
-from .models import SpotifyQueueItem
-from .services import user_is_blacklisted, has_album_playlist_request_permission
+from tosti.utils import log_action
+from venues.models import Reservation
+from .forms import ThaliedjeControlEventForm
+from .models import SpotifyQueueItem, ThaliedjeControlEvent
+from .services import can_request_song, can_request_playlist, can_control_player, active_thaliedje_control_event
 
 
 class IndexView(TemplateView):
@@ -29,10 +40,24 @@ class NowPlayingView(TemplateView):
 
         context["venue"] = player.venue
 
-        context[
-            "can_request_album_playlist"
-        ] = self.request.user.is_authenticated and has_album_playlist_request_permission(self.request.user, player)
-        context["can_request"] = self.request.user.is_authenticated and not user_is_blacklisted(self.request.user)
+        venue_reservation = player.venue.reservations.filter(
+            accepted=True, start__lte=timezone.now(), end__gte=timezone.now()
+        ).first()
+        if venue_reservation:
+            context["current_venue_reservation"] = venue_reservation
+
+        control_event = active_thaliedje_control_event(player)
+        if control_event and self.request.user in control_event.admins.all():
+            context["current_control_event"] = control_event
+
+        if self.request.user.is_authenticated:
+            context["can_request_song"] = can_request_song(self.request.user, player)
+            context["can_request_playlist"] = can_request_playlist(self.request.user, player)
+            context["can_control_player"] = can_control_player(self.request.user, player)
+        else:
+            context["can_request_song"] = False
+            context["can_request_playlist"] = False
+            context["can_control_player"] = False
         return context
 
 
@@ -45,3 +70,77 @@ def render_account_history_tab(request, item, current_page_url):
         "thaliedje/account_history.html",
         context={"page_obj": paginator.get_page(page), "current_page_url": current_page_url, "item": item},
     )
+
+
+@method_decorator(login_required, name="dispatch")
+class ThaliedjeControlEventView(UpdateView):
+    """View for the ThaliedjeControlEvent model."""
+
+    model = ThaliedjeControlEvent
+    form_class = ThaliedjeControlEventForm
+    template_name = "thaliedje/thaliedje_control_event.html"
+
+    def get_queryset(self):
+        """Get the queryset for the view."""
+        return ThaliedjeControlEvent.objects.filter(active=True)
+
+    def dispatch(self, request, *args, **kwargs):
+        """Dispatch the request to the view."""
+        if not request.user.is_authenticated or not self.get_object().admins.filter(pk=request.user.pk).exists():
+            messages.error(request, "You don't have access to this page.")
+            return HttpResponseRedirect(reverse("index"))
+        return super().dispatch(request, *args, **kwargs)
+
+
+@method_decorator(login_required, name="dispatch")
+class ThaliedjeControlEventJoinView(View):
+    """Join a control event via the join code."""
+
+    def get(self, *args, **kwargs):
+        """Process a get request."""
+        try:
+            event = ThaliedjeControlEvent.objects.get(join_code=self.kwargs.get("code"))
+        except ThaliedjeControlEvent.DoesNotExist:
+            messages.add_message(self.request, messages.INFO, "Invalid code.")
+            return HttpResponseRedirect(reverse("index"))
+
+        if not event.active:
+            messages.add_message(self.request, messages.INFO, "This event is not active.")
+            return HttpResponseRedirect(reverse("index"))
+
+        if self.request.user not in event.selected_users.all():
+            event.selected_users.add(self.request.user)
+            event.save()
+            log_action(self.request.user, event, CHANGE, "Joined event via website.")
+            messages.add_message(
+                self.request, messages.INFO, f"You now have access to {event.player} during {event.event.title}."
+            )
+
+        return HttpResponseRedirect(reverse("thaliedje:now-playing", kwargs={"player": event.player.pk}))
+
+
+@method_decorator(login_required, name="dispatch")
+class ThaliedjeControlEventCreateView(View):
+    """Create a control event."""
+
+    def get(self, *args, **kwargs):
+        """Process a get request."""
+        reservation_id = self.kwargs.get("pk")
+
+        try:
+            reservation = Reservation.objects.filter(
+                accepted=True, start__lte=timezone.now(), end__gte=timezone.now(), venue__player__isnull=False
+            ).get(pk=reservation_id)
+        except Reservation.DoesNotExist:
+            messages.add_message(self.request, messages.INFO, "Invalid event.")
+            return HttpResponseRedirect(reverse("index"))
+
+        if not self.request.user.is_authenticated or not self.request.user in reservation.users_access.all():
+            messages.add_message(self.request, messages.INFO, "You don't have access to this event.")
+            return HttpResponseRedirect(reverse("index"))
+
+        event = ThaliedjeControlEvent.objects.create(
+            event=reservation,
+        )
+        log_action(self.request.user, event, ADDITION, "Created event via website.")
+        return HttpResponseRedirect(reverse("thaliedje:control-event", kwargs={"pk": event.pk}))
