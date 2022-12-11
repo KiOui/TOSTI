@@ -18,6 +18,7 @@ INSTALLED_APPS = [
     "constance.backends.database",
     "tosti.sp_app_config.CustomSPAppConfig",
     "django_bootstrap5",
+    "tinymce",
     "fontawesomefree",
     "autocompletefilter",
     "import_export",
@@ -25,6 +26,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'rangefilter',
+    "announcements",
     "users",
     "venues",
     "associations",
@@ -58,6 +60,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.contrib.admindocs.middleware.XViewMiddleware",
+    "announcements.middleware.ClosedAnnouncementsMiddleware",
 ]
 
 ROOT_URLCONF = "tosti.urls"
