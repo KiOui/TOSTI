@@ -183,7 +183,7 @@ CONSTANCE_CONFIG = {
     'BORREL_SEND_BORREL_RESERVATION_REQUEST_EMAILS_TO': (
         'noreply@example.com', 'Where to send borrel reservation request notifications to (e-mail address)', str),
     'VENUES_SEND_RESERVATION_REQUEST_EMAILS_TO': (
-        'noreply@example.com', 'Where to send venue reservation request notifications to (e-mail address)', str),
+        'noreply@example.com, noreply@example.com', 'Where to send venue reservation request notifications to (e-mail address), enter multiple addresses by using a comma (,)', str),
     'SHIFTS_DEFAULT_MAX_ORDERS_TOTAL': (70, 'Default maximum number of orders per shift', int),
 }
 
