@@ -1,4 +1,4 @@
-from thaliedje.services import player_currently_playing, get_player_volume
+from thaliedje.services import player_currently_playing, get_player_volume, get_shuffle, get_repeat
 from users.api.v1.serializers import UserSerializer
 from rest_framework import serializers
 from thaliedje import models
@@ -56,6 +56,8 @@ class PlayerSerializer(serializers.ModelSerializer):
     """Player serializer."""
 
     is_playing = serializers.SerializerMethodField()
+    shuffle = serializers.SerializerMethodField()
+    repeat = serializers.SerializerMethodField()
     track = serializers.SerializerMethodField()
     current_volume = serializers.SerializerMethodField()
 
@@ -80,6 +82,14 @@ class PlayerSerializer(serializers.ModelSerializer):
         """Get current volume."""
         return get_player_volume(instance)
 
+    def get_shuffle(self, instance):
+        """Get whether the player is shuffling."""
+        return get_shuffle(instance)
+
+    def get_repeat(self, instance):
+        """Get whether the player is repeating."""
+        return get_repeat(instance)
+
     class Meta:
         """Meta class."""
 
@@ -91,5 +101,7 @@ class PlayerSerializer(serializers.ModelSerializer):
             "venue",
             "track",
             "is_playing",
+            "shuffle",
+            "repeat",
             "current_volume",
         ]

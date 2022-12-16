@@ -286,3 +286,83 @@ class PlayerPreviousAPIView(APIView):
         return Response(
             status=status.HTTP_200_OK, data=self.serializer_class(player, context={"request": request}).data
         )
+
+
+class PlayerShuffleAPIView(APIView):
+    """API view to set shuffle state of player."""
+
+    schema = CustomAutoSchema(
+        request_schema={
+            "type": "object",
+            "properties": {"state": {"type": "bool", "example": "true"}},
+        }
+    )
+    serializer_class = PlayerSerializer
+    permission_required = "thaliedje.can_control"
+    permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
+    required_scopes = ["thaliedje:manage"]
+
+    def get_permission_object(self):
+        """Get the player to check permissions for."""
+        return self.kwargs.get("player")
+
+    def patch(self, request, **kwargs):
+        """Make player go to the previous song."""
+        player = kwargs.get("player")
+        state = request.data.get("state", None)
+        if state is None:
+            raise ValidationError("A state is required.")
+
+        if type(state) != bool:
+            raise ValidationError("The state parameter should be a boolean.")
+
+        try:
+            services.player_shuffle(player, state)
+        except spotipy.SpotifyException as e:
+            if e.http_status == 403:
+                return Response(status=status.HTTP_403_FORBIDDEN)
+            else:
+                return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        return Response(
+            status=status.HTTP_200_OK, data=self.serializer_class(player, context={"request": request}).data
+        )
+
+
+class PlayerRepeatAPIView(APIView):
+    """API view to set repeat state of player."""
+
+    schema = CustomAutoSchema(
+        request_schema={
+            "type": "object",
+            "properties": {"state": {"type": "string", "example": "context"}},
+        }
+    )
+    serializer_class = PlayerSerializer
+    permission_required = "thaliedje.can_control"
+    permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
+    required_scopes = ["thaliedje:manage"]
+
+    def get_permission_object(self):
+        """Get the player to check permissions for."""
+        return self.kwargs.get("player")
+
+    def patch(self, request, **kwargs):
+        """Make player go to the previous song."""
+        player = kwargs.get("player")
+        state = request.data.get("state", None)
+        if state is None:
+            raise ValidationError("A state is required.")
+
+        if state != "off" and state != "context" and state != "track":
+            raise ValidationError("The state parameter should be one of 'off', 'context' or 'track'.")
+
+        try:
+            services.player_repeat(player, state)
+        except spotipy.SpotifyException as e:
+            if e.http_status == 403:
+                return Response(status=status.HTTP_403_FORBIDDEN)
+            else:
+                return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        return Response(
+            status=status.HTTP_200_OK, data=self.serializer_class(player, context={"request": request}).data
+        )

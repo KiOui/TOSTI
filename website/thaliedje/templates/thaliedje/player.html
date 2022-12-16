@@ -31,17 +31,33 @@
         </div>
     </template>
     <template v-else>
-        <div class="player-controls mt-3 mb-3">
-            <i class="fa-solid fa-backward" v-on:click="(event) => backward(evemt)" ></i>
+        <div class="player-controls mt-3 mb-3 mx-auto">
+            <template v-if="player_data.shuffle !== null">
+                <template v-if="player_data.shuffle">
+                    <i class="position-relative fa-solid fa-shuffle mx-2 active-button pb-2" v-on:click="(event) => toggleShuffle(false, event)" ></i>
+                </template>
+                <template v-else>
+                    <i class="position-relative fa-solid fa-shuffle mx-2" v-on:click="(event) => toggleShuffle(true, event)" ></i>
+                </template>
+            </template>
+            <i class="fa-solid fa-backward mx-2" v-on:click="(event) => backward(event)" ></i>
             <template v-if="player_data.is_playing">
-                <i class="fa-solid fa-pause" v-on:click="(event) => pause(event)"></i>
+                <i class="fa-solid fa-pause mx-2" v-on:click="(event) => pause(event)"></i>
             </template>
             <template v-else>
-                <i class="fa-solid fa-play" v-on:click="(event) => play(event)"></i>
+                <i class="fa-solid fa-play mx-2" v-on:click="(event) => play(event)"></i>
             </template>
-            <i class="fa-solid fa-forward" v-on:click="(event) => forward(event)"></i>
+            <i class="fa-solid fa-forward mx-2" v-on:click="(event) => forward(event)"></i>
+            <template v-if="player_data.repeat !== null">
+                <template v-if="player_data.repeat === 'context'">
+                    <i class="position-relative fa-solid fa-repeat mx-2 active-button pb-2" v-on:click="(event) => toggleRepeat('off', event)" ></i>
+                </template>
+                <template v-else>
+                    <i class="position-relative fa-solid fa-repeat mx-2" v-on:click="(event) => toggleRepeat('context', event)" ></i>
+                </template>
+            </template>
         </div>
-        <div class="player-controls">
+        <div class="player-controls mx-auto">
             <input type="range" class="volume w-100" v-on:click="(event) => event.preventDefault()" v-on:change="(event) => setVolume(player_data.current_volume, event)" min="0" max="100" step="5" v-model="player_data.current_volume">
         </div>
     </template>
@@ -54,6 +70,8 @@
         data: {
             player_data: {
                 is_playing: false,
+                shuffle: null,
+                repeat: null,
                 track: null,
                 current_volume: null,
             },
@@ -176,6 +194,78 @@
                             "Content-Type": 'application/json',
                             "Accept": 'application/json',
                         }
+                    }
+                ).then(response => {
+                    if (response.status === 200) {
+                        return response.json();
+                    } else {
+                        throw response;
+                    }
+                }).then(data => {
+                    this.player_data = data;
+                }).catch(error => {
+                    if (error.status && error.status !== 403) {
+                        tata.error('', "Failed to communicate with the Spotify device, make sure the device is available.");
+                    } else {
+                        show_error_from_api(error);
+                    }
+                }).finally(() => {
+                    this.doing_call = false;
+                    this.refresh_timer = setTimeout(this.refresh, 20000);
+                });
+            },
+            toggleShuffle(value, event) {
+                event.preventDefault();
+                this.doing_call = true;
+                clearTimeout(this.refresh_timer);
+                fetch(
+                    '{% url "v1:player_shuffle" player=player %}',
+                    {
+                        method: "PATCH",
+                        headers: {
+                            "X-CSRFToken": get_csrf_token(),
+                            "Content-Type": 'application/json',
+                            "Accept": 'application/json',
+                        },
+                        body: JSON.stringify({
+                            state: value,
+                        }),
+                    }
+                ).then(response => {
+                    if (response.status === 200) {
+                        return response.json();
+                    } else {
+                        throw response;
+                    }
+                }).then(data => {
+                    this.player_data = data;
+                }).catch(error => {
+                    if (error.status && error.status !== 403) {
+                        tata.error('', "Failed to communicate with the Spotify device, make sure the device is available.");
+                    } else {
+                        show_error_from_api(error);
+                    }
+                }).finally(() => {
+                    this.doing_call = false;
+                    this.refresh_timer = setTimeout(this.refresh, 20000);
+                });
+            },
+            toggleRepeat(value, event) {
+                event.preventDefault();
+                this.doing_call = true;
+                clearTimeout(this.refresh_timer);
+                fetch(
+                    '{% url "v1:player_repeat" player=player %}',
+                    {
+                        method: "PATCH",
+                        headers: {
+                            "X-CSRFToken": get_csrf_token(),
+                            "Content-Type": 'application/json',
+                            "Accept": 'application/json',
+                        },
+                        body: JSON.stringify({
+                            state: value,
+                        }),
                     }
                 ).then(response => {
                     if (response.status === 200) {
