@@ -22,21 +22,12 @@ async function show_error_from_api(data) {
     tata.error('', "An unknown exception occurred, the server might be offline or not responding.");
 }
 
-function get_parents(elem) {
-    let parents = [];
-    for ( ; elem && elem !== document; elem = elem.parentNode ) {
-		parents.push(elem);
-	}
-    return parents;
-}
-
-function create_element(tag_name, class_list, text) {
-    let element = document.createElement(tag_name);
-    for (let i = 0; i < class_list.length; i++) {
-        element.classList.add(class_list[i]);
-    }
-    element.appendChild(document.createTextNode(text));
-    return element;
+function debounce(func, timeout = 300){
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => { func.apply(this, args); }, timeout);
+  };
 }
 
 function set_cookie(name,value,days) {

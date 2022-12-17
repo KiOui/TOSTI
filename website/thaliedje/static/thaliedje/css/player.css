@@ -41,6 +41,14 @@
     font-size: 20pt;
 }
 
+.player-controls i.large-button {
+    font-size: 20pt;
+}
+
+.player-controls i.small-icon {
+    font-size: 10pt;
+}
+
 .player-controls i:hover {
     cursor: pointer;
 }
