@@ -84,8 +84,8 @@ class ReservationUpdateForm(ReservationForm):
 class ReservationDisabledForm(ReservationForm):
     """Reservation Disabled Form."""
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         """Initialise Reservation Disabled Form."""
-        super(ReservationDisabledForm, self).__init__()
+        super().__init__(*args, **kwargs)
         for field in self.fields.values():
             field.disabled = True
