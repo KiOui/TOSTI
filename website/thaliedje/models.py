@@ -243,7 +243,7 @@ class ThaliedjeControlEvent(models.Model):
     start = AnnotationProperty(F("event__start"))
     end = AnnotationProperty(F("event__end"))
 
-    active = RangeCheckProperty("event__start", "event__end", timezone.now)
+    active = RangeCheckProperty("start", "end", timezone.now)
 
     objects = QueryablePropertiesManager()
 

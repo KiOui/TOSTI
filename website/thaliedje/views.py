@@ -116,7 +116,7 @@ class ThaliedjeControlEventJoinView(View):
                 self.request, messages.INFO, f"You now have access to {event.player} during {event.event.title}."
             )
 
-        return redirect(reverse("thaliedje:now-playing", kwargs={"player": event.player.pk}))
+        return redirect(reverse("thaliedje:now_playing", kwargs={"player": event.player}))
 
 
 @method_decorator(login_required, name="dispatch")
