@@ -84,4 +84,8 @@ class ReservationUpdateForm(ReservationForm):
 class ReservationDisabledForm(ReservationForm):
     """Reservation Disabled Form."""
 
-    pass
+    def __init__(self):
+        """Initialise Reservation Disabled Form."""
+        super(ReservationDisabledForm, self).__init__()
+        for field in self.fields.values():
+            field.disabled = True
