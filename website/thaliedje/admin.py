@@ -89,9 +89,51 @@ class ThaliedjeControlEventAdmin(admin.ModelAdmin):
 
     filter_horizontal = ["selected_users"]
 
+    list_display = [
+        "start",
+        "end",
+        "player",
+        "event_title",
+        "event_association",
+    ]
+
+    def event_title(self, obj):
+        return obj.event.title
+
+    event_title.short_description = "Event"
+
+    def event_association(self, obj):
+        return obj.event.association
+
+    event_association.short_description = "Association"
+
 
 @admin.register(PlayerLogEntry)
 class PlayerLogEntryAdmin(admin.ModelAdmin):
     """Admin for log entries."""
 
-    pass
+    list_display = [
+        "timestamp",
+        "player",
+        "action",
+        "user",
+        "description",
+    ]
+
+    list_filter = [
+        "player",
+        "action",
+        ("timestamp", admin.DateFieldListFilter),
+    ]
+
+    def has_delete_permission(self, request, obj=None):
+        """Disable delete permission."""
+        return False
+
+    def has_add_permission(self, request):
+        """Disable add permission."""
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        """Disable change permission."""
+        return False
