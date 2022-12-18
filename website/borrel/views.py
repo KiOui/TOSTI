@@ -215,6 +215,13 @@ class BorrelBorrelReservationUpdateView(BasicBorrelBrevetRequiredMixin, BorrelRe
         """Redirect to the details of the reservation."""
         return reverse("borrel:view_reservation", kwargs={"pk": self.get_object().pk})
 
+    def dispatch(self, request, *args, **kwargs):
+        """Check if this reservation can be changed."""
+        if not self.get_object().can_be_changed:
+            messages.add_message(self.request, messages.ERROR, "You cannot change this reservation anymore.")
+            return redirect(self.get_success_url())
+        return super().dispatch(request, *args, **kwargs)
+
     def form_valid(self, form):
         """Process the form."""
         if not self.get_object().can_be_changed:
@@ -248,11 +255,7 @@ class ReservationRequestCancelView(DeleteView):
     def dispatch(self, request, *args, **kwargs):
         """Display a warning if the reservation cannot be cancelled."""
         if not self.get_object().can_be_changed:
-            messages.add_message(
-                self.request,
-                messages.ERROR,
-                "Your borrel reservation cannot be cancelled anymore, as it is already accepted.",
-            )
+            messages.add_message(self.request, messages.ERROR, "You cannot cancel this reservation anymore.")
             return redirect(self.get_success_url())
         return super().dispatch(request, *args, **kwargs)
 
