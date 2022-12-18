@@ -19,8 +19,8 @@
         <p>{{ reservation.start }}</p>
         <strong>End:</strong> <br>
         <p>{{ reservation.end }}</p>
-        {% if reservation.comment %}<strong>Comment:</strong> <br>
-        <p>{{ reservation.comment }}</p>{% endif %}
+        {% if reservation.comments %}<strong>Comments:</strong> <br>
+        <p>{{ reservation.comments }}</p>{% endif %}
         <p>
             To accept or reject this reservation, visit <a href="https://{{ domain }}{% url "admin:venues_reservation_change" object_id=reservation.id %}">https://{{ domain }}{% url "admin:venues_reservation_change" object_id=reservation.id %}</a>.
         </p>
