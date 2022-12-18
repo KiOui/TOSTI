@@ -1,16 +1,11 @@
-.scanner-container {
-    display: flex;
-    justify-content: center;
-    margin: auto;
-}
 
 #scanner {
     position: relative;
-    width: 100%;
 }
 
 #scanner video {
     max-width: 100%;
+    width: 100%;
     position: relative;
     display: block;
 }

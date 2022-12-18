@@ -54,7 +54,7 @@ class OrderListCreateAPIView(ListCreateAPIView):
         """Get the queryset."""
         return (
             self.queryset.filter(shift=self.kwargs.get("shift"))
-            .prefetch_related("association")
+            .prefetch_related("user_association", "user__association")
             .order_by("-prioritize", "created")
         )
 

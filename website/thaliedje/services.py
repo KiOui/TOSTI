@@ -222,7 +222,7 @@ def request_song(player, spotify_track_id, user):
     """
     try:
         track_info = player.spotify.track(spotify_track_id)
-        player.spotify.add_to_queue(spotify_track_id, device_id=player.playback_device_id)
+        player.spotify.add_to_queue(spotify_track_id)
         track = create_track_database_information(track_info)
         SpotifyQueueItem.objects.create(
             track=track,

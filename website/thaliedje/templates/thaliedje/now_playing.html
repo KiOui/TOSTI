@@ -52,26 +52,6 @@
         </div>
     </footer>
     {% if can_request_song %}
-        <div id="song-request-wrapper">
-            <div class="modal" id="song-request-popup">
-                <div class="modal-dialog{% if can_request_playlist %} modal-xl{% endif %}">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h2 class="modal-title">Request a song</h2>
-                            <button type="button" class="close btn btn-default" data-bs-dismiss="modal">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="container">
-                                <p>Search a track below and add it to the queue.</p>
-                                {% include 'thaliedje/search.html' with player=player refresh=False show_admin_columns=can_request_playlist %}
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {% include 'thaliedje/search.html' with player=player refresh=False show_admin_columns=can_request_playlist %}
     {% endif %}
 {% endblock %}
