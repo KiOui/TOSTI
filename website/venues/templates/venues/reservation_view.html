@@ -13,7 +13,8 @@
                 {% bootstrap_form form %}
                 {% if object.can_be_changed %}
                     {% bootstrap_button button_type="submit" content="Update reservation" size="lg" extra_classes="mt-4 mb-2 w-100" %}
-                    {% bootstrap_button button_type="link" href="" content="Cancel reservation" button_class="btn-danger" extra_classes="mb-3 w-100" %}
+                    {% url "venues:delete_reservation" object.id as delete_url %}
+                    {% bootstrap_button button_type="link" href=delete_url content="Cancel reservation" button_class="btn-danger" extra_classes="mb-3 w-100" %}
                 {% endif %}
                 {% include "venues/includes/share_reservation.html" %}
             </form>
