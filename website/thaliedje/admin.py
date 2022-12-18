@@ -98,11 +98,13 @@ class ThaliedjeControlEventAdmin(admin.ModelAdmin):
     ]
 
     def event_title(self, obj):
+        """Get the title of the event."""
         return obj.event.title
 
     event_title.short_description = "Event"
 
     def event_association(self, obj):
+        """Get the association of the event."""
         return obj.event.association
 
     event_association.short_description = "Association"
