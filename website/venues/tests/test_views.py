@@ -85,7 +85,7 @@ class VenueViewTests(TestCase):
             start=timezone.now(),
             end=timezone.now() + timedelta(hours=5),
             venue=Venue.objects.get(pk=1),
-            comment="Test comment",
+            comments="Test comment",
             accepted=None,
         )
         models.Reservation.objects.create(
@@ -95,7 +95,7 @@ class VenueViewTests(TestCase):
             start=timezone.now() + timedelta(days=1),
             end=timezone.now() + timedelta(days=1, hours=5),
             venue=Venue.objects.get(pk=1),
-            comment="Test comment",
+            comments="Test comment",
             accepted=False,
         )
 
@@ -106,7 +106,7 @@ class VenueViewTests(TestCase):
             start=timezone.now() + timedelta(days=2),
             end=timezone.now() + timedelta(days=2, hours=5),
             venue=Venue.objects.get(pk=1),
-            comment="Test comment",
+            comments="Test comment",
             accepted=True,
         )
         response = self.client.get(reverse("venues:list_reservations"))

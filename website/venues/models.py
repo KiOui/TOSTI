@@ -94,6 +94,7 @@ class Reservation(models.Model):
 
     @property
     def can_be_changed(self):
+        """Check if the reservation can be changed."""
         return self.accepted is None and self.start > timezone.now()
 
     def clean(self):
