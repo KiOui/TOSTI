@@ -91,6 +91,7 @@ class ReservationUpdateView(UpdateView):
     def form_valid(self, form):
         """Process the form."""
         if not self.get_object().can_be_changed:
+            messages.error(self.request, "This reservation cannot be changed.")
             return redirect(self.get_success_url())
         obj = form.save()
         obj.user_updated = self.request.user
@@ -106,6 +107,17 @@ class ReservationCancelView(DeleteView):
     model = Reservation
     template_name = "venues/reservation_cancel.html"
     success_url = reverse_lazy("venues:list_reservations")
+
+    def dispatch(self, request, *args, **kwargs):
+        """Display a warning if the reservation cannot be cancelled."""
+        if not self.get_object().can_be_changed:
+            messages.add_message(
+                self.request,
+                messages.ERROR,
+                "Your reservation cannot be cancelled anymore.",
+            )
+            return redirect(self.get_success_url())
+        return super().dispatch(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
         """Delete the reservation."""

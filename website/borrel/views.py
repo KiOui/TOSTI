@@ -218,6 +218,7 @@ class BorrelBorrelReservationUpdateView(BasicBorrelBrevetRequiredMixin, BorrelRe
     def form_valid(self, form):
         """Process the form."""
         if not self.get_object().can_be_changed:
+            messages.add_message(self.request, messages.ERROR, "You cannot change this reservation anymore.")
             return redirect(self.get_success_url())
 
         context = self.get_context_data()
