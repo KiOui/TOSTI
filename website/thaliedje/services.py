@@ -40,6 +40,8 @@ def active_thaliedje_control_event(player):
 
 def can_request_song(user, player):
     """Check if a user can request a song."""
+    if not user.is_authenticated:
+        return False
     control_event = active_thaliedje_control_event(player)
     if control_event is not None:
         if control_event.respect_blacklist and user_is_blacklisted(user):
@@ -50,6 +52,8 @@ def can_request_song(user, player):
 
 def can_request_playlist(user, player):
     """Check if a user can request playlists or albums."""
+    if not user.is_authenticated:
+        return False
     control_event = active_thaliedje_control_event(player)
     if control_event is not None:
         if control_event.respect_blacklist and user_is_blacklisted(user):
@@ -60,6 +64,8 @@ def can_request_playlist(user, player):
 
 def can_control_player(user, player):
     """Check if a user can control the player."""
+    if not user.is_authenticated:
+        return False
     control_event = active_thaliedje_control_event(player)
     if control_event is not None:
         if control_event.respect_blacklist and user_is_blacklisted(user):
@@ -223,6 +229,7 @@ def request_song(player, spotify_track_id, user):
             player=player,
             requested_by=user,
         )
+        return track
     except SpotifyException as e:
         logging.error(e)
         raise e

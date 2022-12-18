@@ -131,8 +131,8 @@ class PlayerTrackAddAPIView(APIView):
             raise ValidationError("A track id is required.")
 
         try:
-            services.request_song(player, track_id, request.user)
-            log_player_action(request.user, player, "request_song", 'Requested song "{}"'.format(track_id))
+            track = services.request_song(player, track_id, request.user)
+            log_player_action(request.user, player, "request_song", 'Requested song "{}"'.format(track.name))
         except spotipy.SpotifyException:
             return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
         return Response(status=status.HTTP_200_OK)
