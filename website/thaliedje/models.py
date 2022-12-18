@@ -1,13 +1,10 @@
 import os
 import secrets
-import uuid
 
-from django.contrib.admin.models import LogEntry
-from django.contrib.contenttypes.models import ContentType
 from django.core.validators import MinLengthValidator
 from django.db import models
 from django.conf import settings
-from django.db.models import When, F, Case
+from django.db.models import F
 from django.urls import reverse
 from django.utils import timezone
 from queryable_properties.managers import QueryablePropertiesManager
@@ -15,7 +12,6 @@ from queryable_properties.properties import RangeCheckProperty, AnnotationProper
 from spotipy import SpotifyOAuth
 from spotipy.client import Spotify
 
-from associations.models import Association
 from users.models import User
 from venues.models import Venue, Reservation
 

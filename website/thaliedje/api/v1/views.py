@@ -15,7 +15,6 @@ from thaliedje.api.v1.serializers import PlayerSerializer, QueueItemSerializer, 
 from thaliedje.models import Player, SpotifyQueueItem
 from thaliedje.services import can_request_song, can_request_playlist, can_control_player, log_player_action
 from tosti.api.openapi import CustomAutoSchema
-from tosti.api.permissions import HasPermissionOnObject
 
 
 class PlayerListAPIView(ListAPIView):
@@ -162,9 +161,10 @@ class PlayerPlayAPIView(APIView):
             context_uri = request.data.get("context_uri", None)
             if can_request_playlist(request.user, player) and context_uri is not None:
                 services.player_start(player, context_uri=context_uri)
+                log_player_action(request.user, player, "play", f"Started playback {context_uri}.")
             else:
                 services.player_start(player)
-            log_player_action(request.user, player, "play", "Started playback.")
+                log_player_action(request.user, player, "play", "Started playback.")
         except spotipy.SpotifyException as e:
             if e.http_status == 403:
                 return Response(status=status.HTTP_403_FORBIDDEN)

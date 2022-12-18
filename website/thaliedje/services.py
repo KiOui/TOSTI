@@ -29,10 +29,13 @@ def active_thaliedje_control_event(player):
     :param player: the player
     :return: the active ThaliedjeControlEvent or None
     """
-    qs = ThaliedjeControlEvent.objects.filter(player=player.id, active=True)
-    if qs.exists():
-        return qs.first()
-    return None
+    try:
+        return ThaliedjeControlEvent.objects.get(player=player, active=True)
+    except ThaliedjeControlEvent.DoesNotExist:
+        return None
+    except ThaliedjeControlEvent.MultipleObjectsReturned:
+        logging.error("Multiple active ThaliedjeControlEvents found for player %s", player)
+        return None
 
 
 def can_request_song(user, player):
