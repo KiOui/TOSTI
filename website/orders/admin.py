@@ -139,7 +139,11 @@ class ShiftAdmin(ExportMixin, GuardedModelAdmin):
 
     def get_queryset(self, request):
         """Return queryset."""
-        return super().get_queryset(request).prefetch_related("association")
+        return (
+            super()
+            .get_queryset(request)
+            .prefetch_related("orders__user_association", "orders__user__association", "assignees__association")
+        )
 
     def view_on_site(self, obj):
         """
@@ -293,7 +297,7 @@ class OrderAdmin(AutocompleteFilterMixin, ImportExportModelAdmin):
 
     def get_queryset(self, request):
         """Return queryset."""
-        return super().get_queryset(request).prefetch_related("association")
+        return super().get_queryset(request).prefetch_related("user_association", "user__association")
 
     class Media:
         """Necessary to use AutocompleteFilter."""
