@@ -11,7 +11,7 @@ admin.site.site_title = "TOSTI"
 class LogEntryAdmin(AutocompleteFilterMixin, admin.ModelAdmin):
     """Admin for the LogEntry model."""
 
-    date_hierarchy = "action_time"
+    # date_hierarchy = "action_time"
 
     list_filter = [("user", AutocompleteListFilter), "content_type", "action_flag"]
 
