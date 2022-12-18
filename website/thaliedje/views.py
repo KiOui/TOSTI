@@ -135,7 +135,7 @@ class ThaliedjeControlEventCreateView(View):
             messages.add_message(self.request, messages.INFO, "Invalid event.")
             return HttpResponseRedirect(reverse("index"))
 
-        if not self.request.user.is_authenticated or not self.request.user in reservation.users_access.all():
+        if not self.request.user.is_authenticated or self.request.user not in reservation.users_access.all():
             messages.add_message(self.request, messages.INFO, "You don't have access to this event.")
             return HttpResponseRedirect(reverse("index"))
 
