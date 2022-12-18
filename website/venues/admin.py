@@ -56,6 +56,7 @@ class ReservationAdmin(admin.ModelAdmin):
     ]
     search_fields = ["title"]
     autocomplete_fields = ["user_created"]
+    filter_horizontal = ["users_access"]
     # date_hierarchy = "start"
     form = ReservationAdminForm
     actions = ["accept_reservation", "reject_reservation"]
