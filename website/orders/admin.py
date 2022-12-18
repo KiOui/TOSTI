@@ -137,6 +137,10 @@ class ShiftAdmin(ExportMixin, GuardedModelAdmin):
     search_fields = ["start", "venue__venue__name"]
     actions = ["close_shift"]
 
+    def get_queryset(self, request):
+        """Return queryset."""
+        return super().get_queryset(request).prefetch_related("association")
+
     def view_on_site(self, obj):
         """
         Get the URL for the frontend view of this shift.
@@ -286,6 +290,10 @@ class OrderAdmin(AutocompleteFilterMixin, ImportExportModelAdmin):
 
     get_venue.short_description = "venue"
     get_venue.admin_order_field = "shift__venue"
+
+    def get_queryset(self, request):
+        """Return queryset."""
+        return super().get_queryset(request).prefetch_related("association")
 
     class Media:
         """Necessary to use AutocompleteFilter."""

@@ -38,11 +38,7 @@ class RequestReservationView(FormView):
     def get_form_kwargs(self):
         """Get the kwargs for rendering the form."""
         kwargs = super(RequestReservationView, self).get_form_kwargs()
-        kwargs.update(
-            {
-                "request": self.request,
-            }
-        )
+        kwargs.update({"request": self.request})
         return kwargs
 
     def form_valid(self, form):

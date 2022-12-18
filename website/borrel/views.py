@@ -121,7 +121,12 @@ class BorrelReservationBaseView(FormView):
         """Only allow access to reservations users have access to."""
         if not self.request.user.is_authenticated:
             return super().get_queryset().none()
-        return super().get_queryset().filter(pk__in=self.request.user.borrel_reservations_access.values("pk"))
+        return (
+            super()
+            .get_queryset()
+            .filter(pk__in=self.request.user.borrel_reservations_access.values("pk"))
+            .prefetch_related("items", "items__product", "items__product__category")
+        )
 
     def get_form_kwargs(self):
         """Pass the request to the form."""
@@ -175,7 +180,8 @@ class BorrelReservationCreateView(BasicBorrelBrevetRequiredMixin, BorrelReservat
             return self.form_invalid(form)
 
 
-class BorrelBorrelReservationUpdateView(BasicBorrelBrevetRequiredMixin, BorrelReservationBaseView, UpdateView):
+@method_decorator(login_required, name="dispatch")
+class BorrelBorrelReservationUpdateView(BorrelReservationBaseView, UpdateView):
     """View and update a reservation."""
 
     template_name = "borrel/borrel_reservation_view.html"
@@ -241,12 +247,19 @@ class BorrelBorrelReservationUpdateView(BasicBorrelBrevetRequiredMixin, BorrelRe
             return self.form_invalid(form)
 
 
+@method_decorator(login_required, name="dispatch")
 class ReservationRequestCancelView(DeleteView):
     """Delete a reservation request if it is not yet accepted."""
 
     model = BorrelReservation
     template_name = "borrel/borrel_reservation_cancel.html"
     success_url = reverse_lazy("borrel:list_reservations")
+
+    def get_queryset(self):
+        """Only allow access to reservations users have access to."""
+        if not self.request.user.is_authenticated:
+            return super().get_queryset().none()
+        return super().get_queryset().filter(pk__in=self.request.user.borrel_reservations_access.values("pk"))
 
     def dispatch(self, request, *args, **kwargs):
         """Display a warning if the reservation cannot be cancelled."""
