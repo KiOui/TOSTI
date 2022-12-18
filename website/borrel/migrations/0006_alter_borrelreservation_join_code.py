@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='borrelreservation',
             name='join_code',
-            field=models.CharField(blank=True, max_length=20, validators=[django.core.validators.MinLengthValidator(20)]),
+            field=models.CharField(blank=True, max_length=255, validators=[django.core.validators.MinLengthValidator(20)]),
         ),
     ]

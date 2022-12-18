@@ -125,7 +125,7 @@ class BorrelReservation(models.Model):
         Reservation, on_delete=models.SET_NULL, null=True, blank=True, related_name="borrel_reservations"
     )
 
-    join_code = models.CharField(max_length=20, blank=True, null=False, validators=[MinLengthValidator(20)])
+    join_code = models.CharField(max_length=255, blank=True, null=False, validators=[MinLengthValidator(20)])
 
     active = RangeCheckProperty("start", "end", timezone.now)
 
