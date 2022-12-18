@@ -77,6 +77,12 @@ class ReservationUpdateView(UpdateView):
     template_name = "venues/reservation_view.html"
     model = Reservation
 
+    def get_queryset(self):
+        """Only allow reservations you have access to."""
+        if not self.request.user.is_authenticated:
+            return super().get_queryset().none()
+        return super().get_queryset().filter(pk__in=self.request.user.reservations_access.values("pk"))
+
     def get_form_class(self):
         """Determine which form class to use for the main form."""
         if self.get_object().can_be_changed:
@@ -111,6 +117,12 @@ class ReservationCancelView(DeleteView):
     model = Reservation
     template_name = "venues/reservation_cancel.html"
     success_url = reverse_lazy("venues:list_reservations")
+
+    def get_queryset(self):
+        """Only allow reservations you have access to."""
+        if not self.request.user.is_authenticated:
+            return super().get_queryset().none()
+        return super().get_queryset().filter(pk__in=self.request.user.reservations_access.values("pk"))
 
     def dispatch(self, request, *args, **kwargs):
         """Display a warning if the reservation cannot be cancelled."""
