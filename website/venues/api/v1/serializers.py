@@ -18,7 +18,7 @@ class VenueSerializer(serializers.ModelSerializer):
 class ReservationSerializer(serializers.ModelSerializer):
     """Reservation Serializer."""
 
-    user = UserSerializer(many=False, read_only=True)
+    user_created = UserSerializer(many=False, read_only=True)
     venue = VenueSerializer(many=False, read_only=True)
     association = AssociationSerializer(many=False, read_only=True)
 
@@ -26,4 +26,4 @@ class ReservationSerializer(serializers.ModelSerializer):
         """Meta class."""
 
         model = models.Reservation
-        fields = ["id", "title", "user", "association", "start", "end", "venue", "comment"]
+        fields = ["id", "title", "user_created", "association", "start", "end", "venue", "comments"]
