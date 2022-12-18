@@ -64,7 +64,6 @@ class Reservation(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    submitted_at = models.DateTimeField(null=True, blank=True)
 
     title = models.CharField(max_length=100, null=False, blank=False)
     association = models.ForeignKey(
