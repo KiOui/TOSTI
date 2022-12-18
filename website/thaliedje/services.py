@@ -30,7 +30,7 @@ def active_thaliedje_control_event(player):
     :return: the active ThaliedjeControlEvent or None
     """
     try:
-        return ThaliedjeControlEvent.objects.get(player=player, active=True)
+        return ThaliedjeControlEvent.objects.get(player=player.id, active=True)
     except ThaliedjeControlEvent.DoesNotExist:
         return None
     except ThaliedjeControlEvent.MultipleObjectsReturned:
