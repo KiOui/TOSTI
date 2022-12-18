@@ -6,7 +6,7 @@
     <div class="flex-column" style="max-width: 400px;min-width: 300px;justify-content: space-between;padding: 5px;flex: 1;">
         <strong>Reservation {% if reservation.title %}{{ reservation.title }}{% else %}{{ reservation.venue }} ({{ reservation.start }}){% endif %}</strong> <br>
         <p>
-            Dear {{ reservation.user.get_short_name }},
+            Dear {{ reservation.user_created.get_short_name }},
         </p>
         <p>
             The status of your reservation has changed.
