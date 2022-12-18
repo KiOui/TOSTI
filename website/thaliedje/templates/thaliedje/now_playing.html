@@ -29,7 +29,7 @@
             <div class="row flex-grow-1">
                 <div class="col">
                     {% if current_venue_reservation and not  current_control_event %}
-                        <a class="btn-ml m-auto cursor-pointer btn-on my-2" href="{% url "thaliedje:create-control event" current_venue_reservation.pk %}">
+                        <a class="btn-ml m-auto cursor-pointer btn-on my-2" href="{% url "thaliedje:create-control-event" current_venue_reservation.pk %}">
                             <p class="font-footer"><i class="fa-solid fa-gear me-3"></i>Take controls during {{ current_venue_reservation.title }}</p>
                         </a>
                     {% endif %}

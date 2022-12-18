@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.admin.models import CHANGE, ADDITION
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
@@ -88,7 +88,7 @@ class ThaliedjeControlEventView(UpdateView):
         """Dispatch the request to the view."""
         if not request.user.is_authenticated or not self.get_object().admins.filter(pk=request.user.pk).exists():
             messages.error(request, "You don't have access to this page.")
-            return HttpResponseRedirect(reverse("index"))
+            return redirect(reverse("index"))
         return super().dispatch(request, *args, **kwargs)
 
 
@@ -102,11 +102,11 @@ class ThaliedjeControlEventJoinView(View):
             event = ThaliedjeControlEvent.objects.get(join_code=self.kwargs.get("code"))
         except ThaliedjeControlEvent.DoesNotExist:
             messages.add_message(self.request, messages.INFO, "Invalid code.")
-            return HttpResponseRedirect(reverse("index"))
+            return redirect(reverse("index"))
 
         if not event.active:
             messages.add_message(self.request, messages.INFO, "This event is not active.")
-            return HttpResponseRedirect(reverse("index"))
+            return redirect(reverse("index"))
 
         if self.request.user not in event.selected_users.all():
             event.selected_users.add(self.request.user)
@@ -116,7 +116,7 @@ class ThaliedjeControlEventJoinView(View):
                 self.request, messages.INFO, f"You now have access to {event.player} during {event.event.title}."
             )
 
-        return HttpResponseRedirect(reverse("thaliedje:now-playing", kwargs={"player": event.player.pk}))
+        return redirect(reverse("thaliedje:now-playing", kwargs={"player": event.player.pk}))
 
 
 @method_decorator(login_required, name="dispatch")
@@ -133,14 +133,14 @@ class ThaliedjeControlEventCreateView(View):
             ).get(pk=reservation_id)
         except Reservation.DoesNotExist:
             messages.add_message(self.request, messages.INFO, "Invalid event.")
-            return HttpResponseRedirect(reverse("index"))
+            return redirect(reverse("index"))
 
         if not self.request.user.is_authenticated or self.request.user not in reservation.users_access.all():
             messages.add_message(self.request, messages.INFO, "You don't have access to this event.")
-            return HttpResponseRedirect(reverse("index"))
+            return redirect(reverse("index"))
 
         event = ThaliedjeControlEvent.objects.create(
             event=reservation,
         )
         log_action(self.request.user, event, ADDITION, "Created event via website.")
-        return HttpResponseRedirect(reverse("thaliedje:control-event", kwargs={"pk": event.pk}))
+        return redirect(reverse("thaliedje:event-control", kwargs={"pk": event.pk}))
