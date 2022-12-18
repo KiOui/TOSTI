@@ -105,6 +105,7 @@ class ThaliedjeControlEventForm(forms.ModelForm):
         ]
 
     def __init__(self, *args, **kwargs):
+        """Initialise ThaliedjeControlEventForm."""
         super().__init__(*args, **kwargs)
         self.fields["association_can_request"].label = "Request songs"
         self.fields["association_can_control"].label = "Control player"

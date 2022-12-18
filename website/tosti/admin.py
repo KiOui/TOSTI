@@ -9,6 +9,8 @@ admin.site.site_title = "TOSTI"
 
 @admin.register(LogEntry)
 class LogEntryAdmin(AutocompleteFilterMixin, admin.ModelAdmin):
+    """Admin for the LogEntry model."""
+
     date_hierarchy = "action_time"
 
     list_filter = [("user", AutocompleteListFilter), "content_type", "action_flag"]
@@ -23,13 +25,17 @@ class LogEntryAdmin(AutocompleteFilterMixin, admin.ModelAdmin):
     ]
 
     def has_add_permission(self, request):
+        """Allow adding of the log."""
         return False
 
     def has_change_permission(self, request, obj=None):
+        """Allow changing of the log."""
         return False
 
     def has_delete_permission(self, request, obj=None):
+        """Allow deleting of the log."""
         return False
 
     def has_view_permission(self, request, obj=None):
+        """Allow viewing of the log."""
         return True
