@@ -20,9 +20,10 @@ class Migration(migrations.Migration):
             old_name='comment',
             new_name='comments',
         ),
-        migrations.RemoveField(
+        migrations.RenameField(
             model_name='reservation',
-            name='user',
+            old_name='user',
+            new_name='user_created',
         ),
         migrations.AddField(
             model_name='reservation',
@@ -44,11 +45,6 @@ class Migration(migrations.Migration):
             model_name='reservation',
             name='updated_at',
             field=models.DateTimeField(auto_now=True),
-        ),
-        migrations.AddField(
-            model_name='reservation',
-            name='user_created',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='reservations_created', to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
             model_name='reservation',
