@@ -33,4 +33,6 @@ def send_reservation_status_change_email(reservation: models.Reservation):
 
     html_content = template.render(context)
 
-    return send_email("TOSTI: Reservation status change", html_content, [reservation.user.email])
+    return send_email(
+        "TOSTI: Reservation status change", html_content, [user.email for user in reservation.users_access.all()]
+    )
