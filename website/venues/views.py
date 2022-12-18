@@ -133,7 +133,7 @@ class JoinReservationView(View):
             log_action(self.request.user, reservation, CHANGE, "Joined reservation via website.")
             messages.add_message(self.request, messages.INFO, "You now have access to this reservation.")
 
-        return Reservation(reverse("venues:view_reservation", kwargs={"pk": reservation.pk}))
+        return redirect(reverse("venues:view_reservation", kwargs={"pk": reservation.pk}))
 
 
 class ReservationFeed(ICalFeed):
