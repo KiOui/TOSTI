@@ -43,7 +43,7 @@ class NowPlayingView(TemplateView):
         venue_reservation = player.venue.reservations.filter(
             accepted=True, start__lte=timezone.now(), end__gte=timezone.now()
         ).first()
-        if venue_reservation:
+        if venue_reservation and self.request.user in venue_reservation.users_access.all():
             context["current_venue_reservation"] = venue_reservation
 
         control_event = active_thaliedje_control_event(player)
