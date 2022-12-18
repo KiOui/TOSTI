@@ -11,7 +11,10 @@
                 {% bootstrap_messages %}
                 {% csrf_token %}
                 {% bootstrap_form form %}
-                {% bootstrap_button button_type="submit" content="Save" extra_classes="mt-4 w-100" %}
+                {% if object.can_be_changed %}
+                    {% bootstrap_button button_type="submit" content="Update reservation" size="lg" extra_classes="mt-4 mb-2 w-100" %}
+                    {% bootstrap_button button_type="link" href="" content="Cancel reservation" button_class="btn-danger" extra_classes="mb-3 w-100" %}
+                {% endif %}
                 {% include "venues/includes/share_reservation.html" %}
             </form>
         </div>
