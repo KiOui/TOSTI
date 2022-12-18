@@ -182,7 +182,7 @@ class ReservationFeed(ICalFeed):
         """Get item description."""
         return (
             f"Title: {item.title}<br>"
-            f"Comments: {item.comment}<br>"
+            f"Comments: {item.comments}<br>"
             f'<a href="{self.item_link(item)}">View on T.O.S.T.I.</a>'
         )
 
