@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from django.apps import AppConfig
 from django.contrib import messages
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -16,7 +17,7 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     "constance",
     "constance.backends.database",
-    "django_cron",
+    "tosti.django_cron_app_config.CustomDjangoCronAppConfig",
     "tosti.sp_app_config.CustomSPAppConfig",
     "django_bootstrap5",
     "tinymce",
