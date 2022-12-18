@@ -95,7 +95,7 @@ class ReservationUpdateView(UpdateView):
         obj = form.save()
         obj.user_updated = self.request.user
         obj.save()
-        log_action(self.request.user, form, CHANGE, "Updated reservation via website.")
+        log_action(self.request.user, obj, CHANGE, "Updated reservation via website.")
         messages.add_message(self.request, messages.SUCCESS, "Your borrel reservation has been updated.")
         return redirect(self.get_success_url())
 
