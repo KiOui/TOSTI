@@ -25,7 +25,7 @@ django-saml-sp =  { git = "https://github.com/imsweb/django-saml-sp.git", branch
 django-autocompletefilter = "^0.0.8"
 django-bootstrap5 = "^22.2"
 sentry-sdk = "^1.5.7"
-django-filter = "^22.1"
+django-filter = "21.1"
 django-constance = {extras = ["database"], version = "^2.9.0"}
 html2text = "^2020.1.16"
 django-ical = "^1.8.3"
