@@ -316,6 +316,7 @@ class PlayerShuffleAPIView(APIView):
 
         try:
             services.player_shuffle(player, state)
+            log_player_action(request.user, player, "shuffle", "Set shuffle to '{}'.".format(state))
         except spotipy.SpotifyException as e:
             if e.http_status == 403:
                 return Response(status=status.HTTP_403_FORBIDDEN)
@@ -358,6 +359,7 @@ class PlayerRepeatAPIView(APIView):
 
         try:
             services.player_repeat(player, state)
+            log_player_action(request.user, player, "repeat", "Set repeat to '{}'.".format(state))
         except spotipy.SpotifyException as e:
             if e.http_status == 403:
                 return Response(status=status.HTTP_403_FORBIDDEN)
