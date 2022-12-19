@@ -294,7 +294,6 @@ class PlayerShuffleAPIView(APIView):
         }
     )
     serializer_class = PlayerSerializer
-    permission_required = "thaliedje.can_control"
     permission_classes = [IsAuthenticatedOrTokenHasScope]
     required_scopes = ["thaliedje:manage"]
 
@@ -337,7 +336,6 @@ class PlayerRepeatAPIView(APIView):
         }
     )
     serializer_class = PlayerSerializer
-    permission_required = "thaliedje.can_control"
     permission_classes = [IsAuthenticatedOrTokenHasScope]
     required_scopes = ["thaliedje:manage"]
 
