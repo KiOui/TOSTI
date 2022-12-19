@@ -1,12 +1,19 @@
 import os
+import secrets
 
+from django.core.validators import MinLengthValidator
 from django.db import models
 from django.conf import settings
+from django.db.models import F
 from django.urls import reverse
+from django.utils import timezone
+from queryable_properties.managers import QueryablePropertiesManager
+from queryable_properties.properties import RangeCheckProperty, AnnotationProperty, queryable_property
 from spotipy import SpotifyOAuth
 from spotipy.client import Spotify
+
 from users.models import User
-from venues.models import Venue
+from venues.models import Venue, Reservation
 
 
 class Player(models.Model):
@@ -210,3 +217,163 @@ class ThaliedjeBlacklistedUser(models.Model):
         """Meta class for ThaliedjeBlacklistedUser."""
 
         verbose_name = "blacklisted user"
+
+
+class ThaliedjeControlEvent(models.Model):
+    """Model for setting different control permissions during a certain time period."""
+
+    event = models.OneToOneField(Reservation, on_delete=models.CASCADE, null=False, blank=False)
+
+    association_can_request = models.BooleanField(default=False)
+    association_can_control = models.BooleanField(default=False)
+    association_can_request_playlist = models.BooleanField(default=False)
+
+    selected_users = models.ManyToManyField(User, blank=True, related_name="thaliedje_control_events")
+    join_code = models.CharField(max_length=255, blank=True, null=True, validators=[MinLengthValidator(20)])
+    selected_users_can_request = models.BooleanField(default=False)
+    selected_users_can_control = models.BooleanField(default=False)
+    selected_users_can_request_playlist = models.BooleanField(default=False)
+
+    everyone_can_request = models.BooleanField(default=False)
+    everyone_can_control = models.BooleanField(default=False)
+    everyone_can_request_playlist = models.BooleanField(default=False)
+
+    respect_blacklist = models.BooleanField(default=True)
+
+    start = AnnotationProperty(F("event__start"))
+    end = AnnotationProperty(F("event__end"))
+
+    active = RangeCheckProperty("start", "end", timezone.now)
+
+    objects = QueryablePropertiesManager()
+
+    @queryable_property
+    def player(self):
+        """Get the player for this event."""
+        return self.event.venue.player
+
+    @player.annotater
+    @classmethod
+    def player(cls):
+        """Get the player for this event."""
+        return F("event__venue__player")
+
+    @queryable_property
+    def association(self):
+        """Get the player for this event."""
+        return self.event.association
+
+    @association.annotater
+    @classmethod
+    def association(cls):
+        """Get the player for this event."""
+        return F("event__association")
+
+    @property
+    def admins(self):
+        """Get the admins for this event."""
+        return self.event.users_access.all()
+
+    @property
+    def event_logs(self):
+        """Get the event logs for this event."""
+        return self.player.logs.filter(timestamp__range=(self.start, self.end))
+
+    def can_control_player(self, user):
+        """Check if a user can control the player."""
+        if self.everyone_can_control and user.is_authenticated:
+            return True
+        if (
+            self.association_can_control
+            and user.is_authenticated
+            and self.association is not None
+            and user.association == self.association
+        ):
+            return True
+        if self.selected_users_can_control and user in self.selected_users.all():
+            return True
+        if user in self.admins.all():
+            return True
+        return False
+
+    def can_request_song(self, user):
+        """Check if a user can request a song."""
+        if self.everyone_can_request and user.is_authenticated:
+            return True
+        if (
+            self.association_can_request
+            and user.is_authenticated
+            and self.association is not None
+            and user.association == self.association
+        ):
+            return True
+        if self.selected_users_can_request and user in self.selected_users.all():
+            return True
+        if user in self.admins.all():
+            return True
+        return False
+
+    def can_request_playlist(self, user):
+        """Check if a user can request a playlist."""
+        if self.everyone_can_request_playlist and user.is_authenticated:
+            return True
+        if (
+            self.association_can_request_playlist
+            and user.is_authenticated
+            and self.association is not None
+            and user.association == self.association
+        ):
+            return True
+        if self.selected_users_can_request_playlist and user in self.selected_users.all():
+            return True
+        if user in self.admins.all():
+            return True
+        return False
+
+    def get_absolute_url(self):
+        """Get the absolute url for this event."""
+        return reverse("thaliedje:event-control", kwargs={"pk": self.pk})
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        """Save the reservation."""
+        if not self.join_code:
+            self.join_code = secrets.token_urlsafe(20)
+
+        if self.association_can_request_playlist:
+            self.association_can_request = True
+        if self.selected_users_can_request_playlist:
+            self.selected_users_can_request = True
+        if self.everyone_can_request_playlist:
+            self.everyone_can_request = True
+
+        super().save(force_insert, force_update, using, update_fields)
+
+    def __str__(self):
+        """Convert this object to string."""
+        return f"Control event for {self.event}"
+
+    class Meta:
+        """Meta class for ThaliedjeControlEvent."""
+
+        verbose_name = "control event"
+        verbose_name_plural = "control events"
+
+
+class PlayerLogEntry(models.Model):
+    """Model for logging player events."""
+
+    player = models.ForeignKey(Player, on_delete=models.CASCADE, related_name="logs")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    action = models.CharField(max_length=255)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    description = models.CharField(max_length=255)
+
+    def __str__(self):
+        """Print object as a string."""
+        return f"{self.player} {self.action} by {self.user} at {self.timestamp}"
+
+    class Meta:
+        """Meta class for PlayerLogEntry."""
+
+        verbose_name = "player log entry"
+        verbose_name_plural = "player log entries"

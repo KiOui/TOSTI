@@ -79,7 +79,7 @@ class BorrelReservationForm(forms.ModelForm):
             and self.cleaned_data.get("end", None) is not None
         ):
             reservation = Reservation.objects.create(
-                user=self.user,
+                user_created=self.user,
                 venue=self.cleaned_data["venue"],
                 start=self.cleaned_data["start"],
                 end=self.cleaned_data["end"],

@@ -116,7 +116,7 @@
                     }
                 }).finally(() => {
                     this.doing_call = false;
-                    this.refresh_timer = setTimeout(this.refresh, 20000);
+                    this.refresh_timer = setTimeout(this.refresh, 5000);
                 });
             },
             pause(event) {
@@ -149,7 +149,7 @@
                     }
                 }).finally(() => {
                     this.doing_call = false;
-                    this.refresh_timer = setTimeout(this.refresh, 20000);
+                    this.refresh_timer = setTimeout(this.refresh, 5000);
                 });
             },
             forward(event) {
@@ -182,7 +182,7 @@
                     }
                 }).finally(() => {
                     this.doing_call = false;
-                    this.refresh_timer = setTimeout(this.refresh, 20000);
+                    this.refresh_timer = setTimeout(this.refresh, 5000);
                 });
             },
             backward(event) {
@@ -215,7 +215,7 @@
                     }
                 }).finally(() => {
                     this.doing_call = false;
-                    this.refresh_timer = setTimeout(this.refresh, 20000);
+                    this.refresh_timer = setTimeout(this.refresh, 5000);
                 });
             },
             toggleShuffle(value, event) {
@@ -251,7 +251,7 @@
                     }
                 }).finally(() => {
                     this.doing_call = false;
-                    this.refresh_timer = setTimeout(this.refresh, 20000);
+                    this.refresh_timer = setTimeout(this.refresh, 5000);
                 });
             },
             toggleRepeat(value, event) {
@@ -287,7 +287,7 @@
                     }
                 }).finally(() => {
                     this.doing_call = false;
-                    this.refresh_timer = setTimeout(this.refresh, 20000);
+                    this.refresh_timer = setTimeout(this.refresh, 5000);
                 });
             },
             setVolume: debounce(function(self, value, event) {
@@ -326,7 +326,7 @@
                         show_error_from_api(error);
                     }
                 }).finally(() => {
-                    self.refresh_timer = setTimeout(self.refresh, 20000);
+                    self.refresh_timer = setTimeout(self.refresh, 5000);
                 });
             }),
             refresh() {
@@ -354,7 +354,7 @@
                 }).catch(error => {
                     console.log(`An error occurred while refreshing player {{ player.id }}. Error: ${error}`)
                 }).finally(() => {
-                    this.refresh_timer = setTimeout(this.refresh, 20000);
+                    this.refresh_timer = setTimeout(this.refresh, 5000);
                 });
             }
         }

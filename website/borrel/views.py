@@ -5,7 +5,7 @@ from django.contrib.admin.models import ADDITION, CHANGE, DELETION
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.models import Site
 from django.forms import inlineformset_factory
-from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.decorators import method_decorator
@@ -121,7 +121,12 @@ class BorrelReservationBaseView(FormView):
         """Only allow access to reservations users have access to."""
         if not self.request.user.is_authenticated:
             return super().get_queryset().none()
-        return super().get_queryset().filter(pk__in=self.request.user.borrel_reservations_access.values("pk"))
+        return (
+            super()
+            .get_queryset()
+            .filter(pk__in=self.request.user.borrel_reservations_access.values("pk"))
+            .prefetch_related("items", "items__product", "items__product__category")
+        )
 
     def get_form_kwargs(self):
         """Pass the request to the form."""
@@ -169,13 +174,14 @@ class BorrelReservationCreateView(BasicBorrelBrevetRequiredMixin, BorrelReservat
             if obj.venue_reservation is not None:
                 send_reservation_request_email(obj.venue_reservation)
 
-            return HttpResponseRedirect(reverse("borrel:list_reservations"))
+            return redirect(reverse("borrel:list_reservations"))
         else:
             messages.add_message(self.request, messages.ERROR, "Something went wrong.")
             return self.form_invalid(form)
 
 
-class BorrelBorrelReservationUpdateView(BasicBorrelBrevetRequiredMixin, BorrelReservationBaseView, UpdateView):
+@method_decorator(login_required, name="dispatch")
+class BorrelBorrelReservationUpdateView(BorrelReservationBaseView, UpdateView):
     """View and update a reservation."""
 
     template_name = "borrel/borrel_reservation_view.html"
@@ -215,11 +221,15 @@ class BorrelBorrelReservationUpdateView(BasicBorrelBrevetRequiredMixin, BorrelRe
         """Redirect to the details of the reservation."""
         return reverse("borrel:view_reservation", kwargs={"pk": self.get_object().pk})
 
+    def post(self, request, *args, **kwargs):
+        """Check if this reservation can be changed."""
+        if not self.get_object().can_be_changed:
+            messages.add_message(self.request, messages.ERROR, "You cannot change this reservation anymore.")
+            return redirect(self.get_success_url())
+        return super().post(request, *args, **kwargs)
+
     def form_valid(self, form):
         """Process the form."""
-        if not self.get_object().can_be_changed:
-            return HttpResponseRedirect(self.get_success_url())
-
         context = self.get_context_data()
         items = context["items"]
         if items.is_valid():
@@ -231,12 +241,13 @@ class BorrelBorrelReservationUpdateView(BasicBorrelBrevetRequiredMixin, BorrelRe
 
             log_action(self.request.user, obj, CHANGE, "Updated reservation via website.")
             messages.add_message(self.request, messages.SUCCESS, "Your borrel reservation has been updated.")
-            return HttpResponseRedirect(self.get_success_url())
+            return redirect(self.get_success_url())
         else:
             messages.add_message(self.request, messages.ERROR, f"Something went wrong. {items.errors}")
             return self.form_invalid(form)
 
 
+@method_decorator(login_required, name="dispatch")
 class ReservationRequestCancelView(DeleteView):
     """Delete a reservation request if it is not yet accepted."""
 
@@ -244,15 +255,17 @@ class ReservationRequestCancelView(DeleteView):
     template_name = "borrel/borrel_reservation_cancel.html"
     success_url = reverse_lazy("borrel:list_reservations")
 
+    def get_queryset(self):
+        """Only allow access to reservations users have access to."""
+        if not self.request.user.is_authenticated:
+            return super().get_queryset().none()
+        return super().get_queryset().filter(pk__in=self.request.user.borrel_reservations_access.values("pk"))
+
     def dispatch(self, request, *args, **kwargs):
         """Display a warning if the reservation cannot be cancelled."""
         if not self.get_object().can_be_changed:
-            messages.add_message(
-                self.request,
-                messages.ERROR,
-                "Your borrel reservation cannot be cancelled anymore, as it is already accepted.",
-            )
-            return HttpResponseRedirect(self.get_success_url())
+            messages.add_message(self.request, messages.ERROR, "You cannot cancel this reservation anymore.")
+            return redirect(self.get_success_url())
         return super().dispatch(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
@@ -288,7 +301,7 @@ class JoinReservationView(BasicBorrelBrevetRequiredMixin, View):
             reservation = BorrelReservation.objects.get(join_code=self.kwargs.get("code"))
         except BorrelReservation.DoesNotExist:
             messages.add_message(self.request, messages.INFO, "Invalid code.")
-            return HttpResponseRedirect(reverse("index"))
+            return redirect(reverse("index"))
 
         if self.request.user not in reservation.users_access.all():
             reservation.users_access.add(self.request.user)
@@ -296,7 +309,7 @@ class JoinReservationView(BasicBorrelBrevetRequiredMixin, View):
             log_action(self.request.user, reservation, CHANGE, "Joined reservation via website.")
             messages.add_message(self.request, messages.INFO, "You now have access to this reservation.")
 
-        return HttpResponseRedirect(reverse("borrel:view_reservation", kwargs={"pk": reservation.pk}))
+        return redirect(reverse("borrel:view_reservation", kwargs={"pk": reservation.pk}))
 
 
 class BorrelReservationSubmitView(BasicBorrelBrevetRequiredMixin, BorrelReservationBaseView, UpdateView):
@@ -343,10 +356,10 @@ class BorrelReservationSubmitView(BasicBorrelBrevetRequiredMixin, BorrelReservat
         """Display error messages in certain conditions."""
         if self.get_object().submitted:
             messages.add_message(self.request, messages.INFO, "Your borrel reservation was already submitted.")
-            return HttpResponseRedirect(self.get_success_url())
+            return redirect(self.get_success_url())
         if not self.get_object().can_be_submitted:
             messages.add_message(self.request, messages.WARNING, "This reservation cannot be submitted.")
-            return HttpResponseRedirect(self.get_success_url())
+            return redirect(self.get_success_url())
         return super().dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
@@ -357,11 +370,11 @@ class BorrelReservationSubmitView(BasicBorrelBrevetRequiredMixin, BorrelReservat
         """Process the form."""
         if self.get_object().submitted:
             messages.add_message(self.request, messages.INFO, "Your borrel reservation was already submitted.")
-            return HttpResponseRedirect(self.get_success_url())
+            return redirect(self.get_success_url())
 
         if not self.get_object().can_be_submitted:
             messages.add_message(self.request, messages.WARNING, "This reservation cannot be submitted.")
-            return HttpResponseRedirect(self.get_success_url())
+            return redirect(self.get_success_url())
 
         context = self.get_context_data()
         items = context["items"]
@@ -376,7 +389,7 @@ class BorrelReservationSubmitView(BasicBorrelBrevetRequiredMixin, BorrelReservat
             log_action(self.request.user, obj, CHANGE, "Submitted reservation via website.")
             messages.add_message(self.request, messages.SUCCESS, "Your borrel reservation is submitted.")
 
-            return HttpResponseRedirect(self.get_success_url())
+            return redirect(self.get_success_url())
         else:
             messages.add_message(self.request, messages.ERROR, f"Something went wrong. {items.errors}")
             return self.form_invalid(form)

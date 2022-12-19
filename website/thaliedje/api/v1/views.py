@@ -13,9 +13,8 @@ from thaliedje.api.v1.filters import PlayerFilter
 from thaliedje.api.v1.pagination import StandardResultsSetPagination
 from thaliedje.api.v1.serializers import PlayerSerializer, QueueItemSerializer, AnonymousQueueItemSerializer
 from thaliedje.models import Player, SpotifyQueueItem
-from thaliedje.services import user_is_blacklisted, has_album_playlist_request_permission
+from thaliedje.services import can_request_song, can_request_playlist, can_control_player, log_player_action
 from tosti.api.openapi import CustomAutoSchema
-from tosti.api.permissions import HasPermissionOnObject
 
 
 class PlayerListAPIView(ListAPIView):
@@ -88,10 +87,11 @@ class PlayerTrackSearchAPIView(APIView):
 
     def get(self, request, **kwargs):
         """Search for a track."""
-        if user_is_blacklisted(self.request.user):
-            return Response(status=status.HTTP_403_FORBIDDEN, data="You are blacklisted.")
-
         player = kwargs.get("player")
+
+        if not can_request_song(request.user, player):
+            return Response(status=status.HTTP_403_FORBIDDEN, data="You are not allowed to request songs.")
+
         query = request.GET.get("query", "")
         try:
             maximum = int(request.GET.get("maximum", 5))
@@ -100,7 +100,7 @@ class PlayerTrackSearchAPIView(APIView):
 
         type_to_search = "track"
 
-        if has_album_playlist_request_permission(request.user, player):
+        if can_request_playlist(request.user, player):
             type_to_search = "album,playlist,track"
 
         if query != "":
@@ -121,16 +121,18 @@ class PlayerTrackAddAPIView(APIView):
 
     def post(self, request, **kwargs):
         """Add a track to the queue."""
-        if user_is_blacklisted(self.request.user):
-            return Response(status=status.HTTP_403_FORBIDDEN, data="You are blacklisted.")
-
         player = kwargs.get("player")
+
+        if not can_request_song(request.user, player):
+            return Response(status=status.HTTP_403_FORBIDDEN, data="You are not allowed to request songs.")
+
         track_id = request.data.get("id", None)
         if track_id is None:
             raise ValidationError("A track id is required.")
 
         try:
-            services.request_song(request.user, player, track_id)
+            track = services.request_song(player, track_id, request.user)
+            log_player_action(request.user, player, "request_song", 'Requested song "{}"'.format(track.track_name))
         except spotipy.SpotifyException:
             return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
         return Response(status=status.HTTP_200_OK)
@@ -146,23 +148,23 @@ class PlayerPlayAPIView(APIView):
         }
     )
     serializer_class = PlayerSerializer
-    permission_required = "thaliedje.can_control"
-    permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
+    permission_classes = [IsAuthenticatedOrTokenHasScope]
     required_scopes = ["thaliedje:manage"]
-
-    def get_permission_object(self):
-        """Get the player to check permissions for."""
-        return self.kwargs.get("player")
 
     def patch(self, request, **kwargs):
         """Make player play."""
         player = kwargs.get("player")
+        if not can_control_player(request.user, player):
+            return Response(status=status.HTTP_403_FORBIDDEN, data="You are not allowed to control this player.")
+
         try:
             context_uri = request.data.get("context_uri", None)
-            if has_album_playlist_request_permission(request.user, player) and context_uri is not None:
+            if can_request_playlist(request.user, player) and context_uri is not None:
                 services.player_start(player, context_uri=context_uri)
+                log_player_action(request.user, player, "play", f"Started playback {context_uri}.")
             else:
                 services.player_start(player)
+                log_player_action(request.user, player, "play", "Started playback.")
         except spotipy.SpotifyException as e:
             if e.http_status == 403:
                 return Response(status=status.HTTP_403_FORBIDDEN)
@@ -177,19 +179,17 @@ class PlayerPauseAPIView(APIView):
     """API view to make player pause."""
 
     serializer_class = PlayerSerializer
-    permission_required = "thaliedje.can_control"
-    permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
+    permission_classes = [IsAuthenticatedOrTokenHasScope]
     required_scopes = ["thaliedje:manage"]
-
-    def get_permission_object(self):
-        """Get the player to check permissions for."""
-        return self.kwargs.get("player")
 
     def patch(self, request, **kwargs):
         """Make player pause."""
         player = kwargs.get("player")
+        if not can_control_player(request.user, player):
+            return Response(status=status.HTTP_403_FORBIDDEN, data="You are not allowed to control this player.")
         try:
             services.player_pause(player)
+            log_player_action(request.user, player, "pause", "Paused playback.")
         except spotipy.SpotifyException as e:
             if e.http_status == 403:
                 return Response(status=status.HTTP_403_FORBIDDEN)
@@ -210,20 +210,19 @@ class PlayerVolumeAPIView(APIView):
             "properties": {"volume_percent": {"type": "integer", "minimum": 0, "maximum": 100, "example": 75}},
         }
     )
-    permission_required = "thaliedje.can_control"
-    permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
+    permission_classes = [IsAuthenticatedOrTokenHasScope]
     required_scopes = ["thaliedje:manage"]
-
-    def get_permission_object(self):
-        """Get the player to check permissions for."""
-        return self.kwargs.get("player")
 
     def patch(self, request, **kwargs):
         """Make player pause."""
         player = kwargs.get("player")
+        if not can_control_player(request.user, player):
+            return Response(status=status.HTTP_403_FORBIDDEN, data="You are not allowed to control this player.")
+
         volume = int(request.data.get("volume"))
         try:
             services.set_player_volume(player, volume)
+            log_player_action(request.user, player, "volume", f"Changed volume to {volume}.")
         except spotipy.SpotifyException as e:
             if e.http_status == 403:
                 return Response(status=status.HTTP_403_FORBIDDEN)
@@ -238,19 +237,18 @@ class PlayerNextAPIView(APIView):
     """API view to make player go to next song."""
 
     serializer_class = PlayerSerializer
-    permission_required = "thaliedje.can_control"
-    permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
+    permission_classes = [IsAuthenticatedOrTokenHasScope]
     required_scopes = ["thaliedje:manage"]
-
-    def get_permission_object(self):
-        """Get the player to check permissions for."""
-        return self.kwargs.get("player")
 
     def patch(self, request, **kwargs):
         """Make player go to the next song."""
         player = kwargs.get("player")
+        if not can_control_player(request.user, player):
+            return Response(status=status.HTTP_403_FORBIDDEN, data="You are not allowed to control this player.")
+
         try:
             services.player_next(player)
+            log_player_action(request.user, player, "next", "Skipped to next song.")
         except spotipy.SpotifyException as e:
             if e.http_status == 403:
                 return Response(status=status.HTTP_403_FORBIDDEN)
@@ -265,19 +263,17 @@ class PlayerPreviousAPIView(APIView):
     """API view to make player go to previous song."""
 
     serializer_class = PlayerSerializer
-    permission_required = "thaliedje.can_control"
-    permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
+    permission_classes = [IsAuthenticatedOrTokenHasScope]
     required_scopes = ["thaliedje:manage"]
-
-    def get_permission_object(self):
-        """Get the player to check permissions for."""
-        return self.kwargs.get("player")
 
     def patch(self, request, **kwargs):
         """Make player go to the previous song."""
         player = kwargs.get("player")
+        if not can_control_player(request.user, player):
+            return Response(status=status.HTTP_403_FORBIDDEN, data="You are not allowed to control this player.")
         try:
             services.player_previous(player)
+            log_player_action(request.user, player, "previous", "Skipped to previous song.")
         except spotipy.SpotifyException as e:
             if e.http_status == 403:
                 return Response(status=status.HTTP_403_FORBIDDEN)

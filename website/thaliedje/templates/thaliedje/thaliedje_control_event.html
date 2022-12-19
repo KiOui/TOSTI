@@ -1,0 +1,77 @@
+{% extends 'tosti/base.html' %}
+{% load django_bootstrap5 players %}
+
+{% block page %}
+    <div class="container my-5 text-center">
+        <h1>
+            <i class="fa-solid fa-gear me-2"></i> Control {{ object.player }}
+        </h1>
+        <h3>{{ object.event.title }} - until {{ object.event.end|date:"H:i" }}</h3>
+    </div>
+    <div class="container mb-5">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-4">
+                {% render_player object.player %}
+            </div>
+            <form method="post" class="col-12 col-lg-8 col-lg-offset-2">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-12 col-sm-4 mt-3">
+                    {% if object.association %}
+                        <h4 class="text-center text-sm-start">{{ object.association }}</h4>
+                        {% bootstrap_field form.association_can_request %}
+                        {% bootstrap_field form.association_can_request_playlist %}
+                        {% bootstrap_field form.association_can_control %}
+                    {% else %}
+                        <h4>No association</h4>
+                    {% endif %}
+                    </div>
+                    <div class="col-12 col-sm-4 mt-3">
+                        <h4 class="text-center text-sm-start">Joined users</h4>
+                        {% bootstrap_field form.selected_users_can_request %}
+                        {% bootstrap_field form.selected_users_can_request_playlist %}
+                        {% bootstrap_field form.selected_users_can_control %}
+                    </div>
+                    <div class="col-12 col-sm-4 mt-3">
+                        <h4 class="text-center text-sm-start">Everyone</h4>
+                        {% bootstrap_field form.everyone_can_request %}
+                        {% bootstrap_field form.everyone_can_request_playlist %}
+                        {% bootstrap_field form.everyone_can_control %}
+                    </div>
+                </div>
+                <hr>
+                {% bootstrap_field form.respect_blacklist %}
+                <ul>
+                    <li>Everyone is required to log in with their accounts.</li>
+                    <li>Association permissions are verified against the association a user picked in their profile. Remember that not everyone fills in their association and this field is not verified. Anyone can edit their association at any point in time.</li>
+                    <li>Admins of this event reservation always have access to all features.</li>
+                    <li>There is no event-specific blacklist.</li>
+                </ul>
+
+                {% bootstrap_button button_type="submit" content="Save" size="lg" extra_classes="mt-4 mb-4 w-100" %}
+
+                <div class="alert alert-primary" role="alert">
+                    <h5 class="alert-heading text-start">Share controls</h5>
+                    Let other people control the music too during this event:<br/>
+                    <div class="my-2"><a class="alert-link user-select-all text-break">{{ request.scheme }}://{{ request.get_host }}{% url 'thaliedje:join-event' object.pk object.join_code %}</a></div>
+                    Watch out: anyone with this URL will be added to the 'joined users'. The URL can be shared further by anyone that has it.
+                    <hr/>
+                    Currently joined users:
+                    <ul>
+                        {% for user in object.selected_users.all %}
+                            <li>{{ user }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="alert alert-secondary" role="alert">
+                    <h5 class="alert-heading text-start">Player logs</h5>
+                    <ul>
+                        {% for log in object.event_logs %}
+                            <li>{{ log.timestamp|date:"H:i:s" }} {{ log.user }}: {{ log.description }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

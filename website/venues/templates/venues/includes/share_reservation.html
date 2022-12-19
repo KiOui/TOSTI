@@ -2,7 +2,7 @@
     <div class="alert alert-secondary mt-5" role="alert">
         <h5 class="alert-heading text-start">Share reservation</h5>
         Give other people access to this reservation by sharing the following URL with them:<br/>
-        <div class="my-2"><a class="alert-link user-select-all text-break">{{ request.scheme }}://{{ request.get_host }}{% url 'borrel:join_reservation' object.join_code %}</a></div>
+        <div class="my-2"><a class="alert-link user-select-all text-break">{{ request.scheme }}://{{ request.get_host }}{% url 'venues:join_reservation' object.join_code %}</a></div>
         Watch out: anyone with this URL can get full access to your reservation. Do not make it public.
         <hr/>
         Current people with access:

@@ -80,33 +80,33 @@ class VenueViewTests(TestCase):
         self.assertTrue(self.client.login(username=self.user.username, password="password"))
         models.Reservation.objects.create(
             title="Test reservation",
-            user=self.user,
+            user_created=self.user,
             association=Association.objects.get(pk=1),
             start=timezone.now(),
             end=timezone.now() + timedelta(hours=5),
             venue=Venue.objects.get(pk=1),
-            comment="Test comment",
+            comments="Test comment",
             accepted=None,
         )
         models.Reservation.objects.create(
             title="Test reservation denied",
-            user=self.user,
+            user_created=self.user,
             association=Association.objects.get(pk=1),
             start=timezone.now() + timedelta(days=1),
             end=timezone.now() + timedelta(days=1, hours=5),
             venue=Venue.objects.get(pk=1),
-            comment="Test comment",
+            comments="Test comment",
             accepted=False,
         )
 
         models.Reservation.objects.create(
             title="Test reservation accepted",
-            user=self.user,
+            user_created=self.user,
             association=Association.objects.get(pk=1),
             start=timezone.now() + timedelta(days=2),
             end=timezone.now() + timedelta(days=2, hours=5),
             venue=Venue.objects.get(pk=1),
-            comment="Test comment",
+            comments="Test comment",
             accepted=True,
         )
         response = self.client.get(reverse("venues:list_reservations"))

@@ -1,0 +1,18 @@
+{% extends 'tosti/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block page %}
+    <div class="container my-5 text-center">
+        <h1>Cancel reservation</h1>
+    </div>
+    <div class="container mb-5">
+        <div class="row justify-content-center">
+            <form method="post" class="col-12 col-lg-8 col-lg-offset-2">
+                {% bootstrap_messages %}
+                {% csrf_token %}
+                <p>Are you sure you want to cancel this reservation?</p>
+                {% bootstrap_button button_type="submit" content="Yes, cancel this reservation" button_class="btn-danger" extra_classes="mt-4 w-100" %}
+            </form>
+        </div>
+    </div>
+{% endblock %}

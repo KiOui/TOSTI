@@ -1,5 +1,5 @@
 from django import forms
-from .models import Player
+from .models import Player, ThaliedjeControlEvent
 
 
 class SpotifyTokenForm(forms.Form):
@@ -82,3 +82,38 @@ class PlayerAdminForm(forms.ModelForm):
 
         model = Player
         exclude = ["playback_device_name"]
+
+
+class ThaliedjeControlEventForm(forms.ModelForm):
+    """Form for ThaliedjeControlEvent."""
+
+    class Meta:
+        """Meta class."""
+
+        model = ThaliedjeControlEvent
+        fields = [
+            "association_can_request",
+            "association_can_control",
+            "association_can_request_playlist",
+            "selected_users_can_request",
+            "selected_users_can_control",
+            "selected_users_can_request_playlist",
+            "everyone_can_request",
+            "everyone_can_control",
+            "everyone_can_request_playlist",
+            "respect_blacklist",
+        ]
+
+    def __init__(self, *args, **kwargs):
+        """Initialise ThaliedjeControlEventForm."""
+        super().__init__(*args, **kwargs)
+        self.fields["association_can_request"].label = "Request songs"
+        self.fields["association_can_control"].label = "Control player"
+        self.fields["association_can_request_playlist"].label = "Request playlists"
+        self.fields["selected_users_can_request"].label = "Request songs"
+        self.fields["selected_users_can_control"].label = "Control player"
+        self.fields["selected_users_can_request_playlist"].label = "Request playlists"
+        self.fields["everyone_can_request"].label = "Request songs"
+        self.fields["everyone_can_control"].label = "Control player"
+        self.fields["everyone_can_request_playlist"].label = "Request playlists"
+        self.fields["respect_blacklist"].label = "Respect blacklist"
