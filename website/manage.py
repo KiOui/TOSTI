@@ -15,10 +15,10 @@ def main():
         import socket  # noqa
 
         hostname = socket.gethostname()
-        if hostname == "webvm01":
-            os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tosti.settings.production")
-        else:
+        if hostname.startswith("lilo"):
             os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tosti.settings.management")
+        else:
+            os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tosti.settings.production")
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
