@@ -295,7 +295,7 @@ class PlayerShuffleAPIView(APIView):
     )
     serializer_class = PlayerSerializer
     permission_required = "thaliedje.can_control"
-    permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
+    permission_classes = [IsAuthenticatedOrTokenHasScope]
     required_scopes = ["thaliedje:manage"]
 
     def get_permission_object(self):
@@ -305,6 +305,9 @@ class PlayerShuffleAPIView(APIView):
     def patch(self, request, **kwargs):
         """Make player go to the previous song."""
         player = kwargs.get("player")
+        if not can_control_player(request.user, player):
+            return Response(status=status.HTTP_403_FORBIDDEN, data="You are not allowed to control this player.")
+
         state = request.data.get("state", None)
         if state is None:
             raise ValidationError("A state is required.")
@@ -335,7 +338,7 @@ class PlayerRepeatAPIView(APIView):
     )
     serializer_class = PlayerSerializer
     permission_required = "thaliedje.can_control"
-    permission_classes = [HasPermissionOnObject, IsAuthenticatedOrTokenHasScope]
+    permission_classes = [IsAuthenticatedOrTokenHasScope]
     required_scopes = ["thaliedje:manage"]
 
     def get_permission_object(self):
@@ -345,6 +348,9 @@ class PlayerRepeatAPIView(APIView):
     def patch(self, request, **kwargs):
         """Make player go to the previous song."""
         player = kwargs.get("player")
+        if not can_control_player(request.user, player):
+            return Response(status=status.HTTP_403_FORBIDDEN, data="You are not allowed to control this player.")
+
         state = request.data.get("state", None)
         if state is None:
             raise ValidationError("A state is required.")
