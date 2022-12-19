@@ -4,6 +4,7 @@
     font-size: 16pt;
     flex-wrap: nowrap;
     justify-content: center;
+    align-items: center;
     max-width: 300px;
 }
 
@@ -37,20 +38,12 @@
     line-height: normal;
 }
 
-.player-controls i {
-    font-size: 20pt;
-}
-
-.player-controls i.large-button {
-    font-size: 20pt;
-}
-
-.player-controls i.small-icon {
-    font-size: 10pt;
-}
-
 .player-controls i:hover {
     cursor: pointer;
+}
+
+.player-controls .active-button {
+    margin-top: 8px;
 }
 
 .player-controls .active-button:after {

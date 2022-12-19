@@ -31,37 +31,37 @@
         </div>
     </template>
     <template v-else>
-        <div class="player-controls mt-3 mb-4 mx-auto">
+        <div class="player-controls my-3 mx-auto">
             <template v-if="player_data.shuffle !== null">
                 <template v-if="player_data.shuffle">
-                    <i class="position-relative fa-solid fa-shuffle mx-2 active-button pb-2" v-on:click="(event) => toggleShuffle(false, event)" ></i>
+                    <i class="position-relative fa-solid fa-shuffle mx-2 active-button fa-xs pb-2" v-on:click="(event) => toggleShuffle(false, event)" ></i>
                 </template>
                 <template v-else>
-                    <i class="position-relative fa-solid fa-shuffle mx-2" v-on:click="(event) => toggleShuffle(true, event)" ></i>
+                    <i class="position-relative fa-solid fa-shuffle fa-xs mx-2" v-on:click="(event) => toggleShuffle(true, event)" ></i>
                 </template>
             </template>
-            <i class="fa-solid fa-backward mx-2 large-button" v-on:click="(event) => backward(event)" ></i>
+            <i class="fa-solid fa-backward mx-2 fa-xl" v-on:click="(event) => backward(event)" ></i>
             <template v-if="player_data.is_playing">
-                <i class="fa-solid fa-pause mx-2 large-button" v-on:click="(event) => pause(event)"></i>
+                <i class="fa-solid fa-pause mx-2 fa-xl" v-on:click="(event) => pause(event)"></i>
             </template>
             <template v-else>
-                <i class="fa-solid fa-play mx-2 large-button" v-on:click="(event) => play(event)"></i>
+                <i class="fa-solid fa-play mx-2 fa-xl" v-on:click="(event) => play(event)"></i>
             </template>
-            <i class="fa-solid fa-forward mx-2 large-button" v-on:click="(event) => forward(event)"></i>
+            <i class="fa-solid fa-forward mx-2 fa-xl" v-on:click="(event) => forward(event)"></i>
             <template v-if="player_data.repeat !== null">
                 <template v-if="player_data.repeat === 'context'">
-                    <i class="position-relative fa-solid fa-repeat mx-2 active-button pb-2" v-on:click="(event) => toggleRepeat('off', event)" ></i>
+                    <i class="position-relative fa-solid fa-repeat mx-2 active-button pb-2 fa-xs" v-on:click="(event) => toggleRepeat('off', event)" ></i>
                 </template>
                 <template v-else>
-                    <i class="position-relative fa-solid fa-repeat mx-2" v-on:click="(event) => toggleRepeat('context', event)" ></i>
+                    <i class="position-relative fa-solid fa-repeat mx-2 fa-xs" v-on:click="(event) => toggleRepeat('context', event)" ></i>
                 </template>
             </template>
         </div>
         <div class="player-controls mx-auto">
-            <i v-if="player_data.current_volume === 0 || player_data.current_volume === '0'" class="fa-solid fa-volume-xmark mx-3 small-icon" v-on:click="(event) => {setVolume(this, Math.max(player_data.current_volume - 5, 0), event); player_data.current_volume = Math.max(player_data.current_volume - 5, 0);}"></i>
-            <i v-else class="fa-solid fa-volume-low mx-3 small-icon" v-on:click="(event) => {setVolume(this, Math.max(player_data.current_volume - 5, 0), event); player_data.current_volume = Math.max(player_data.current_volume - 5, 0);}"></i>
+            <i v-if="player_data.current_volume === 0 || player_data.current_volume === '0'" class="fa-solid fa-volume-xmark mx-3 fa-2xs" v-on:click="(event) => {setVolume(this, Math.max(player_data.current_volume - 5, 0), event); player_data.current_volume = Math.max(player_data.current_volume - 5, 0);}"></i>
+            <i v-else class="fa-solid fa-volume-low mx-3 fa-2xs" v-on:click="(event) => {setVolume(this, Math.max(player_data.current_volume - 5, 0), event); player_data.current_volume = Math.max(player_data.current_volume - 5, 0);}"></i>
             <input type="range" class="volume w-100" v-on:click="(event) => event.preventDefault()" v-on:change="(event) => setVolume(this, player_data.current_volume, event)" min="0" max="100" step="5" v-model="player_data.current_volume">
-            <i class="fa-solid fa-volume-high mx-3 small-icon" v-on:click="(event) => {setVolume(this, Math.min(player_data.current_volume + 5, 100), event); player_data.current_volume = Math.min(player_data.current_volume + 5, 100);}"></i>
+            <i class="fa-solid fa-volume-high mx-3 fa-2xs" v-on:click="(event) => {setVolume(this, Math.min(player_data.current_volume + 5, 100), event); player_data.current_volume = Math.min(player_data.current_volume + 5, 100);}"></i>
         </div>
     </template>
 {% endif %}
