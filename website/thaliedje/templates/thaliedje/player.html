@@ -31,18 +31,37 @@
         </div>
     </template>
     <template v-else>
-        <div class="player-controls mt-3 mb-3">
-            <i class="fa-solid fa-backward" v-on:click="(event) => backward(evemt)" ></i>
+        <div class="player-controls my-3 mx-auto">
+            <template v-if="player_data.shuffle !== null">
+                <template v-if="player_data.shuffle">
+                    <i class="position-relative fa-solid fa-shuffle mx-2 active-button fa-xs pb-2" v-on:click="(event) => toggleShuffle(false, event)" ></i>
+                </template>
+                <template v-else>
+                    <i class="position-relative fa-solid fa-shuffle fa-xs mx-2" v-on:click="(event) => toggleShuffle(true, event)" ></i>
+                </template>
+            </template>
+            <i class="fa-solid fa-backward mx-2 fa-xl" v-on:click="(event) => backward(event)" ></i>
             <template v-if="player_data.is_playing">
-                <i class="fa-solid fa-pause" v-on:click="(event) => pause(event)"></i>
+                <i class="fa-solid fa-pause mx-2 fa-xl" v-on:click="(event) => pause(event)"></i>
             </template>
             <template v-else>
-                <i class="fa-solid fa-play" v-on:click="(event) => play(event)"></i>
+                <i class="fa-solid fa-play mx-2 fa-xl" v-on:click="(event) => play(event)"></i>
             </template>
-            <i class="fa-solid fa-forward" v-on:click="(event) => forward(event)"></i>
+            <i class="fa-solid fa-forward mx-2 fa-xl" v-on:click="(event) => forward(event)"></i>
+            <template v-if="player_data.repeat !== null">
+                <template v-if="player_data.repeat === 'context'">
+                    <i class="position-relative fa-solid fa-repeat mx-2 active-button pb-2 fa-xs" v-on:click="(event) => toggleRepeat('off', event)" ></i>
+                </template>
+                <template v-else>
+                    <i class="position-relative fa-solid fa-repeat mx-2 fa-xs" v-on:click="(event) => toggleRepeat('context', event)" ></i>
+                </template>
+            </template>
         </div>
-        <div class="player-controls">
-            <input type="range" class="volume w-100" v-on:click="(event) => event.preventDefault()" v-on:change="(event) => setVolume(player_data.current_volume, event)" min="0" max="100" step="5" v-model="player_data.current_volume">
+        <div class="player-controls mx-auto">
+            <i v-if="player_data.current_volume === 0 || player_data.current_volume === '0'" class="fa-solid fa-volume-xmark mx-3 fa-2xs" v-on:click="(event) => {setVolume(this, Math.max(player_data.current_volume - 5, 0), event); player_data.current_volume = Math.max(player_data.current_volume - 5, 0);}"></i>
+            <i v-else class="fa-solid fa-volume-low mx-3 fa-2xs" v-on:click="(event) => {setVolume(this, Math.max(player_data.current_volume - 5, 0), event); player_data.current_volume = Math.max(player_data.current_volume - 5, 0);}"></i>
+            <input type="range" class="volume w-100" v-on:click="(event) => event.preventDefault()" v-on:change="(event) => setVolume(this, player_data.current_volume, event)" min="0" max="100" step="5" v-model="player_data.current_volume">
+            <i class="fa-solid fa-volume-high mx-3 fa-2xs" v-on:click="(event) => {setVolume(this, Math.min(player_data.current_volume + 5, 100), event); player_data.current_volume = Math.min(player_data.current_volume + 5, 100);}"></i>
         </div>
     </template>
 {% endif %}
@@ -54,10 +73,13 @@
         data: {
             player_data: {
                 is_playing: false,
+                shuffle: null,
+                repeat: null,
                 track: null,
-                current_volume: null,
+                current_volume: 50,
             },
             doing_call: false,
+            set_volume_index: 0,
             refresh_timer: null,
         },
         created() {
@@ -196,9 +218,83 @@
                     this.refresh_timer = setTimeout(this.refresh, 5000);
                 });
             },
-            setVolume(value, event) {
+            toggleShuffle(value, event) {
                 event.preventDefault();
+                this.doing_call = true;
                 clearTimeout(this.refresh_timer);
+                fetch(
+                    '{% url "v1:player_shuffle" player=player %}',
+                    {
+                        method: "PATCH",
+                        headers: {
+                            "X-CSRFToken": get_csrf_token(),
+                            "Content-Type": 'application/json',
+                            "Accept": 'application/json',
+                        },
+                        body: JSON.stringify({
+                            state: value,
+                        }),
+                    }
+                ).then(response => {
+                    if (response.status === 200) {
+                        return response.json();
+                    } else {
+                        throw response;
+                    }
+                }).then(data => {
+                    this.player_data = data;
+                }).catch(error => {
+                    if (error.status && error.status !== 403) {
+                        tata.error('', "Failed to communicate with the Spotify device, make sure the device is available.");
+                    } else {
+                        show_error_from_api(error);
+                    }
+                }).finally(() => {
+                    this.doing_call = false;
+                    this.refresh_timer = setTimeout(this.refresh, 5000);
+                });
+            },
+            toggleRepeat(value, event) {
+                event.preventDefault();
+                this.doing_call = true;
+                clearTimeout(this.refresh_timer);
+                fetch(
+                    '{% url "v1:player_repeat" player=player %}',
+                    {
+                        method: "PATCH",
+                        headers: {
+                            "X-CSRFToken": get_csrf_token(),
+                            "Content-Type": 'application/json',
+                            "Accept": 'application/json',
+                        },
+                        body: JSON.stringify({
+                            state: value,
+                        }),
+                    }
+                ).then(response => {
+                    if (response.status === 200) {
+                        return response.json();
+                    } else {
+                        throw response;
+                    }
+                }).then(data => {
+                    this.player_data = data;
+                }).catch(error => {
+                    if (error.status && error.status !== 403) {
+                        tata.error('', "Failed to communicate with the Spotify device, make sure the device is available.");
+                    } else {
+                        show_error_from_api(error);
+                    }
+                }).finally(() => {
+                    this.doing_call = false;
+                    this.refresh_timer = setTimeout(this.refresh, 5000);
+                });
+            },
+            setVolume: debounce(function(self, value, event) {
+                event.preventDefault();
+                clearTimeout(self.refresh_timer);
+                const set_volume_index = self.set_volume_index;
+                self.set_volume_index = self.set_volume_index + 1;
                 fetch(
                     '{% url "v1:player_volume" player=player %}',
                     {
@@ -219,8 +315,10 @@
                         throw response;
                     }
                 }).then(data => {
-                    data.current_volume = value; // The API will sometimes return the old volume, so do not use this value.
-                    this.player_data = data;
+                    if (self.set_volume_index === set_volume_index) {
+                        data.current_volume = value; // The API will sometimes return the old volume, so do not use this value.
+                        self.player_data = data;
+                    }
                 }).catch(error => {
                     if (error.status && error.status !== 403) {
                         tata.error('', "Failed to communicate with the Spotify device, make sure the device is available.");
@@ -228,9 +326,9 @@
                         show_error_from_api(error);
                     }
                 }).finally(() => {
-                    this.refresh_timer = setTimeout(this.refresh, 5000);
+                    self.refresh_timer = setTimeout(self.refresh, 5000);
                 });
-            },
+            }),
             refresh() {
                 clearTimeout(this.refresh_timer);
                 return fetch(
@@ -249,6 +347,9 @@
                         throw response;
                     }
                 }).then(data => {
+                    if (data.current_volume === null) {
+                        data.current_volume = 50;
+                    }
                     this.player_data = data;
                 }).catch(error => {
                     console.log(`An error occurred while refreshing player {{ player.id }}. Error: ${error}`)

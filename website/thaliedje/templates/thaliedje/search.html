@@ -103,7 +103,6 @@
             tracks: [],
             albums: [],
             playlists: [],
-            typing_timer: null,
             current_search_index: 0,
         },
         created() {
@@ -116,10 +115,7 @@
         watch: {
             query: {
                 handler(val, oldVal) {
-                    clearTimeout(this.typing_timer);
-                    if (this.query !== "") {
-                        this.typing_timer = setTimeout(this.search, 200);
-                    }
+                    this.search(this);
                 }
             }
         },
@@ -223,36 +219,38 @@
                 }).catch(error => show_error_from_api(error));
             },
             {% endif %}
-            search() {
-                this.current_search_index = this.current_search_index + 1;
-                let this_search_index = this.current_search_index;
-                fetch(
-                    `{% url "v1:player_search" player=player %}?query=${this.query}`,
-                    {
-                        headers: {
-                            "X-CSRFToken": get_csrf_token(),
-                            "Content-Type": 'application/json',
-                            "Accept": 'application/json',
+            search: debounce(function(self) {
+                if (self.query !== "") {
+                    self.current_search_index = self.current_search_index + 1;
+                    let this_search_index = self.current_search_index;
+                    fetch(
+                        `{% url "v1:player_search" player=player %}?query=${self.query}`,
+                        {
+                            headers: {
+                                "X-CSRFToken": get_csrf_token(),
+                                "Content-Type": 'application/json',
+                                "Accept": 'application/json',
+                            }
                         }
-                    }
-                ).then(response => {
-                    if (response.status === 200) {
-                        return response.json();
-                    } else {
-                        throw response;
-                    }
-                }).then(data => {
-                    if (this_search_index === this.current_search_index && this.query === data.query) {
-                        this.tracks = data.results.tracks;
-                        if (data.results.albums !== undefined) {
-                            this.albums = data.results.albums;
+                    ).then(response => {
+                        if (response.status === 200) {
+                            return response.json();
+                        } else {
+                            throw response;
                         }
-                        if (data.results.playlists !== undefined) {
-                            this.playlists = data.results.playlists;
+                    }).then(data => {
+                        if (this_search_index === self.current_search_index && self.query === data.query) {
+                            self.tracks = data.results.tracks;
+                            if (data.results.albums !== undefined) {
+                                self.albums = data.results.albums;
+                            }
+                            if (data.results.playlists !== undefined) {
+                                self.playlists = data.results.playlists;
+                            }
                         }
-                    }
-                }).catch(error => show_error_from_api(error));
-            },
+                    }).catch(error => show_error_from_api(error));
+                }
+            }),
         }
     });
 </script>

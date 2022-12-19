@@ -301,6 +301,40 @@ def player_previous(player):
         raise e
 
 
+def player_shuffle(player, shuffle_state: bool):
+    """
+    Set the shuffle state of a Player.
+
+    :param player: the player
+    :param shuffle_state: the shuffle state
+    :return: Nothing
+    :raises: SpotifyException on failure
+    """
+    try:
+        player.spotify.shuffle(shuffle_state)
+        SpotifyCache.instance(player.id).reset()
+    except SpotifyException as e:
+        logging.error(e)
+        raise e
+
+
+def player_repeat(player, repeat_state: str):
+    """
+    Set the repeat state of a Player.
+
+    :param player: the player
+    :param repeat_state: the repeat state, either 'off', 'context' or 'track'
+    :return: Nothing
+    :raises: SpotifyException on failure
+    """
+    try:
+        player.spotify.repeat(repeat_state)
+        SpotifyCache.instance(player.id).reset()
+    except SpotifyException as e:
+        logging.error(e)
+        raise e
+
+
 def get_player_volume(player):
     """
     Get the volume of a player.
@@ -312,6 +346,26 @@ def get_player_volume(player):
     try:
         current_playback = SpotifyCache.instance(player.id).current_playback(player)
         return current_playback["device"]["volume_percent"] if current_playback is not None else None
+    except SpotifyException as e:
+        logging.error(e)
+        raise e
+
+
+def get_shuffle(player):
+    """Get whether a player is shuffling."""
+    try:
+        current_playback = SpotifyCache.instance(player.id).current_playback(player)
+        return current_playback["shuffle_state"] if current_playback is not None else None
+    except SpotifyException as e:
+        logging.error(e)
+        raise e
+
+
+def get_repeat(player):
+    """Get whether a player is repeating."""
+    try:
+        current_playback = SpotifyCache.instance(player.id).current_playback(player)
+        return current_playback["repeat_state"] if current_playback is not None else None
     except SpotifyException as e:
         logging.error(e)
         raise e

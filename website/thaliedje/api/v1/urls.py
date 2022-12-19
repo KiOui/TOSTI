@@ -9,6 +9,8 @@ from thaliedje.api.v1.views import (
     PlayerPreviousAPIView,
     PlayerPlayAPIView,
     PlayerPauseAPIView,
+    PlayerShuffleAPIView,
+    PlayerRepeatAPIView,
     PlayerVolumeAPIView,
 )
 from thaliedje.converters import PlayerConverter
@@ -25,5 +27,7 @@ urlpatterns = [
     path("players/<player:player>/pause/", PlayerPauseAPIView.as_view(), name="player_pause"),
     path("players/<player:player>/next/", PlayerNextAPIView.as_view(), name="player_next"),
     path("players/<player:player>/previous/", PlayerPreviousAPIView.as_view(), name="player_previous"),
+    path("players/<player:player>/shuffle/", PlayerShuffleAPIView.as_view(), name="player_shuffle"),
+    path("players/<player:player>/repeat/", PlayerRepeatAPIView.as_view(), name="player_repeat"),
     path("players/<player:player>/volume/", PlayerVolumeAPIView.as_view(), name="player_volume"),
 ]

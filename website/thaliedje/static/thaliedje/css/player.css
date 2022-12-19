@@ -1,8 +1,11 @@
 .player-controls {
     display: flex;
     margin: auto;
-    width: 150px;
     font-size: 16pt;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    max-width: 300px;
 }
 
 .player-controls i {
@@ -35,10 +38,24 @@
     line-height: normal;
 }
 
-.player-controls i {
-    font-size: 20pt;
-}
-
 .player-controls i:hover {
     cursor: pointer;
+}
+
+.player-controls .active-button {
+    margin-top: 8px;
+}
+
+.player-controls .active-button:after {
+    background-color: currentcolor;
+    border-radius: 50%;
+    bottom: 0;
+    content: "";
+    display: block;
+    height: 4px;
+    left: 50%;
+    position: absolute;
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
+    width: 4px;
 }
