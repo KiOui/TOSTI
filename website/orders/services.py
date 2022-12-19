@@ -66,8 +66,8 @@ def add_scanned_order(product: Product, shift: Shift, ready=True, paid=True) -> 
 
     :param product: A Product for which an Order has to be created
     :param shift: The shift for which the Orders have to be created
-    :param ready: Whether or not the Order should be directly made ready
-    :param paid: Whether or not the Order should be directly made paid
+    :param ready: Whether the Order should be directly made ready
+    :param paid: Whether the Order should be directly made paid
     :return: The created Order
     """
     # Check if Shift is not finalized
@@ -98,7 +98,7 @@ def add_user_order(product: Product, shift: Shift, user: User) -> Order:
     """
     # Check order permissions
     if user_is_blacklisted(user):
-        raise OrderException("User is blacklisted.")
+        raise OrderException("User is blacklisted")
 
     # Check if Shift is not finalized
     if shift.finalized:
@@ -110,11 +110,14 @@ def add_user_order(product: Product, shift: Shift, user: User) -> Order:
 
     # Check if Shift is not closed
     if not shift.can_order:
-        raise OrderException("This Shift is closed.")
+        raise OrderException("This Shift is closed")
 
     # Check Shift order maximum while ignoring Products without Shift restrictions
     if not product.ignore_shift_restrictions and not shift.user_can_order_amount(user, amount=1):
         raise OrderException("User can not order that many products in this shift")
+
+    if not product.orderable:
+        raise OrderException("Product is not orderable")
 
     # Check Product availability
     if not product.available:
