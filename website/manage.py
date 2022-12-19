@@ -12,7 +12,13 @@ def main():
         # Use development settings if no management settings are found
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tosti.settings.development")
     else:
-        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tosti.settings.management")
+        import socket  # noqa
+
+        hostname = socket.gethostname()
+        if hostname == "webvm01":
+            os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tosti.settings.production")
+        else:
+            os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tosti.settings.management")
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
