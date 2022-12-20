@@ -26,7 +26,7 @@ class PlayerListAPIView(ListAPIView):
         django_filters.rest_framework.DjangoFilterBackend,
         filters.SearchFilter,
     )
-    filter_class = PlayerFilter
+    filterset_class = PlayerFilter
     search_fields = ["display_name"]
 
 

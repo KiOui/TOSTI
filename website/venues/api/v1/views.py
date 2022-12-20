@@ -18,7 +18,7 @@ class VenueListAPIView(ListAPIView):
     serializer_class = VenueSerializer
     queryset = Venue.objects.filter(active=True)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend, SearchFilter)
-    filter_class = VenueFilter
+    filterset_class = VenueFilter
     search_fields = ["name", "slug"]
 
 
@@ -49,5 +49,5 @@ class ReservationListAPIView(ListAPIView):
         "venue", "user_created", "user_created__association", "association"
     )
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend, SearchFilter)
-    filter_class = ReservationFilter
+    filterset_class = ReservationFilter
     search_fields = ["title"]

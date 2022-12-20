@@ -47,7 +47,7 @@ class OrderListCreateAPIView(ListCreateAPIView):
     filter_backends = [
         django_filters.rest_framework.DjangoFilterBackend,
     ]
-    filter_class = OrderFilter
+    filterset_class = OrderFilter
     queryset = Order.objects.select_related("user", "product")
 
     def get_queryset(self):
@@ -121,7 +121,7 @@ class ShiftListCreateAPIView(LoggedListCreateAPIView):
         "POST": ["orders:manage"],
     }
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
-    filter_class = ShiftFilter
+    filterset_class = ShiftFilter
 
     def get_queryset(self):
         """Get the queryset."""
@@ -176,7 +176,7 @@ class ProductListAPIView(ListAPIView):
         django_filters.rest_framework.DjangoFilterBackend,
         filters.SearchFilter,
     )
-    filter_class = ProductFilter
+    filterset_class = ProductFilter
     search_fields = ["name", "barcode"]
 
     def get_queryset(self):
