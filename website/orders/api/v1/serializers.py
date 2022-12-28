@@ -86,6 +86,7 @@ class OrderSerializer(serializers.ModelSerializer):
             "paid_at",
             "type",
             "prioritize",
+            "deprioritize",
         ]
         read_only_fields = ["id", "created", "user", "order_price", "ready_at", "paid_at"]
 

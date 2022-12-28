@@ -11,6 +11,7 @@ from orders.api.v1.views import (
     ShiftRetrieveUpdateAPIView,
     OrderTogglePaidAPIView,
     OrderToggleReadyAPIView,
+    OrderToListBottomAPIView,
     ShiftFinalizeAPIView,
     JoinShiftAPIView,
 )
@@ -35,6 +36,11 @@ urlpatterns = [
         "shifts/<shift:shift>/orders/<order:order>/ready/",
         OrderToggleReadyAPIView.as_view(),
         name="order_toggle_ready",
+    ),
+    path(
+        "shifts/<shift:shift>/orders/<order:order>/to-bottom/",
+        OrderToListBottomAPIView.as_view(),
+        name="order_to_bottom_list",
     ),
     path("shifts/<shift:shift>/add-time/", ShiftAddTimeAPIView.as_view(), name="shifts_add_time"),
     path("shifts/<shift:shift>/add-capacity/", ShiftAddCapacityAPIView.as_view(), name="shifts_add_capacity"),

@@ -33,6 +33,11 @@
                 </div>
             </div>
         </div>
+        <div v-if="user_orders.length > 0">
+            <button class="btn btn-lg btn-ml m-auto cursor-pointer btn-on d-flex" style="border-radius: 0; max-width: fit-content;" v-on:click="user_orders.forEach(order_to_bottom_of_list)" :class="{ disabled: user_orders_not_at_bottom == 0}">
+                Place my order at the bottom of the list
+            </button>
+        </div>
     </div>
 
     <div style="font-size: 20pt;" class="d-flex align-items-center justify-content-center">
@@ -136,6 +141,15 @@
                  return this.orders.filter(function(order) {
                      return !order.product.ignore_shift_restrictions;
                  });
+             },
+             user_orders_not_at_bottom: function() {
+                let userCopy = this.user;
+                let list = this.orders.filter(
+                    function(order) {
+                        return userCopy === null || (order.user !== null && order.user.id === userCopy.id && !order.deprioritize);
+                    }
+                );
+                return list;
              }
          },
         methods: {
@@ -200,6 +214,28 @@
                         this.addingOrder = false;
                     })
                 });
+            },
+            order_to_bottom_of_list(order) {
+                fetch(
+                    `/api/v1/shifts/{{ shift.id }}/orders/${order.id}/to-bottom/`,
+                    {
+                        method: 'PATCH',
+                        headers: {
+                            "X-CSRFToken": get_csrf_token(),
+                            "Accept": 'application/json',
+                        }
+                    }
+                ).then(response => {
+                    if (response.status === 200) {
+                        return response;
+                    } else {
+                        throw response;
+                    }
+                }).then(() => {
+                    if (typeof (update_refresh_list) !== 'undefined') {
+                        update_refresh_list();
+                    }
+                }).catch(error => show_error_from_api(error));
             },
         }
     });

@@ -55,7 +55,7 @@ class OrderListCreateAPIView(ListCreateAPIView):
         return (
             self.queryset.filter(shift=self.kwargs.get("shift"))
             .prefetch_related("user_association", "user__association")
-            .order_by("-prioritize", "created")
+            .order_by("-prioritize", "deprioritize", "created")
         )
 
     def get_serializer_context(self):
@@ -360,6 +360,35 @@ class OrderToggleReadyAPIView(APIView):
         order.ready = not order.ready
         order.save()
         log_action(self.request.user, order, CHANGE, f"Set order ready to {order.ready} via API.")
+
+        return Response(
+            status=status.HTTP_200_OK,
+            data=OrderSerializer(order, many=False, context={"request": request}).data,
+        )
+
+
+class OrderToListBottomAPIView(APIView):
+    """API View to move an order to the bottom of the list."""
+
+    serializer_class = OrderSerializer
+    schema = CustomAutoSchema(response_schema={"$ref": "#/components/schemas/Order"})
+    permission_classes = [IsAuthenticatedOrTokenHasScope]
+    # required_scopes = ["orders:manage"]
+
+    def patch(self, request, **kwargs):
+        """Move the order to the bottom of the list."""
+        shift = kwargs.get("shift")
+        order = kwargs.get("order")
+
+        if order not in Order.objects.filter(shift=shift):
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if not request.user == order.user:
+            raise PermissionDenied
+
+        order.deprioritize = True
+        order.save()
+        log_action(self.request.user, order, CHANGE, f"Moved order {order.id} to bottom of the list via API.")
 
         return Response(
             status=status.HTTP_200_OK,
