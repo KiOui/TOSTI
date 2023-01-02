@@ -50,6 +50,7 @@
                     <p class="item-counter"><% index + 1 %>.</p>
                     <p class="item-name"><% order.product.name %> (<% format_price(order.order_price) %>)</p>
                     <i v-if="order.product.icon !== null" :class="`fa-solid fa-${order.product.icon} item-icon`"></i>
+                    <span v-if="!order.paid && order.user !== null && {{ user.id }} === order.user.id" class="badge rounded-pill bg-danger" style="max-height: fit-content;">Not paid</span>
                     <div class="flex-divider"></div>
                     <i v-if="order.user !== null && {{ user.id }} === order.user.id"
                        class="fa-solid fa-user user-icon"></i>
@@ -59,22 +60,12 @@
                     <i v-else class="item-username fa-solid fa-desktop"></i>
                 </div>
                 <div class="ms-2 button-row">
-                    <template v-if="order.user !== null && {{ user.id }} === order.user.id">
-                        <div v-if="order.ready && order.paid" class="status-button me-2 bg-success text-white">
-                            Done
-                        </div>
-                        <div v-else-if="order.ready && !order.paid" class="status-button-processing me-2">
-                            Done
-                        </div>
-                        <div v-else-if="!order.ready && order.paid" class="status-button me-2 bg-warning">
-                            Processing
-                        </div>
-                        <div v-else class="status-button me-2 bg-danger text-white">Not paid</div>
-                    </template>
-                    <template v-else>
-                        <div v-if="order.ready" class="status-button me-2 bg-success text-white">Done</div>
-                        <div v-else class="status-button me-2 bg-warning">Processing</div>
-                    </template>
+                    <div v-if="order.ready" class="status-button me-2 bg-success text-white">
+                        Done
+                    </div>
+                    <div v-else class="status-button me-2 bg-warning text-white">
+                        Processing
+                    </div>
                 </div>
             </li>
         </transition-group>
