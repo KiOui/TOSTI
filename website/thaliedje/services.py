@@ -436,6 +436,7 @@ def player_currently_playing(player):
 
 
 def get_queue(player):
+    """Get the current queue of a player."""
     try:
         return SpotifyCache.instance(player.id).current_queue(player)
     except SpotifyException as e:
