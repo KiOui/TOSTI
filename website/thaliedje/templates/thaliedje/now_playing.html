@@ -3,7 +3,7 @@
 
 {% block page %}
     <div class="container-sm mt-5">
-        <h1 class="mb-5"><i class="fab fa-spotify"></i> {{ player }}</h1>
+        <h1 class="mb-5"><i class="fab fa-spotify me-3"></i>{{ player }}</h1>
         {% if disabled %}
             <p class="alert alert-warning">Player is disabled.</p>
         {% else %}
@@ -15,7 +15,16 @@
                 </div>
                 <div class="col-md">
                     <div class="mb-5">
-                        {% render_queue_list player %}
+                        <h2>Queue</h2>
+                        <p class="mb-3 text-center" style="font-size: 1rem;">What's up next?</p>
+                        {% render_queue player %}
+                    </div>
+                </div>
+                <div class="col-md">
+                    <div class="mb-5">
+                        <h2>Requests</h2>
+                        <p class="mb-3" style="font-size: 1rem;">The most recently requested songs.</p>
+                        {% render_requests player %}
                     </div>
                 </div>
             </div>

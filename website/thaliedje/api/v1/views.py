@@ -11,7 +11,11 @@ from rest_framework.views import APIView
 from thaliedje import services
 from thaliedje.api.v1.filters import PlayerFilter
 from thaliedje.api.v1.pagination import StandardResultsSetPagination
-from thaliedje.api.v1.serializers import PlayerSerializer, QueueItemSerializer, AnonymousQueueItemSerializer
+from thaliedje.api.v1.serializers import (
+    PlayerSerializer,
+    RequestedQueueItemSerializer,
+    AnonymousRequestedQueueItemSerializer,
+)
 from thaliedje.models import Player, SpotifyQueueItem
 from thaliedje.services import can_request_song, can_request_playlist, can_control_player, log_player_action
 from tosti.api.openapi import CustomAutoSchema
@@ -37,10 +41,10 @@ class PlayerRetrieveAPIView(RetrieveAPIView):
     queryset = Player.objects.all()
 
 
-class PlayerQueueListAPIView(ListAPIView):
-    """Get the current player's queue."""
+class PlayerRequestsAPIView(ListAPIView):
+    """Get the latest requests."""
 
-    serializer_class = QueueItemSerializer
+    serializer_class = RequestedQueueItemSerializer
     queryset = SpotifyQueueItem.objects.all()
     pagination_class = StandardResultsSetPagination
 
@@ -52,8 +56,29 @@ class PlayerQueueListAPIView(ListAPIView):
     def get_serializer_class(self):
         """Get the serializer class."""
         if self.request.user.is_authenticated:
-            return QueueItemSerializer
-        return AnonymousQueueItemSerializer
+            return RequestedQueueItemSerializer
+        return AnonymousRequestedQueueItemSerializer
+
+
+class PlayerQueueAPIView(APIView):
+    """Get the current player's queue."""
+
+    def get(self, request, **kwargs):
+        """Get the player's current queue."""
+        player = kwargs.get("player")
+        current_playback = services.get_queue(player)
+
+        queue_items = current_playback["queue"]
+        response = []
+        for item in queue_items:
+            response_item = {
+                "track_id": item["id"],
+                "track_name": item["name"],
+                "track_artists": [x["name"] for x in item["artists"]],
+                "duration": item["duration_ms"] / 1000,
+            }
+            response.append(response_item)
+        return Response(response)
 
 
 class PlayerTrackSearchAPIView(APIView):

@@ -6,21 +6,27 @@ from thaliedje.services import can_control_player
 register = template.Library()
 
 
+@register.inclusion_tag("thaliedje/requests.html")
+def render_requests(player, show_requestor=True):
+    """Render queue."""
+    return {"player": player, "show_requestor": show_requestor}
+
+
 @register.inclusion_tag("thaliedje/queue.html")
-def render_queue_list(player):
+def render_queue(player):
     """Render queue."""
     return {"player": player}
 
 
 @register.inclusion_tag("thaliedje/player.html", takes_context=True)
 def render_player(context, player):
-    """Render queue."""
+    """Render player."""
     return {"player": player, "controls": can_control_player(context["request"].user, player)}
 
 
 @register.inclusion_tag("thaliedje/player.html", takes_context=True)
 def render_venue_player(context, venue):
-    """Render queue."""
+    """Render player for a venue."""
     player = Player.get_player(venue)
     return {"player": player, "controls": can_control_player(context["request"].user, player)}
 

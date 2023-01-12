@@ -1,4 +1,5 @@
 import inspect
+import time
 
 from thaliedje.models import Player
 from tosti.cache import Cache
@@ -39,8 +40,21 @@ class SpotifyCache:
             artists: [list of artist names],
             is_playing: [True|False]
         """
+
+        def _currently_playing(*args, **kwargs):
+            # The spotify API doesn't actually return an accurate timestamp,
+            # but the timestamp of the latest playback change,
+            # so we overwrite it with our own time
+
+            before_call = time.time() * 1000
+            spotify_response = player.spotify.currently_playing(*args, **kwargs)
+            after_call = time.time() * 1000
+            if spotify_response is not None:
+                spotify_response["timestamp"] = int((before_call + after_call) / 2)
+            return spotify_response
+
         return self.cache.call_method_cached(
-            player.spotify.currently_playing,
+            _currently_playing,
             "{}_{}".format(player.id, inspect.currentframe().f_code.co_name),
             check_cache,
             store_cache,
@@ -50,15 +64,28 @@ class SpotifyCache:
 
     def current_playback(self, player: Player, check_cache=True, store_cache=True, *args, **kwargs):
         """
-        Get the currently playback information.
+        Get the current playback information.
 
         :param player: the player object to retrieve track information for
         :param check_cache: whether to check the cache for cached data first
         :param store_cache: whether to store retrieved data to cache
         :return a dictionary with information about the current playback
         """
+
+        def _current_playback(*args, **kwargs):
+            # The spotify API doesn't actually return an accurate timestamp,
+            # but the timestamp of the latest playback change,
+            # so we overwrite it with our own time
+
+            before_call = time.time() * 1000
+            spotify_response = player.spotify.current_playback(*args, **kwargs)
+            after_call = time.time() * 1000
+            if spotify_response is not None:
+                spotify_response["timestamp"] = int((before_call + after_call) / 2)
+            return spotify_response
+
         return self.cache.call_method_cached(
-            player.spotify.current_playback,
+            _current_playback,
             "{}_{}".format(player.id, inspect.currentframe().f_code.co_name),
             check_cache,
             store_cache,
@@ -88,6 +115,17 @@ class SpotifyCache:
             store_cache,
             valid_ms=1000,
             reset_cache=True,
+            *args,
+            **kwargs,
+        )
+
+    def current_queue(self, player, check_cache=True, store_cache=True, *args, **kwargs):
+        """Get the current queue."""
+        return self.cache.call_method_cached(
+            player.spotify.queue,
+            "{}_{}".format(player.id, inspect.currentframe().f_code.co_name),
+            check_cache,
+            store_cache,
             *args,
             **kwargs,
         )
