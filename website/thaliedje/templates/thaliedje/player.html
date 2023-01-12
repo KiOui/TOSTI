@@ -4,8 +4,33 @@
 <template v-if="player_data.track !== null">
     <div class="w-50 mx-auto mb-2">
         <a href="{% url "thaliedje:now_playing" player=player %}">
-            <img class="w-100" :src="player_data.track.image"/>
+            <img class="w-100" :src="player_data.track.image" :alt="player_data.track.name"/>
         </a>
+    </div>
+    <div class="w-50 mx-auto mb-3">
+            <div class="progress" style="height: 2px">
+                <div
+                    class="progress-bar"
+                    role="progressbar"
+                    :style="'width: ' + this.track_progress_percentage+'%;'"
+                    :aria-valuenow="this.track_progress_ms"
+                    aria-valuemin="0"
+                    :aria-valuemax="this.player_data.duration_ms">
+                </div>
+            </div>
+        <div>
+            <span class="float-start me-2 small">
+                <template>
+                    <% Math.floor((track_progress_ms / 1000) / 60) %>:<% String(Math.floor((track_progress_ms / 1000) % 60)).padStart(2, '0') %>
+                </template>
+            </span>
+            <span class="float-end ms-2 small">
+                <template>
+                    <% Math.floor((player_data.duration_ms / 1000) / 60) %>:<% String(Math.floor((player_data.duration_ms / 1000) % 60)).padStart(2, '0') %>
+    {#                (<% -1 * Math.floor((track_ms_left / 1000) / 60) %>:<% String(Math.floor((track_ms_left / 1000) % 60)).padStart(2, '0') %>)#}
+                </template>
+            </span>
+        </div>
     </div>
     <div class="text-center m-auto"><% player_data.track.name %></div>
     <div class="text-center w-100">
@@ -77,15 +102,38 @@
                 repeat: null,
                 track: null,
                 current_volume: 50,
+                timestamp: 0,
+                progress_ms: 0,
+                duration_ms: 0,
             },
             doing_call: false,
             set_volume_index: 0,
             refresh_timer: null,
+            track_progress_ms: 0,
+            track_progress_percentage: 0,
+            track_ms_left: 0,
         },
         created() {
             this.refresh();
+            setInterval(() => {
+                this.updateTrackProgress();
+            }, 100);
         },
         methods: {
+            updateTrackProgress() {
+                if (this.player_data.is_playing === false) return
+
+                this.track_progress_ms = this.player_data.progress_ms + (Date.now() - this.player_data.timestamp);
+                this.track_progress_percentage = this.track_progress_ms / this.player_data.duration_ms * 100;
+                this.track_ms_left = this.player_data.duration_ms - this.track_progress_ms;
+
+                if (this.track_progress_ms >= this.player_data.duration_ms) {
+                    this.track_progress_ms = this.player_data.duration_ms;
+                    this.track_progress_percentage = 100;
+                    this.track_ms_left = 0;
+                    this.refresh();
+                }
+            },
             play(event) {
                 event.preventDefault();
                 this.doing_call = true;

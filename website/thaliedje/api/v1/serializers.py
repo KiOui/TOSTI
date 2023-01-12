@@ -20,8 +20,8 @@ class TrackSerializer(serializers.ModelSerializer):
         fields = ["track_id", "track_name", "track_artists"]
 
 
-class AnonymousQueueItemSerializer(serializers.ModelSerializer):
-    """Queue Item Serializer."""
+class AnonymousRequestedQueueItemSerializer(serializers.ModelSerializer):
+    """Requested Queue Item Serializer."""
 
     track = TrackSerializer(many=False, read_only=True)
 
@@ -35,8 +35,8 @@ class AnonymousQueueItemSerializer(serializers.ModelSerializer):
         ]
 
 
-class QueueItemSerializer(serializers.ModelSerializer):
-    """Queue Item Serializer."""
+class RequestedQueueItemSerializer(serializers.ModelSerializer):
+    """Requested Queue Item Serializer."""
 
     track = TrackSerializer(many=False, read_only=True)
     requested_by = UserSerializer(many=False)
@@ -60,6 +60,10 @@ class PlayerSerializer(serializers.ModelSerializer):
     repeat = serializers.SerializerMethodField()
     track = serializers.SerializerMethodField()
     current_volume = serializers.SerializerMethodField()
+
+    timestamp = serializers.SerializerMethodField()
+    progress_ms = serializers.SerializerMethodField()
+    duration_ms = serializers.SerializerMethodField()
 
     def get_track(self, instance):
         """Get track as a dict."""
@@ -90,6 +94,30 @@ class PlayerSerializer(serializers.ModelSerializer):
         """Get whether the player is repeating."""
         return get_repeat(instance)
 
+    def get_timestamp(self, instance):
+        """Get timestamp."""
+        currently_playing = player_currently_playing(instance)
+        if currently_playing:
+            return currently_playing["timestamp"]
+        else:
+            return None
+
+    def get_progress_ms(self, instance):
+        """Get progress_ms."""
+        currently_playing = player_currently_playing(instance)
+        if currently_playing:
+            return currently_playing["progress_ms"]
+        else:
+            return None
+
+    def get_duration_ms(self, instance):
+        """Get duration_ms."""
+        currently_playing = player_currently_playing(instance)
+        if currently_playing:
+            return currently_playing["duration_ms"]
+        else:
+            return None
+
     class Meta:
         """Meta class."""
 
@@ -104,4 +132,7 @@ class PlayerSerializer(serializers.ModelSerializer):
             "shuffle",
             "repeat",
             "current_volume",
+            "timestamp",
+            "progress_ms",
+            "duration_ms",
         ]

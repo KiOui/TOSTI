@@ -419,13 +419,29 @@ def player_currently_playing(player):
     image = currently_playing["item"]["album"]["images"][0]["url"]
     name = currently_playing["item"]["name"]
     artists = [x["name"] for x in currently_playing["item"]["artists"]]
+    is_playing = currently_playing["is_playing"]
+    timestamp = currently_playing["timestamp"]
+    progress_ms = currently_playing["progress_ms"]
+    duration_ms = currently_playing["item"]["duration_ms"]
 
     return {
         "image": image,
         "name": name,
         "artists": artists,
-        "is_playing": currently_playing["is_playing"],
+        "is_playing": is_playing,
+        "timestamp": timestamp,
+        "progress_ms": progress_ms,
+        "duration_ms": duration_ms,
     }
+
+
+def get_queue(player):
+    """Get the current queue of a player."""
+    try:
+        return SpotifyCache.instance(player.id).current_queue(player)
+    except SpotifyException as e:
+        logging.error(e)
+        raise e
 
 
 def execute_data_minimisation(dry_run=False):

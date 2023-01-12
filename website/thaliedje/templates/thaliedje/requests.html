@@ -1,0 +1,62 @@
+{% load static %}
+<div id="requests-container-{{ player.id }}">
+    <template v-if="requests.length > 0">
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Track</th>
+                <th scope="col">Artists</th>
+                {% if show_requestor %}
+                    <th scope="col">Requestor</th>
+                {% endif %}
+            </tr>
+            </thead>
+            <tbody>
+            <template v-for="item in requests">
+                <tr>
+                    <th scope="row"><% item.track.track_name %></th>
+                    <td>
+                        <template v-for="(artist, index) in item.track.track_artists">
+                            <% artist %><template v-if="index !== item.track.track_artists.length - 1">, </template>
+                        </template>
+                    </td>
+                    {% if show_requestor %}
+                        <td><% item.requested_by.display_name %></td>
+                    {% endif %}
+                </tr>
+            </template>
+            </tbody>
+        </table>
+    </template>
+    <template v-else>
+        <p class="alert alert-warning">No songs were requested lately</p>
+    </template>
+</div>
+
+<script>
+    let player_{{ player.id }}_requests_vue = new Vue({
+        el: '#requests-container-{{ player.id }}',
+        delimiters: ['<%', '%>'],
+        data: {
+            requests: []
+        },
+        created() {
+            fetch('{% url "v1:player_requests" player=player %}')
+            .then(response => response.json())
+            .then(json => json.results)
+            .then(json => {
+                json.forEach(track => {
+                    const date = new Date(track.added);
+                    track.added = `${date.toLocaleDateString()}, ${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+                });
+                this.requests = json;
+            });
+        }
+    });
+    add_refresh_url("{% url 'v1:player_requests' player=player %}", function (data) {
+        data.results.forEach(track => {
+            const date = new Date(track.added);track.added = `${date.toLocaleDateString()}, ${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+        });
+        player_{{ player.id }}_requests_vue.requests = data.results
+    });
+</script>
