@@ -109,15 +109,26 @@
             doing_call: false,
             set_volume_index: 0,
             refresh_timer: null,
+            recalculate_progress_interval: null,
             track_progress_ms: 0,
             track_progress_percentage: 0,
             track_ms_left: 0,
         },
         created() {
             this.refresh();
-            setInterval(() => {
+            this.recalculate_progress_interval = setInterval(() => {
                 this.updateTrackProgress();
             }, 100);
+        },
+        mounted() {
+            this.refresh_timer = setTimeout(this.refresh, 2000);
+            this.recalculate_progress_interval = setInterval(() => {
+                this.updateTrackProgress();
+            }, 100);
+        },
+        unmounted() {
+            clearTimeout(this.refresh_timer);
+            clearInterval(this.recalculate_progress_interval);
         },
         methods: {
             updateTrackProgress() {
