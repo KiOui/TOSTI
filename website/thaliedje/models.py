@@ -490,11 +490,12 @@ class SpotifyPlayer(Player):
 
         track_info = self.spotify.track(track_id)
 
-        self.spotify.add_to_queue(track_id)
+        self.spotify.add_to_queue(track_id, self.playback_device_id)
         cache.delete(self._queue_cache_key)
 
         if not self.is_playing:
             self.start()
+            self.next()
 
         return track_info
 
@@ -522,7 +523,6 @@ class SpotifyPlayer(Player):
         self.spotify.start_playback(device_id=self.playback_device_id)
         cache.delete(self._current_playback_cache_key)
 
-    # TODO add do_spotify_call method that handles errors, timeouts and stuff
     def pause(self):
         """Pause the playback device of a Player."""
         if not self.configured:
@@ -552,42 +552,65 @@ class SpotifyPlayer(Player):
     @property
     def current_image(self):
         """Get the image for the currently playing song."""
-        return self._current_playback["item"]["album"]["images"][0]["url"]
+        current_playback = self._current_playback
+        if current_playback is None:
+            return None
+        return current_playback["item"]["album"]["images"][0]["url"]
 
     @property
     def current_track_name(self):
         """Get the track name for the currently playing song."""
-        return self._current_playback["item"]["name"]
+        current_playback = self._current_playback
+        if current_playback is None:
+            return None
+        return current_playback["item"]["name"]
 
     @property
     def current_artists(self):
         """Get the artist names for the currently playing song."""
+        current_playback = self._current_playback
+        if current_playback is None:
+            return []
         return [x["name"] for x in self._current_playback["item"]["artists"]]
 
     @property
     def is_playing(self):
         """Check if the player is currently playing music."""
-        return self._current_playback["is_playing"]
+        current_playback = self._current_playback
+        if current_playback is None:
+            return False
+        return current_playback["is_playing"]
 
     @property
     def current_timestamp(self):
         """Get the timestamp of the latest update with the player."""
-        return self._current_playback["timestamp"]
+        current_playback = self._current_playback
+        if current_playback is None:
+            return None
+        return current_playback["timestamp"]
 
     @property
     def current_progress_ms(self):
         """Get the current progress of the currently playing song at the current_timestamp."""
-        return self._current_playback["progress_ms"]
+        current_playback = self._current_playback
+        if current_playback is None:
+            return None
+        return current_playback["progress_ms"]
 
     @property
     def current_track_duration_ms(self):
         """Get the duration of the currently playing song."""
-        return self._current_playback["item"]["duration_ms"]
+        current_playback = self._current_playback
+        if current_playback is None:
+            return None
+        return current_playback["item"]["duration_ms"]
 
     @property
     def volume(self):
         """Get the volume of the playback device of a Player."""
         current_playback = self._current_playback
+        if current_playback is None:
+            return None
         return current_playback["device"]["volume_percent"]
 
     @volume.setter
@@ -603,6 +626,8 @@ class SpotifyPlayer(Player):
     def shuffle(self):
         """Get whether a player is shuffling."""
         current_playback = self._current_playback
+        if current_playback is None:
+            return None
         return current_playback["shuffle_state"]
 
     @shuffle.setter
@@ -613,11 +638,14 @@ class SpotifyPlayer(Player):
 
         self.spotify.shuffle(shuffle_state, self.playback_device_id)
         cache.delete(self._current_playback_cache_key)
+        cache.delete(self._queue_cache_key)
 
     @property
     def repeat(self):
         """Get the repeat state of the playback device of a Player."""
         current_playback = self._current_playback
+        if current_playback is None:
+            return None
         return current_playback["repeat_state"]
 
     @repeat.setter
