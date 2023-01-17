@@ -1,7 +1,7 @@
 from constance import config
 from django_cron import CronJobBase, Schedule
 
-from thaliedje.models import Player
+from thaliedje.models import SpotifyPlayer
 
 
 class StopMusicCronJob(CronJobBase):
@@ -14,7 +14,7 @@ class StopMusicCronJob(CronJobBase):
 
     def do(self):
         """Stop the music."""
-        for player in Player.objects.all():
+        for player in SpotifyPlayer.objects.all():
             player.pause()
 
 
@@ -28,5 +28,5 @@ class StartMusicCronJob(CronJobBase):
 
     def do(self):
         """Start the music."""
-        for player in Player.objects.all():
+        for player in SpotifyPlayer.objects.all():
             player.start()
