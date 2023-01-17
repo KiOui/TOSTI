@@ -20,6 +20,8 @@ from venues.models import Venue, Reservation
 
 
 class Player(models.Model):
+    """A player."""
+
     display_name = models.CharField(max_length=255, default="", blank=True)
     slug = models.SlugField(unique=True, max_length=100)
     venue = models.OneToOneField(Venue, on_delete=models.SET_NULL, null=True, blank=True)
@@ -68,15 +70,18 @@ class Player(models.Model):
         raise NotImplementedError
 
     @property
-    def current_progress_timestamp(self):
+    def current_timestamp(self):
+        """Get the timestamp of the latest update with the player."""
         raise NotImplementedError
 
     @property
     def current_progress_ms(self):
+        """Get the current progress of the currently playing song at the current_timestamp."""
         raise NotImplementedError
 
     @property
     def current_track_duration_ms(self):
+        """Get the duration of the currently playing song."""
         raise NotImplementedError
 
     @property
@@ -169,6 +174,7 @@ class Player(models.Model):
 
     @property
     def active_control_event(self):
+        """Get the active control event for this player."""
         return ThaliedjeControlEvent.current_event(self) or None
 
     def can_request_playlist(self, user):
@@ -208,35 +214,43 @@ class Player(models.Model):
 
 
 class MarietjePlayer(Player):
+    """A player that is controlled by Marietje."""
 
     url = models.URLField(max_length=255, default="", blank=True)
 
     @property
     def current_image(self):
+        """Get the image url for the currently playing song."""
         return None
 
     @property
     def current_track_name(self):
+        """Get the track name for the currently playing song."""
         return None
 
     @property
     def current_artists(self):
+        """Get the artist names for the currently playing song."""
         return []
 
     @property
-    def current_progress_timestamp(self):
+    def current_timestamp(self):
+        """Get the timestamp of the latest update with the player."""
         return None
 
     @property
     def current_progress_ms(self):
+        """Get the current progress of the currently playing song at the current_timestamp."""
         return None
 
     @property
     def current_track_duration_ms(self):
+        """Get the duration of the currently playing song."""
         return None
 
     @property
     def queue(self):
+        """Get the queue for this player."""
         return []
 
     def get_absolute_url(self):
@@ -244,49 +258,63 @@ class MarietjePlayer(Player):
         return self.url
 
     def can_request_playlist(self, user):
+        """Check if a user can request playlists or albums."""
         return False
 
     def can_request_song(self, user):
+        """Check if a user can request a song."""
         return False
 
     def can_control(self, user):
+        """Check if a user can control the player."""
         return False
 
     def request_song(self, track_id):
+        """Request a song."""
         pass
 
     def start_playing(self, context_uri):
+        """Start the playing something."""
         pass
 
     def start(self):
+        """Start the player."""
         pass
 
     def pause(self):
+        """Pause the player."""
         pass
 
     def next(self):
+        """Skip to the next song."""
         pass
 
     def previous(self):
+        """Skip to the previous song."""
         pass
 
     @property
     def is_playing(self):
-        return None
+        """Check if the player is currently playing music."""
+        return False
 
     @property
     def volume(self):
+        """Get the volume of the player."""
         return None
 
     @property
     def shuffle(self):
+        """Check if the player is in shuffle mode."""
         return None
 
     @property
     def repeat(self):
+        """Get the repeat mode of the player."""
         return None
 
     def search(self, query, maximum=5, query_type="track"):
+        """Search for a song."""
         pass
 
 
@@ -395,11 +423,13 @@ class SpotifyPlayer(Player):
 
     @property
     def _current_playback_cache_key(self):
+        """Get the cache key for the current playback cache."""
         return f"spotify_player_{self.id}_playback"
 
     def _get_current_playback(self):
         """
         Get the current playback from the Spotify API.
+
         Due to a bug, the API does not return the actual timestamp, so we compute it ourselves.
         """
         before_call = time.time() * 1000
@@ -411,6 +441,7 @@ class SpotifyPlayer(Player):
 
     @property
     def _current_playback(self):
+        """Get the current playback from the Spotify API."""
         if not self.configured:
             raise RuntimeError("This Spotify account is not configured yet.")
 
@@ -424,6 +455,7 @@ class SpotifyPlayer(Player):
 
     @property
     def _queue_cache_key(self):
+        """Get the cache key for the queue."""
         return f"spotify_player_{self.id}_queue"
 
     @property
@@ -452,7 +484,7 @@ class SpotifyPlayer(Player):
         return queue
 
     def request_song(self, track_id):
-        """Queue a track"""
+        """Queue a track."""
         if not self.configured:
             raise RuntimeError("This Spotify account is not configured yet.")
 
@@ -538,15 +570,18 @@ class SpotifyPlayer(Player):
         return self._current_playback["is_playing"]
 
     @property
-    def current_progress_timestamp(self):
+    def current_timestamp(self):
+        """Get the timestamp of the latest update with the player."""
         return self._current_playback["timestamp"]
 
     @property
     def current_progress_ms(self):
+        """Get the current progress of the currently playing song at the current_timestamp."""
         return self._current_playback["progress_ms"]
 
     @property
     def current_track_duration_ms(self):
+        """Get the duration of the currently playing song."""
         return self._current_playback["item"]["duration_ms"]
 
     @property
@@ -581,6 +616,7 @@ class SpotifyPlayer(Player):
 
     @property
     def repeat(self):
+        """Get the repeat state of the playback device of a Player."""
         current_playback = self._current_playback
         return current_playback["repeat_state"]
 
@@ -669,6 +705,7 @@ class SpotifyArtist(models.Model):
 
     @classmethod
     def get_or_create_from_spotify(cls, spotify_data):
+        """Create a SpotifyArtist object from Spotify data."""
         obj, _ = cls.objects.get_or_create(artist_id=spotify_data["id"])
         if obj.artist_name != spotify_data["name"]:
             obj.artist_name = spotify_data["name"]
@@ -698,6 +735,7 @@ class SpotifyTrack(models.Model):
 
     @classmethod
     def get_or_create_from_spotify(cls, spotify_data):
+        """Create a SpotifyTrack object from Spotify data."""
         obj, _ = cls.objects.get_or_create(track_id=spotify_data["id"])
         updated = False
 

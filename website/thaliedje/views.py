@@ -13,7 +13,7 @@ from django.views.generic import TemplateView, UpdateView
 from tosti.utils import log_action
 from venues.models import Reservation
 from .forms import ThaliedjeControlEventForm
-from .models import SpotifyQueueItem, ThaliedjeControlEvent, SpotifyPlayer
+from .models import SpotifyQueueItem, ThaliedjeControlEvent, SpotifyPlayer, Player
 
 
 class IndexView(TemplateView):
@@ -34,38 +34,28 @@ class NowPlayingView(TemplateView):
         context["player"] = player
         context["venue"] = player.venue
 
-        try:
-            player = SpotifyPlayer.objects.get(pk=player.pk)
-        except SpotifyPlayer.DoesNotExist:
-            context["can_request_song"] = False
-            context["can_control"] = False
-            context["can_request_playlist"] = False
-            return context
+        # if not player.configured:
+        #     context["disabled"] = True
+        #     return context
+
+        venue_reservation = player.venue.reservations.filter(
+            accepted=True, start__lte=timezone.now(), end__gte=timezone.now()
+        ).first()
+        if venue_reservation and self.request.user in venue_reservation.users_access.all():
+            context["current_venue_reservation"] = venue_reservation
+
+        control_event = player.active_control_event
+        if control_event and self.request.user in control_event.admins.all():
+            context["current_control_event"] = control_event
+
+        if self.request.user.is_authenticated:
+            context["can_request_song"] = player.can_request_song(self.request.user)
+            context["can_request_playlist"] = player.can_request_playlist(self.request.user)
+            context["can_control"] = player.can_control(self.request.user)
         else:
-            context["player"] = player
-
-            if not player.configured:
-                context["disabled"] = True
-                return context
-
-            venue_reservation = player.venue.reservations.filter(
-                accepted=True, start__lte=timezone.now(), end__gte=timezone.now()
-            ).first()
-            if venue_reservation and self.request.user in venue_reservation.users_access.all():
-                context["current_venue_reservation"] = venue_reservation
-
-            control_event = player.active_control_event
-            if control_event and self.request.user in control_event.admins.all():
-                context["current_control_event"] = control_event
-
-            if self.request.user.is_authenticated:
-                context["can_request_song"] = player.can_request_song(self.request.user)
-                context["can_request_playlist"] = player.can_request_playlist(self.request.user)
-                context["can_control"] = player.can_control(self.request.user)
-            else:
-                context["can_request_song"] = False
-                context["can_request_playlist"] = False
-                context["can_control"] = False
+            context["can_request_song"] = False
+            context["can_request_playlist"] = False
+            context["can_control"] = False
         return context
 
 

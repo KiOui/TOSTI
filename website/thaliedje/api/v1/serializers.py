@@ -57,7 +57,7 @@ class PlayerSerializer(serializers.ModelSerializer):
 
     track = serializers.SerializerMethodField()
     current_volume = serializers.FloatField(source="volume")
-    timestamp = serializers.IntegerField(source="current_progress_timestamp")
+    timestamp = serializers.IntegerField(source="current_timestamp")
     progress_ms = serializers.IntegerField(source="current_progress_ms")
     duration_ms = serializers.IntegerField(source="current_track_duration_ms")
 

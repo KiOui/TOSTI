@@ -17,7 +17,7 @@ class PlayerConverter(SlugConverter):
             try:
                 return player.spotifyplayer
             except SpotifyPlayer.DoesNotExist:
-                return player
+                return player.marietjeplayer
         except Player.DoesNotExist:
             raise ValueError
 

@@ -21,6 +21,8 @@ from .forms import PlayerAdminForm
 
 @admin.register(MarietjePlayer)
 class MarietjePlayerAdmin(GuardedModelAdmin):
+    """MarietjePlayer admin."""
+
     pass
 
 
