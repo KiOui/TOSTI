@@ -10,7 +10,6 @@ from thaliedje.admin_views import (
     SpotifyAuthorizeSucceededView,
 )
 from .models import (
-    Player,
     SpotifyPlayer,
     ThaliedjeBlacklistedUser,
     ThaliedjeControlEvent,
