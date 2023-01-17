@@ -19,12 +19,12 @@
                 </div>
             </div>
         <div>
-            <span class="float-start me-2 small">
+            <span class="float-start me-2 small align-left text-nowrap" style="width: 30px">
                 <template>
                     <% Math.floor((track_progress_ms / 1000) / 60) %>:<% String(Math.floor((track_progress_ms / 1000) % 60)).padStart(2, '0') %>
                 </template>
             </span>
-            <span class="float-end ms-2 small">
+            <span class="float-end ms-2 small align-right">
                 <template>
                     <% Math.floor((player_data.duration_ms / 1000) / 60) %>:<% String(Math.floor((player_data.duration_ms / 1000) % 60)).padStart(2, '0') %>
     {#                (<% -1 * Math.floor((track_ms_left / 1000) / 60) %>:<% String(Math.floor((track_ms_left / 1000) % 60)).padStart(2, '0') %>)#}

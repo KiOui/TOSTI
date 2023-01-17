@@ -9,12 +9,24 @@ from thaliedje.admin_views import (
     SpotifyTokenView,
     SpotifyAuthorizeSucceededView,
 )
-from .models import Player, ThaliedjeBlacklistedUser, ThaliedjeControlEvent, PlayerLogEntry
+from .models import (
+    Player,
+    SpotifyPlayer,
+    ThaliedjeBlacklistedUser,
+    ThaliedjeControlEvent,
+    PlayerLogEntry,
+    MarietjePlayer,
+)
 from .forms import PlayerAdminForm
 
 
-@admin.register(Player)
-class PlayerAdmin(GuardedModelAdmin):
+@admin.register(MarietjePlayer)
+class MarietjePlayerAdmin(GuardedModelAdmin):
+    pass
+
+
+@admin.register(SpotifyPlayer)
+class SpotifyPlayerAdmin(GuardedModelAdmin):
     """Player admin for Players."""
 
     list_display = [
