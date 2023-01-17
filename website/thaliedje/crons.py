@@ -15,7 +15,7 @@ class StopMusicCronJob(CronJobBase):
     def do(self):
         """Stop the music."""
         for player in Player.objects.all():
-            player.spotify.pause_playback()
+            player.pause()
 
 
 class StartMusicCronJob(CronJobBase):
@@ -29,4 +29,4 @@ class StartMusicCronJob(CronJobBase):
     def do(self):
         """Start the music."""
         for player in Player.objects.all():
-            player.spotify.start_playback()
+            player.start()
