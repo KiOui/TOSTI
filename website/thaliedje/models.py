@@ -461,6 +461,9 @@ class SpotifyPlayer(Player):
         self.spotify.add_to_queue(track_id)
         cache.delete(self._queue_cache_key)
 
+        if not self.is_playing:
+            self.start()
+
         return track_info
 
     def start_playing(self, context_uri):
