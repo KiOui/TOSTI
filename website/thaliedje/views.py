@@ -13,7 +13,7 @@ from django.views.generic import TemplateView, UpdateView
 from tosti.utils import log_action
 from venues.models import Reservation
 from .forms import ThaliedjeControlEventForm
-from .models import SpotifyQueueItem, ThaliedjeControlEvent, SpotifyPlayer, Player
+from .models import SpotifyQueueItem, ThaliedjeControlEvent
 
 
 class IndexView(TemplateView):
@@ -33,10 +33,6 @@ class NowPlayingView(TemplateView):
         player = kwargs.get("player")
         context["player"] = player
         context["venue"] = player.venue
-
-        # if not player.configured:
-        #     context["disabled"] = True
-        #     return context
 
         venue_reservation = player.venue.reservations.filter(
             accepted=True, start__lte=timezone.now(), end__gte=timezone.now()
