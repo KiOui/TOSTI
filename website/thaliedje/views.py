@@ -14,7 +14,6 @@ from tosti.utils import log_action
 from venues.models import Reservation
 from .forms import ThaliedjeControlEventForm
 from .models import SpotifyQueueItem, ThaliedjeControlEvent
-from .services import can_request_song, can_request_playlist, can_control_player, active_thaliedje_control_event
 
 
 class IndexView(TemplateView):
@@ -33,11 +32,6 @@ class NowPlayingView(TemplateView):
         context = super().get_context_data(**kwargs)
         player = kwargs.get("player")
         context["player"] = player
-
-        if not player.configured:
-            context["disabled"] = True
-            return context
-
         context["venue"] = player.venue
 
         venue_reservation = player.venue.reservations.filter(
@@ -46,18 +40,18 @@ class NowPlayingView(TemplateView):
         if venue_reservation and self.request.user in venue_reservation.users_access.all():
             context["current_venue_reservation"] = venue_reservation
 
-        control_event = active_thaliedje_control_event(player)
+        control_event = player.active_control_event
         if control_event and self.request.user in control_event.admins.all():
             context["current_control_event"] = control_event
 
         if self.request.user.is_authenticated:
-            context["can_request_song"] = can_request_song(self.request.user, player)
-            context["can_request_playlist"] = can_request_playlist(self.request.user, player)
-            context["can_control_player"] = can_control_player(self.request.user, player)
+            context["can_request_song"] = player.can_request_song(self.request.user)
+            context["can_request_playlist"] = player.can_request_playlist(self.request.user)
+            context["can_control"] = player.can_control(self.request.user)
         else:
             context["can_request_song"] = False
             context["can_request_playlist"] = False
-            context["can_control_player"] = False
+            context["can_control"] = False
         return context
 
 

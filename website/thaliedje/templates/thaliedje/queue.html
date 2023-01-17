@@ -18,14 +18,16 @@
                           <% artist %><template v-if="index !== item.track_artists.length - 1">, </template>
                       </template>
                   </td>
-                  <td><% Math.floor(item.duration / 60) %>:<% String(Math.floor(item.duration % 60)).padStart(2, '0') %></td>
+                  <td><% Math.floor(item.duration_ms / 1000 / 60) %>:<% String(Math.floor(item.duration_ms / 1000 % 60)).padStart(2, '0') %></td>
                 </tr>
             </template>
           </tbody>
         </table>
     </template>
     <template v-else>
-        <p class="alert alert-danger"><i class="fas fa-exclamation-triangle me-3"></i>Queue not available</p>
+        <div class="loader-container text-center">
+            <span class="loader"></span>
+        </div>
     </template>
 </div>
 

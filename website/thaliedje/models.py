@@ -1,6 +1,9 @@
+import logging
 import os
 import secrets
+import time
 
+from django.core.cache import cache
 from django.core.validators import MinLengthValidator
 from django.db import models
 from django.conf import settings
@@ -17,6 +20,305 @@ from venues.models import Venue, Reservation
 
 
 class Player(models.Model):
+    """A player."""
+
+    display_name = models.CharField(max_length=255, default="", blank=True)
+    slug = models.SlugField(unique=True, max_length=100)
+    venue = models.OneToOneField(Venue, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        """Get the string representation of a Player."""
+        if self.display_name is not None:
+            return self.display_name
+        else:
+            return self.venue.name
+
+    def get_absolute_url(self):
+        """Get the front-end url for a Player."""
+        return (
+            reverse("thaliedje:now_playing", args=[self.venue])
+            if self.venue
+            else reverse("thaliedje:now_playing", args=[self])
+        )
+
+    @staticmethod
+    def get_player(venue):
+        """Get a Player for a venue (if it exists)."""
+        try:
+            return Player.objects.get(venue=venue)
+        except Player.DoesNotExist:
+            return None
+
+    @property
+    def current_image(self):
+        """Get the image for the currently playing song."""
+        raise NotImplementedError
+
+    @property
+    def current_track_name(self):
+        """Get the track name for the currently playing song."""
+        raise NotImplementedError
+
+    @property
+    def current_artists(self):
+        """Get the artist names for the currently playing song."""
+        raise NotImplementedError
+
+    @property
+    def is_playing(self):
+        """Check if the player is currently playing music."""
+        raise NotImplementedError
+
+    @property
+    def current_timestamp(self):
+        """Get the timestamp of the latest update with the player."""
+        raise NotImplementedError
+
+    @property
+    def current_progress_ms(self):
+        """Get the current progress of the currently playing song at the current_timestamp."""
+        raise NotImplementedError
+
+    @property
+    def current_track_duration_ms(self):
+        """Get the duration of the currently playing song."""
+        raise NotImplementedError
+
+    @property
+    def queue(self):
+        """Get the queue for this player."""
+        raise NotImplementedError
+
+    def request_song(self, track_id):
+        """Request a song."""
+        raise NotImplementedError
+
+    def start_playing(self, context_uri):
+        """Start the player."""
+        raise NotImplementedError
+
+    def start(self):
+        """Start the player."""
+        raise NotImplementedError
+
+    def pause(self):
+        """Pause the player."""
+        raise NotImplementedError
+
+    def next(self):
+        """Skip to the next song."""
+        raise NotImplementedError
+
+    def previous(self):
+        """Skip to the previous song."""
+        raise NotImplementedError
+
+    @property
+    def volume(self):
+        """Get the volume of the player."""
+        raise NotImplementedError
+
+    @volume.setter
+    def volume(self, volume):
+        """Set the volume of the player."""
+        raise NotImplementedError
+
+    @property
+    def shuffle(self):
+        """Check if the player is in shuffle mode."""
+        raise NotImplementedError
+
+    @shuffle.setter
+    def shuffle(self, value):
+        """Set the shuffle mode of the player."""
+        raise NotImplementedError
+
+    @property
+    def repeat(self):
+        """Get the repeat mode of the player."""
+        raise NotImplementedError
+
+    @repeat.setter
+    def repeat(self, value):
+        """Set the repeat mode of the player."""
+        raise NotImplementedError
+
+    def search(self, query, maximum=5, query_type="track"):
+        """Search for a song."""
+        raise NotImplementedError
+
+    class Meta:
+        """Meta class."""
+
+        verbose_name = "Player"
+        verbose_name_plural = "Players"
+        permissions = [
+            ("can_control", "Can control music players"),
+            ("can_request_playlists_and_albums", "Can request playlists and albums"),
+        ]
+
+    def log_action(self, user, action, description):
+        """
+        Log a player action.
+
+        :param user: the user
+        :param action: the action
+        :param description: the description
+        """
+        PlayerLogEntry.objects.create(
+            player=self,
+            user=user,
+            action=action,
+            description=description,
+        )
+
+    @property
+    def active_control_event(self):
+        """Get the active control event for this player."""
+        return ThaliedjeControlEvent.current_event(self) or None
+
+    def can_request_playlist(self, user):
+        """Check if a user can request playlists or albums."""
+        if not user.is_authenticated:
+            return False
+        control_event = self.active_control_event
+        if control_event is not None:
+            if control_event.respect_blacklist and ThaliedjeBlacklistedUser.user_is_blacklisted(user):
+                return False
+            return control_event.can_request_playlist(user)
+        return user.has_perm(
+            "thaliedje.can_request_playlists_and_albums", self
+        ) and not ThaliedjeBlacklistedUser.user_is_blacklisted(user)
+
+    def can_request_song(self, user):
+        """Check if a user can request a song."""
+        if not user.is_authenticated:
+            return False
+        control_event = self.active_control_event
+        if control_event is not None:
+            if control_event.respect_blacklist and ThaliedjeBlacklistedUser.user_is_blacklisted(user):
+                return False
+            return control_event.can_request_song(user)
+        return not ThaliedjeBlacklistedUser.user_is_blacklisted(user)
+
+    def can_control(self, user):
+        """Check if a user can control the player."""
+        if not user.is_authenticated:
+            return False
+        control_event = self.active_control_event
+        if control_event is not None:
+            if control_event.respect_blacklist and ThaliedjeBlacklistedUser.user_is_blacklisted(user):
+                return False
+            return control_event.can_control_player(user)
+        return user.has_perm("thaliedje.can_control", self) and not ThaliedjeBlacklistedUser.user_is_blacklisted(user)
+
+
+class MarietjePlayer(Player):
+    """A player that is controlled by Marietje."""
+
+    url = models.URLField(max_length=255, default="", blank=True)
+
+    @property
+    def current_image(self):
+        """Get the image url for the currently playing song."""
+        return None
+
+    @property
+    def current_track_name(self):
+        """Get the track name for the currently playing song."""
+        return None
+
+    @property
+    def current_artists(self):
+        """Get the artist names for the currently playing song."""
+        return []
+
+    @property
+    def current_timestamp(self):
+        """Get the timestamp of the latest update with the player."""
+        return None
+
+    @property
+    def current_progress_ms(self):
+        """Get the current progress of the currently playing song at the current_timestamp."""
+        return None
+
+    @property
+    def current_track_duration_ms(self):
+        """Get the duration of the currently playing song."""
+        return None
+
+    @property
+    def queue(self):
+        """Get the queue for this player."""
+        return []
+
+    def get_absolute_url(self):
+        """Get the front-end url for a Player."""
+        return self.url
+
+    def can_request_playlist(self, user):
+        """Check if a user can request playlists or albums."""
+        return False
+
+    def can_request_song(self, user):
+        """Check if a user can request a song."""
+        return False
+
+    def can_control(self, user):
+        """Check if a user can control the player."""
+        return False
+
+    def request_song(self, track_id):
+        """Request a song."""
+        pass
+
+    def start_playing(self, context_uri):
+        """Start the playing something."""
+        pass
+
+    def start(self):
+        """Start the player."""
+        pass
+
+    def pause(self):
+        """Pause the player."""
+        pass
+
+    def next(self):
+        """Skip to the next song."""
+        pass
+
+    def previous(self):
+        """Skip to the previous song."""
+        pass
+
+    @property
+    def is_playing(self):
+        """Check if the player is currently playing music."""
+        return False
+
+    @property
+    def volume(self):
+        """Get the volume of the player."""
+        return None
+
+    @property
+    def shuffle(self):
+        """Check if the player is in shuffle mode."""
+        return None
+
+    @property
+    def repeat(self):
+        """Get the repeat mode of the player."""
+        return None
+
+    def search(self, query, maximum=5, query_type="track"):
+        """Search for a song."""
+        pass
+
+
+class SpotifyPlayer(Player):
     """
     Player model for Spotify players.
 
@@ -35,8 +337,6 @@ class Player(models.Model):
         "streaming, app-remote-control"
     )  # The required Spotify API permissions
 
-    display_name = models.CharField(max_length=255, default="", blank=True)
-    slug = models.SlugField(unique=True, max_length=100)
     playback_device_id = models.CharField(max_length=255, default="", blank=True)
     playback_device_name = models.CharField(
         max_length=255,
@@ -51,18 +351,12 @@ class Player(models.Model):
     client_id = models.CharField(max_length=255, unique=True)
     client_secret = models.CharField(max_length=255)
     redirect_uri = models.CharField(max_length=255)
-    venue = models.OneToOneField(Venue, on_delete=models.SET_NULL, null=True, blank=True)
 
     class Meta:
         """Meta class."""
 
-        verbose_name = "Player"
-        verbose_name_plural = "Players"
-
-        permissions = [
-            ("can_control", "Can control music players"),
-            ("can_request_playlists_and_albums", "Can request playlists and albums"),
-        ]
+        verbose_name = "Spotify player"
+        verbose_name_plural = "Spotify players"
 
     def __str__(self):
         """
@@ -74,22 +368,6 @@ class Player(models.Model):
             return self.display_name
         else:
             return self.client_id
-
-    def get_absolute_url(self):
-        """Get the front-end url for a Player."""
-        return (
-            reverse("thaliedje:now_playing", args=[self.venue])
-            if self.venue
-            else reverse("thaliedje:now_playing", args=[self])
-        )
-
-    @staticmethod
-    def get_player(venue):
-        """Get a Player for a venue (if it exists)."""
-        try:
-            return Player.objects.get(venue=venue)
-        except Player.DoesNotExist:
-            return None
 
     @property
     def configured(self):
@@ -143,6 +421,273 @@ class Player(models.Model):
             self.save()
         return self.display_name
 
+    @property
+    def _current_playback_cache_key(self):
+        """Get the cache key for the current playback cache."""
+        return f"spotify_player_{self.id}_playback"
+
+    def _get_current_playback(self):
+        """
+        Get the current playback from the Spotify API.
+
+        Due to a bug, the API does not return the actual timestamp, so we compute it ourselves.
+        """
+        before_call = time.time() * 1000
+        spotify_response = self.spotify.current_playback()
+        after_call = time.time() * 1000
+        if spotify_response is not None:
+            spotify_response["timestamp"] = int((before_call + after_call) / 2)
+        return spotify_response
+
+    @property
+    def _current_playback(self):
+        """Get the current playback from the Spotify API."""
+        if not self.configured:
+            raise RuntimeError("This Spotify account is not configured yet.")
+
+        cached_result = cache.get(self._current_playback_cache_key)
+        if cached_result is not None:
+            return cached_result
+
+        playback = self._get_current_playback()
+        cache.set(self._current_playback_cache_key, playback, 5)
+        return playback
+
+    @property
+    def _queue_cache_key(self):
+        """Get the cache key for the queue."""
+        return f"spotify_player_{self.id}_queue"
+
+    @property
+    def queue(self):
+        """Get the current queue of a player."""
+        if not self.configured:
+            raise RuntimeError("This Spotify account is not configured yet.")
+
+        cached_result = cache.get(self._queue_cache_key)
+        if cached_result is not None:
+            return cached_result
+
+        queue = self.spotify.queue()
+
+        queue = [
+            {
+                "track_id": item["id"],
+                "track_name": item["name"],
+                "track_artists": [x["name"] for x in item["artists"]],
+                "duration_ms": item["duration_ms"],
+            }
+            for item in queue["queue"]
+        ]
+
+        cache.set(self._queue_cache_key, queue, 30)
+        return queue
+
+    def request_song(self, track_id):
+        """Queue a track."""
+        if not self.configured:
+            raise RuntimeError("This Spotify account is not configured yet.")
+
+        track_info = self.spotify.track(track_id)
+
+        self.spotify.add_to_queue(track_id)
+        cache.delete(self._queue_cache_key)
+
+        if not self.is_playing:
+            self.start()
+
+        return track_info
+
+    def start_playing(self, context_uri):
+        """Start playing something on the playback device of a Player."""
+        if not self.configured:
+            raise RuntimeError("This Spotify account is not configured yet.")
+
+        if self._current_playback is None:
+            # If the playback device is not active, make it active
+            self.spotify.transfer_playback(self.playback_device_id)
+
+        self.spotify.start_playback(device_id=self.playback_device_id, context_uri=context_uri)
+        cache.delete(self._current_playback_cache_key)
+
+    def start(self):
+        """Start playing on the playback device of a Player."""
+        if not self.configured:
+            raise RuntimeError("This Spotify account is not configured yet.")
+
+        if self._current_playback is None:
+            # If the playback device is not active, make it active
+            self.spotify.transfer_playback(self.playback_device_id)
+
+        self.spotify.start_playback(device_id=self.playback_device_id)
+        cache.delete(self._current_playback_cache_key)
+
+    # TODO add do_spotify_call method that handles errors, timeouts and stuff
+    def pause(self):
+        """Pause the playback device of a Player."""
+        if not self.configured:
+            raise RuntimeError("This Spotify account is not configured yet.")
+
+        self.spotify.pause_playback(self.playback_device_id)
+        cache.delete(self._current_playback_cache_key)
+
+    def next(self):
+        """Skip to the next track on the playback device of a Player."""
+        if not self.configured:
+            raise RuntimeError("This Spotify account is not configured yet.")
+
+        self.spotify.next_track(self.playback_device_id)
+        cache.delete(self._current_playback_cache_key)
+        cache.delete(self._queue_cache_key)
+
+    def previous(self):
+        """Skip to the next track on the playback device of a Player."""
+        if not self.configured:
+            raise RuntimeError("This Spotify account is not configured yet.")
+
+        self.spotify.previous_track(self.playback_device_id)
+        cache.delete(self._current_playback_cache_key)
+        cache.delete(self._queue_cache_key)
+
+    @property
+    def current_image(self):
+        """Get the image for the currently playing song."""
+        return self._current_playback["item"]["album"]["images"][0]["url"]
+
+    @property
+    def current_track_name(self):
+        """Get the track name for the currently playing song."""
+        return self._current_playback["item"]["name"]
+
+    @property
+    def current_artists(self):
+        """Get the artist names for the currently playing song."""
+        return [x["name"] for x in self._current_playback["item"]["artists"]]
+
+    @property
+    def is_playing(self):
+        """Check if the player is currently playing music."""
+        return self._current_playback["is_playing"]
+
+    @property
+    def current_timestamp(self):
+        """Get the timestamp of the latest update with the player."""
+        return self._current_playback["timestamp"]
+
+    @property
+    def current_progress_ms(self):
+        """Get the current progress of the currently playing song at the current_timestamp."""
+        return self._current_playback["progress_ms"]
+
+    @property
+    def current_track_duration_ms(self):
+        """Get the duration of the currently playing song."""
+        return self._current_playback["item"]["duration_ms"]
+
+    @property
+    def volume(self):
+        """Get the volume of the playback device of a Player."""
+        current_playback = self._current_playback
+        return current_playback["device"]["volume_percent"]
+
+    @volume.setter
+    def volume(self, volume_percent):
+        """Set the volume of the playback device of a Player."""
+        if not self.configured:
+            raise RuntimeError("This Spotify account is not configured yet.")
+
+        self.spotify.volume(volume_percent, self.playback_device_id)
+        cache.delete(self._current_playback_cache_key)
+
+    @property
+    def shuffle(self):
+        """Get whether a player is shuffling."""
+        current_playback = self._current_playback
+        return current_playback["shuffle_state"]
+
+    @shuffle.setter
+    def shuffle(self, shuffle_state: bool):
+        """Set the shuffle state of the playback device of a Player."""
+        if not self.configured:
+            raise RuntimeError("This Spotify account is not configured yet.")
+
+        self.spotify.shuffle(shuffle_state, self.playback_device_id)
+        cache.delete(self._current_playback_cache_key)
+
+    @property
+    def repeat(self):
+        """Get the repeat state of the playback device of a Player."""
+        current_playback = self._current_playback
+        return current_playback["repeat_state"]
+
+    @repeat.setter
+    def repeat(self, repeat_state: str):
+        """Set the repeat state of the playback device of a Player."""
+        if not self.configured:
+            raise RuntimeError("This Spotify account is not configured yet.")
+
+        self.spotify.repeat(repeat_state, self.playback_device_id)
+        cache.delete(self._current_playback_cache_key)
+
+    def search(self, query, maximum=5, query_type="track"):
+        """
+        Search SpotifyTracks for a search query.
+
+        :param query: the search query
+        :param maximum: the maximum number of results to search for
+        :param query_type: the type of the spotify instance to search
+        :return: a list of tracks [{"name": the trackname, "artists": [a list of artist names],
+         "id": the Spotify track id}]
+        """
+        result = self.spotify.search(query, limit=maximum, type=query_type)
+
+        trimmed_result = dict()
+
+        for key in result.keys():
+            # Filter out None values as the Spotipy library might return None for data it can't decode
+            trimmed_result_for_key = [x for x in result[key]["items"] if x is not None]
+            if key == "tracks":
+                trimmed_result_for_key = sorted(trimmed_result_for_key, key=lambda x: -x["popularity"])
+                trimmed_result_for_key = [
+                    {
+                        "type": x["type"],
+                        "name": x["name"],
+                        "artists": [y["name"] for y in x["artists"]],
+                        "id": x["id"],
+                        "uri": x["uri"],
+                        "image": x["album"]["images"][0]["url"],
+                    }
+                    for x in trimmed_result_for_key
+                ]
+                trimmed_result["tracks"] = trimmed_result_for_key
+            elif key == "albums":
+                trimmed_result_for_key = [
+                    {
+                        "type": x["type"],
+                        "name": x["name"],
+                        "artists": [y["name"] for y in x["artists"]],
+                        "id": x["id"],
+                        "uri": x["uri"],
+                        "image": x["images"][0]["url"],
+                    }
+                    for x in trimmed_result_for_key
+                ]
+                trimmed_result["albums"] = trimmed_result_for_key
+            elif key == "playlists":
+                trimmed_result_for_key = [
+                    {
+                        "type": x["type"],
+                        "name": x["name"],
+                        "owner": x["owner"],
+                        "id": x["id"],
+                        "uri": x["uri"],
+                        "image": x["images"][0]["url"] if len(x["images"]) > 0 else None,
+                    }
+                    for x in trimmed_result_for_key
+                ]
+                trimmed_result["playlists"] = trimmed_result_for_key
+        return trimmed_result
+
 
 class SpotifyArtist(models.Model):
     """Spotify Artist model."""
@@ -157,6 +702,15 @@ class SpotifyArtist(models.Model):
         :return: the artist name of this object
         """
         return self.artist_name
+
+    @classmethod
+    def get_or_create_from_spotify(cls, spotify_data):
+        """Create a SpotifyArtist object from Spotify data."""
+        obj, _ = cls.objects.get_or_create(artist_id=spotify_data["id"])
+        if obj.artist_name != spotify_data["name"]:
+            obj.artist_name = spotify_data["name"]
+            obj.save()
+        return obj
 
 
 class SpotifyTrack(models.Model):
@@ -179,6 +733,27 @@ class SpotifyTrack(models.Model):
         """Get queryset of track_artists."""
         return self.track_artists.all()
 
+    @classmethod
+    def get_or_create_from_spotify(cls, spotify_data):
+        """Create a SpotifyTrack object from Spotify data."""
+        obj, _ = cls.objects.get_or_create(track_id=spotify_data["id"])
+        updated = False
+
+        if obj.track_name != spotify_data["name"]:
+            obj.track_name = spotify_data["name"]
+            updated = True
+
+        artists = [SpotifyArtist.get_or_create_from_spotify(x) for x in spotify_data["artists"]]
+
+        if set(obj.track_artists.all()) != set(artists):
+            [obj.track_artists.add(x) for x in artists]
+            updated = True
+
+        if updated:
+            obj.save()
+
+        return obj
+
 
 class SpotifyQueueItem(models.Model):
     """
@@ -188,14 +763,16 @@ class SpotifyQueueItem(models.Model):
     device for a Player, requested by a certain user.
     """
 
-    track = models.ForeignKey(
-        SpotifyTrack, related_name="queue_items", on_delete=models.SET_NULL, null=True, blank=True
-    )
-    player = models.ForeignKey(Player, related_name="queue", on_delete=models.CASCADE)
+    track = models.ForeignKey(SpotifyTrack, related_name="requests", on_delete=models.SET_NULL, null=True, blank=True)
+    player = models.ForeignKey(Player, related_name="requests", on_delete=models.CASCADE)
     added = models.DateTimeField(auto_now_add=True)
-    requested_by = models.ForeignKey(
-        User, related_name="queue_items", null=True, on_delete=models.SET_NULL, blank=True
-    )
+    requested_by = models.ForeignKey(User, related_name="requests", null=True, on_delete=models.SET_NULL, blank=True)
+
+    @classmethod
+    def queue_track(cls, spotify_data, player, user):
+        """Add a track to the queue of a player."""
+        track = SpotifyTrack.get_or_create_from_spotify(spotify_data)
+        return cls.objects.create(track=track, player=player, requested_by=user)
 
     class Meta:
         """Meta class."""
@@ -212,6 +789,11 @@ class ThaliedjeBlacklistedUser(models.Model):
     def __str__(self):
         """Print object as a string."""
         return f"{self.user} blacklisted for requesting songs"
+
+    @classmethod
+    def user_is_blacklisted(cls, user):
+        """Return if the user is on the blacklist."""
+        return cls.objects.filter(user=user).exists()
 
     class Meta:
         """Meta class for ThaliedjeBlacklistedUser."""
@@ -351,6 +933,22 @@ class ThaliedjeControlEvent(models.Model):
     def __str__(self):
         """Convert this object to string."""
         return f"Control event for {self.event}"
+
+    @classmethod
+    def current_event(cls, player):
+        """
+        Get the active ThaliedjeControlEvent for a Player.
+
+        :param player: the player
+        :return: the active ThaliedjeControlEvent or None
+        """
+        try:
+            return cls.objects.get(player=player.id, active=True)
+        except cls.DoesNotExist:
+            return None
+        except cls.MultipleObjectsReturned:
+            logging.error("Multiple active ThaliedjeControlEvents found for player %s", player)
+            return None
 
     class Meta:
         """Meta class for ThaliedjeControlEvent."""

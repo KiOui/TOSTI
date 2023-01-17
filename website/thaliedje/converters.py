@@ -1,5 +1,5 @@
 from django.urls.converters import SlugConverter, IntConverter
-from .models import Player
+from .models import Player, SpotifyPlayer
 
 
 class PlayerConverter(SlugConverter):
@@ -13,7 +13,11 @@ class PlayerConverter(SlugConverter):
         :return: a Player or ValueError
         """
         try:
-            return Player.objects.get(slug=value)
+            player = Player.objects.get(slug=value)
+            try:
+                return player.spotifyplayer
+            except SpotifyPlayer.DoesNotExist:
+                return player.marietjeplayer
         except Player.DoesNotExist:
             raise ValueError
 
@@ -38,7 +42,11 @@ class PlayerPKConverter(IntConverter):
         :return: a Player or ValueError
         """
         try:
-            return Player.objects.get(pk=pk)
+            player = Player.objects.get(pk=pk)
+            try:
+                return player.spotifyplayer
+            except SpotifyPlayer.DoesNotExist:
+                return player.marietjeplayer
         except Player.DoesNotExist:
             raise ValueError
 

@@ -1,7 +1,6 @@
 from django import template
 
-from thaliedje.models import Player
-from thaliedje.services import can_control_player
+from thaliedje.models import Player, SpotifyPlayer
 
 register = template.Library()
 
@@ -21,14 +20,20 @@ def render_queue(player):
 @register.inclusion_tag("thaliedje/player.html", takes_context=True)
 def render_player(context, player):
     """Render player."""
-    return {"player": player, "controls": can_control_player(context["request"].user, player)}
+    try:
+        player = SpotifyPlayer.objects.get(id=player.id)
+    except SpotifyPlayer.DoesNotExist:
+        controls = False
+    else:
+        controls = player.can_control(context["request"].user)
+    return {"player": player, "controls": controls}
 
 
 @register.inclusion_tag("thaliedje/player.html", takes_context=True)
 def render_venue_player(context, venue):
     """Render player for a venue."""
     player = Player.get_player(venue)
-    return {"player": player, "controls": can_control_player(context["request"].user, player)}
+    return render_player(context, player)
 
 
 @register.inclusion_tag("thaliedje/render_players.html", takes_context=True)
