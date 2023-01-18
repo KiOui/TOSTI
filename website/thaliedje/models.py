@@ -12,7 +12,8 @@ from django.urls import reverse
 from django.utils import timezone
 from queryable_properties.managers import QueryablePropertiesManager
 from queryable_properties.properties import RangeCheckProperty, AnnotationProperty, queryable_property
-from spotipy import SpotifyOAuth
+from requests import ReadTimeout
+from spotipy import SpotifyOAuth, SpotifyException
 from spotipy.client import Spotify
 
 from users.models import User
@@ -437,7 +438,11 @@ class SpotifyPlayer(Player):
         Due to a bug, the API does not return the actual timestamp, so we compute it ourselves.
         """
         before_call = time.time() * 1000
-        spotify_response = self.spotify.current_playback()
+        try:
+            spotify_response = self.spotify.current_playback()
+        except (SpotifyException, ReadTimeout):
+            return None
+
         after_call = time.time() * 1000
         if spotify_response is not None:
             spotify_response["timestamp"] = int((before_call + after_call) / 2)
@@ -454,7 +459,10 @@ class SpotifyPlayer(Player):
             return cached_result
 
         playback = self._get_current_playback()
-        cache.set(self._current_playback_cache_key, playback, 5)
+        if playback is None:
+            return None
+
+        cache.set(self._current_playback_cache_key, playback, 10)
         return playback
 
     @property
@@ -484,7 +492,7 @@ class SpotifyPlayer(Player):
             for item in queue["queue"]
         ]
 
-        cache.set(self._queue_cache_key, queue, 30)
+        cache.set(self._queue_cache_key, queue, 60)
         return queue
 
     def request_song(self, track_id):
