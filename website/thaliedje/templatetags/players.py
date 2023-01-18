@@ -44,7 +44,15 @@ def render_players(context):
     :param context: needed because the render_player must know the request
     :return: a dictionary
     """
-    return {"players": Player.objects.all(), "request": context["request"]}
+
+    players = []
+    for player in Player.objects.all():
+        try:
+            player = player.spotifyplayer
+        except SpotifyPlayer.DoesNotExist:
+            player = player.marietjeplayer
+        players.append(player)
+    return {"players": players, "request": context["request"]}
 
 
 @register.inclusion_tag("thaliedje/render_player_card.html", takes_context=True)

@@ -357,6 +357,10 @@ class SpotifyPlayer(Player):
 
         verbose_name = "Spotify player"
         verbose_name_plural = "Spotify players"
+        permissions = [
+            ("can_control", "Can control music players"),
+            ("can_request_playlists_and_albums", "Can request playlists and albums"),
+        ]
 
     def __str__(self):
         """
