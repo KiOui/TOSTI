@@ -50,7 +50,9 @@
                     <p class="item-counter"><% index + 1 %>.</p>
                     <p class="item-name"><% order.product.name %> (<% format_price(order.order_price) %>)</p>
                     <i v-if="order.product.icon !== null" :class="`fa-solid fa-${order.product.icon} item-icon`"></i>
-                    <span v-if="!order.paid && order.user !== null && {{ user.id }} === order.user.id" class="badge rounded-pill bg-danger" style="max-height: fit-content;">Not paid</span>
+                    <div>
+                        <span v-if="!order.paid && order.user !== null && {{ user.id }} === order.user.id" class="badge rounded-pill bg-danger" style="max-height: fit-content;">Not paid</span>
+                    </div>
                     <div class="flex-divider"></div>
                     <i v-if="order.user !== null && {{ user.id }} === order.user.id"
                        class="fa-solid fa-user user-icon"></i>

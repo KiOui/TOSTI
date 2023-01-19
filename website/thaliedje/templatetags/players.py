@@ -38,13 +38,11 @@ def render_venue_player(context, venue):
 
 @register.inclusion_tag("thaliedje/render_players.html", takes_context=True)
 def render_players(context):
-    """
-    Render all players in card format.
+    """Render all players in card format.
 
     :param context: needed because the render_player must know the request
     :return: a dictionary
     """
-
     players = []
     for player in Player.objects.all():
         try:
