@@ -43,7 +43,6 @@ def render_players(context):
     :param context: needed because the render_player must know the request
     :return: a dictionary
     """
-
     players = []
     for player in Player.objects.all():
         try:
