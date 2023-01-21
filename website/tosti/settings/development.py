@@ -43,3 +43,9 @@ MEDIA_URL = "/media/"
 
 # SPOTIFY SETTINGS
 SPOTIFY_CACHE_PATH = os.path.join(BASE_DIR, "cache")  # noqa
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}

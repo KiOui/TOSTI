@@ -414,6 +414,27 @@ class SpotifyPlayer(Player):
         """
         return Spotify(oauth_manager=self.auth)
 
+    def do_spotify_request(self, func, *args, **kwargs):
+        """
+        Perform a Spotify request with error handling.
+
+        :param func: the function to call
+        :param args: the arguments to pass to the function
+        :param kwargs: the keyword arguments to pass to the function
+        :return: the result of the function call
+        """
+        if not self.configured:
+            raise RuntimeError("This Spotify account is not configured yet.")
+
+        logging.info("Performing Spotify request: %s", func.__name__)
+
+        try:
+            return func(*args, **kwargs)
+        except SpotifyException as e:
+            logging.warning("Spotify error: %s", e)
+        except ReadTimeout:
+            logging.warning("Spotify request timed out.")
+
     @property
     def get_display_name(self):
         """
@@ -438,10 +459,8 @@ class SpotifyPlayer(Player):
         Due to a bug, the API does not return the actual timestamp, so we compute it ourselves.
         """
         before_call = time.time() * 1000
-        try:
-            spotify_response = self.spotify.current_playback()
-        except (SpotifyException, ReadTimeout):
-            return None
+
+        spotify_response = self.do_spotify_request(self.spotify.current_playback)
 
         after_call = time.time() * 1000
         if spotify_response is not None:
@@ -451,18 +470,18 @@ class SpotifyPlayer(Player):
     @property
     def _current_playback(self):
         """Get the current playback from the Spotify API."""
-        if not self.configured:
-            raise RuntimeError("This Spotify account is not configured yet.")
-
         cached_result = cache.get(self._current_playback_cache_key)
         if cached_result is not None:
+            if cached_result == "unavailable":
+                return None
             return cached_result
 
         playback = self._get_current_playback()
         if playback is None:
+            cache.set(self._current_playback_cache_key, "unavailable", 5)
             return None
 
-        cache.set(self._current_playback_cache_key, playback, 10)
+        cache.set(self._current_playback_cache_key, playback, 5)
         return playback
 
     @property
@@ -473,14 +492,13 @@ class SpotifyPlayer(Player):
     @property
     def queue(self):
         """Get the current queue of a player."""
-        if not self.configured:
-            raise RuntimeError("This Spotify account is not configured yet.")
-
         cached_result = cache.get(self._queue_cache_key)
         if cached_result is not None:
+            if cached_result == "unavailable":
+                return None
             return cached_result
 
-        queue = self.spotify.queue()
+        queue = self.do_spotify_request(self.spotify.queue)
 
         queue = [
             {
@@ -492,17 +510,19 @@ class SpotifyPlayer(Player):
             for item in queue["queue"]
         ]
 
-        cache.set(self._queue_cache_key, queue, 60)
+        if queue is None:
+            cache.set(self._queue_cache_key, "unavailable", 10)
+            return None
+
+        cache.set(self._queue_cache_key, queue, 10)
         return queue
 
     def request_song(self, track_id):
         """Queue a track."""
-        if not self.configured:
-            raise RuntimeError("This Spotify account is not configured yet.")
+        track_info = self.do_spotify_request(self.spotify.track, track_id)
 
-        track_info = self.spotify.track(track_id)
+        self.do_spotify_request(self.spotify.add_to_queue, track_id, device_id=self.playback_device_id)
 
-        self.spotify.add_to_queue(track_id, self.playback_device_id)
         cache.delete(self._queue_cache_key)
 
         if not self.is_playing:
@@ -513,51 +533,41 @@ class SpotifyPlayer(Player):
 
     def start_playing(self, context_uri):
         """Start playing something on the playback device of a Player."""
-        if not self.configured:
-            raise RuntimeError("This Spotify account is not configured yet.")
-
         if self._current_playback is None:
             # If the playback device is not active, make it active
-            self.spotify.transfer_playback(self.playback_device_id)
+            self.do_spotify_request(
+                self.spotify.start_playback, device_id=self.playback_device_id, context_uri=context_uri
+            )
 
-        self.spotify.start_playback(device_id=self.playback_device_id, context_uri=context_uri)
+        self.do_spotify_request(
+            self.spotify.start_playback, device_id=self.playback_device_id, context_uri=context_uri
+        )
+
         cache.delete(self._current_playback_cache_key)
 
     def start(self):
         """Start playing on the playback device of a Player."""
-        if not self.configured:
-            raise RuntimeError("This Spotify account is not configured yet.")
-
         if self._current_playback is None:
             # If the playback device is not active, make it active
-            self.spotify.transfer_playback(self.playback_device_id)
+            self.do_spotify_request(self.spotify.start_playback, device_id=self.playback_device_id)
 
-        self.spotify.start_playback(device_id=self.playback_device_id)
+        self.do_spotify_request(self.spotify.start_playback, device_id=self.playback_device_id)
         cache.delete(self._current_playback_cache_key)
 
     def pause(self):
         """Pause the playback device of a Player."""
-        if not self.configured:
-            raise RuntimeError("This Spotify account is not configured yet.")
-
-        self.spotify.pause_playback(self.playback_device_id)
+        self.do_spotify_request(self.spotify.pause_playback, device_id=self.playback_device_id)
         cache.delete(self._current_playback_cache_key)
 
     def next(self):
         """Skip to the next track on the playback device of a Player."""
-        if not self.configured:
-            raise RuntimeError("This Spotify account is not configured yet.")
-
-        self.spotify.next_track(self.playback_device_id)
+        self.do_spotify_request(self.spotify.next_track, device_id=self.playback_device_id)
         cache.delete(self._current_playback_cache_key)
         cache.delete(self._queue_cache_key)
 
     def previous(self):
         """Skip to the next track on the playback device of a Player."""
-        if not self.configured:
-            raise RuntimeError("This Spotify account is not configured yet.")
-
-        self.spotify.previous_track(self.playback_device_id)
+        self.do_spotify_request(self.spotify.previous_track, device_id=self.playback_device_id)
         cache.delete(self._current_playback_cache_key)
         cache.delete(self._queue_cache_key)
 
@@ -628,10 +638,7 @@ class SpotifyPlayer(Player):
     @volume.setter
     def volume(self, volume_percent):
         """Set the volume of the playback device of a Player."""
-        if not self.configured:
-            raise RuntimeError("This Spotify account is not configured yet.")
-
-        self.spotify.volume(volume_percent, self.playback_device_id)
+        self.do_spotify_request(self.spotify.volume, volume_percent, device_id=self.playback_device_id)
         cache.delete(self._current_playback_cache_key)
 
     @property
@@ -645,10 +652,7 @@ class SpotifyPlayer(Player):
     @shuffle.setter
     def shuffle(self, shuffle_state: bool):
         """Set the shuffle state of the playback device of a Player."""
-        if not self.configured:
-            raise RuntimeError("This Spotify account is not configured yet.")
-
-        self.spotify.shuffle(shuffle_state, self.playback_device_id)
+        self.do_spotify_request(self.spotify.shuffle, shuffle_state, device_id=self.playback_device_id)
         cache.delete(self._current_playback_cache_key)
         cache.delete(self._queue_cache_key)
 
@@ -663,10 +667,7 @@ class SpotifyPlayer(Player):
     @repeat.setter
     def repeat(self, repeat_state: str):
         """Set the repeat state of the playback device of a Player."""
-        if not self.configured:
-            raise RuntimeError("This Spotify account is not configured yet.")
-
-        self.spotify.repeat(repeat_state, self.playback_device_id)
+        self.do_spotify_request(self.spotify.repeat, repeat_state, device_id=self.playback_device_id)
         cache.delete(self._current_playback_cache_key)
 
     def search(self, query, maximum=5, query_type="track"):
@@ -679,13 +680,13 @@ class SpotifyPlayer(Player):
         :return: a list of tracks [{"name": the trackname, "artists": [a list of artist names],
          "id": the Spotify track id}]
         """
-        result = self.spotify.search(query, limit=maximum, type=query_type)
+        results = self.do_spotify_request(self.spotify.search, q=query, limit=maximum, type=query_type)
 
         trimmed_result = dict()
 
-        for key in result.keys():
+        for key in results.keys():
             # Filter out None values as the Spotipy library might return None for data it can't decode
-            trimmed_result_for_key = [x for x in result[key]["items"] if x is not None]
+            trimmed_result_for_key = [x for x in results[key]["items"] if x is not None]
             if key == "tracks":
                 trimmed_result_for_key = sorted(trimmed_result_for_key, key=lambda x: -x["popularity"])
                 trimmed_result_for_key = [
