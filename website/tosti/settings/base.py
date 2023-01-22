@@ -1,7 +1,9 @@
+import os
 from pathlib import Path
 
-from django.apps import AppConfig
+import saml2
 from django.contrib import messages
+from saml2 import saml, xmldsig
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -18,7 +20,7 @@ INSTALLED_APPS = [
     "constance",
     "constance.backends.database",
     "tosti.django_cron_app_config.CustomDjangoCronAppConfig",
-    "tosti.sp_app_config.CustomSPAppConfig",
+    "djangosaml2",
     "django_bootstrap5",
     "tinymce",
     "fontawesomefree",
@@ -48,7 +50,7 @@ GUARDIAN_RAISE_403 = True
 
 AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",  # default
-    "sp.backends.SAMLAuthenticationBackend",
+    "djangosaml2.backends.Saml2Backend",
     "guardian.backends.ObjectPermissionBackend",
 )
 
@@ -62,14 +64,11 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.contrib.admindocs.middleware.XViewMiddleware",
+    "djangosaml2.middleware.SamlSessionMiddleware",
     "announcements.middleware.ClosedAnnouncementsMiddleware",
 ]
 
 ROOT_URLCONF = "tosti.urls"
-
-LOGIN_URL = '/login/'
-
-LOGIN_REDIRECT_URL = '/users/account/'
 
 TEMPLATES = [
     {
@@ -159,9 +158,86 @@ OAUTH2_PROVIDER = {
 }
 
 # SAML SP SETTINGS
-SP_UNIQUE_USERNAMES = False
-SP_LOGIN = "users.services.post_login"
-SESSION_SERIALIZER = "django.contrib.sessions.serializers.PickleSerializer"
+SAML_SESSION_COOKIE_NAME = "saml_session"
+SESSION_COOKIE_SECURE = False
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/users/account/'
+# LOGIN_URL = "/saml/login/"
+# LOGOUT_REDIRECT_URL = "/saml/login/"
+# LOGIN_REDIRECT_URL = "/"
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+BASE_URL = "tosti.science.ru.nl"
+SAML_USE_NAME_ID_AS_USERNAME = True
+SAML_ATTRIBUTE_MAPPING = {
+    "uid": ("username",),
+    "mail": ("email",),
+    "displayName": ("full_name",),
+}
+SAML_CONFIG = {
+    "xmlsec_binary": "/usr/local/bin/xmlsec1",
+    "entityid": BASE_URL,
+    "allow_unknown_attributes": True,
+    "service": {
+        "sp": {
+            "name": "TOSTI",
+            "name_id_format": saml.NAMEID_FORMAT_PERSISTENT,
+            "endpoints": {
+                "assertion_consumer_service": [
+                    (f"{BASE_URL}/saml/acs/", saml2.BINDING_HTTP_POST),
+                ],
+                "single_logout_service": [
+                    (f"{BASE_URL}/saml/ls/", saml2.BINDING_HTTP_REDIRECT),
+                    (f"{BASE_URL}/saml/ls/post", saml2.BINDING_HTTP_POST),
+                ],
+            },
+            "signing_algorithm": xmldsig.SIG_RSA_SHA256,
+            "digest_algorithm": xmldsig.DIGEST_SHA256,
+            "force_authn": False,
+            "name_id_format_allow_create": True,
+            "required_attributes": ["uid", "mail", "displayName"],
+            "want_response_signed": False,
+            "want_assertions_signed": True,
+            "allow_unsolicited": True,
+        },
+    },
+    "metadata": {
+        "local": [
+            os.path.join(BASE_DIR, "tosti", "settings", "metadata.xml"),
+        ],
+    },
+    "debug": 1,
+    "key_file": os.path.join(BASE_DIR, "tosti", "settings", "private.key"),
+    "cert_file": os.path.join(BASE_DIR, "tosti", "settings", "public.cert"),
+    "encryption_keypairs": [
+        {
+            "key_file": os.path.join(BASE_DIR, "tosti", "settings", "private.key"),
+            "cert_file": os.path.join(BASE_DIR, "tosti", "settings", "public.cert"),
+        }
+    ],
+    "contact_person": [
+        {
+            "given_name": "Olympus",
+            "email_address": "www-tosti@science.ru.nl",
+            "contact_type": "technical",
+        },
+        {
+            "given_name": "Olympus",
+            "email_address": "www-tosti@science.ru.nl",
+            "contact_type": "administrative",
+        },
+    ],
+    "organization": {
+        "name": [("Olympus", "nl"), ("Olympus", "en")],
+        "display_name": [
+            ("Olympus", "nl"),
+            ("Olympus", "en"),
+        ],
+        "url": [
+            (BASE_URL, "nl"),
+            (BASE_URL, "en"),
+        ],
+    },
+}
 
 # Messages
 MESSAGE_TAGS = {
