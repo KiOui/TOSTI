@@ -46,17 +46,12 @@ def execute_data_minimisation(dry_run=False):
     :return: list of users from who data is removed
     """
     delete_before = timezone.now() - datetime.timedelta(days=31)
-    orders = Order.objects.filter(created__lte=delete_before)
+    orders = Order.objects.filter(created__lte=delete_before).exclude(paid=False)
 
-    users = []
-    for order in orders:
-        if not order.paid:
-            logger.warning(f"An unpaid order of {order.user} has not been touched.")
-        else:
-            users.append(order.user)
-            order.user = None
-            if not dry_run:
-                order.save()
+    users = orders.values_list("user", flat=True).distinct()
+    if not dry_run:
+        orders.update(user=None)
+
     return users
 
 
