@@ -536,7 +536,7 @@ class SpotifyPlayer(Player):
         if self._current_playback is None:
             # If the playback device is not active, make it active
             self.do_spotify_request(
-                self.spotify.start_playback, device_id=self.playback_device_id, context_uri=context_uri
+                self.spotify.transfer_playback, device_id=self.playback_device_id, context_uri=context_uri
             )
 
         self.do_spotify_request(
@@ -549,7 +549,7 @@ class SpotifyPlayer(Player):
         """Start playing on the playback device of a Player."""
         if self._current_playback is None:
             # If the playback device is not active, make it active
-            self.do_spotify_request(self.spotify.start_playback, device_id=self.playback_device_id)
+            self.do_spotify_request(self.spotify.transfer_playback, device_id=self.playback_device_id)
 
         self.do_spotify_request(self.spotify.start_playback, device_id=self.playback_device_id)
         cache.delete(self._current_playback_cache_key)
