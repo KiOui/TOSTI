@@ -46,7 +46,14 @@ urlpatterns = [
     ),
     path("api/", include("tosti.api.urls")),
     path("saml/", include("djangosaml2.urls")),
-    path("sso/science/", include("djangosaml2.urls")), # Legacy for as long as CNCZ IDP isn't updated to use the new URL
+    path(
+        "sso/science/", include("djangosaml2.urls")
+    ),  # Legacy for as long as CNCZ IDP isn't updated to use the new URL
+    path(
+        "sso/science/slo/",
+        RedirectView.as_view(url="/sso/science/ls/", query_string=True),
+        name="slo_legacy_redirect",
+    ),  # Legacy for as long as CNCZ IDP isn't updated to use the new URL
     path(
         "login/",
         RedirectView.as_view(url="/saml/login/" if not settings.DEBUG else "/admin-login", query_string=True),
