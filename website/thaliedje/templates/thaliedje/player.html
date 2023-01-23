@@ -1,7 +1,7 @@
 {% load static %}
 <link rel="stylesheet" href="{% static 'thaliedje/css/player.css' %}"/>
 <div class="player" id="player-container-{{ player.id }}">
-<template v-if="player_data.track !== null">
+<template v-if="player_data.track.name !== null">
     <div class="w-50 mx-auto mb-2">
         <a href="{% url "thaliedje:now_playing" player=player %}">
             <img class="w-100" :src="player_data.track.image" :alt="player_data.track.name"/>
