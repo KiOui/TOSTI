@@ -151,4 +151,6 @@ docker-compose.yml
 # Production settings
 /website/tosti/settings/production.py
 /website/tosti/settings/management.py
+/website/tosti/settings/saml/private.key
+/website/tosti/settings/saml/public.cert
 RELOAD

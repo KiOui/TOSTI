@@ -1,7 +1,9 @@
+import os
 from pathlib import Path
 
-from django.apps import AppConfig
+import saml2
 from django.contrib import messages
+from saml2 import saml, xmldsig
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -18,7 +20,7 @@ INSTALLED_APPS = [
     "constance",
     "constance.backends.database",
     "tosti.django_cron_app_config.CustomDjangoCronAppConfig",
-    "tosti.sp_app_config.CustomSPAppConfig",
+    "djangosaml2",
     "django_bootstrap5",
     "tinymce",
     "fontawesomefree",
@@ -48,7 +50,7 @@ GUARDIAN_RAISE_403 = True
 
 AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",  # default
-    "sp.backends.SAMLAuthenticationBackend",
+    "djangosaml2.backends.Saml2Backend",
     "guardian.backends.ObjectPermissionBackend",
 )
 
@@ -62,14 +64,11 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.contrib.admindocs.middleware.XViewMiddleware",
+    "djangosaml2.middleware.SamlSessionMiddleware",
     "announcements.middleware.ClosedAnnouncementsMiddleware",
 ]
 
 ROOT_URLCONF = "tosti.urls"
-
-LOGIN_URL = '/login/'
-
-LOGIN_REDIRECT_URL = '/users/account/'
 
 TEMPLATES = [
     {
@@ -158,10 +157,9 @@ OAUTH2_PROVIDER = {
     },
 }
 
-# SAML SP SETTINGS
-SP_UNIQUE_USERNAMES = False
-SP_LOGIN = "users.services.post_login"
-SESSION_SERIALIZER = "django.contrib.sessions.serializers.PickleSerializer"
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/users/account/'
+LOGOUT_REDIRECT_URL = "/"
 
 # Messages
 MESSAGE_TAGS = {
