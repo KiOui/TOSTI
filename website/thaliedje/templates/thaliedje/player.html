@@ -8,15 +8,15 @@
         </a>
     </div>
     <div class="w-50 mx-auto mb-3">
-            <div class="progress" style="height: 2px">
-                <div
-                    class="progress-bar"
-                    role="progressbar"
-                    :style="'width: ' + this.track_progress_percentage+'%;'"
-                    :aria-valuenow="this.track_progress_ms"
-                    aria-valuemin="0"
-                    :aria-valuemax="this.player_data.duration_ms">
-                </div>
+        <div class="progress" style="height: 2px">
+            <div
+                class="progress-bar"
+                role="progressbar"
+                :style="'width: ' + this.track_progress_percentage+'%;'"
+                :aria-valuenow="this.track_progress_ms"
+                aria-valuemin="0"
+                :aria-valuemax="this.player_data.duration_ms">
+            </div>
             </div>
         <div>
             <span class="float-start me-2 small align-left text-nowrap" style="width: 30px">
@@ -100,11 +100,15 @@
                 is_playing: false,
                 shuffle: null,
                 repeat: null,
-                track: null,
-                current_volume: 50,
-                timestamp: 0,
-                progress_ms: 0,
-                duration_ms: 0,
+                track: {
+                    image: null,
+                    name: null,
+                    artists: [],
+                },
+                current_volume: null,
+                timestamp: null,
+                progress_ms: null,
+                duration_ms: null,
             },
             doing_call: false,
             set_volume_index: 0,
