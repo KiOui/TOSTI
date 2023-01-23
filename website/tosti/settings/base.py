@@ -183,14 +183,14 @@ SAML_CONFIG = {
             "name_id_format": saml.NAMEID_FORMAT_PERSISTENT,
             "endpoints": {
                 "assertion_consumer_service": [
-                    (f"https://{BASE_URL}/sso/science/acs/", saml2.BINDING_HTTP_POST), # Legacy, remove when possible
                     (f"https://{BASE_URL}/saml/acs/", saml2.BINDING_HTTP_POST),
+                    (f"https://{BASE_URL}/sso/science/acs/", saml2.BINDING_HTTP_POST), # Legacy, remove when possible
                 ],
                 "single_logout_service": [
-                    (f"https://{BASE_URL}/sso/science/ls/", saml2.BINDING_HTTP_REDIRECT), # Legacy, remove when possible
-                    (f"https://{BASE_URL}/sso/science/ls/post", saml2.BINDING_HTTP_POST), # Legacy, remove when possible
                     (f"https://{BASE_URL}/saml/ls/", saml2.BINDING_HTTP_REDIRECT),
                     (f"https://{BASE_URL}/saml/ls/post", saml2.BINDING_HTTP_POST),
+                    (f"https://{BASE_URL}/sso/science/slo/", saml2.BINDING_HTTP_REDIRECT), # Legacy, remove when possible
+                    (f"https://{BASE_URL}/sso/science/slo/post", saml2.BINDING_HTTP_POST), # Legacy, remove when possible
                 ],
             },
             "signing_algorithm": xmldsig.SIG_RSA_SHA256,
