@@ -167,7 +167,7 @@ LOGIN_REDIRECT_URL = '/users/account/'
 # LOGIN_REDIRECT_URL = "/"
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 BASE_URL = "tosti.science.ru.nl"
-SAML_USE_NAME_ID_AS_USERNAME = True
+SAML_USE_NAME_ID_AS_USERNAME = False
 SAML_ATTRIBUTE_MAPPING = {
     "uid": ("username",),
     "mail": ("email",),
