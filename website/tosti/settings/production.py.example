@@ -112,7 +112,7 @@ SAML_ATTRIBUTE_MAPPING = {
 }
 SAML_CONFIG = {
     "xmlsec_binary": "/usr/bin/xmlsec1",
-    "entityid": tosti.science.ru.nl,
+    "entityid": "tosti.science.ru.nl",
     "allow_unknown_attributes": True,
     "service": {
         "sp": {
@@ -142,16 +142,16 @@ SAML_CONFIG = {
     },
     "metadata": {
         "local": [
-            os.path.join(BASE_DIR, "tosti", "settings", "metadata.xml"),
+            os.path.join(BASE_DIR, "tosti", "settings", "saml", "metadata.xml"),
         ],
     },
     "debug": 1,
-    "key_file": os.path.join(BASE_DIR, "tosti", "settings", "private.key"),
-    "cert_file": os.path.join(BASE_DIR, "tosti", "settings", "public.cert"),
+    "key_file": os.path.join(BASE_DIR, "tosti", "settings", "saml", "private.key"),
+    "cert_file": os.path.join(BASE_DIR, "tosti", "settings", "saml", "public.cert"),
     "encryption_keypairs": [
         {
-            "key_file": os.path.join(BASE_DIR, "tosti", "settings", "private.key"),
-            "cert_file": os.path.join(BASE_DIR, "tosti", "settings", "public.cert"),
+            "key_file": os.path.join(BASE_DIR, "tosti", "settings", "saml", ""private.key"),
+            "cert_file": os.path.join(BASE_DIR, "tosti", "settings", "saml", "public.cert"),
         }
     ],
     "contact_person": [
