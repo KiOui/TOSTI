@@ -157,88 +157,9 @@ OAUTH2_PROVIDER = {
     },
 }
 
-# SAML SP SETTINGS
-SAML_SESSION_COOKIE_NAME = "saml_session"
-SESSION_COOKIE_SECURE = False
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/users/account/'
 LOGOUT_REDIRECT_URL = "/"
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-BASE_URL = "tosti.science.ru.nl"
-SAML_USE_NAME_ID_AS_USERNAME = False
-SAML_ATTRIBUTE_MAPPING = {
-    "uid": ("username",),
-    "mail": ("email",),
-    "displayName": ("full_name",),
-}
-SAML_CONFIG = {
-    "xmlsec_binary": "/usr/bin/xmlsec1",
-    "entityid": BASE_URL,
-    "allow_unknown_attributes": True,
-    "service": {
-        "sp": {
-            "name": "TOSTI",
-            "name_id_format": saml.NAMEID_FORMAT_PERSISTENT,
-            "endpoints": {
-                "assertion_consumer_service": [
-                    (f"https://{BASE_URL}/saml/acs/", saml2.BINDING_HTTP_POST),
-                    (f"https://{BASE_URL}/sso/science/acs/", saml2.BINDING_HTTP_POST), # Legacy, remove when possible
-                ],
-                "single_logout_service": [
-                    (f"https://{BASE_URL}/saml/ls/", saml2.BINDING_HTTP_REDIRECT),
-                    (f"https://{BASE_URL}/saml/ls/post", saml2.BINDING_HTTP_POST),
-                    (f"https://{BASE_URL}/sso/science/slo/", saml2.BINDING_HTTP_REDIRECT), # Legacy, remove when possible
-                    (f"https://{BASE_URL}/sso/science/slo/post", saml2.BINDING_HTTP_POST), # Legacy, remove when possible
-                ],
-            },
-            "signing_algorithm": xmldsig.SIG_RSA_SHA256,
-            "digest_algorithm": xmldsig.DIGEST_SHA256,
-            "force_authn": False,
-            "name_id_format_allow_create": True,
-            "required_attributes": ["uid", "mail", "displayName"],
-            "want_response_signed": False,
-            "want_assertions_signed": True,
-            "allow_unsolicited": True,
-        },
-    },
-    "metadata": {
-        "local": [
-            os.path.join(BASE_DIR, "tosti", "settings", "metadata.xml"),
-        ],
-    },
-    "debug": 1,
-    "key_file": os.path.join(BASE_DIR, "tosti", "settings", "private.key"),
-    "cert_file": os.path.join(BASE_DIR, "tosti", "settings", "public.cert"),
-    "encryption_keypairs": [
-        {
-            "key_file": os.path.join(BASE_DIR, "tosti", "settings", "private.key"),
-            "cert_file": os.path.join(BASE_DIR, "tosti", "settings", "public.cert"),
-        }
-    ],
-    "contact_person": [
-        {
-            "given_name": "Olympus",
-            "email_address": "www-tosti@science.ru.nl",
-            "contact_type": "technical",
-        },
-        {
-            "given_name": "Olympus",
-            "email_address": "www-tosti@science.ru.nl",
-            "contact_type": "administrative",
-        },
-    ],
-    "organization": {
-        "name": [("Olympus", "nl"), ("Olympus", "en")],
-        "display_name": [
-            ("Olympus", "nl"),
-            ("Olympus", "en"),
-        ],
-        "url": [
-            (BASE_URL, "nl"),
-            (BASE_URL, "en"),
-        ],
-    },
-}
 
 # Messages
 MESSAGE_TAGS = {
