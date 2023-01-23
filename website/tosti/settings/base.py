@@ -174,7 +174,7 @@ SAML_ATTRIBUTE_MAPPING = {
     "displayName": ("full_name",),
 }
 SAML_CONFIG = {
-    "xmlsec_binary": "/usr/local/bin/xmlsec1",
+    "xmlsec_binary": "/usr/bin/xmlsec1",
     "entityid": BASE_URL,
     "allow_unknown_attributes": True,
     "service": {
@@ -183,11 +183,11 @@ SAML_CONFIG = {
             "name_id_format": saml.NAMEID_FORMAT_PERSISTENT,
             "endpoints": {
                 "assertion_consumer_service": [
-                    (f"{BASE_URL}/saml/acs/", saml2.BINDING_HTTP_POST),
+                    (f"{BASE_URL}/sso/science/acs/", saml2.BINDING_HTTP_POST),
                 ],
                 "single_logout_service": [
-                    (f"{BASE_URL}/saml/ls/", saml2.BINDING_HTTP_REDIRECT),
-                    (f"{BASE_URL}/saml/ls/post", saml2.BINDING_HTTP_POST),
+                    (f"{BASE_URL}/sso/science/slo/", saml2.BINDING_HTTP_REDIRECT),
+                    (f"{BASE_URL}/sso/science/slo/post", saml2.BINDING_HTTP_POST),
                 ],
             },
             "signing_algorithm": xmldsig.SIG_RSA_SHA256,
