@@ -373,7 +373,6 @@ class OrderToListBottomAPIView(APIView):
     serializer_class = OrderSerializer
     schema = CustomAutoSchema(response_schema={"$ref": "#/components/schemas/Order"})
     permission_classes = [IsAuthenticatedOrTokenHasScope]
-    # required_scopes = ["orders:manage"]
 
     def patch(self, request, **kwargs):
         """Move the order to the bottom of the list."""
@@ -383,7 +382,7 @@ class OrderToListBottomAPIView(APIView):
         if order not in Order.objects.filter(shift=shift):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        if not request.user == order.user:
+        if request.user != order.user:
             raise PermissionDenied
 
         order.deprioritize = True

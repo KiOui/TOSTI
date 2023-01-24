@@ -33,11 +33,6 @@
                 </div>
             </div>
         </div>
-        <div v-if="user_orders.length > 0">
-            <button class="btn btn-lg btn-ml m-auto cursor-pointer btn-on d-flex" style="border-radius: 0; max-width: fit-content;" v-on:click="user_orders.forEach(order_to_bottom_of_list)" :class="{ disabled: user_orders_not_at_bottom == 0}">
-                Place my order at the bottom of the list
-            </button>
-        </div>
     </div>
 
     <div style="font-size: 20pt;" class="d-flex align-items-center justify-content-center">
@@ -59,12 +54,14 @@
                         <span v-if="!order.paid && order.user !== null && {{ user.id }} === order.user.id" class="badge rounded-pill bg-danger" style="max-height: fit-content;">Not paid</span>
                     </div>
                     <div class="flex-divider"></div>
-                    <i v-if="order.user !== null && {{ user.id }} === order.user.id"
-                       class="fa-solid fa-user user-icon"></i>
-                    <p v-if="order.type === 0" class="item-username">
-                        <template v-if="order.user !== null"><% order.user.first_name %></template>
-                    </p>
-                    <i v-else class="item-username fa-solid fa-desktop"></i>
+                    <div class="d-flex justify-center align-items-center">
+                        <i v-if="order.user !== null && {{ user.id }} === order.user.id && order.deprioritize === false"
+                            class="fa-solid fa-arrow-turn-down user-icon" style="font-size: 1.5em; cursor: pointer;" v-on:click="order_to_bottom_of_list(order)"></i>
+                        <p v-if="order.type === 0" class="item-username">
+                            <template v-if="order.user !== null"><% order.user.first_name %></template>
+                        </p>
+                        <i v-else class="item-username fa-solid fa-desktop"></i>
+                    </div>
                 </div>
                 <div class="ms-2 button-row">
                     <div v-if="order.ready" class="status-button me-2 bg-success text-white">
@@ -135,15 +132,6 @@
                      return !order.product.ignore_shift_restrictions;
                  });
              },
-             user_orders_not_at_bottom: function() {
-                let userCopy = this.user;
-                let list = this.orders.filter(
-                    function(order) {
-                        return userCopy === null || (order.user !== null && order.user.id === userCopy.id && !order.deprioritize);
-                    }
-                );
-                return list;
-             }
          },
         methods: {
             format_price(priceToFormat) {
@@ -209,26 +197,28 @@
                 });
             },
             order_to_bottom_of_list(order) {
-                fetch(
-                    `/api/v1/shifts/{{ shift.id }}/orders/${order.id}/to-bottom/`,
-                    {
-                        method: 'PATCH',
-                        headers: {
-                            "X-CSRFToken": get_csrf_token(),
-                            "Accept": 'application/json',
+                if (confirm("Are you sure you want to put this order on the bottom of the list?")) {
+                    fetch(
+                        `/api/v1/shifts/{{ shift.id }}/orders/${order.id}/to-bottom/`,
+                        {
+                            method: 'PATCH',
+                            headers: {
+                                "X-CSRFToken": get_csrf_token(),
+                                "Accept": 'application/json',
+                            }
                         }
-                    }
-                ).then(response => {
-                    if (response.status === 200) {
-                        return response;
-                    } else {
-                        throw response;
-                    }
-                }).then(() => {
-                    if (typeof (update_refresh_list) !== 'undefined') {
-                        update_refresh_list();
-                    }
-                }).catch(error => show_error_from_api(error));
+                    ).then(response => {
+                        if (response.status === 200) {
+                            return response;
+                        } else {
+                            throw response;
+                        }
+                    }).then(() => {
+                        if (typeof (update_refresh_list) !== 'undefined') {
+                            update_refresh_list();
+                        }
+                    }).catch(error => show_error_from_api(error));
+                }
             },
         }
     });
