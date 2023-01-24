@@ -10,6 +10,7 @@ from django.conf import settings
 from django.db.models import F
 from django.urls import reverse
 from django.utils import timezone
+from model_utils.managers import InheritanceManager
 from queryable_properties.managers import QueryablePropertiesManager
 from queryable_properties.properties import RangeCheckProperty, AnnotationProperty, queryable_property
 from requests import ReadTimeout
@@ -26,6 +27,8 @@ class Player(models.Model):
     display_name = models.CharField(max_length=255, default="", blank=True)
     slug = models.SlugField(unique=True, max_length=100)
     venue = models.OneToOneField(Venue, on_delete=models.SET_NULL, null=True, blank=True)
+
+    objects = InheritanceManager()
 
     def __str__(self):
         """Get the string representation of a Player."""

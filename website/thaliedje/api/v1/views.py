@@ -32,6 +32,11 @@ class PlayerListAPIView(ListAPIView):
     search_fields = ["display_name"]
     serializer_class = PlayerSerializer
 
+    def get_queryset(self):
+        """Get queryset."""
+        queryset = super().get_queryset().select_subclasses()
+        return queryset
+
 
 class PlayerRetrieveAPIView(RetrieveAPIView):
     """Get the current player."""
@@ -39,13 +44,10 @@ class PlayerRetrieveAPIView(RetrieveAPIView):
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
 
-    def get_object(self):
-        """Get object."""
-        obj = super().get_object()
-        try:
-            return obj.spotifyplayer
-        except SpotifyPlayer.DoesNotExist:
-            return obj.marietjeplayer
+    def get_queryset(self):
+        """Get queryset."""
+        queryset = super().get_queryset().select_subclasses()
+        return queryset
 
 
 class PlayerRequestsAPIView(ListAPIView):
