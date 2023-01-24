@@ -82,6 +82,10 @@
     cursor: pointer;
 }
 
+.user-order-background {
+    background-color: var(--background-shade);
+}
+
 @media screen and (max-width: 600px) {
     .item-list {
         flex-direction: column;

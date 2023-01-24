@@ -45,7 +45,7 @@
 
         <!-- Item orders -->
         <transition-group name="orderlist" tag="ul" class="item-orders">
-            <li v-for="(order, index) of orders" :key="`orderlist_order_${order.id}`" class="pt-2 pb-2 item-list">
+            <li v-for="(order, index) of orders" :key="`orderlist_order_${order.id}`" class="pt-2 pb-2 item-list" :class="{ 'user-order-background': (order.user !== null && {{ user.id }} === order.user.id)}">
                 <div class="information-row">
                     <p class="item-counter"><% index + 1 %>.</p>
                     <p class="item-name"><% order.product.name %> (<% format_price(order.order_price) %>)</p>
@@ -54,12 +54,14 @@
                         <span v-if="!order.paid && order.user !== null && {{ user.id }} === order.user.id" class="badge rounded-pill bg-danger" style="max-height: fit-content;">Not paid</span>
                     </div>
                     <div class="flex-divider"></div>
-                    <i v-if="order.user !== null && {{ user.id }} === order.user.id"
-                       class="fa-solid fa-user user-icon"></i>
-                    <p v-if="order.type === 0" class="item-username">
-                        <template v-if="order.user !== null"><% order.user.first_name %></template>
-                    </p>
-                    <i v-else class="item-username fa-solid fa-desktop"></i>
+                    <div class="d-flex justify-center align-items-center">
+                        <i v-if="order.user !== null && {{ user.id }} === order.user.id && order.deprioritize === false"
+                            class="fa-solid fa-arrow-down-short-wide" style="font-size: 1.5em; cursor: pointer;" v-on:click="order_to_bottom_of_list(order)"></i>
+                        <p v-if="order.type === 0" class="item-username">
+                            <template v-if="order.user !== null"><% order.user.first_name %></template>
+                        </p>
+                        <i v-else class="item-username fa-solid fa-desktop"></i>
+                    </div>
                 </div>
                 <div class="ms-2 button-row">
                     <div v-if="order.ready" class="status-button me-2 bg-success text-white">
@@ -141,7 +143,7 @@
                  return this.orders.filter(function(order) {
                      return !order.product.ignore_shift_restrictions;
                  });
-             }
+             },
          },
         methods: {
             format_price(priceToFormat) {
@@ -205,6 +207,30 @@
                         this.addingOrder = false;
                     })
                 });
+            },
+            order_to_bottom_of_list(order) {
+                if (confirm("Are you sure you want to put this order on the bottom of the list?")) {
+                    fetch(
+                        `/api/v1/shifts/{{ shift.id }}/orders/${order.id}/to-bottom/`,
+                        {
+                            method: 'PATCH',
+                            headers: {
+                                "X-CSRFToken": get_csrf_token(),
+                                "Accept": 'application/json',
+                            }
+                        }
+                    ).then(response => {
+                        if (response.status === 200) {
+                            return response;
+                        } else {
+                            throw response;
+                        }
+                    }).then(() => {
+                        if (typeof (update_refresh_list) !== 'undefined') {
+                            update_refresh_list();
+                        }
+                    }).catch(error => show_error_from_api(error));
+                }
             },
         }
     });

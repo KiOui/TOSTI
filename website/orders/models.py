@@ -539,6 +539,8 @@ class Order(models.Model):
 
     prioritize = models.BooleanField(default=False)
 
+    deprioritize = models.BooleanField(default=False)
+
     class Meta:
         """Meta class."""
 
