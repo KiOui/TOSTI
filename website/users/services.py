@@ -2,15 +2,8 @@ from datetime import timedelta
 
 from django.contrib.auth import get_user_model
 from django.utils import timezone
-from sp.utils import login
 
 User = get_user_model()
-
-
-def post_login(request, user, idp, saml):
-    """Log a user in to the system using a custom function."""
-    update_staff_status(user)
-    return login(request, user, idp, saml)
 
 
 def update_staff_status(user):
