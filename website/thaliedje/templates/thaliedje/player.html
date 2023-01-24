@@ -113,24 +113,32 @@
             track_progress_ms: 0,
             track_progress_percentage: 0,
             track_ms_left: 0,
+            lastRefresh: null,
         },
         created() {
             this.refresh();
-            this.recalculate_progress_interval = setInterval(() => {
-                this.updateTrackProgress();
-            }, 100);
-        },
-        mounted() {
-            this.refresh_timer = setTimeout(this.refresh, 2000);
-            this.recalculate_progress_interval = setInterval(() => {
-                this.updateTrackProgress();
-            }, 100);
+            this.recalculate_progress_interval = setInterval(this.updateTrackProgress, 100);
+            document.addEventListener("visibilitychange", this.visibilityChange);
         },
         unmounted() {
-            clearTimeout(this.refresh_timer);
-            clearInterval(this.recalculate_progress_interval);
+            document.removeEventListener("visibilitychange", this.visibilityChange);
         },
         methods: {
+            visibilityChange(event) {
+                if (event.target.hidden) {
+                    clearTimeout(this.refresh_timer);
+                    clearInterval(this.recalculate_progress_interval);
+                } else {
+                    clearTimeout(this.refresh_timer);
+                    clearInterval(this.recalculate_progress_interval);
+                    this.recalculate_progress_interval = setInterval(this.updateTrackProgress, 100);
+                    if (this.lastRefresh === null || (new Date()).getTime() - this.lastRefresh > 5000) {
+                        this.refresh();
+                    } else {
+                        this.refresh_timer = setTimeout(this.refresh, 5000);
+                    }
+                }
+            },
             updateTrackProgress() {
                 if (this.player_data.is_playing === false) return
 
@@ -413,6 +421,7 @@
                 }).catch(error => {
                     console.log(`An error occurred while refreshing player {{ player.id }}. Error: ${error}`)
                 }).finally(() => {
+                    this.lastRefresh = (new Date()).getTime();
                     this.refresh_timer = setTimeout(this.refresh, 5000);
                 });
             }
