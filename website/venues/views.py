@@ -127,12 +127,12 @@ class ReservationCancelView(DeleteView):
             return redirect(self.get_success_url())
         return super().dispatch(request, *args, **kwargs)
 
-    def delete(self, request, *args, **kwargs):
+    def form_valid(self, form):
         """Delete the reservation."""
         obj = self.get_object()
         log_action(self.request.user, obj, DELETION, "Cancelled reservation via website.")
         messages.add_message(self.request, messages.SUCCESS, "Your reservation has been cancelled.")
-        return super().delete(request, *args, **kwargs)
+        return super().form_valid(form)
 
 
 @method_decorator(login_required, name="dispatch")
