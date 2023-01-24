@@ -75,6 +75,18 @@ function add_refresh_url(url, assigner_func) {
     }
 }
 
+function remove_refresh_url(url, assigner_func) {
+    if (refresh_list[url]) {
+        const index = refresh_list[url].indexOf(assigner_func);
+        if (index >= 0) {
+            refresh_list[url].splice(index, 1);
+            if (refresh_list[url].length === 0) {
+                delete refresh_list[url];
+            }
+        }
+    }
+}
+
 function update_refresh_list() {
     clearTimeout(update_timer);
     Promise.all(Object.entries(refresh_list).map(([key, value]) => {

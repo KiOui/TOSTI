@@ -50,7 +50,20 @@
                 .then(json => {
                     this.shift = json;
                 });
+            add_refresh_url("{% url "v1:shift_retrieveupdate" pk=shift.id %}", refresh_shift_header_data);
+        },
+        watch: {
+            shift: {
+                handler(newValue, oldValue) {
+                    if (newValue.finalized === true) {
+                        remove_refresh_url("{% url "v1:shift_retrieveupdate" pk=shift.id %}", refresh_shift_header_data);
+                    }
+                }
             }
-        });
-    add_refresh_url("{% url "v1:shift_retrieveupdate" pk=shift.id %}", function(data) {shift_header_{{ shift.id }}_vue.shift = data});
+        },
+    });
+
+    function refresh_shift_header_data(data) {
+        shift_header_{{ shift.id }}_vue.shift = data;
+    }
 </script>

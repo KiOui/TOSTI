@@ -65,6 +65,13 @@
                         this.typing_timer = setTimeout(this.search, 200);
                     }
                 }
+            },
+            shift: {
+                handler(newValue, oldValue) {
+                    if (newValue.finalized === true) {
+                        remove_refresh_url("{% url "v1:shift_retrieveupdate" pk=shift.id %}", process_refresh_scanner_data);
+                    }
+                }
             }
         },
         created() {
@@ -73,6 +80,7 @@
                 .then(json => {
                     this.shift = json;
                 });
+            add_refresh_url("{% url "v1:shift_retrieveupdate" pk=shift.id %}", process_refresh_scanner_data);
         },
         mounted() {
             //call function on modal shown
@@ -150,7 +158,8 @@
             }
         }
     });
-    add_refresh_url("{% url "v1:shift_retrieveupdate" pk=shift.id %}", function(data) {
-        scanner_vue.shift = data
-    });
+
+    function process_refresh_scanner_data(data) {
+        scanner_vue.shift = data;
+    }
 </script>
