@@ -1,7 +1,7 @@
 
 let update_timer = null;
-let update_list = [];
 let refresh_list = {};
+let lastRefresh = null;
 
 async function show_error_from_api(data) {
     if (data) {
@@ -75,10 +75,22 @@ function add_refresh_url(url, assigner_func) {
     }
 }
 
+function remove_refresh_url(url, assigner_func) {
+    if (refresh_list[url]) {
+        const index = refresh_list[url].indexOf(assigner_func);
+        if (index >= 0) {
+            refresh_list[url].splice(index, 1);
+            if (refresh_list[url].length === 0) {
+                delete refresh_list[url];
+            }
+        }
+    }
+}
+
 function update_refresh_list() {
     clearTimeout(update_timer);
-    for (const [key, value] of Object.entries(refresh_list)) {
-        fetch(
+    Promise.all(Object.entries(refresh_list).map(([key, value]) => {
+        return fetch(
             key,
             {
                 headers: {
@@ -102,8 +114,10 @@ function update_refresh_list() {
         }).catch(error => {
             console.log(`An error occurred while refreshing ${key}. Error: ${error}`)
         });
-    }
-    update_timer = setTimeout(update_refresh_list, 5000);
+    })).finally(() => {
+        lastRefresh = (new Date()).getTime();
+        update_timer = setTimeout(update_refresh_list, 5000);
+    });
 }
 
 function get_csrf_token() {
@@ -121,4 +135,18 @@ function get_csrf_token() {
     }
 }
 
+function visibilityChange(event) {
+    if (event.target.hidden) {
+        clearTimeout(update_timer);
+    } else {
+        clearTimeout(update_timer);
+        if (lastRefresh === null || (new Date()).getTime() - lastRefresh > 5000) {
+            update_refresh_list();
+        } else {
+            update_timer = setTimeout(update_refresh_list, 5000);
+        }
+    }
+}
+
 update_refresh_list();
+document.addEventListener("visibilitychange", visibilityChange);

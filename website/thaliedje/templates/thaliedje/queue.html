@@ -36,17 +36,41 @@
         el: '#queue-container-{{ player.id }}',
         delimiters: ['<%', '%>'],
         data: {
-            queue: []
+            queue: [],
+            refreshTimer: null,
+            lastRefresh: null,
         },
         created() {
-            fetch('{% url "v1:player_queue" player=player %}')
-            .then(response => response.json())
-            .then(json => {
-                this.queue = json;
-            });
+            this.refresh_player_queue();
+            document.addEventListener("visibilitychange", this.visibilityChange);
+        },
+        unmounted() {
+            document.removeEventListener("visibilitychange", this.visibilityChange);
+        },
+        methods: {
+            refresh_player_queue() {
+                fetch('{% url "v1:player_queue" player=player %}')
+                    .then(response => response.json())
+                    .then(json => {
+                        this.queue = json;
+                    })
+                    .finally(() => {
+                        this.lastRefresh = (new Date()).getTime();
+                        this.refreshTimer = setTimeout(this.refresh_player_queue, 5000);
+                    });
+            },
+            visibilityChange(event) {
+                if (event.target.hidden) {
+                    clearTimeout(this.refreshTimer);
+                } else {
+                    clearTimeout(this.refreshTimer);
+                    if (this.lastRefresh === null || (new Date()).getTime() - this.lastRefresh > 5000) {
+                        this.refresh_player_queue();
+                    } else {
+                        this.refreshTimer = setTimeout(this.refresh_player_queue, 5000);
+                    }
+                }
+            },
         }
-    });
-    add_refresh_url("{% url 'v1:player_queue' player=player %}", function (data) {
-        player_{{ player.id }}_queue_vue.queue = data
     });
 </script>

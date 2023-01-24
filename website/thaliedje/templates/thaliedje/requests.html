@@ -38,25 +38,45 @@
         el: '#requests-container-{{ player.id }}',
         delimiters: ['<%', '%>'],
         data: {
-            requests: []
+            requests: [],
+            refreshTimer: null,
+            lastRefresh: null,
         },
         created() {
-            fetch('{% url "v1:player_requests" player=player %}')
-            .then(response => response.json())
-            .then(json => json.results)
-            .then(json => {
-                json.forEach(track => {
-                    const date = new Date(track.added);
-                    track.added = `${date.toLocaleDateString()}, ${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-                });
-                this.requests = json;
-            });
+            this.refresh_player_requests();
+            document.addEventListener("visibilitychange", this.visibilityChange);
+        },
+        unmounted() {
+            document.removeEventListener("visibilitychange", this.visibilityChange);
+        },
+        methods: {
+            refresh_player_requests() {
+                fetch('{% url "v1:player_requests" player=player %}')
+                    .then(response => response.json())
+                    .then(json => json.results)
+                    .then(json => {
+                        json.forEach(track => {
+                            const date = new Date(track.added);
+                            track.added = `${date.toLocaleDateString()}, ${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+                        });
+                        this.requests = json;
+                    }).finally(() => {
+                        this.lastRefresh = (new Date()).getTime();
+                        this.refreshTimer = setTimeout(this.refresh_player_requests, 5000);
+                    });
+            },
+            visibilityChange(event) {
+                if (event.target.hidden) {
+                    clearTimeout(this.refreshTimer);
+                } else {
+                    clearTimeout(this.refreshTimer);
+                    if (this.lastRefresh === null || (new Date()).getTime() - this.lastRefresh > 5000) {
+                        this.refresh_player_requests();
+                    } else {
+                        this.refreshTimer = setTimeout(this.refresh_player_requests, 5000);
+                    }
+                }
+            },
         }
-    });
-    add_refresh_url("{% url 'v1:player_requests' player=player %}", function (data) {
-        data.results.forEach(track => {
-            const date = new Date(track.added);track.added = `${date.toLocaleDateString()}, ${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-        });
-        player_{{ player.id }}_requests_vue.requests = data.results
     });
 </script>

@@ -112,6 +112,18 @@
                 .then(json => {
                     this.shift = json;
                 });
+            add_refresh_url("{% url "v1:orders_listcreate" shift=shift %}", process_refresh_order_footer_data);
+            add_refresh_url("{% url "v1:shift_retrieveupdate" pk=shift.id %}", process_refresh_shift_footer_data);
+        },
+        watch: {
+            shift: {
+                handler(newValue, oldValue) {
+                    if (newValue.finalized === true) {
+                        remove_refresh_url("{% url "v1:orders_listcreate" shift=shift %}", process_refresh_order_footer_data);
+                        remove_refresh_url("{% url "v1:shift_retrieveupdate" pk=shift.id %}", process_refresh_shift_footer_data);
+                    }
+                }
+            }
         },
         methods: {
             adjust_can_order(can_order) {
@@ -215,10 +227,12 @@
             }
         }
     });
-    add_refresh_url("{% url "v1:orders_listcreate" shift=shift %}", function (data) {
-        admin_footer_vue_{{ shift.id }}.orders = data
-    });
-    add_refresh_url("{% url "v1:shift_retrieveupdate" pk=shift.id %}", function (data) {
-        admin_footer_vue_{{ shift.id }}.shift = data
-    });
+
+    function process_refresh_order_footer_data(data) {
+        admin_footer_vue_{{ shift.id }}.orders = data;
+    }
+
+    function process_refresh_shift_footer_data(data) {
+        admin_footer_vue_{{ shift.id }}.shift = data;
+    }
 </script>

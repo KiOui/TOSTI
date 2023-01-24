@@ -104,6 +104,16 @@
             user: null,
             addingOrder: false,
         },
+        watch: {
+            shift: {
+                handler(newValue, oldValue) {
+                    if (newValue.finalized === true) {
+                        remove_refresh_url("{% url "v1:orders_listcreate" shift=shift %}", process_refreshed_order_data);
+                        remove_refresh_url("{% url "v1:shift_retrieveupdate" pk=shift.id %}", process_shift_data);
+                    }
+                }
+            }
+        },
         created() {
              fetch('{% url "v1:me" %}')
                 .then(response => response.json())
@@ -111,6 +121,8 @@
                     this.user = json;
                 });
             this.refresh();
+            add_refresh_url("{% url "v1:orders_listcreate" shift=shift %}", process_refreshed_order_data);
+            add_refresh_url("{% url "v1:shift_retrieveupdate" pk=shift.id %}", process_shift_data);
         },
         computed: {
              user_orders: function() {
@@ -196,11 +208,13 @@
             },
         }
     });
-    add_refresh_url("{% url "v1:orders_listcreate" shift=shift %}", function (data) {
+
+    function process_refreshed_order_data(data) {
         data = data.filter(order => order.type === 0);
-        orders_vue_{{ shift.id }}.orders = data
-    });
-    add_refresh_url("{% url "v1:shift_retrieveupdate" pk=shift.id %}", function (data) {
-        orders_vue_{{ shift.id }}.shift = data
-    });
+        orders_vue_{{ shift.id }}.orders = data;
+    }
+
+    function process_shift_data(data) {
+        orders_vue_{{ shift.id }}.shift = data;
+    }
 </script>

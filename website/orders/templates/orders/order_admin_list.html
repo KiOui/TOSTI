@@ -160,6 +160,18 @@
                 .then(json => {
                     this.products = json;
                 });
+            add_refresh_url("{% url "v1:orders_listcreate" shift=shift %}", process_refreshed_order_data);
+            add_refresh_url("{% url "v1:shift_retrieveupdate" pk=shift.id %}", process_refreshed_shift_data);
+        },
+        watch: {
+            shift: {
+                handler(newValue, oldValue) {
+                    if (newValue.finalized === true) {
+                        remove_refresh_url("{% url "v1:orders_listcreate" shift=shift %}", process_refreshed_order_data);
+                        remove_refresh_url("{% url "v1:shift_retrieveupdate" pk=shift.id %}", process_refreshed_shift_data);
+                    }
+                }
+            }
         },
         computed: {
             user_orders: function() {
@@ -354,10 +366,12 @@
             }
         }
     });
-    add_refresh_url("{% url "v1:orders_listcreate" shift=shift %}", function (data) {
-        orders_vue_{{ shift.id }}.orders = data
-    });
-    add_refresh_url("{% url "v1:shift_retrieveupdate" pk=shift.id %}", function (data) {
-        orders_vue_{{ shift.id }}.shift = data
-    });
+
+    function process_refreshed_order_data(data) {
+        orders_vue_{{ shift.id }}.orders = data;
+    }
+
+    function process_refreshed_shift_data(data) {
+        orders_vue_{{ shift.id }}.shift = data;
+    }
 </script>
