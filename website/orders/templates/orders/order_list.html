@@ -45,7 +45,7 @@
 
         <!-- Item orders -->
         <transition-group name="orderlist" tag="ul" class="item-orders">
-            <li v-for="(order, index) of orders" :key="`orderlist_order_${order.id}`" class="pt-2 pb-2 item-list">
+            <li v-for="(order, index) of orders" :key="`orderlist_order_${order.id}`" class="pt-2 pb-2 item-list" :class="{ 'user-order-background': (order.user !== null && {{ user.id }} === order.user.id)}">
                 <div class="information-row">
                     <p class="item-counter"><% index + 1 %>.</p>
                     <p class="item-name"><% order.product.name %> (<% format_price(order.order_price) %>)</p>
@@ -56,7 +56,7 @@
                     <div class="flex-divider"></div>
                     <div class="d-flex justify-center align-items-center">
                         <i v-if="order.user !== null && {{ user.id }} === order.user.id && order.deprioritize === false"
-                            class="fa-solid fa-arrow-turn-down user-icon" style="font-size: 1.5em; cursor: pointer;" v-on:click="order_to_bottom_of_list(order)"></i>
+                            class="fa-solid fa-arrow-down-short-wide" style="font-size: 1.5em; cursor: pointer;" v-on:click="order_to_bottom_of_list(order)"></i>
                         <p v-if="order.type === 0" class="item-username">
                             <template v-if="order.user !== null"><% order.user.first_name %></template>
                         </p>

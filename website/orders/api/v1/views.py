@@ -386,6 +386,7 @@ class OrderToListBottomAPIView(APIView):
             raise PermissionDenied
 
         order.deprioritize = True
+        order.prioritize = False
         order.save()
         log_action(self.request.user, order, CHANGE, f"Moved order {order.id} to bottom of the list via API.")
 
