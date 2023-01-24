@@ -1,36 +1,33 @@
 {% load static %}
-<link rel="stylesheet" href="{% static 'thaliedje/css/search.css' %}"/>
-<h2>Requested songs</h2>
-<p style="font-size: 1rem;">The most recently requested songs are displayed here.</p>
 <div id="queue-container-{{ player.id }}">
     <template v-if="queue.length > 0">
-        <div class="d-flex my-2">
-            <div class="flex-equal-width">Track</div>
-            <div class="flex-equal-width">Artists</div>
-            {% if request.user.is_authenticated %}
-                <div class="flex-equal-width">Requested by</div>
-            {% endif %}
-            <div class="flex-equal-width">Added at</div>
-        </div>
-        <div class="border"></div>
-        <template v-for="item in queue">
-            <div class="d-flex my-2">
-                <div class="flex-equal-width"><% item.track.track_name %></div>
-                <div class="flex-equal-width">
-                    <template v-for="(artist, index) in item.track.track_artists">
-                        <% artist %><template v-if="index !== item.track.track_artists.length - 1">, </template>
-                    </template>
-                </div>
-                {% if request.user.is_authenticated %}
-                    <div class="flex-equal-width"><% item.requested_by.display_name %></div>
-                {% endif %}
-                <div class="flex-equal-width"><% item.added %></div>
-            </div>
-            <div class="border"></div>
-        </template>
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Track</th>
+              <th scope="col">Artists</th>
+              <th scope="col">Duration</th>
+            </tr>
+          </thead>
+          <tbody>
+            <template v-for="item in queue">
+                <tr>
+                  <th scope="row"><% item.track_name %></th>
+                  <td>
+                      <template v-for="(artist, index) in item.track_artists">
+                          <% artist %><template v-if="index !== item.track_artists.length - 1">, </template>
+                      </template>
+                  </td>
+                  <td><% Math.floor(item.duration_ms / 1000 / 60) %>:<% String(Math.floor(item.duration_ms / 1000 % 60)).padStart(2, '0') %></td>
+                </tr>
+            </template>
+          </tbody>
+        </table>
     </template>
     <template v-else>
-        <p class="alert alert-warning">There are no requested songs</p>
+        <div class="loader-container text-center">
+            <span class="loader"></span>
+        </div>
     </template>
 </div>
 
@@ -44,20 +41,12 @@
         created() {
             fetch('{% url "v1:player_queue" player=player %}')
             .then(response => response.json())
-            .then(json => json.results)
             .then(json => {
-                json.forEach(track => {
-                    const date = new Date(track.added);
-                    track.added = `${date.toLocaleDateString()}, ${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-                });
                 this.queue = json;
             });
         }
     });
     add_refresh_url("{% url 'v1:player_queue' player=player %}", function (data) {
-        data.results.forEach(track => {
-            const date = new Date(track.added);track.added = `${date.toLocaleDateString()}, ${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-        });
-        player_{{ player.id }}_queue_vue.queue = data.results
+        player_{{ player.id }}_queue_vue.queue = data
     });
 </script>

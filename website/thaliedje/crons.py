@@ -1,7 +1,11 @@
 from constance import config
 from django_cron import CronJobBase, Schedule
 
-from thaliedje.models import Player
+from thaliedje.models import SpotifyPlayer
+
+
+WEEKDAYS = [0, 1, 2, 3, 4]
+WEEKENDS = [5, 6]
 
 
 class StopMusicCronJob(CronJobBase):
@@ -14,8 +18,8 @@ class StopMusicCronJob(CronJobBase):
 
     def do(self):
         """Stop the music."""
-        for player in Player.objects.all():
-            player.spotify.pause_playback()
+        for player in SpotifyPlayer.objects.all():
+            player.pause()
 
 
 class StartMusicCronJob(CronJobBase):
@@ -23,10 +27,15 @@ class StartMusicCronJob(CronJobBase):
 
     RUN_AT_TIMES = [config.THALIEDJE_START_PLAYERS_AT]
     RETRY_AFTER_FAILURE_MINS = 1
-    schedule = Schedule(run_at_times=RUN_AT_TIMES, retry_after_failure_mins=RETRY_AFTER_FAILURE_MINS)
+    schedule = Schedule(
+        run_at_times=RUN_AT_TIMES, retry_after_failure_mins=RETRY_AFTER_FAILURE_MINS, run_on_days=WEEKDAYS
+    )
     code = "thaliedje.startmusic"
 
     def do(self):
         """Start the music."""
-        for player in Player.objects.all():
-            player.spotify.start_playback()
+        if config.THALIEDJE_HOLIDAY_ACTIVE:
+            return
+
+        for player in SpotifyPlayer.objects.all():
+            player.start()

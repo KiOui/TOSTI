@@ -1,5 +1,8 @@
 from .base import *
 
+import saml2
+from saml2 import saml, xmldsig
+
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import ignore_logger
@@ -34,20 +37,20 @@ DATABASES = {
 # https://docs.djangoproject.com/en/3.2/topics/logging/
 
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'file': {
-            'level': 'ERROR',
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR.parent.parent / "logs" / 'django.log',
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "file": {
+            "level": "ERROR",
+            "class": "logging.FileHandler",
+            "filename": BASE_DIR.parent.parent / "logs" / "django.log",
         },
     },
-    'loggers': {
-        'django': {
-            'handlers': ['file'],
-            'level': 'ERROR',
-            'propagate': True,
+    "loggers": {
+        "django": {
+            "handlers": ["file"],
+            "level": "ERROR",
+            "propagate": True,
         },
     },
 }
@@ -56,21 +59,17 @@ LOGGING = {
 # Email
 # https://docs.djangoproject.com/en/3.2/topics/email/
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = "smtp-auth.ru.nl"
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_DEFAULT_SENDER = "tosti-noreply@science.ru.nl"
-EMAIL_HOST_USER = "tosti-noreply@science.ru.nl"
-DEFAULT_FROM_EMAIL = 'T.O.S.T.I. <tosti-noreply@science.ru.nl>'
-SERVER_EMAIL = 'www-cantres@science.ru.nl'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.science.ru.nl"
+EMAIL_PORT = 25
+EMAIL_DEFAULT_SENDER = "www-tosti@science.ru.nl"
+EMAIL_HOST_USER = "www-tosti@science.ru.nl"
+DEFAULT_FROM_EMAIL = "TOSTI <www-tosti@science.ru.nl>"
+SERVER_EMAIL = "www-tosti@science.ru.nl"
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
-
-# Add hashes to static files for cache resets.
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 STATIC_ROOT = BASE_DIR.parent / "static"
 STATIC_URL = "/static/"
@@ -78,16 +77,110 @@ MEDIA_ROOT = BASE_DIR.parent.parent / "writable" / "media"
 MEDIA_URL = "/media/"
 
 
-# GOOGLE ANALYTICS
-GOOGLE_ANALYTICS_KEY = "***************"
-
 # SPOTIFY
-SPOTIFY_CACHE_PATH = "***************"
+SPOTIFY_CACHE_PATH = BASE_DIR.parent.parent / "writable" / "spotipycache"
 
 # SENTRY
 sentry_sdk.init(
     dsn="***********",
     integrations=[DjangoIntegration()],
     traces_sample_rate=1.0,
-    send_default_pii=True
+    send_default_pii=True,
 )
+
+# CACHES
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
+        "LOCATION": BASE_DIR.parent.parent / "writable" / "cache",
+    }
+}
+
+
+# SAML SP SETTINGS
+SAML_SESSION_COOKIE_NAME = "saml_session"
+SESSION_COOKIE_SECURE = False
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SAML_USE_NAME_ID_AS_USERNAME = False
+SAML_ATTRIBUTE_MAPPING = {
+    "uid": ("username",),
+    "mail": ("email",),
+    "displayName": ("full_name",),
+}
+SAML_CONFIG = {
+    "xmlsec_binary": "/usr/bin/xmlsec1",
+    "entityid": "tosti.science.ru.nl",
+    "allow_unknown_attributes": True,
+    "service": {
+        "sp": {
+            "name": "TOSTI",
+            "name_id_format": saml.NAMEID_FORMAT_PERSISTENT,
+            "endpoints": {
+                "assertion_consumer_service": [
+                    (f"https://tosti.science.ru.nl/saml/acs/", saml2.BINDING_HTTP_POST),
+                    (
+                        f"https://tosti.science.ru.nl/sso/science/acs/",
+                        saml2.BINDING_HTTP_POST,
+                    ),  # Legacy, remove when possible
+                ],
+                "single_logout_service": [
+                    (f"https://tosti.science.ru.nl/saml/ls/", saml2.BINDING_HTTP_REDIRECT),
+                    (f"https://tosti.science.ru.nl/saml/ls/post", saml2.BINDING_HTTP_POST),
+                    (
+                        f"https://tosti.science.ru.nl/sso/science/slo/",
+                        saml2.BINDING_HTTP_REDIRECT,
+                    ),  # Legacy, remove when possible
+                    (
+                        f"https://tosti.science.ru.nl/sso/science/slo/post",
+                        saml2.BINDING_HTTP_POST,
+                    ),  # Legacy, remove when possible
+                ],
+            },
+            "signing_algorithm": xmldsig.SIG_RSA_SHA256,
+            "digest_algorithm": xmldsig.DIGEST_SHA256,
+            "force_authn": False,
+            "name_id_format_allow_create": True,
+            "required_attributes": ["uid", "mail", "displayName"],
+            "want_response_signed": False,
+            "want_assertions_signed": True,
+            "allow_unsolicited": True,
+        },
+    },
+    "metadata": {
+        "local": [
+            os.path.join(BASE_DIR, "tosti", "settings", "saml", "metadata.xml"),
+        ],
+    },
+    "debug": 1,
+    "key_file": os.path.join(BASE_DIR, "tosti", "settings", "saml", "private.key"),
+    "cert_file": os.path.join(BASE_DIR, "tosti", "settings", "saml", "public.cert"),
+    "encryption_keypairs": [
+        {
+            "key_file": os.path.join(BASE_DIR, "tosti", "settings", "saml", "private.key"),
+            "cert_file": os.path.join(BASE_DIR, "tosti", "settings", "saml", "public.cert"),
+        }
+    ],
+    "contact_person": [
+        {
+            "given_name": "Olympus",
+            "email_address": "www-tosti@science.ru.nl",
+            "contact_type": "technical",
+        },
+        {
+            "given_name": "Olympus",
+            "email_address": "www-tosti@science.ru.nl",
+            "contact_type": "administrative",
+        },
+    ],
+    "organization": {
+        "name": [("Olympus", "nl"), ("Olympus", "en")],
+        "display_name": [
+            ("Olympus", "nl"),
+            ("Olympus", "en"),
+        ],
+        "url": [
+            ("https://tosti.science.ru.nl", "nl"),
+            ("https://tosti.science.ru.nl", "en"),
+        ],
+    },
+}

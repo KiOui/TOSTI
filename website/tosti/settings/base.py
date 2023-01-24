@@ -1,7 +1,9 @@
+import os
 from pathlib import Path
 
-from django.apps import AppConfig
+import saml2
 from django.contrib import messages
+from saml2 import saml, xmldsig
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -18,7 +20,7 @@ INSTALLED_APPS = [
     "constance",
     "constance.backends.database",
     "tosti.django_cron_app_config.CustomDjangoCronAppConfig",
-    "tosti.sp_app_config.CustomSPAppConfig",
+    "djangosaml2",
     "django_bootstrap5",
     "tinymce",
     "fontawesomefree",
@@ -48,7 +50,7 @@ GUARDIAN_RAISE_403 = True
 
 AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",  # default
-    "sp.backends.SAMLAuthenticationBackend",
+    "djangosaml2.backends.Saml2Backend",
     "guardian.backends.ObjectPermissionBackend",
 )
 
@@ -62,14 +64,11 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.contrib.admindocs.middleware.XViewMiddleware",
+    "djangosaml2.middleware.SamlSessionMiddleware",
     "announcements.middleware.ClosedAnnouncementsMiddleware",
 ]
 
 ROOT_URLCONF = "tosti.urls"
-
-LOGIN_URL = '/login/'
-
-LOGIN_REDIRECT_URL = '/users/account/'
 
 TEMPLATES = [
     {
@@ -158,10 +157,9 @@ OAUTH2_PROVIDER = {
     },
 }
 
-# SAML SP SETTINGS
-SP_UNIQUE_USERNAMES = False
-SP_LOGIN = "users.services.post_login"
-SESSION_SERIALIZER = "django.contrib.sessions.serializers.PickleSerializer"
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/users/account/'
+LOGOUT_REDIRECT_URL = "/"
 
 # Messages
 MESSAGE_TAGS = {
@@ -188,7 +186,8 @@ CONSTANCE_CONFIG = {
         'noreply@example.com, noreply@example.com', 'Where to send venue reservation request notifications to (e-mail address), enter multiple addresses by using a comma (,)', str),
     'SHIFTS_DEFAULT_MAX_ORDERS_TOTAL': (70, 'Default maximum number of orders per shift', int),
     'THALIEDJE_STOP_PLAYERS_AT': ("21:00", 'Time to stop the players. Should be aligned on 5 minutes', str),
-    'THALIEDJE_START_PLAYERS_AT': ("08:00", 'Time to start the players. Should be aligned on 5 minutes', str),
+    'THALIEDJE_START_PLAYERS_AT': ("08:00", 'Time to start the players (only on weekdays). Should be aligned on 5 minutes', str),
+    'THALIEDJE_HOLIDAY_ACTIVE': (False, 'If enabled, the player will not start playing automatically at the start of the day', bool),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = {
@@ -196,7 +195,7 @@ CONSTANCE_CONFIG_FIELDSETS = {
     'Tantalus settings': ('TANTALUS_ENDPOINT_URL', 'TANTALUS_API_URL', 'TANTALUS_USERNAME', 'TANTALUS_PASSWORD',),
     'E-mail settings': ('BORREL_SEND_BORREL_RESERVATION_REQUEST_EMAILS_TO', 'VENUES_SEND_RESERVATION_REQUEST_EMAILS_TO'),
     'Shifts settings': ('SHIFTS_DEFAULT_MAX_ORDERS_TOTAL',),
-    'Thaliedje settings': ('THALIEDJE_STOP_PLAYERS_AT', 'THALIEDJE_START_PLAYERS_AT'),
+    'Thaliedje settings': ('THALIEDJE_STOP_PLAYERS_AT', 'THALIEDJE_START_PLAYERS_AT', 'THALIEDJE_HOLIDAY_ACTIVE'),
 }
 
 # Sites app
@@ -206,3 +205,5 @@ CRON_CLASSES = [
     "thaliedje.crons.StopMusicCronJob",
     "thaliedje.crons.StartMusicCronJob",
 ]
+
+DJANGO_CRON_DELETE_LOGS_OLDER_THAN = 14
