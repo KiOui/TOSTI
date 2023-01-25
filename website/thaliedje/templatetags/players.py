@@ -43,13 +43,7 @@ def render_players(context):
     :param context: needed because the render_player must know the request
     :return: a dictionary
     """
-    players = []
-    for player in Player.objects.all():
-        try:
-            player = player.spotifyplayer
-        except SpotifyPlayer.DoesNotExist:
-            player = player.marietjeplayer
-        players.append(player)
+    players = list(Player.objects.all().select_subclasses())
     return {"players": players, "request": context["request"]}
 
 

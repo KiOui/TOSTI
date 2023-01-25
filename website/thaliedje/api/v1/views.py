@@ -15,7 +15,7 @@ from thaliedje.api.v1.serializers import (
     RequestedQueueItemSerializer,
     AnonymousRequestedQueueItemSerializer,
 )
-from thaliedje.models import Player, SpotifyQueueItem, SpotifyPlayer
+from thaliedje.models import Player, SpotifyQueueItem
 from thaliedje.services import request_song
 from tosti.api.openapi import CustomAutoSchema
 
@@ -75,10 +75,6 @@ class PlayerQueueAPIView(APIView):
     def get(self, request, **kwargs):
         """Get the player's current queue."""
         player = self.kwargs.get("player")
-        try:
-            player = player.spotifyplayer
-        except SpotifyPlayer.DoesNotExist:
-            player = player.marietjeplayer
         return Response(player.queue)
 
 
