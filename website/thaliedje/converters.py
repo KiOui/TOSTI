@@ -12,7 +12,6 @@ class PlayerConverter(SlugConverter):
         :param value: the slug of the Player
         :return: a Player or ValueError
         """
-
         return Player.objects.select_subclasses().get(slug=value)
 
     def to_url(self, obj):
