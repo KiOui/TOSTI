@@ -580,7 +580,10 @@ class SpotifyPlayer(Player):
         current_playback = self._current_playback
         if current_playback is None:
             return None
-        return current_playback["item"]["album"]["images"][0]["url"]
+        try:
+            return current_playback["item"]["album"]["images"][0]["url"]
+        except (KeyError, IndexError, TypeError):
+            return None
 
     @property
     def current_track_name(self):
@@ -588,7 +591,10 @@ class SpotifyPlayer(Player):
         current_playback = self._current_playback
         if current_playback is None:
             return None
-        return current_playback["item"]["name"]
+        try:
+            return current_playback["item"]["name"]
+        except (KeyError, IndexError, TypeError):
+            return None
 
     @property
     def current_artists(self):
@@ -596,7 +602,10 @@ class SpotifyPlayer(Player):
         current_playback = self._current_playback
         if current_playback is None:
             return []
-        return [x["name"] for x in self._current_playback["item"]["artists"]]
+        try:
+            return [x["name"] for x in self._current_playback["item"]["artists"]]
+        except (KeyError, IndexError, TypeError):
+            return []
 
     @property
     def is_playing(self):
