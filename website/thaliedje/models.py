@@ -350,7 +350,7 @@ class MarietjePlayer(Player):
                 "track_id": item["song"]["id"],
                 "track_name": item["song"]["title"],
                 "track_artists": [item["song"]["artist"]],
-                "duration_ms": item["song"]["duration"],
+                "duration_ms": int(item["song"]["duration"]) * 1000,
             }
             for item in queue["queue"]
         ]
