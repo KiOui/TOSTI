@@ -38,4 +38,10 @@ class StartMusicCronJob(CronJobBase):
             return
 
         for player in SpotifyPlayer.objects.all():
-            player.start()
+            player.repeat = "context"
+            player.shuffle = True
+
+            if config.THALIEDJE_START_PLAYER_URI is not None and config.THALIEDJE_START_PLAYER_URI != "":
+                player.start_playing(config.THALIEDJE_START_PLAYER_URI)
+            else:
+                player.start()

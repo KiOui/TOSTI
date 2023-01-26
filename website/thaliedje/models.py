@@ -670,6 +670,8 @@ class SpotifyPlayer(Player):
     @repeat.setter
     def repeat(self, repeat_state: str):
         """Set the repeat state of the playback device of a Player."""
+        if repeat_state not in ["off", "track", "context"]:
+            raise ValueError("Repeat state must be one of 'off', 'track', or 'context'")
         self.do_spotify_request(self.spotify.repeat, repeat_state, device_id=self.playback_device_id)
         cache.delete(self._current_playback_cache_key)
 
