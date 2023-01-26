@@ -2,12 +2,12 @@
 <link rel="stylesheet" href="{% static 'thaliedje/css/player.css' %}"/>
 <div class="player" id="player-container-{{ player.id }}">
 <template v-if="player_data.track.name !== null">
-    <div class="w-50 mx-auto mb-2">
+    <div class="w-50 mx-auto mb-2" v-if="player_data.track.image !== null">
         <a href="{% url "thaliedje:now_playing" player=player %}">
             <img class="w-100" :src="player_data.track.image" :alt="player_data.track.name"/>
         </a>
     </div>
-    <div class="w-50 mx-auto mb-3">
+    <div class="w-50 mx-auto mb-3" v-if="this.track_progress_ms !== null && this.track_progress_percentage !== null && this.player_data !== null && this.player_data.duration_ms !== null">
         <div class="progress" style="height: 2px">
             <div
                 class="progress-bar"
@@ -144,7 +144,13 @@
                 }
             },
             updateTrackProgress() {
-                if (this.player_data.is_playing === false) return
+                if (this.player_data.is_playing === false) {
+                    return;
+                }
+
+                if (this.player_data.progress_ms === null || this.player_data.timestamp === null) {
+                    return;
+                }
 
                 this.track_progress_ms = this.player_data.progress_ms + (Date.now() - this.player_data.timestamp);
                 this.track_progress_percentage = this.track_progress_ms / this.player_data.duration_ms * 100;

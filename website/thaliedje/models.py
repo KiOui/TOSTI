@@ -16,6 +16,7 @@ from requests import ReadTimeout
 from spotipy import SpotifyOAuth, SpotifyException
 from spotipy.client import Spotify
 
+from thaliedje.marietje import Marietje, MarietjeClientCredentials, MarietjeException
 from users.models import User
 from venues.models import Venue, Reservation
 
@@ -217,7 +218,73 @@ class Player(models.Model):
 class MarietjePlayer(Player):
     """A player that is controlled by Marietje."""
 
-    url = models.URLField(max_length=255, default="", blank=True)
+    url = models.URLField(max_length=255, default="", blank=False, null=False)
+    client_id = models.CharField(max_length=100, blank=False, null=False)
+    client_secret = models.CharField(max_length=255, blank=False, null=False)
+
+    @property
+    def cache_path(self):
+        """
+        Get the Spotipy cache file path for this auth object.
+
+        :return: the cache file path
+        """
+        if not os.path.exists(settings.MARIETJE_CACHE_PATH):
+            os.makedirs(settings.MARIETJE_CACHE_PATH)
+        return os.path.join(settings.MARIETJE_CACHE_PATH, self.client_id)
+
+    @property
+    def auth(self):
+        """Get Marietje Auth credentials."""
+        return MarietjeClientCredentials(self.url, self.client_id, self.client_secret, cache_path=self.cache_path)
+
+    @property
+    def marietje(self):
+        """Get a Marietje client."""
+        return Marietje(self.url, auth_manager=self.auth)
+
+    def do_marietje_request(self, func, *args, **kwargs):
+        """
+        Perform a Marietje request with error handling.
+
+        :param func: the function to call
+        :param args: the arguments to pass to the function
+        :param kwargs: the keyword arguments to pass to the function
+        :return: the result of the function call
+        """
+        logging.info("Performing Marietje request: %s", func.__name__)
+
+        try:
+            return func(*args, **kwargs)
+        except MarietjeException as e:
+            logging.warning("Marietje error: %s", e)
+        except ReadTimeout:
+            logging.warning("Marietje request timed out.")
+
+    @property
+    def _current_playback_cache_key(self):
+        """Get the cache key for the current playback cache."""
+        return f"marietje_player_{self.id}_playback"
+
+    def _current_playback(self):
+        """Get the current playback from the Marietje API."""
+        cached_result = cache.get(self._current_playback_cache_key)
+        if cached_result is not None:
+            if cached_result == "unavailable":
+                return None
+            return cached_result
+
+        playback = self.do_marietje_request(self.marietje.queue_current)
+
+        if playback is None:
+            cache.set(self._current_playback_cache_key, "unavailable", 5)
+            return None
+
+        playback = playback["current_song"]
+
+        cache.set(self._current_playback_cache_key, playback, 5)
+
+        return playback
 
     @property
     def current_image(self):
@@ -227,12 +294,22 @@ class MarietjePlayer(Player):
     @property
     def current_track_name(self):
         """Get the track name for the currently playing song."""
-        return None
+        playback = self._current_playback()
+
+        if playback is None:
+            return playback
+
+        return playback["song"]["title"]
 
     @property
     def current_artists(self):
         """Get the artist names for the currently playing song."""
-        return []
+        playback = self._current_playback()
+
+        if playback is None:
+            return playback
+
+        return [playback["song"]["artist"]]
 
     @property
     def current_timestamp(self):
@@ -250,9 +327,35 @@ class MarietjePlayer(Player):
         return None
 
     @property
+    def _queue_cache_key(self):
+        """Get the cache key for the queue."""
+        return f"marietje_player_{self.id}_queue"
+
+    @property
     def queue(self):
         """Get the queue for this player."""
-        return []
+        cached_result = cache.get(self._queue_cache_key)
+        if cached_result is not None:
+            if cached_result == "unavailable":
+                return None
+            return cached_result
+
+        queue = self.do_marietje_request(self.marietje.queue_current)
+
+        if queue is None:
+            cache.set(self._queue_cache_key, "unavailable", 10)
+
+        queue = [
+            {
+                "track_id": item["song"]["id"],
+                "track_name": item["song"]["title"],
+                "track_artists": [item["song"]["artist"]],
+                "duration_ms": item["song"]["duration"],
+            }
+            for item in queue["queue"]
+        ]
+        cache.set(self._queue_cache_key, queue, 10)
+        return queue
 
     def get_absolute_url(self):
         """Get the front-end url for a Player."""
@@ -297,7 +400,7 @@ class MarietjePlayer(Player):
     @property
     def is_playing(self):
         """Check if the player is currently playing music."""
-        return False
+        return True
 
     @property
     def volume(self):
