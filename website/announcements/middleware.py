@@ -25,7 +25,7 @@ class ClosedAnnouncementsMiddleware:
         return response
 
 
-class AnnouncementMiddleware:
+class AppAnnouncementMiddleware:
     """Announcement Middleware."""
 
     def __init__(self, get_response):
@@ -36,8 +36,8 @@ class AnnouncementMiddleware:
         """Call app announcement function if they exist for gathering all announcements."""
         announcements = []
         for app in apps.get_app_configs():
-            if hasattr(app, "announcements"):
+            if hasattr(app, "announcements") and hasattr(app.announcements, "__call__"):
                 announcements += app.announcements(request)
-        setattr(request, "_announcements", announcements)
+        setattr(request, "_app_announcements", announcements)
 
         return self.get_response(request)

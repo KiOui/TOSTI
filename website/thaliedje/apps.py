@@ -33,6 +33,6 @@ class ThaliedjeConfig(AppConfig):
             and request.user.is_authenticated
             and ThaliedjeBlacklistedUser.objects.filter(user=request.user).exists()
         ):
-            return ["You are&nbsp;<b>blacklisted</b>&nbsp;for requesting songs!"]
+            return ["You are&nbsp;<b>blacklisted</b>&nbsp;for requesting thaliedje!"]
 
         return []

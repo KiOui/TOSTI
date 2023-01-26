@@ -62,6 +62,6 @@ class OrdersConfig(AppConfig):
             and request.user.is_authenticated
             and OrderBlacklistedUser.objects.filter(user=request.user).exists()
         ):
-            return ["You are&nbsp;<b>blacklisted</b>&nbsp;for creating orders!"]
+            return ["You are&nbsp;<b>blacklisted</b>&nbsp;for placing orders!"]
 
         return []
