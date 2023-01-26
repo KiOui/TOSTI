@@ -1,8 +1,8 @@
 {% for reservation in reservations %}
     <div class="alert alert-info clearfix" role="alert">
         <div class="float-start">
-            Click here to submit your borrel list for <b>{{ reservation.title }}</b>.
+            Click here to submit your borrel form for <b>{{ reservation.title }}</b>.
         </div>
-        <a href="{% url "borrel:submit_reservation" reservation.id %}" class="btn btn-success float-end stretched-link">Submit</a>
+        <a href="{% url "borrel:submit_reservation" reservation.id %}" class="btn btn-success float-end stretched-link">View borrel form</a>
     </div>
 {% endfor %}
