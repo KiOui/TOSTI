@@ -12,7 +12,10 @@ class PlayerConverter(SlugConverter):
         :param value: the slug of the Player
         :return: a Player or ValueError
         """
-        return Player.objects.select_subclasses().get(slug=value)
+        try:
+            Player.objects.select_subclasses().get(slug=value)
+        except Player.DoesNotExist:
+            raise ValueError("Player does not exist")
 
     def to_url(self, obj):
         """
@@ -34,7 +37,10 @@ class PlayerPKConverter(IntConverter):
         :param pk: the pk of the Player
         :return: a Player or ValueError
         """
-        return Player.objects.select_subclasses().get(pk=pk)
+        try:
+            Player.objects.select_subclasses().get(pk=pk)
+        except Player.DoesNotExist:
+            raise ValueError("Player does not exist")
 
     def to_url(self, obj):
         """
