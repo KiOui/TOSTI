@@ -13,7 +13,7 @@ class PlayerConverter(SlugConverter):
         :return: a Player or ValueError
         """
         try:
-            Player.objects.select_subclasses().get(slug=value)
+            return Player.objects.select_subclasses().get(slug=value)
         except Player.DoesNotExist:
             raise ValueError("Player does not exist")
 
@@ -38,7 +38,7 @@ class PlayerPKConverter(IntConverter):
         :return: a Player or ValueError
         """
         try:
-            Player.objects.select_subclasses().get(pk=pk)
+            return Player.objects.select_subclasses().get(pk=pk)
         except Player.DoesNotExist:
             raise ValueError("Player does not exist")
 
