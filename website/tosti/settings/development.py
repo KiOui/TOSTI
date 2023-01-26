@@ -42,7 +42,8 @@ MEDIA_ROOT = BASE_DIR / "media"
 MEDIA_URL = "/media/"
 
 # SPOTIFY SETTINGS
-SPOTIFY_CACHE_PATH = os.path.join(BASE_DIR, "cache")  # noqa
+SPOTIFY_CACHE_PATH = os.path.join(BASE_DIR, "cache/spotify")  # noqa
+MARIETJE_CACHE_PATH = os.path.join(BASE_DIR, "cache/marietje")  # noqa
 
 CACHES = {
     'default': {

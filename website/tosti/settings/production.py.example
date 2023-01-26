@@ -79,6 +79,7 @@ MEDIA_URL = "/media/"
 
 # SPOTIFY
 SPOTIFY_CACHE_PATH = BASE_DIR.parent.parent / "writable" / "spotipycache"
+MARIETJE_CACHE_PATH = BASE_DIR.parent.parent / "writable" / "marietjecache"
 
 # SENTRY
 sentry_sdk.init(
