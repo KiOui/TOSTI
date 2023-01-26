@@ -23,3 +23,16 @@ class ThaliedjeConfig(AppConfig):
             return user_page_list
 
         AccountView.user_data_tabs.add_filter(filter_user_page)
+
+    def announcements(self, request):
+        """Add announcements."""
+        from thaliedje.models import ThaliedjeBlacklistedUser
+
+        if (
+            request.user is not None
+            and request.user.is_authenticated
+            and ThaliedjeBlacklistedUser.objects.filter(user=request.user).exists()
+        ):
+            return ["You are&nbsp;<b>blacklisted</b>&nbsp;for requesting songs!"]
+
+        return []
