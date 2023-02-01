@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-cd "${0%/*}"
+cd "${0%/*}" || exit
 git pull
 source env/bin/activate
 website/manage.py migrate
