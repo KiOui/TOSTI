@@ -15,5 +15,6 @@ def render_announcements(context):
 
     return {
         "announcements": Announcement.objects.visible().filter(~Q(id__in=closed_announcements)),
+        "app_announcements": getattr(request, "_app_announcements", []),
         "closed_announcements": closed_announcements,
     }

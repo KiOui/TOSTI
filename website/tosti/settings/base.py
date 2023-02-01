@@ -66,6 +66,7 @@ MIDDLEWARE = [
     "django.contrib.admindocs.middleware.XViewMiddleware",
     "djangosaml2.middleware.SamlSessionMiddleware",
     "announcements.middleware.ClosedAnnouncementsMiddleware",
+    "announcements.middleware.AppAnnouncementMiddleware",
 ]
 
 ROOT_URLCONF = "tosti.urls"
