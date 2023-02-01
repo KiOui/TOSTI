@@ -797,6 +797,9 @@ class SpotifyPlayer(Player):
         """
         results = self.do_spotify_request(self.spotify.search, q=query, limit=maximum, type=query_type)
 
+        if results is None:
+            return []
+
         trimmed_result = dict()
 
         for key in results.keys():
