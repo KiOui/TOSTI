@@ -85,7 +85,6 @@ class StatisticsView(LoginRequiredMixin, TemplateView):
 
     def get(self, request, **kwargs):
         """GET Statistics View."""
-
         ordered_items_distribution = json.dumps(generate_order_statistics())
         orders_per_venue = json.dumps(generate_orders_per_venue_statistics())
         most_requested_songs = json.dumps(generate_most_requested_songs())
