@@ -13,7 +13,6 @@ User = get_user_model()
 
 
 class VenuesFormsTests(TestCase):
-
     fixtures = ["associations.json", "users.json", "venues.json"]
 
     @classmethod

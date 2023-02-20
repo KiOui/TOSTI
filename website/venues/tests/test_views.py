@@ -14,7 +14,6 @@ User = get_user_model()
 
 
 class VenueViewTests(TestCase):
-
     fixtures = ["users.json", "associations.json", "venues.json"]
 
     @classmethod

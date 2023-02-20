@@ -15,7 +15,6 @@ User = get_user_model()
 
 
 class TantalusServicesTests(TestCase):
-
     fixtures = ["users.json", "associations.json", "borrel.json", "tantalus.json"]
 
     @classmethod
