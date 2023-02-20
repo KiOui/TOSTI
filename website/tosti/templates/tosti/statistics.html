@@ -1,0 +1,67 @@
+{% extends "tosti/base.html" %}
+{% load static %}
+
+{% block title %}
+    TOSTI: Statistics
+{% endblock %}
+
+{% block page %}
+    <div class="container mt-5">
+        <h1>Statistics</h1>
+        <div class="row mb-5">
+            <div class="col-6">
+                <canvas id="ordered-items-chart"
+                    data-data="{{ ordered_items_distribution }}"
+                    data-title="Ordered items"
+                    data-chart-type="pie">
+                </canvas>
+            </div>
+            <div class="col-6">
+                <canvas id="orders-per-venue-chart"
+                    data-data="{{ orders_per_venue }}"
+                    data-title="Orders per venue"
+                    data-chart-type="pie">
+                </canvas>
+            </div>
+        </div>
+        <div class="row mb-5">
+            <div class="col-6">
+                <canvas id="most-requested-songs-chart"
+                    data-data="{{ most_requested_songs }}"
+                    data-title="Most requested songs"
+                    data-chart-type="bar">
+                </canvas>
+            </div>
+            <div class="col-6">
+                <canvas id="users-with-most-requests-chart"
+                    data-data="{{ users_with_most_requests }}"
+                    data-title="Users with most requests"
+                    data-chart-type="bar">
+                </canvas>
+            </div>
+        </div>
+        <div class="row mb-5">
+            <div class="col">
+                <canvas id="users-per-association-chart"
+                    data-data="{{ users_per_association }}"
+                    data-title="Users per association"
+                    data-chart-type="bar">
+                </canvas>
+            </div>
+        </div>
+        <div class="row mb-5">
+            <div class="col">
+                <canvas id="beer-ordered-per-association-chart"
+                    data-data="{{ beer_ordered_per_association }}"
+                    data-title="Amount of bottles of beer ordered per association"
+                    data-chart-type="bar">
+                </canvas>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js"></script>
+    <script src="{% static 'tosti/js/statistics.js' %}"></script>
+{% endblock %}
