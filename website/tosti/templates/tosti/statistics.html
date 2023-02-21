@@ -49,15 +49,17 @@
                 </canvas>
             </div>
         </div>
-        <div class="row mb-5">
-            <div class="col">
-                <canvas id="beer-ordered-per-association-chart"
-                    data-data="{{ beer_ordered_per_association }}"
-                    data-title="Amount of bottles of beer ordered per association"
-                    data-chart-type="bar">
-                </canvas>
+        {% if borrel_product_category is not None %}
+            <div class="row mb-5">
+                <div class="col">
+                    <canvas id="borrel-product-category-ordered-per-association-chart"
+                        data-data="{{ borrel_product_category_ordered_per_association }}"
+                        data-title="Amount of products ordered in the '{{ borrel_product_category.name }}' category per association"
+                        data-chart-type="bar">
+                    </canvas>
+                </div>
             </div>
-        </div>
+        {% endif %}
     </div>
 {% endblock %}
 

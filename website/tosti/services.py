@@ -11,9 +11,7 @@ from django.utils import timezone
 
 from associations.models import Association
 from orders.models import Product as OrderProduct, OrderVenue
-from borrel.models import Product as BorrelProduct
 from thaliedje.models import SpotifyTrack
-from constance import config
 
 logger = logging.getLogger(__name__)
 
@@ -138,13 +136,8 @@ def generate_users_per_association():
     return data
 
 
-def generate_beer_ordered_per_association():
-    """Generate statistics about beer ordered per association."""
-    try:
-        beer_product = BorrelProduct.objects.get(id=config.STATISTICS_BEER_ID)
-    except BorrelProduct.DoesNotExist:
-        return None
-
+def generate_product_category_ordered_per_association(category):
+    """Generate statistics about products in a category ordered per association."""
     data = {
         "labels": [],
         "datasets": [
@@ -160,7 +153,7 @@ def generate_beer_ordered_per_association():
             filter=Q(
                 borrel_reservations__submitted_at__isnull=False,
                 borrel_reservations__start__gte=last_year,
-                borrel_reservations__items__product=beer_product,
+                borrel_reservations__items__product__category=category,
             ),
         )
     ):

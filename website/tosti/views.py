@@ -13,8 +13,10 @@ from tosti.services import (
     generate_most_requested_songs,
     generate_users_with_most_song_requests,
     generate_users_per_association,
-    generate_beer_ordered_per_association,
+    generate_product_category_ordered_per_association,
 )
+from borrel.models import ProductCategory as BorrelProductCategory
+from constance import config
 
 
 class IndexView(TemplateView):
@@ -90,10 +92,14 @@ class StatisticsView(LoginRequiredMixin, TemplateView):
         most_requested_songs = json.dumps(generate_most_requested_songs())
         users_with_most_requests = json.dumps(generate_users_with_most_song_requests())
         users_per_association = json.dumps(generate_users_per_association())
-        beer_ordered_per_association_dict = generate_beer_ordered_per_association()
-        beer_ordered_per_association = (
-            json.dumps(beer_ordered_per_association_dict) if beer_ordered_per_association_dict is not None else None
-        )
+        try:
+            borrel_product_category = BorrelProductCategory.objects.get(id=config.STATISTICS_BORREL_CATEGORY)
+            borrel_product_category_ordered_per_association = json.dumps(
+                generate_product_category_ordered_per_association(borrel_product_category)
+            )
+        except BorrelProductCategory.DoesNotExist:
+            borrel_product_category_ordered_per_association = None
+            borrel_product_category = None
 
         return render(
             request,
@@ -104,7 +110,8 @@ class StatisticsView(LoginRequiredMixin, TemplateView):
                 "most_requested_songs": most_requested_songs,
                 "users_with_most_requests": users_with_most_requests,
                 "users_per_association": users_per_association,
-                "beer_ordered_per_association": beer_ordered_per_association,
+                "borrel_product_category_ordered_per_association": borrel_product_category_ordered_per_association,
+                "borrel_product_category": borrel_product_category,
             },
         )
 
