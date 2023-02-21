@@ -12,6 +12,7 @@ from .views import (
     DocumentationView,
     ExplainerView,
     AfterLoginRedirectView,
+    StatisticsView,
 )
 
 handler403 = custom_handler403
@@ -24,6 +25,7 @@ urlpatterns = [
     path("privacy/", PrivacyView.as_view(), name="privacy"),
     path("documentation/", DocumentationView.as_view(), name="documentation"),
     path("explainers/", ExplainerView.as_view(), name="explainers"),
+    path("statistics/", StatisticsView.as_view(), name="statistics"),
     path(
         "users/",
         include(("users.urls", "users"), namespace="users"),

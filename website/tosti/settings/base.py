@@ -190,10 +190,11 @@ CONSTANCE_CONFIG = {
     'THALIEDJE_START_PLAYERS_AT': ("08:00", 'Time to start the players (only on weekdays). Should be aligned on 5 minutes', str),
     'THALIEDJE_HOLIDAY_ACTIVE': (False, 'If enabled, the player will not start playing automatically at the start of the day', bool),
     'THALIEDJE_START_PLAYER_URI': ('', 'URI to start playing when the player starts automatically.', str),
+    'STATISTICS_BORREL_CATEGORY': (0, 'The object ID of the Category of Borrel products to show on the statistics screen.', int),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = {
-    'General settings': ('FOOTER_CREDITS_TEXT', 'CLEANING_SCHEME_URL',),
+    'General settings': ('FOOTER_CREDITS_TEXT', 'CLEANING_SCHEME_URL', 'STATISTICS_BORREL_CATEGORY', ),
     'Tantalus settings': ('TANTALUS_ENDPOINT_URL', 'TANTALUS_API_URL', 'TANTALUS_USERNAME', 'TANTALUS_PASSWORD',),
     'E-mail settings': ('BORREL_SEND_BORREL_RESERVATION_REQUEST_EMAILS_TO', 'VENUES_SEND_RESERVATION_REQUEST_EMAILS_TO'),
     'Shifts settings': ('SHIFTS_DEFAULT_MAX_ORDERS_TOTAL',),
