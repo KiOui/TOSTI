@@ -18,7 +18,6 @@ logging.disable()
 
 
 class OrderViewTests(TestCase):
-
     fixtures = ["users.json", "venues.json"]
 
     @classmethod
