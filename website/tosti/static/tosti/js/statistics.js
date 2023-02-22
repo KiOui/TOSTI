@@ -33,11 +33,11 @@ const COLORS = [
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll("canvas").forEach((canvas) => {
 
-            const data = JSON.parse(canvas.dataset["data"]);
+            const data = JSON.parse(canvas.dataset.data);
             const datasets = data["datasets"];
             const labels = data["labels"];
-            const title = canvas.dataset["title"];
-            const chartType = canvas.dataset["chart-type"];
+            const title = canvas.dataset.title;
+            const chartType = canvas.dataset.chartType;
 
             let config = {
                 type: chartType,
