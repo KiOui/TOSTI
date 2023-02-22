@@ -102,6 +102,7 @@ class ThaliedjeControlEventForm(forms.ModelForm):
             "everyone_can_control",
             "everyone_can_request_playlist",
             "respect_blacklist",
+            "check_throttling",
         ]
 
     def __init__(self, *args, **kwargs):
@@ -117,3 +118,4 @@ class ThaliedjeControlEventForm(forms.ModelForm):
         self.fields["everyone_can_control"].label = "Control player"
         self.fields["everyone_can_request_playlist"].label = "Request playlists"
         self.fields["respect_blacklist"].label = "Respect blacklist"
+        self.fields["check_throttling"].label = "Check throttling"

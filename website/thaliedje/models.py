@@ -197,24 +197,28 @@ class Player(models.Model):
             "thaliedje.can_request_playlists_and_albums", self
         ) and not ThaliedjeBlacklistedUser.user_is_blacklisted(user)
 
-    def can_request_song(self, user):
-        """Check if a user can request a song."""
-        if not user.is_authenticated:
-            return False
-
-        # Check how many songs the user has requested in the last hour
+    def user_is_throttled(self, user):
+        """Check if a user is throttled."""
         if (
             SpotifyQueueItem.objects.filter(requested_by=user, added__gte=timezone.now() - timedelta(hours=1)).count()
             >= config.THALIEDJE_MAX_SONG_REQUESTS_PER_HOUR
         ):
+            return True
+        return False
+
+    def can_request_song(self, user):
+        """Check if a user can request a song."""
+        if not user.is_authenticated:
             return False
 
         control_event = self.active_control_event
         if control_event is not None:
             if control_event.respect_blacklist and ThaliedjeBlacklistedUser.user_is_blacklisted(user):
                 return False
+            if control_event.check_throttling and self.user_is_throttled(user):
+                return False
             return control_event.can_request_song(user)
-        return not ThaliedjeBlacklistedUser.user_is_blacklisted(user)
+        return not ThaliedjeBlacklistedUser.user_is_blacklisted(user) and not self.user_is_throttled(user)
 
     def can_control(self, user):
         """Check if a user can control the player."""
@@ -990,6 +994,7 @@ class ThaliedjeControlEvent(models.Model):
     everyone_can_request_playlist = models.BooleanField(default=False)
 
     respect_blacklist = models.BooleanField(default=True)
+    check_throttling = models.BooleanField(default=True)
 
     start = AnnotationProperty(F("event__start"))
     end = AnnotationProperty(F("event__end"))
