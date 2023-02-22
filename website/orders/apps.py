@@ -52,3 +52,16 @@ class OrdersConfig(AppConfig):
 
         AccountView.user_data_tabs.add_filter(filter_user_page)
         ExplainerView.explainer_tabs.add_filter(filter_explainer_page)
+
+    def announcements(self, request):
+        """Add announcements."""
+        from orders.models import OrderBlacklistedUser
+
+        if (
+            request.user is not None
+            and request.user.is_authenticated
+            and OrderBlacklistedUser.objects.filter(user=request.user).exists()
+        ):
+            return ["You are&nbsp;<b>blacklisted</b>&nbsp;for placing orders!"]
+
+        return []

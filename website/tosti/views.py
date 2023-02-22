@@ -1,9 +1,22 @@
+import json
+
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.generic import TemplateView, RedirectView
 
 from tosti.filter import Filter
+from tosti.services import (
+    generate_order_statistics,
+    generate_orders_per_venue_statistics,
+    generate_most_requested_songs,
+    generate_users_with_most_song_requests,
+    generate_users_per_association,
+    generate_product_category_ordered_per_association,
+)
+from borrel.models import ProductCategory as BorrelProductCategory
+from constance import config
 
 
 class IndexView(TemplateView):
@@ -65,6 +78,42 @@ class ExplainerView(TemplateView):
             if tab_rendered is not None:
                 rendered_tabs.append({"name": tab["name"], "slug": tab["slug"], "content": tab_rendered})
         return render(request, self.template_name, {"rendered_tabs": rendered_tabs})
+
+
+class StatisticsView(LoginRequiredMixin, TemplateView):
+    """Statistics View."""
+
+    template_name = "tosti/statistics.html"
+
+    def get(self, request, **kwargs):
+        """GET Statistics View."""
+        ordered_items_distribution = json.dumps(generate_order_statistics())
+        orders_per_venue = json.dumps(generate_orders_per_venue_statistics())
+        most_requested_songs = json.dumps(generate_most_requested_songs())
+        users_with_most_requests = json.dumps(generate_users_with_most_song_requests())
+        users_per_association = json.dumps(generate_users_per_association())
+        try:
+            borrel_product_category = BorrelProductCategory.objects.get(id=config.STATISTICS_BORREL_CATEGORY)
+            borrel_product_category_ordered_per_association = json.dumps(
+                generate_product_category_ordered_per_association(borrel_product_category)
+            )
+        except BorrelProductCategory.DoesNotExist:
+            borrel_product_category_ordered_per_association = None
+            borrel_product_category = None
+
+        return render(
+            request,
+            self.template_name,
+            {
+                "ordered_items_distribution": ordered_items_distribution,
+                "orders_per_venue": orders_per_venue,
+                "most_requested_songs": most_requested_songs,
+                "users_with_most_requests": users_with_most_requests,
+                "users_per_association": users_per_association,
+                "borrel_product_category_ordered_per_association": borrel_product_category_ordered_per_association,
+                "borrel_product_category": borrel_product_category,
+            },
+        )
 
 
 def handler403(request, exception):

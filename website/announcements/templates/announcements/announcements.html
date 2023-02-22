@@ -7,3 +7,9 @@
                 data-announcement-id="{{ announcement.pk }}" onclick="close_announcement({{ announcement.id }})"></button>
     </div>
 {% endfor %}
+
+{% for announcement in app_announcements %}
+    <div class="announcement">
+        {{ announcement|bleach }}
+    </div>
+{% endfor %}

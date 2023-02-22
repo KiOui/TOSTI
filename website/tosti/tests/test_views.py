@@ -10,7 +10,6 @@ from venues.models import Venue
 
 
 class TostiViewTests(TestCase):
-
     fixtures = ["venues.json"]
 
     def test_index_view(self):
