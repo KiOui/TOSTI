@@ -189,6 +189,7 @@ CONSTANCE_CONFIG = {
     'THALIEDJE_START_PLAYERS_AT': ("08:00", 'Time to start the players (only on weekdays). Should be aligned on 5 minutes', str),
     'THALIEDJE_HOLIDAY_ACTIVE': (False, 'If enabled, the player will not start playing automatically at the start of the day', bool),
     'THALIEDJE_START_PLAYER_URI': ('', 'URI to start playing when the player starts automatically.', str),
+    'THALIEDJE_MAX_SONG_REQUESTS_PER_HOUR': (10, 'Maximum number of song requests per hour before a user is blacklisted', int),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = {

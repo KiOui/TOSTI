@@ -2,7 +2,9 @@ import logging
 import os
 import secrets
 import time
+from datetime import timedelta
 
+from constance import config
 from django.core.cache import cache
 from django.core.validators import MinLengthValidator
 from django.db import models
@@ -199,6 +201,14 @@ class Player(models.Model):
         """Check if a user can request a song."""
         if not user.is_authenticated:
             return False
+
+        # Check how many songs the user has requested in the last hour
+        if (
+            SpotifyQueueItem.objects.filter(requested_by=user, added__gte=timezone.now() - timedelta(hours=1)).count()
+            >= config.THALIEDJE_MAX_SONG_REQUESTS_PER_HOUR
+        ):
+            return False
+
         control_event = self.active_control_event
         if control_event is not None:
             if control_event.respect_blacklist and ThaliedjeBlacklistedUser.user_is_blacklisted(user):
