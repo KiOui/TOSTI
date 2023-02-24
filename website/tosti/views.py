@@ -14,6 +14,7 @@ from tosti.services import (
     generate_users_with_most_song_requests,
     generate_users_per_association,
     generate_product_category_ordered_per_association,
+    generate_product_category_ordered_per_month,
 )
 from borrel.models import ProductCategory as BorrelProductCategory
 from constance import config
@@ -97,8 +98,12 @@ class StatisticsView(LoginRequiredMixin, TemplateView):
             borrel_product_category_ordered_per_association = json.dumps(
                 generate_product_category_ordered_per_association(borrel_product_category)
             )
+            borrel_product_category_ordered_per_month = json.dumps(
+                generate_product_category_ordered_per_month(borrel_product_category)
+            )
         except BorrelProductCategory.DoesNotExist:
             borrel_product_category_ordered_per_association = None
+            borrel_product_category_ordered_per_month = None
             borrel_product_category = None
 
         return render(
@@ -111,6 +116,7 @@ class StatisticsView(LoginRequiredMixin, TemplateView):
                 "users_with_most_requests": users_with_most_requests,
                 "users_per_association": users_per_association,
                 "borrel_product_category_ordered_per_association": borrel_product_category_ordered_per_association,
+                "borrel_product_category_ordered_per_month": borrel_product_category_ordered_per_month,
                 "borrel_product_category": borrel_product_category,
             },
         )

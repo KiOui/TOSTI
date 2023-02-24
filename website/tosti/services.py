@@ -7,11 +7,13 @@ from django.contrib.auth import get_user_model
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 from django.db.models import Count, Q, Sum
+from django.db.models.functions import TruncMonth
 from django.utils import timezone
 
 from associations.models import Association
 from orders.models import Product as OrderProduct, OrderVenue
 from thaliedje.models import SpotifyTrack
+from borrel.models import ReservationItem
 
 logger = logging.getLogger(__name__)
 
@@ -159,5 +161,30 @@ def generate_product_category_ordered_per_association(category):
     ):
         data["labels"].append(str(association))
         data["datasets"][0]["data"].append(association.ordered_beer_amount)
+
+    return data
+
+
+def generate_product_category_ordered_per_month(category):
+    """Generate statistics about products in a category ordered per month."""
+    data = {
+        "labels": [],
+        "datasets": [
+            {"data": []},
+        ],
+    }
+
+    last_year = timezone.now() - timedelta(days=365)
+
+    for date, ordered_amount in (
+        ReservationItem.objects.filter(
+            reservation__submitted_at__isnull=False, product__category=category, reservation__start__gte=last_year
+        )
+        .annotate(month=TruncMonth("reservation__start"))
+        .values_list("month")
+        .annotate(ordered_amount=Sum("amount_used"))
+    ):
+        data["labels"].append(date.strftime("%B, %Y"))
+        data["datasets"][0]["data"].append(ordered_amount)
 
     return data
