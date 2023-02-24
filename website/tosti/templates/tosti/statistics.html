@@ -25,16 +25,14 @@
             </div>
         </div>
         <div class="row mb-5">
-            <div class="col">
+            <div class="col-6">
                 <canvas id="most-requested-songs-chart"
                     data-data="{{ most_requested_songs }}"
                     data-title="Most requested songs"
                     data-chart-type="bar">
                 </canvas>
             </div>
-        </div>
-        <div class="row mb-5">
-            <div class="col">
+            <div class="col-6">
                 <canvas id="users-with-most-requests-chart"
                     data-data="{{ users_with_most_requests }}"
                     data-title="Users with most requests"
@@ -57,15 +55,6 @@
                     <canvas id="borrel-product-category-ordered-per-association-chart"
                         data-data="{{ borrel_product_category_ordered_per_association }}"
                         data-title="Amount of products ordered in the '{{ borrel_product_category.name }}' category per association"
-                        data-chart-type="bar">
-                    </canvas>
-                </div>
-            </div>
-            <div class="row mb-5">
-                <div class="col">
-                    <canvas id="borrel-product-category-ordered-per-month-chart"
-                        data-data="{{ borrel_product_category_ordered_per_month }}"
-                        data-title="Amount of products ordered in the '{{ borrel_product_category.name }}' category per month"
                         data-chart-type="bar">
                     </canvas>
                 </div>
