@@ -5,7 +5,8 @@ from rest_framework.generics import (
     DestroyAPIView,
     RetrieveUpdateAPIView,
     ListCreateAPIView,
-    RetrieveDestroyAPIView, RetrieveUpdateDestroyAPIView,
+    RetrieveDestroyAPIView,
+    RetrieveUpdateDestroyAPIView,
 )
 
 from tosti.utils import log_action, ModelDiffCalculator

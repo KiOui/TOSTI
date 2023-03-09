@@ -83,7 +83,9 @@ def add_scanned_order(product: Product, shift: Shift, ready=True, paid=True) -> 
     )
 
 
-def add_user_order(product: Product, shift: Shift, user: User, deprioritize=False, paid=False, ready=False, **kwargs) -> Order:
+def add_user_order(
+    product: Product, shift: Shift, user: User, deprioritize=False, paid=False, ready=False, **kwargs
+) -> Order:
     """
     Add a single Order (of type TYPE_ORDERED).
 
@@ -136,7 +138,7 @@ def add_user_order(product: Product, shift: Shift, user: User, deprioritize=Fals
         paid=paid,
         ready=ready,
         prioritize=user_gets_prioritized_orders(user, shift),
-        deprioritize=deprioritize
+        deprioritize=deprioritize,
     )
 
 

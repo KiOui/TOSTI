@@ -18,7 +18,7 @@ class WritableModelSerializer(serializers.ModelSerializer):
         for field in self.fields.values():
             if not field.read_only:
                 if isinstance(field, ModelSerializer):
-                    model = getattr(self.Meta, 'model')
+                    model = getattr(self.Meta, "model")
                     info = model_meta.get_field_info(model)
                     relation_info = info.relations[field.field_name]
                     new_field_class, new_field_kwargs = self.build_relational_field(field.field_name, relation_info)
@@ -26,14 +26,14 @@ class WritableModelSerializer(serializers.ModelSerializer):
                     new_field.bind(field_name=field.field_name, parent=self)
                     yield new_field
                 elif isinstance(field, ListSerializer) and isinstance(field.child, ModelSerializer):
-                    model = getattr(self.Meta, 'model')
+                    model = getattr(self.Meta, "model")
                     info = model_meta.get_field_info(model)
                     relation_info = info.relations[field.field_name]
                     new_field_class, new_field_kwargs = self.build_relational_field(field.field_name, relation_info)
-                    new_field_kwargs['many'] = True
+                    new_field_kwargs["many"] = True
                     # We need to overwrite allow_empty because its default is different when creating a foreignkey
                     # field.
-                    new_field_kwargs['allow_empty'] = field.allow_empty
+                    new_field_kwargs["allow_empty"] = field.allow_empty
                     new_field = new_field_class(**new_field_kwargs)
                     new_field.bind(field_name=field.field_name, parent=self)
                     yield new_field

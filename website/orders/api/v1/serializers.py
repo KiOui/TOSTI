@@ -1,7 +1,5 @@
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
-from rest_framework.relations import PrimaryKeyRelatedField
-from rest_framework.serializers import ModelSerializer, ListSerializer
 
 from orders import models
 from orders.models import Order, Product, OrderVenue
@@ -9,19 +7,14 @@ from orders.services import add_user_order, add_scanned_order
 from tosti.api.serializers import WritableModelSerializer
 from users.api.v1.serializers import UserSerializer
 from venues.api.v1.serializers import VenueSerializer
-from rest_framework.utils import model_meta
 
 
 class OrderVenueSerializer(serializers.ModelSerializer):
-
     venue = VenueSerializer()
 
     class Meta:
-
         model = OrderVenue
-        fields = [
-            "venue"
-        ]
+        fields = ["venue"]
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -67,7 +60,7 @@ class OrderSerializer(serializers.ModelSerializer):
         super().__init__(*args, **kwargs)
         if self.instance is not None:
             # If we are updating.
-            self.fields.get('type').read_only = True
+            self.fields.get("type").read_only = True
 
     def validate_product(self, value):
         """Validate the product id."""
@@ -128,7 +121,7 @@ class ShiftSerializer(WritableModelSerializer):
         super().__init__(*args, **kwargs)
         if self.instance is not None:
             # If we are updating.
-            self.fields.get('venue').read_only = True
+            self.fields.get("venue").read_only = True
 
     def get_amount_of_orders(self, instance):
         """Get the amount of orders in the shift."""
@@ -138,7 +131,7 @@ class ShiftSerializer(WritableModelSerializer):
         """
         Create a Shift.
 
-        Catch any ValueError exception that may be caused by the save() method of the Shift object.
+        Catch any ValidationError exception that may be caused by the save() method of the Shift object.
         """
         try:
             return super().create(validated_data)
@@ -149,11 +142,11 @@ class ShiftSerializer(WritableModelSerializer):
         """
         Update a Shift.
 
-        Catch any ValueError exception that may be caused by the save() method of the Shift object.
+        Catch any ValidationError exception that may be caused by the save() method of the Shift object.
         """
         try:
             return super().update(instance, validated_data)
-        except ValueError as e:
+        except ValidationError as e:
             raise serializers.ValidationError(e)
 
     class Meta:

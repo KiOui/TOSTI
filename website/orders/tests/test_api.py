@@ -8,10 +8,9 @@ from django.utils import timezone
 from freezegun import freeze_time
 from guardian.shortcuts import assign_perm
 
-from rest_framework.test import APIRequestFactory, force_authenticate, APITestCase
+from rest_framework.test import APITestCase
 from orders import models
-from orders.api.v1.views import OrderListCreateAPIView
-from orders.models import Order, Shift
+from orders.models import Order, Shift, OrderVenue
 from venues.models import Venue
 
 
@@ -31,7 +30,9 @@ class OrderServicesTests(APITestCase):
             venue=order_venue, start=timezone.now(), end=timezone.now() + timedelta(hours=4), can_order=True
         )
         cls.product = models.Product.objects.create(name="Test product", current_price=1.25)
-        cls.product_not_available_at_venue = models.Product.objects.create(name="Not available at venue", current_price=0.6)
+        cls.product_not_available_at_venue = models.Product.objects.create(
+            name="Not available at venue", current_price=0.6
+        )
         cls.normal_user = User.objects.get(pk=2)
         cls.normal_user.set_password("password")
         cls.normal_user.save()
@@ -58,9 +59,7 @@ class OrderServicesTests(APITestCase):
 
     def test_order_not_logged_in(self):
         """Non-logged in users should not be able to order items."""
-        response = self.client.post(
-            reverse("v1:orders_listcreate", kwargs={"shift": self.shift})
-        )
+        response = self.client.post(reverse("v1:orders_listcreate", kwargs={"shift": self.shift}))
         self.assertEqual(response.status_code, 403)
 
     def test_order_logged_in_normal_user(self):
@@ -70,14 +69,14 @@ class OrderServicesTests(APITestCase):
         response = self.client.post(
             reverse("v1:orders_listcreate", kwargs={"shift": self.shift}),
             {
-                'product': self.product.id,
+                "product": self.product.id,
             },
-            format='json'
+            format="json",
         )
         self.assertEqual(response.status_code, 201)
         orders_after = Order.objects.all().count()
         self.assertEqual(orders_after - orders_before, 1)
-        created_order = Order.objects.latest('id')
+        created_order = Order.objects.latest("id")
         self.assertEqual(created_order.product, self.product)
 
     def test_order_product_not_available_at_venue(self):
@@ -88,9 +87,9 @@ class OrderServicesTests(APITestCase):
             response = self.client.post(
                 reverse("v1:orders_listcreate", kwargs={"shift": self.shift}),
                 {
-                    'product': self.product_not_available_at_venue.id,
+                    "product": self.product_not_available_at_venue.id,
                 },
-                format='json'
+                format="json",
             )
             self.assertEqual(response.status_code, 400)
             orders_after = Order.objects.all().count()
@@ -102,9 +101,9 @@ class OrderServicesTests(APITestCase):
             response = self.client.post(
                 reverse("v1:orders_listcreate", kwargs={"shift": self.shift}),
                 {
-                    'product': self.product_not_available_at_venue.id,
+                    "product": self.product_not_available_at_venue.id,
                 },
-                format='json'
+                format="json",
             )
             self.assertEqual(response.status_code, 400)
             orders_after = Order.objects.all().count()
@@ -115,16 +114,11 @@ class OrderServicesTests(APITestCase):
         self.client.login(username=self.normal_user.username, password="password")
         response = self.client.post(
             reverse("v1:orders_listcreate", kwargs={"shift": self.shift}),
-            {
-                'product': self.product.id,
-                'ready': True,
-                'paid': True,
-                'prioritize': True
-            },
-            format='json'
+            {"product": self.product.id, "ready": True, "paid": True, "prioritize": True},
+            format="json",
         )
         self.assertEqual(response.status_code, 201)
-        created_order = Order.objects.latest('id')
+        created_order = Order.objects.latest("id")
         self.assertEqual(created_order.product, self.product)
         self.assertEqual(created_order.ready, False)
         self.assertEqual(created_order.paid, False)
@@ -135,14 +129,11 @@ class OrderServicesTests(APITestCase):
         self.client.login(username=self.normal_user.username, password="password")
         response = self.client.post(
             reverse("v1:orders_listcreate", kwargs={"shift": self.shift}),
-            {
-                'product': self.product.id,
-                'deprioritize': True
-            },
-            format='json'
+            {"product": self.product.id, "deprioritize": True},
+            format="json",
         )
         self.assertEqual(response.status_code, 201)
-        created_order = Order.objects.latest('id')
+        created_order = Order.objects.latest("id")
         self.assertEqual(created_order.product, self.product)
         self.assertEqual(created_order.deprioritize, True)
 
@@ -151,14 +142,11 @@ class OrderServicesTests(APITestCase):
         self.client.login(username=self.normal_user.username, password="password")
         response = self.client.post(
             reverse("v1:orders_listcreate", kwargs={"shift": self.shift}),
-            {
-                'product': self.product.id,
-                'type': 1
-            },
-            format='json'
+            {"product": self.product.id, "type": 1},
+            format="json",
         )
         self.assertEqual(response.status_code, 201)
-        created_order = Order.objects.latest('id')
+        created_order = Order.objects.latest("id")
         self.assertEqual(created_order.type, 0)
 
     def test_order_closed_shift(self):
@@ -170,13 +158,13 @@ class OrderServicesTests(APITestCase):
         response = self.client.post(
             reverse("v1:orders_listcreate", kwargs={"shift": self.shift}),
             {
-                'product': self.product.id,
+                "product": self.product.id,
             },
-            format='json'
+            format="json",
         )
         orders_after = Order.objects.all().count()
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(str(response.data['detail']), "This Shift is closed")
+        self.assertEqual(str(response.data["detail"]), "This Shift is closed")
         self.assertEqual(orders_before, orders_after)
 
     @freeze_time()
@@ -190,13 +178,13 @@ class OrderServicesTests(APITestCase):
         response = self.client.post(
             reverse("v1:orders_listcreate", kwargs={"shift": self.shift}),
             {
-                'product': self.product.id,
+                "product": self.product.id,
             },
-            format='json'
+            format="json",
         )
         orders_after = Order.objects.all().count()
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(str(response.data['detail']), "Shift is not active")
+        self.assertEqual(str(response.data["detail"]), "Shift is not active")
         self.assertEqual(orders_before, orders_after)
 
     @freeze_time()
@@ -210,13 +198,13 @@ class OrderServicesTests(APITestCase):
         response = self.client.post(
             reverse("v1:orders_listcreate", kwargs={"shift": self.shift}),
             {
-                'product': self.product.id,
+                "product": self.product.id,
             },
-            format='json'
+            format="json",
         )
         orders_after = Order.objects.all().count()
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(str(response.data['detail']), "Shift is not active")
+        self.assertEqual(str(response.data["detail"]), "Shift is not active")
         self.assertEqual(orders_before, orders_after)
 
     @freeze_time()
@@ -231,13 +219,13 @@ class OrderServicesTests(APITestCase):
         response = self.client.post(
             reverse("v1:orders_listcreate", kwargs={"shift": self.shift}),
             {
-                'product': self.product.id,
+                "product": self.product.id,
             },
-            format='json'
+            format="json",
         )
         orders_after = Order.objects.all().count()
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(str(response.data['detail']), "Shift is finalized, no Orders can be added anymore")
+        self.assertEqual(str(response.data["detail"]), "Shift is finalized, no Orders can be added anymore")
         self.assertEqual(orders_before, orders_after)
 
     def test_scanned_order(self):
@@ -248,15 +236,15 @@ class OrderServicesTests(APITestCase):
         response = self.client.post(
             reverse("v1:orders_listcreate", kwargs={"shift": self.shift}),
             {
-                'product': self.product.id,
-                'type': 1,
+                "product": self.product.id,
+                "type": 1,
             },
-            format='json'
+            format="json",
         )
         orders_after = Order.objects.all().count()
         self.assertEqual(response.status_code, 201)
         self.assertEqual(orders_after - orders_before, 1)
-        order_created = Order.objects.latest('id')
+        order_created = Order.objects.latest("id")
         self.assertEqual(order_created.type, 1)
 
     def test_normal_order_as_privileged_user(self):
@@ -269,15 +257,15 @@ class OrderServicesTests(APITestCase):
             response = self.client.post(
                 reverse("v1:orders_listcreate", kwargs={"shift": self.shift}),
                 {
-                    'product': self.product.id,
-                    'type': 0,
+                    "product": self.product.id,
+                    "type": 0,
                 },
-                format='json'
+                format="json",
             )
             orders_after = Order.objects.all().count()
             self.assertEqual(response.status_code, 201)
             self.assertEqual(orders_after - orders_before, 1)
-            order_created = Order.objects.latest('id')
+            order_created = Order.objects.latest("id")
             self.assertEqual(order_created.type, 0)
 
         with self.subTest("No explicit type set"):
@@ -285,14 +273,14 @@ class OrderServicesTests(APITestCase):
             response = self.client.post(
                 reverse("v1:orders_listcreate", kwargs={"shift": self.shift}),
                 {
-                    'product': self.product.id,
+                    "product": self.product.id,
                 },
-                format='json'
+                format="json",
             )
             orders_after = Order.objects.all().count()
             self.assertEqual(response.status_code, 201)
             self.assertEqual(orders_after - orders_before, 1)
-            order_created = Order.objects.latest('id')
+            order_created = Order.objects.latest("id")
             self.assertEqual(order_created.type, 0)
 
     def test_order_made_paid_ready(self):
@@ -304,16 +292,16 @@ class OrderServicesTests(APITestCase):
             response = self.client.post(
                 reverse("v1:orders_listcreate", kwargs={"shift": self.shift}),
                 {
-                    'product': self.product.id,
-                    'paid': True,
-                    'ready': True,
+                    "product": self.product.id,
+                    "paid": True,
+                    "ready": True,
                 },
-                format='json'
+                format="json",
             )
             orders_after = Order.objects.all().count()
             self.assertEqual(response.status_code, 201)
             self.assertEqual(orders_after - orders_before, 1)
-            order_created = Order.objects.latest('id')
+            order_created = Order.objects.latest("id")
             self.assertEqual(order_created.type, 0)
             self.assertEqual(order_created.paid, True)
             self.assertEqual(order_created.ready, True)
@@ -323,17 +311,17 @@ class OrderServicesTests(APITestCase):
             response = self.client.post(
                 reverse("v1:orders_listcreate", kwargs={"shift": self.shift}),
                 {
-                    'product': self.product.id,
-                    'type': 1,
-                    'paid': True,
-                    'ready': True,
+                    "product": self.product.id,
+                    "type": 1,
+                    "paid": True,
+                    "ready": True,
                 },
-                format='json'
+                format="json",
             )
             orders_after = Order.objects.all().count()
             self.assertEqual(response.status_code, 201)
             self.assertEqual(orders_after - orders_before, 1)
-            order_created = Order.objects.latest('id')
+            order_created = Order.objects.latest("id")
             self.assertEqual(order_created.type, 1)
             self.assertEqual(order_created.paid, True)
             self.assertEqual(order_created.ready, True)
@@ -346,9 +334,9 @@ class OrderServicesTests(APITestCase):
         response = self.client.post(
             reverse("v1:orders_listcreate", kwargs={"shift": self.shift}),
             {
-                'product': self.product.id,
+                "product": self.product.id,
             },
-            format='json'
+            format="json",
         )
         orders_after = Order.objects.all().count()
         self.assertEqual(response.status_code, 403)
@@ -369,18 +357,16 @@ class OrderServicesTests(APITestCase):
         response = self.client.post(
             reverse("v1:shifts_listcreate"),
             {
-                'venue': self.order_venue.pk,
-                'start': "2023-03-09T10:00:00.000Z",
-                'end': "2023-03-09T12:00:00.000Z",
-                'can_order': True,
-                'finalized': False,
-                'max_orders_per_user': 2,
-                'max_orders_total': 70,
-                'assignees': [
-                    self.user_with_permissions.id
-                ],
+                "venue": self.order_venue.pk,
+                "start": "2023-03-09T10:00:00.000Z",
+                "end": "2023-03-09T12:00:00.000Z",
+                "can_order": True,
+                "finalized": False,
+                "max_orders_per_user": 2,
+                "max_orders_total": 70,
+                "assignees": [self.user_with_permissions.id],
             },
-            format='json'
+            format="json",
         )
         self.assertEqual(response.status_code, 403)
 
@@ -391,27 +377,27 @@ class OrderServicesTests(APITestCase):
         response = self.client.post(
             reverse("v1:shifts_listcreate"),
             {
-                'venue': self.order_venue.pk,
-                'start': "2023-03-09T10:00:00.000Z",
-                'end': "2023-03-09T12:00:00.000Z",
-                'can_order': True,
-                'finalized': False,
-                'max_orders_per_user': 2,
-                'max_orders_total': 70,
-                'assignees': [
-                    self.user_with_permissions.id
-                ],
+                "venue": self.order_venue.pk,
+                "start": "2023-03-09T10:00:00.000Z",
+                "end": "2023-03-09T12:00:00.000Z",
+                "can_order": True,
+                "finalized": False,
+                "max_orders_per_user": 2,
+                "max_orders_total": 70,
+                "assignees": [self.user_with_permissions.id],
             },
-            format='json'
+            format="json",
         )
         self.assertEqual(response.status_code, 201)
         self.assertEqual(Shift.objects.all().count(), 1)
         shift = Shift.objects.first()
         self.assertEqual(shift.venue, self.order_venue)
-        self.assertEqual(shift.start,
-                         timezone.datetime(year=2023, month=3, day=9, hour=10, tzinfo=datetime.timezone.utc))
-        self.assertEqual(shift.end,
-                         timezone.datetime(year=2023, month=3, day=9, hour=12, tzinfo=datetime.timezone.utc))
+        self.assertEqual(
+            shift.start, timezone.datetime(year=2023, month=3, day=9, hour=10, tzinfo=datetime.timezone.utc)
+        )
+        self.assertEqual(
+            shift.end, timezone.datetime(year=2023, month=3, day=9, hour=12, tzinfo=datetime.timezone.utc)
+        )
         self.assertTrue(shift.can_order)
         self.assertFalse(shift.finalized)
         self.assertEqual(shift.max_orders_per_user, 2)
@@ -427,22 +413,23 @@ class OrderServicesTests(APITestCase):
         response = self.client.post(
             reverse("v1:shifts_listcreate"),
             {
-                'venue': self.order_venue.pk,
-                'start': "2023-03-09T10:00:00.000Z",
-                'end': "2023-03-09T15:00:00.000Z",
-                'can_order': True,
-                'finalized': True,
-                'max_orders_per_user': 2,
-                'max_orders_total': 70,
-                'assignees': [],
+                "venue": self.order_venue.pk,
+                "start": "2023-03-09T10:00:00.000Z",
+                "end": "2023-03-09T15:00:00.000Z",
+                "can_order": True,
+                "finalized": True,
+                "max_orders_per_user": 2,
+                "max_orders_total": 70,
+                "assignees": [],
             },
-            format='json'
+            format="json",
         )
         self.assertEqual(response.status_code, 201)
         self.assertEqual(Shift.objects.all().count(), 1)
         shift = Shift.objects.first()
-        self.assertEqual(shift.end,
-                         timezone.datetime(year=2023, month=3, day=9, hour=13, tzinfo=datetime.timezone.utc))
+        self.assertEqual(
+            shift.end, timezone.datetime(year=2023, month=3, day=9, hour=13, tzinfo=datetime.timezone.utc)
+        )
 
     def test_retrieve_shift(self):
         with self.subTest("Not logged in"):
@@ -453,3 +440,241 @@ class OrderServicesTests(APITestCase):
             self.client.login(username=self.normal_user.username, password="password")
             response = self.client.get(reverse("v1:shift_retrieveupdate", kwargs={"pk": self.shift.pk}))
             self.assertEqual(response.status_code, 200)
+
+    def test_full_update_shift_not_logged_in(self):
+        response = self.client.put(
+            reverse("v1:shift_retrieveupdate", kwargs={"pk": self.shift.pk}),
+            {
+                "start": "2023-03-09T10:00:00.000Z",
+                "end": "2023-03-09T15:00:00.000Z",
+                "can_order": True,
+                "finalized": True,
+                "max_orders_per_user": 2,
+                "max_orders_total": 70,
+                "assignees": [],
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_full_update_shift_normal_user(self):
+        self.client.login(username=self.normal_user.username, password="password")
+        self.assertFalse(self.normal_user.has_perm("orders.can_manage_shift_in_venue", self.order_venue))
+        response = self.client.put(
+            reverse("v1:shift_retrieveupdate", kwargs={"pk": self.shift.pk}),
+            {
+                "start": "2023-03-09T10:00:00.000Z",
+                "end": "2023-03-09T15:00:00.000Z",
+                "can_order": True,
+                "finalized": False,
+                "max_orders_per_user": 2,
+                "max_orders_total": 70,
+                "assignees": [],
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_full_update_shift(self):
+        self.client.login(username=self.user_with_permissions.username, password="password")
+        self.assertTrue(self.user_with_permissions.has_perm("orders.can_manage_shift_in_venue", self.order_venue))
+        response = self.client.put(
+            reverse("v1:shift_retrieveupdate", kwargs={"pk": self.shift.pk}),
+            {
+                "start": "2023-03-09T10:00:00.000Z",
+                "end": "2023-03-09T15:00:00.000Z",
+                "can_order": False,
+                "finalized": False,
+                "max_orders_per_user": 18,
+                "max_orders_total": 50,
+                "assignees": [],
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, 200)
+        shift = Shift.objects.get(pk=self.shift.pk)
+        self.assertEqual(
+            shift.start, timezone.datetime(year=2023, month=3, day=9, hour=10, tzinfo=datetime.timezone.utc)
+        )
+        self.assertEqual(
+            shift.end, timezone.datetime(year=2023, month=3, day=9, hour=15, tzinfo=datetime.timezone.utc)
+        )
+        self.assertFalse(shift.can_order)
+        self.assertFalse(shift.finalized)
+        self.assertEqual(shift.max_orders_per_user, 18)
+        self.assertEqual(shift.max_orders_total, 50)
+        self.assertEqual(shift.assignees.all().count(), 0)
+
+    def test_full_update_shift_venue_not_updated(self):
+        self.client.login(username=self.user_with_permissions.username, password="password")
+        self.assertTrue(self.user_with_permissions.has_perm("orders.can_manage_shift_in_venue", self.order_venue))
+        test_venue = Venue.objects.create(name="Extra venue", slug="extra_venue")
+        test_order_venue = OrderVenue.objects.create(venue=test_venue)
+        response = self.client.put(
+            reverse("v1:shift_retrieveupdate", kwargs={"pk": self.shift.pk}),
+            {
+                "venue": test_order_venue.pk,
+                "start": "2023-03-09T10:00:00.000Z",
+                "end": "2023-03-09T15:00:00.000Z",
+                "can_order": False,
+                "finalized": False,
+                "max_orders_per_user": 18,
+                "max_orders_total": 50,
+                "assignees": [],
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, 200)
+        shift = Shift.objects.get(pk=self.shift.pk)
+        self.assertEqual(shift.venue, self.order_venue)
+
+    def test_partial_update_shift_not_logged_in(self):
+        response = self.client.patch(
+            reverse("v1:shift_retrieveupdate", kwargs={"pk": self.shift.pk}),
+            {
+                "can_order": True,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_partial_update_shift_normal_user(self):
+        self.client.login(username=self.normal_user.username, password="password")
+        self.assertFalse(self.normal_user.has_perm("orders.can_manage_shift_in_venue", self.order_venue))
+        response = self.client.patch(
+            reverse("v1:shift_retrieveupdate", kwargs={"pk": self.shift.pk}),
+            {
+                "can_order": True,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_partial_update_shift(self):
+        self.client.login(username=self.user_with_permissions.username, password="password")
+        self.assertTrue(self.user_with_permissions.has_perm("orders.can_manage_shift_in_venue", self.order_venue))
+
+        with self.subTest("Start"):
+            response = self.client.patch(
+                reverse("v1:shift_retrieveupdate", kwargs={"pk": self.shift.pk}),
+                {
+                    "start": "2023-03-09T10:00:00.000Z",
+                },
+                format="json",
+            )
+            self.assertEqual(response.status_code, 200)
+            shift = Shift.objects.get(pk=self.shift.pk)
+            self.assertEqual(
+                shift.start, timezone.datetime(year=2023, month=3, day=9, hour=10, tzinfo=datetime.timezone.utc)
+            )
+
+        with self.subTest("End"):
+            response = self.client.patch(
+                reverse("v1:shift_retrieveupdate", kwargs={"pk": self.shift.pk}),
+                {
+                    "end": "2023-03-09T15:00:00.000Z",
+                },
+                format="json",
+            )
+            self.assertEqual(response.status_code, 200)
+            shift = Shift.objects.get(pk=self.shift.pk)
+            self.assertEqual(
+                shift.end, timezone.datetime(year=2023, month=3, day=9, hour=15, tzinfo=datetime.timezone.utc)
+            )
+
+        with self.subTest("Can order"):
+            response = self.client.patch(
+                reverse("v1:shift_retrieveupdate", kwargs={"pk": self.shift.pk}),
+                {
+                    "can_order": False,
+                },
+                format="json",
+            )
+            self.assertEqual(response.status_code, 200)
+            shift = Shift.objects.get(pk=self.shift.pk)
+            self.assertFalse(shift.can_order)
+
+        with self.subTest("Max orders total"):
+            response = self.client.patch(
+                reverse("v1:shift_retrieveupdate", kwargs={"pk": self.shift.pk}),
+                {
+                    "max_orders_total": 100,
+                },
+                format="json",
+            )
+            self.assertEqual(response.status_code, 200)
+            shift = Shift.objects.get(pk=self.shift.pk)
+            self.assertEqual(shift.max_orders_total, 100)
+
+        with self.subTest("Max orders user"):
+            response = self.client.patch(
+                reverse("v1:shift_retrieveupdate", kwargs={"pk": self.shift.pk}),
+                {
+                    "max_orders_per_user": 50,
+                },
+                format="json",
+            )
+            self.assertEqual(response.status_code, 200)
+            shift = Shift.objects.get(pk=self.shift.pk)
+            self.assertEqual(shift.max_orders_per_user, 50)
+
+        with self.subTest("Assignees"):
+            response = self.client.patch(
+                reverse("v1:shift_retrieveupdate", kwargs={"pk": self.shift.pk}),
+                {
+                    "assignees": [],
+                },
+                format="json",
+            )
+            self.assertEqual(response.status_code, 200)
+            shift = Shift.objects.get(pk=self.shift.pk)
+            self.assertEqual(shift.assignees.all().count(), 0)
+
+    def test_partial_update_shift_venue(self):
+        self.client.login(username=self.user_with_permissions.username, password="password")
+        self.assertTrue(self.user_with_permissions.has_perm("orders.can_manage_shift_in_venue", self.order_venue))
+        test_venue = Venue.objects.create(name="Extra venue", slug="extra_venue")
+        test_order_venue = OrderVenue.objects.create(venue=test_venue)
+        response = self.client.patch(
+            reverse("v1:shift_retrieveupdate", kwargs={"pk": self.shift.pk}),
+            {"venue": test_order_venue.pk},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 200)
+        shift = Shift.objects.get(pk=self.shift.pk)
+        self.assertEqual(shift.venue, self.order_venue)
+
+    @freeze_time("2023-03-09T13:00:00", tz_offset=1)
+    def test_partial_update_shift_make_finalized(self):
+        self.client.login(username=self.user_with_permissions.username, password="password")
+        self.assertTrue(self.user_with_permissions.has_perm("orders.can_manage_shift_in_venue", self.order_venue))
+        self.shift.start = timezone.datetime(year=2023, month=3, day=9, hour=10, tzinfo=datetime.timezone.utc)
+        self.shift.end = timezone.datetime(year=2023, month=3, day=9, hour=16, tzinfo=datetime.timezone.utc)
+        self.shift.save()
+        response = self.client.patch(
+            reverse("v1:shift_retrieveupdate", kwargs={"pk": self.shift.pk}),
+            {
+                "finalized": True,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, 200)
+        shift = Shift.objects.get(pk=self.shift.pk)
+        self.assertTrue(shift.finalized)
+        self.assertEqual(
+            shift.end, timezone.datetime(year=2023, month=3, day=9, hour=13, tzinfo=datetime.timezone.utc)
+        )
+        self.assertFalse(shift.can_order)
+
+    def test_partial_update_shift_make_finalized_orders_not_ready(self):
+        self.client.login(username=self.user_with_permissions.username, password="password")
+        self.assertTrue(self.user_with_permissions.has_perm("orders.can_manage_shift_in_venue", self.order_venue))
+        Order.objects.create(product=self.product, shift=self.shift, user=self.normal_user)
+        response = self.client.patch(
+            reverse("v1:shift_retrieveupdate", kwargs={"pk": self.shift.pk}),
+            {
+                "finalized": True,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, 400)

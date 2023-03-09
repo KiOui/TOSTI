@@ -100,13 +100,12 @@ class OrderRetrieveUpdateDestroyAPIView(LoggedRetrieveUpdateDestroyAPIView):
 
     queryset = Order.objects.select_related("user", "product")
 
-
     def put(self, request, *args, **kwargs):
         """PUT is not allowed for non-privileged users."""
         pass
 
     def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
+        partial = kwargs.pop("partial", False)
         instance = self.get_object()
         shift = self.kwargs.get("shift")
         if user_can_manage_shift(self.request.user, shift):
@@ -122,7 +121,7 @@ class OrderRetrieveUpdateDestroyAPIView(LoggedRetrieveUpdateDestroyAPIView):
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
 
-        if getattr(instance, '_prefetched_objects_cache', None):
+        if getattr(instance, "_prefetched_objects_cache", None):
             # If 'prefetch_related' has been applied to a queryset, we need to
             # forcibly invalidate the prefetch cache on the instance.
             instance._prefetched_objects_cache = {}
