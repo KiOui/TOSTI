@@ -5,7 +5,7 @@ from rest_framework.generics import (
     DestroyAPIView,
     RetrieveUpdateAPIView,
     ListCreateAPIView,
-    RetrieveDestroyAPIView,
+    RetrieveDestroyAPIView, RetrieveUpdateDestroyAPIView,
 )
 
 from tosti.utils import log_action, ModelDiffCalculator
@@ -86,5 +86,11 @@ class LoggedDestroyAPIView(DestroyAPIView):
 
 class LoggedRetrieveDestroyAPIView(LoggedDestroyAPIView, RetrieveDestroyAPIView):
     """RetrieveDestroyAPIView with logged actions."""
+
+    pass
+
+
+class LoggedRetrieveUpdateDestroyAPIView(LoggedUpdateAPIView, LoggedDestroyAPIView, RetrieveUpdateDestroyAPIView):
+    """RetrieveUpdateDestroyAPIView with logged actions."""
 
     pass

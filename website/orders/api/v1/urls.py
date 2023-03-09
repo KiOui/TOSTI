@@ -6,12 +6,9 @@ from orders.api.v1.views import (
     ShiftAddCapacityAPIView,
     ShiftScannerAPIView,
     OrderListCreateAPIView,
-    OrderRetrieveDestroyAPIView,
+    OrderRetrieveUpdateDestroyAPIView,
     ProductListAPIView,
     ShiftRetrieveUpdateAPIView,
-    OrderTogglePaidAPIView,
-    OrderToggleReadyAPIView,
-    OrderToListBottomAPIView,
     ShiftFinalizeAPIView,
     JoinShiftAPIView,
 )
@@ -26,21 +23,8 @@ urlpatterns = [
     path("shifts/<shift:shift>/orders/", OrderListCreateAPIView.as_view(), name="orders_listcreate"),
     path(
         "shifts/<shift:shift>/orders/<int:pk>/",
-        OrderRetrieveDestroyAPIView.as_view(),
-        name="orders_retrievedestroy",
-    ),
-    path(
-        "shifts/<shift:shift>/orders/<order:order>/paid/", OrderTogglePaidAPIView.as_view(), name="order_toggle_paid"
-    ),
-    path(
-        "shifts/<shift:shift>/orders/<order:order>/ready/",
-        OrderToggleReadyAPIView.as_view(),
-        name="order_toggle_ready",
-    ),
-    path(
-        "shifts/<shift:shift>/orders/<order:order>/to-bottom/",
-        OrderToListBottomAPIView.as_view(),
-        name="order_to_bottom_list",
+        OrderRetrieveUpdateDestroyAPIView.as_view(),
+        name="orders_retrieveupdatedestroy",
     ),
     path("shifts/<shift:shift>/add-time/", ShiftAddTimeAPIView.as_view(), name="shifts_add_time"),
     path("shifts/<shift:shift>/add-capacity/", ShiftAddCapacityAPIView.as_view(), name="shifts_add_capacity"),

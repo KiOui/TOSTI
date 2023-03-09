@@ -1,5 +1,8 @@
 <ul class="row w-100">
     <div class="col-auto d-inline-flex">
+        <div v-if="order.type === 0">
+            <input type="checkbox" class="order-made-checkbox d-none d-md-inline-block"/>
+        </div>
         <p class="item-counter"><% index + 1 %>.</p>
         <p class="item-name"><% order.product.name %> (€<% (Math.round(order.order_price * 100) /
         100).toFixed(2) %>)</p>

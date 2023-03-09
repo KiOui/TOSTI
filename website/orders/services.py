@@ -61,6 +61,7 @@ def add_scanned_order(product: Product, shift: Shift, ready=True, paid=True) -> 
 
     :param product: A Product for which an Order has to be created
     :param shift: The shift for which the Orders have to be created
+    :param made: Whether the Order should be directly made made
     :param ready: Whether the Order should be directly made ready
     :param paid: Whether the Order should be directly made paid
     :return: The created Order
@@ -82,13 +83,14 @@ def add_scanned_order(product: Product, shift: Shift, ready=True, paid=True) -> 
     )
 
 
-def add_user_order(product: Product, shift: Shift, user: User) -> Order:
+def add_user_order(product: Product, shift: Shift, user: User, deprioritize=False, paid=False, ready=False, **kwargs) -> Order:
     """
     Add a single Order (of type TYPE_ORDERED).
 
     :param product: A Product for which an Order has to be created
     :param shift: The shift for which the Orders have to be created
     :param user: The User for which the Orders have to be created
+    :param deprioritize: Whether to deprioritize the order.
     :return: The created Order
     """
     # Check order permissions
@@ -131,7 +133,10 @@ def add_user_order(product: Product, shift: Shift, user: User) -> Order:
         type=Order.TYPE_ORDERED,
         user=user,
         user_association=user.association,
+        paid=paid,
+        ready=ready,
         prioritize=user_gets_prioritized_orders(user, shift),
+        deprioritize=deprioritize
     )
 
 

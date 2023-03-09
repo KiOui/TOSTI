@@ -19,7 +19,7 @@ from rest_framework.views import APIView
 from orders.api.v1.filters import ShiftFilter, OrderFilter, ProductFilter
 from orders.api.v1.serializers import OrderSerializer, ShiftSerializer, ProductSerializer
 from orders.exceptions import OrderException
-from orders.models import Order, Shift, Product
+from orders.models import Order, Shift, Product, OrderVenue
 from orders.services import (
     increase_shift_time,
     increase_shift_capacity,
@@ -31,7 +31,7 @@ from orders.services import (
 from tosti import settings
 from tosti.api.openapi import CustomAutoSchema
 from tosti.api.permissions import IsAuthenticatedOrTokenHasScopeForMethod
-from tosti.api.views import LoggedRetrieveUpdateAPIView, LoggedListCreateAPIView, LoggedRetrieveDestroyAPIView
+from tosti.api.views import LoggedRetrieveUpdateAPIView, LoggedListCreateAPIView, LoggedRetrieveUpdateDestroyAPIView
 from tosti.utils import log_action
 
 
@@ -74,7 +74,7 @@ class OrderListCreateAPIView(ListCreateAPIView):
             # Save the order while ignoring the order_type, user, paid and ready argument as the user does not have
             # permissions to save orders for all users in the shift
             order = serializer.save(
-                shift=shift, type=Order.TYPE_ORDERED, user=self.request.user, paid=False, ready=False
+                shift=shift, type=Order.TYPE_ORDERED, user=self.request.user, paid=False, ready=False, made=False
             )
             log_action(self.request.user, order, CHANGE, "Created order via API.")
 
@@ -86,17 +86,57 @@ class OrderListCreateAPIView(ListCreateAPIView):
             raise PermissionDenied(detail=e.__str__())
 
 
-class OrderRetrieveDestroyAPIView(LoggedRetrieveDestroyAPIView):
+class OrderRetrieveUpdateDestroyAPIView(LoggedRetrieveUpdateDestroyAPIView):
     """API View to retrieve and destroy orders."""
 
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticatedOrTokenHasScopeForMethod]
     required_scopes_for_method = {
         "GET": ["orders:order"],
+        "PATCH": ["orders:order"],
+        "PUT": ["orders:order"],
         "DELETE": ["orders:manage"],
     }
 
     queryset = Order.objects.select_related("user", "product")
+
+
+    def put(self, request, *args, **kwargs):
+        """PUT is not allowed for non-privileged users."""
+        pass
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        shift = self.kwargs.get("shift")
+        if user_can_manage_shift(self.request.user, shift):
+            # All changeable order fields can be changed by the user.
+            pass
+        else:
+            # Only deprioritize can be changed by the user.
+            if not instance.deprioritize:
+                serializer = self.get_serializer(instance, data={"deprioritize": request.data}, partial=partial)
+        return Response(serializer.data)
+
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
+
+    def perform_update(self, serializer):
+        shift = self.kwargs.get("shift")
+        if user_can_manage_shift(self.request.user, shift):
+            # All changable order fields can be changed by the user.
+            pass
+        else:
+            # Only deprioritize can be changed by the user.
+            pass
 
     def destroy(self, request, *args, **kwargs):
         """Destroy an order."""
@@ -140,6 +180,7 @@ class ShiftListCreateAPIView(LoggedListCreateAPIView):
     def create(self, request, *args, **kwargs):
         """Create a shift."""
         venue = request.data.get("venue")
+        venue = OrderVenue.objects.get(pk=venue)
         if not user_can_manage_shifts_in_venue(request.user, venue):
             raise PermissionDenied
         return super().create(request, *args, **kwargs)
@@ -306,93 +347,6 @@ class ShiftScannerAPIView(APIView):
 
         return Response(
             status=status.HTTP_200_OK, data=self.serializer_class(order, context={"request": request}).data
-        )
-
-
-class OrderTogglePaidAPIView(APIView):
-    """API View to change the paid status of orders."""
-
-    serializer_class = OrderSerializer
-    schema = CustomAutoSchema(response_schema={"$ref": "#/components/schemas/Order"})
-    permission_classes = [IsAuthenticatedOrTokenHasScope]
-    required_scopes = ["orders:manage"]
-
-    def patch(self, request, **kwargs):
-        """Toggle the order paid status."""
-        shift = kwargs.get("shift")
-        order = kwargs.get("order")
-
-        if order not in Order.objects.filter(shift=shift):
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-        if not user_can_manage_shift(request.user, shift):
-            raise PermissionDenied
-
-        order.paid = not order.paid
-        order.save()
-        log_action(self.request.user, order, CHANGE, f"Set order paid to {order.paid} via API.")
-
-        return Response(
-            status=status.HTTP_200_OK,
-            data=OrderSerializer(order, many=False, context={"request": request}).data,
-        )
-
-
-class OrderToggleReadyAPIView(APIView):
-    """API View to change the ready status of orders."""
-
-    serializer_class = OrderSerializer
-    schema = CustomAutoSchema(response_schema={"$ref": "#/components/schemas/Order"})
-    permission_classes = [IsAuthenticatedOrTokenHasScope]
-    required_scopes = ["orders:manage"]
-
-    def patch(self, request, **kwargs):
-        """Toggle the order ready status."""
-        shift = kwargs.get("shift")
-        order = kwargs.get("order")
-
-        if order not in Order.objects.filter(shift=shift):
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-        if not user_can_manage_shift(request.user, shift):
-            raise PermissionDenied
-
-        order.ready = not order.ready
-        order.save()
-        log_action(self.request.user, order, CHANGE, f"Set order ready to {order.ready} via API.")
-
-        return Response(
-            status=status.HTTP_200_OK,
-            data=OrderSerializer(order, many=False, context={"request": request}).data,
-        )
-
-
-class OrderToListBottomAPIView(APIView):
-    """API View to move an order to the bottom of the list."""
-
-    serializer_class = OrderSerializer
-    schema = CustomAutoSchema(response_schema={"$ref": "#/components/schemas/Order"})
-    permission_classes = [IsAuthenticatedOrTokenHasScope]
-
-    def patch(self, request, **kwargs):
-        """Move the order to the bottom of the list."""
-        shift = kwargs.get("shift")
-        order = kwargs.get("order")
-
-        if order not in Order.objects.filter(shift=shift):
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-        if request.user != order.user:
-            raise PermissionDenied
-
-        order.deprioritize = True
-        order.prioritize = False
-        order.save()
-        log_action(self.request.user, order, CHANGE, f"Moved order {order.id} to bottom of the list via API.")
-
-        return Response(
-            status=status.HTTP_200_OK,
-            data=OrderSerializer(order, many=False, context={"request": request}).data,
         )
 
 
