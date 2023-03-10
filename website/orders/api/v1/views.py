@@ -94,54 +94,49 @@ class OrderRetrieveUpdateDestroyAPIView(LoggedRetrieveUpdateDestroyAPIView):
     required_scopes_for_method = {
         "GET": ["orders:order"],
         "PATCH": ["orders:order"],
-        "PUT": ["orders:order"],
+        "PUT": ["orders:manage"],
         "DELETE": ["orders:manage"],
     }
 
     queryset = Order.objects.select_related("user", "product")
 
     def put(self, request, *args, **kwargs):
-        """PUT is not allowed for non-privileged users."""
-        pass
+        """PUT is only available for shift managers."""
+        shift = self.kwargs.get("shift")
+        if user_can_manage_shift(request.user, shift):
+            return super().put(request, *args, **kwargs)
+        else:
+            self.permission_denied(request)
 
     def update(self, request, *args, **kwargs):
-        partial = kwargs.pop("partial", False)
         instance = self.get_object()
         shift = self.kwargs.get("shift")
         if user_can_manage_shift(self.request.user, shift):
             # All changeable order fields can be changed by the user.
-            pass
+            return super().update(request, *args, **kwargs)
         else:
             # Only deprioritize can be changed by the user.
-            if not instance.deprioritize:
-                serializer = self.get_serializer(instance, data={"deprioritize": request.data}, partial=partial)
-        return Response(serializer.data)
-
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-
-        if getattr(instance, "_prefetched_objects_cache", None):
-            # If 'prefetch_related' has been applied to a queryset, we need to
-            # forcibly invalidate the prefetch cache on the instance.
-            instance._prefetched_objects_cache = {}
-
-        return Response(serializer.data)
-
-    def perform_update(self, serializer):
-        shift = self.kwargs.get("shift")
-        if user_can_manage_shift(self.request.user, shift):
-            # All changable order fields can be changed by the user.
-            pass
-        else:
-            # Only deprioritize can be changed by the user.
-            pass
+            if instance.user != request.user:
+                self.permission_denied(
+                    request, message="You don't have permission to alter other people's orders.", code=403
+                )
+            if request.data.get("deprioritize", None) is not None:
+                deprioritize = request.data.get("deprioritize")
+                if instance.deprioritize and not deprioritize:
+                    self.permission_denied(request, message="Deprioritize can not be unset.", code=400)
+                else:
+                    serializer = self.get_serializer(instance, data={"deprioritize": deprioritize}, partial=True)
+                    serializer.is_valid(raise_exception=True)
+                    self.perform_update(serializer)
+                    return Response(serializer.data)
+            else:
+                self.permission_denied(request, message="Only the deprioritize option can be changed.", code=400)
 
     def destroy(self, request, *args, **kwargs):
         """Destroy an order."""
         shift = kwargs.get("shift")
         if not user_can_manage_shift(request.user, shift):
-            raise PermissionDenied
+            self.permission_denied(request)
         return super().destroy(request, *args, **kwargs)
 
     def get_queryset(self):

@@ -61,6 +61,7 @@ class OrderSerializer(serializers.ModelSerializer):
         if self.instance is not None:
             # If we are updating.
             self.fields.get("type").read_only = True
+            self.fields.get("product").read_only = True
 
     def validate_product(self, value):
         """Validate the product id."""

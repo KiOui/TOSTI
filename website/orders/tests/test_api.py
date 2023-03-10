@@ -57,12 +57,25 @@ class OrderServicesTests(APITestCase):
         self.product.available_at.add(self.order_venue)
         self.product.save()
 
-    def test_order_not_logged_in(self):
+    def test_list_orders_not_logged_in(self):
+        """Listing orders of a Shift should fail if not logged in."""
+        Order.objects.create(user=None, product=self.product, shift=self.shift)
+        response = self.client.get(reverse("v1:orders_listcreate", kwargs={"shift": self.shift}))
+        self.assertEqual(response.status_code, 403)
+
+    def test_list_orders(self):
+        """Listing orders of a Shift should fail if not logged in."""
+        Order.objects.create(user=None, product=self.product, shift=self.shift)
+        self.client.login(username=self.normal_user.username, password="password")
+        response = self.client.get(reverse("v1:orders_listcreate", kwargs={"shift": self.shift}))
+        self.assertEqual(response.status_code, 200)
+
+    def test_create_order_not_logged_in(self):
         """Non-logged in users should not be able to order items."""
         response = self.client.post(reverse("v1:orders_listcreate", kwargs={"shift": self.shift}))
         self.assertEqual(response.status_code, 403)
 
-    def test_order_logged_in_normal_user(self):
+    def test_create_order_logged_in_normal_user(self):
         """Logged in users should be able to order items."""
         orders_before = Order.objects.all().count()
         self.client.login(username=self.normal_user.username, password="password")
@@ -79,7 +92,7 @@ class OrderServicesTests(APITestCase):
         created_order = Order.objects.latest("id")
         self.assertEqual(created_order.product, self.product)
 
-    def test_order_product_not_available_at_venue(self):
+    def test_create_order_product_not_available_at_venue(self):
         """Products should be available in an order venue in order for orders to be created."""
         with self.subTest("Non privileged user"):
             orders_before = Order.objects.all().count()
@@ -109,7 +122,7 @@ class OrderServicesTests(APITestCase):
             orders_after = Order.objects.all().count()
             self.assertEqual(orders_after, orders_before)
 
-    def test_order_normal_user_ignores_fields(self):
+    def test_create_order_normal_user_ignores_fields(self):
         """When a user does not have privileges, ready and paid attributes are ignored."""
         self.client.login(username=self.normal_user.username, password="password")
         response = self.client.post(
@@ -124,7 +137,7 @@ class OrderServicesTests(APITestCase):
         self.assertEqual(created_order.paid, False)
         self.assertEqual(created_order.prioritize, False)
 
-    def test_order_normal_user_deprioritize(self):
+    def test_create_order_normal_user_deprioritize(self):
         """Orders can be deprioritized on creation."""
         self.client.login(username=self.normal_user.username, password="password")
         response = self.client.post(
@@ -137,7 +150,7 @@ class OrderServicesTests(APITestCase):
         self.assertEqual(created_order.product, self.product)
         self.assertEqual(created_order.deprioritize, True)
 
-    def test_order_normal_user_type_scanned(self):
+    def test_create_order_normal_user_type_scanned(self):
         """When a user has no privilege, the type attribute should be ignored."""
         self.client.login(username=self.normal_user.username, password="password")
         response = self.client.post(
@@ -149,7 +162,7 @@ class OrderServicesTests(APITestCase):
         created_order = Order.objects.latest("id")
         self.assertEqual(created_order.type, 0)
 
-    def test_order_closed_shift(self):
+    def test_create_order_closed_shift(self):
         """Orders should not be able to be placed on closed shifts."""
         orders_before = Order.objects.all().count()
         self.shift.can_order = False
@@ -168,7 +181,7 @@ class OrderServicesTests(APITestCase):
         self.assertEqual(orders_before, orders_after)
 
     @freeze_time()
-    def test_order_shift_in_future(self):
+    def test_create_order_shift_in_future(self):
         """Orders should not be able to be placed on shifts that are starting in the future."""
         self.shift.start = timezone.now() + timedelta(hours=2)
         self.shift.end = timezone.now() + timedelta(hours=4)
@@ -188,7 +201,7 @@ class OrderServicesTests(APITestCase):
         self.assertEqual(orders_before, orders_after)
 
     @freeze_time()
-    def test_order_shift_in_past(self):
+    def test_create_order_shift_in_past(self):
         """Orders should not be able to be placed on shifts that are in the past."""
         self.shift.start = timezone.now() - timedelta(hours=4)
         self.shift.end = timezone.now() - timedelta(hours=2)
@@ -208,7 +221,7 @@ class OrderServicesTests(APITestCase):
         self.assertEqual(orders_before, orders_after)
 
     @freeze_time()
-    def test_order_shift_finalized(self):
+    def test_create_order_shift_finalized(self):
         """Orders should not be able to be placed on shifts that are finalized."""
         self.shift.start = timezone.now() - timedelta(hours=4)
         self.shift.end = timezone.now() - timedelta(hours=2)
@@ -228,7 +241,7 @@ class OrderServicesTests(APITestCase):
         self.assertEqual(str(response.data["detail"]), "Shift is finalized, no Orders can be added anymore")
         self.assertEqual(orders_before, orders_after)
 
-    def test_scanned_order(self):
+    def test_create_scanned_order(self):
         """A user with privileges can create scanned orders."""
         orders_before = Order.objects.all().count()
         self.client.login(username=self.user_with_permissions.username, password="password")
@@ -247,7 +260,7 @@ class OrderServicesTests(APITestCase):
         order_created = Order.objects.latest("id")
         self.assertEqual(order_created.type, 1)
 
-    def test_normal_order_as_privileged_user(self):
+    def test_create_normal_order_as_privileged_user(self):
         """A privileged user should be able to create normal orders."""
         self.client.login(username=self.user_with_permissions.username, password="password")
         self.assertTrue(self.user_with_permissions.has_perm("orders.can_manage_shift_in_venue", self.order_venue))
@@ -283,7 +296,7 @@ class OrderServicesTests(APITestCase):
             order_created = Order.objects.latest("id")
             self.assertEqual(order_created.type, 0)
 
-    def test_order_made_paid_ready(self):
+    def test_create_order_made_paid_ready(self):
         """A privileged user should be able to create orders with paid and ready attributes set."""
         self.client.login(username=self.user_with_permissions.username, password="password")
         self.assertTrue(self.user_with_permissions.has_perm("orders.can_manage_shift_in_venue", self.order_venue))
@@ -326,7 +339,7 @@ class OrderServicesTests(APITestCase):
             self.assertEqual(order_created.paid, True)
             self.assertEqual(order_created.ready, True)
 
-    def test_order_while_blacklisted(self):
+    def test_create_order_while_blacklisted(self):
         """Blacklisted users should not be able to order."""
         models.OrderBlacklistedUser.objects.create(user=self.normal_user)
         orders_before = Order.objects.all().count()
@@ -341,6 +354,207 @@ class OrderServicesTests(APITestCase):
         orders_after = Order.objects.all().count()
         self.assertEqual(response.status_code, 403)
         self.assertEqual(orders_after, orders_before)
+
+    def test_full_update_order_not_logged_in(self):
+        order = Order.objects.create(user=None, product=self.product, shift=self.shift)
+        response = self.client.put(
+            reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk}),
+            {
+                "paid": True,
+                "ready": True,
+                "deprioritize": False,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_full_update_order_unprivileged_user(self):
+        order = Order.objects.create(user=None, product=self.product, shift=self.shift)
+        self.client.login(username=self.normal_user.username, password="password")
+        response = self.client.put(
+            reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk}),
+            {
+                "paid": True,
+                "ready": True,
+                "deprioritize": False,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_full_update_order(self):
+        order = Order.objects.create(user=None, product=self.product, shift=self.shift)
+        self.client.login(username=self.user_with_permissions.username, password="password")
+        response = self.client.put(
+            reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk}),
+            {
+                "paid": True,
+                "ready": True,
+                "deprioritize": True,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, 200)
+        order = Order.objects.get(pk=order.pk)
+        self.assertTrue(order.paid)
+        self.assertTrue(order.ready)
+        self.assertTrue(order.deprioritize)
+
+    def test_partial_update_order_not_logged_in(self):
+        order = Order.objects.create(user=None, product=self.product, shift=self.shift)
+        response = self.client.patch(
+            reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk}),
+            {
+                "deprioritize": True,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_parial_update_order_someone_else(self):
+        with self.subTest("Terminal created order"):
+            order = Order.objects.create(user=None, product=self.product, shift=self.shift)
+            self.client.login(username=self.normal_user.username, password="password")
+            response = self.client.patch(
+                reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk}),
+                {
+                    "deprioritize": True,
+                },
+                format="json",
+            )
+            self.assertEqual(response.status_code, 403)
+
+        with self.subTest("Order someone else"):
+            order = Order.objects.create(user=self.user_with_permissions, product=self.product, shift=self.shift)
+            self.client.login(username=self.normal_user.username, password="password")
+            response = self.client.patch(
+                reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk}),
+                {
+                    "deprioritize": True,
+                },
+                format="json",
+            )
+            self.assertEqual(response.status_code, 403)
+
+    def test_parial_update_order_normal_user(self):
+        with self.subTest("Deprioritize"):
+            order = Order.objects.create(user=self.normal_user, product=self.product, shift=self.shift)
+            self.client.login(username=self.normal_user.username, password="password")
+            response = self.client.patch(
+                reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk}),
+                {
+                    "deprioritize": True,
+                },
+                format="json",
+            )
+            self.assertEqual(response.status_code, 200)
+            order = Order.objects.get(pk=order.pk)
+            self.assertTrue(order.deprioritize)
+
+        with self.subTest("Paid"):
+            order = Order.objects.create(user=self.normal_user, product=self.product, shift=self.shift)
+            self.client.login(username=self.normal_user.username, password="password")
+            response = self.client.patch(
+                reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk}),
+                {
+                    "paid": True,
+                },
+                format="json",
+            )
+            self.assertEqual(response.status_code, 403)
+            order = Order.objects.get(pk=order.pk)
+            self.assertFalse(order.paid)
+
+        with self.subTest("Ready"):
+            order = Order.objects.create(user=self.normal_user, product=self.product, shift=self.shift)
+            self.client.login(username=self.normal_user.username, password="password")
+            response = self.client.patch(
+                reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk}),
+                {
+                    "ready": True,
+                },
+                format="json",
+            )
+            self.assertEqual(response.status_code, 403)
+            order = Order.objects.get(pk=order.pk)
+            self.assertFalse(order.ready)
+
+    def test_partial_update_order_disable_deprioritize(self):
+        """For a normal user, disabling deprioritize should not be possible."""
+        order = Order.objects.create(user=self.normal_user, product=self.product, shift=self.shift, deprioritize=True)
+        self.client.login(username=self.normal_user.username, password="password")
+        response = self.client.patch(
+            reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk}),
+            {
+                "deprioritize": False,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, 403)
+        order = Order.objects.get(pk=order.pk)
+        self.assertTrue(order.deprioritize)
+
+    def test_partial_update_order_privileged_user(self):
+        order = Order.objects.create(user=self.normal_user, product=self.product, shift=self.shift, deprioritize=True)
+        self.client.login(username=self.user_with_permissions.username, password="password")
+        response = self.client.patch(
+            reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk}),
+            {
+                "deprioritize": False,
+                "paid": True,
+                "ready": True,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, 200)
+        order = Order.objects.get(pk=order.pk)
+        self.assertFalse(order.deprioritize)
+        self.assertTrue(order.paid)
+        self.assertTrue(order.ready)
+
+    def test_delete_order_not_logged_in(self):
+        order = Order.objects.create(user=None, product=self.product, shift=self.shift, deprioritize=True)
+        response = self.client.delete(
+            reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk})
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_delete_order_not_privileged(self):
+        order = Order.objects.create(user=self.normal_user, product=self.product, shift=self.shift, deprioritize=True)
+        self.client.login(username=self.normal_user.username, password="password")
+        response = self.client.delete(
+            reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk})
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_delete_order(self):
+        with self.subTest("Own order"):
+            order = Order.objects.create(
+                user=self.user_with_permissions, product=self.product, shift=self.shift, deprioritize=True
+            )
+            self.client.login(username=self.user_with_permissions.username, password="password")
+            response = self.client.delete(
+                reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk})
+            )
+            self.assertEqual(response.status_code, 204)
+
+        with self.subTest("Terminal order"):
+            order = Order.objects.create(user=None, product=self.product, shift=self.shift, deprioritize=True)
+            self.client.login(username=self.user_with_permissions.username, password="password")
+            response = self.client.delete(
+                reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk})
+            )
+            self.assertEqual(response.status_code, 204)
+
+        with self.subTest("Other users order"):
+            order = Order.objects.create(
+                user=self.normal_user, product=self.product, shift=self.shift, deprioritize=True
+            )
+            self.client.login(username=self.user_with_permissions.username, password="password")
+            response = self.client.delete(
+                reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk})
+            )
+            self.assertEqual(response.status_code, 204)
 
     def test_list_shifts(self):
         with self.subTest("Not authenticated"):
@@ -529,6 +743,7 @@ class OrderServicesTests(APITestCase):
         self.assertEqual(shift.venue, self.order_venue)
 
     def test_partial_update_shift_not_logged_in(self):
+        """A non-logged in use should not be able to use PATCH on a Shift."""
         response = self.client.patch(
             reverse("v1:shift_retrieveupdate", kwargs={"pk": self.shift.pk}),
             {
@@ -539,6 +754,7 @@ class OrderServicesTests(APITestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_partial_update_shift_normal_user(self):
+        """A normal user should not be able to use PATCH on a Shift."""
         self.client.login(username=self.normal_user.username, password="password")
         self.assertFalse(self.normal_user.has_perm("orders.can_manage_shift_in_venue", self.order_venue))
         response = self.client.patch(
@@ -551,6 +767,7 @@ class OrderServicesTests(APITestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_partial_update_shift(self):
+        """Test PATCH update of Shift properties."""
         self.client.login(username=self.user_with_permissions.username, password="password")
         self.assertTrue(self.user_with_permissions.has_perm("orders.can_manage_shift_in_venue", self.order_venue))
 
@@ -631,6 +848,7 @@ class OrderServicesTests(APITestCase):
             self.assertEqual(shift.assignees.all().count(), 0)
 
     def test_partial_update_shift_venue(self):
+        """Updating a Shift venue should not be possible."""
         self.client.login(username=self.user_with_permissions.username, password="password")
         self.assertTrue(self.user_with_permissions.has_perm("orders.can_manage_shift_in_venue", self.order_venue))
         test_venue = Venue.objects.create(name="Extra venue", slug="extra_venue")
@@ -646,6 +864,7 @@ class OrderServicesTests(APITestCase):
 
     @freeze_time("2023-03-09T13:00:00", tz_offset=1)
     def test_partial_update_shift_make_finalized(self):
+        """Finalize a shift with PATCH."""
         self.client.login(username=self.user_with_permissions.username, password="password")
         self.assertTrue(self.user_with_permissions.has_perm("orders.can_manage_shift_in_venue", self.order_venue))
         self.shift.start = timezone.datetime(year=2023, month=3, day=9, hour=10, tzinfo=datetime.timezone.utc)
@@ -667,6 +886,7 @@ class OrderServicesTests(APITestCase):
         self.assertFalse(shift.can_order)
 
     def test_partial_update_shift_make_finalized_orders_not_ready(self):
+        """Finalizing a Shift where some orders are not ready or paid yet should fail."""
         self.client.login(username=self.user_with_permissions.username, password="password")
         self.assertTrue(self.user_with_permissions.has_perm("orders.can_manage_shift_in_venue", self.order_venue))
         Order.objects.create(product=self.product, shift=self.shift, user=self.normal_user)
@@ -674,6 +894,21 @@ class OrderServicesTests(APITestCase):
             reverse("v1:shift_retrieveupdate", kwargs={"pk": self.shift.pk}),
             {
                 "finalized": True,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_partial_update_shift_unfinalize(self):
+        """A Shift can never be unfinalized."""
+        self.client.login(username=self.user_with_permissions.username, password="password")
+        self.assertTrue(self.user_with_permissions.has_perm("orders.can_manage_shift_in_venue", self.order_venue))
+        self.shift.finalized = True
+        self.shift.save()
+        response = self.client.patch(
+            reverse("v1:shift_retrieveupdate", kwargs={"pk": self.shift.pk}),
+            {
+                "finalized": False,
             },
             format="json",
         )
