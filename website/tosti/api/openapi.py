@@ -106,8 +106,7 @@ class CustomAutoSchema(AutoSchema):
         return {"content": {ct: {"schema": item_schema} for ct in self.request_media_types}}
 
     def map_writable_model_serializer(self, serializer):
-        """Maps a WritableModelSerializer"""
-        # Assuming we have a valid serializer instance.
+        """Map a WritableModelSerializer."""
         required = []
         properties = {}
 
