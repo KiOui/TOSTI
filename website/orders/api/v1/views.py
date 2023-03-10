@@ -6,7 +6,6 @@ from django.contrib.admin.models import CHANGE, ADDITION
 from django.db.models import Q
 from oauth2_provider.contrib.rest_framework import IsAuthenticatedOrTokenHasScope
 from rest_framework import status, filters
-from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import (
     ListCreateAPIView,
@@ -17,13 +16,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from orders.api.v1.filters import ShiftFilter, OrderFilter, ProductFilter
-from orders.api.v1.serializers import OrderSerializer, ShiftSerializer, ProductSerializer
+from orders.api.v1.serializers import OrderSerializer, ShiftSerializer, ProductSerializer, OrderVenueSerializer
 from orders.exceptions import OrderException
 from orders.models import Order, Shift, Product, OrderVenue
 from orders.services import (
-    increase_shift_time,
-    increase_shift_capacity,
-    add_user_to_assignees_of_shift,
     user_can_manage_shifts_in_venue,
     user_can_manage_shift,
     add_scanned_order,
@@ -109,6 +105,7 @@ class OrderRetrieveUpdateDestroyAPIView(LoggedRetrieveUpdateDestroyAPIView):
             self.permission_denied(request)
 
     def update(self, request, *args, **kwargs):
+        """Update an order."""
         instance = self.get_object()
         shift = self.kwargs.get("shift")
         if user_can_manage_shift(self.request.user, shift):
@@ -196,7 +193,7 @@ class ShiftRetrieveUpdateAPIView(LoggedRetrieveUpdateAPIView):
         """Update a shift."""
         shift = get_object_or_404(Shift, pk=kwargs.get("pk"))
         if not user_can_manage_shift(request.user, shift):
-            raise PermissionDenied
+            self.permission_denied(request)
         return super().update(request, *args, **kwargs)
 
 
@@ -225,92 +222,6 @@ class ProductListAPIView(ListAPIView):
             return self.queryset.filter(available_at=shift.venue)
         else:
             return self.queryset.filter(available_at=None)
-
-
-class ShiftAddTimeAPIView(APIView):
-    """API View to extend the end time of a shift."""
-
-    serializer_class = ShiftSerializer
-    schema = CustomAutoSchema(
-        request_schema={"type": "object", "properties": {"minutes": {"type": "int", "example": "5"}}},
-        response_schema={"$ref": "#/components/schemas/Shift"},
-    )
-    permission_classes = [IsAuthenticatedOrTokenHasScope]
-    required_scopes = ["orders:manage"]
-
-    def patch(self, request, **kwargs):
-        """Extend the end time of a shift based on an optional `minutes` PATCH parameter."""
-        shift = kwargs.get("shift")
-        time_minutes = request.data.get("minutes", 5)
-        if not user_can_manage_shift(request.user, shift):
-            raise PermissionDenied
-
-        try:
-            increase_shift_time(shift, time_minutes)
-            log_action(
-                self.request.user, shift, CHANGE, f"Extended shift's end time with {time_minutes} minutes via API."
-            )
-            return Response(
-                status=status.HTTP_200_OK, data=self.serializer_class(shift, context={"request": request}).data
-            )
-        except DjangoValidationError as e:
-            raise PermissionDenied(detail=e.__str__())
-
-
-class ShiftAddCapacityAPIView(APIView):
-    """API View to increase the capacity of a shift."""
-
-    serializer_class = ShiftSerializer
-    schema = CustomAutoSchema(
-        request_schema={"type": "object", "properties": {"capacity": {"type": "int", "example": "5"}}},
-        response_schema={"$ref": "#/components/schemas/Shift"},
-    )
-    permission_classes = [IsAuthenticatedOrTokenHasScope]
-    required_scopes = ["orders:manage"]
-
-    def patch(self, request, **kwargs):
-        """Increase the capacity of a shift based on an optional `capacity` PATCH parameter."""
-        shift = kwargs.get("shift")
-        capacity = request.data.get("capacity", 5)
-        if not user_can_manage_shift(request.user, shift):
-            raise PermissionDenied
-
-        try:
-            increase_shift_capacity(shift, capacity)
-            log_action(self.request.user, shift, CHANGE, f"Added {capacity} to shift's capacity via API.")
-            return Response(
-                status=status.HTTP_200_OK, data=self.serializer_class(shift, context={"request": request}).data
-            )
-        except DjangoValidationError as e:
-            raise PermissionDenied(detail=e.__str__())
-
-
-class ShiftFinalizeAPIView(APIView):
-    """API View to finalize a shift."""
-
-    serializer_class = ShiftSerializer
-    schema = CustomAutoSchema(response_schema={"$ref": "#/components/schemas/Shift"})
-    permission_classes = [IsAuthenticatedOrTokenHasScope]
-    required_scopes = ["orders:manage"]
-
-    def patch(self, request, **kwargs):
-        """Finalize a shift."""
-        shift = kwargs.get("shift")
-        if not user_can_manage_shift(request.user, shift):
-            raise PermissionDenied
-
-        if shift.finalized:
-            return Response(status=status.HTTP_403_FORBIDDEN, data={"detail": "Shift was already finalized."})
-        try:
-            shift.finalized = True
-            shift.save()
-            log_action(self.request.user, shift, CHANGE, "Finalized shift via API.")
-        except DjangoValidationError as e:
-            raise PermissionDenied(detail=", ".join(e.messages))
-
-        return Response(
-            status=status.HTTP_200_OK, data=self.serializer_class(shift, context={"request": request}).data
-        )
 
 
 class ShiftScannerAPIView(APIView):
@@ -344,25 +255,8 @@ class ShiftScannerAPIView(APIView):
         )
 
 
-class JoinShiftAPIView(APIView):
-    """API View to join the assignees of a shift."""
+class OrderVenueListAPIView(ListAPIView):
+    """API View to list Order Venues."""
 
-    serializer_class = ShiftSerializer
-    schema = CustomAutoSchema(response_schema={"$ref": "#/components/schemas/Shift"})
-    permission_classes = [IsAuthenticatedOrTokenHasScope]
-    required_scopes = ["orders:manage"]
-
-    def patch(self, request, **kwargs):
-        """Join the shift assignees."""
-        shift = kwargs.get("shift")
-        if not user_can_manage_shifts_in_venue(request.user, shift.venue):
-            raise PermissionDenied
-        try:
-            add_user_to_assignees_of_shift(request.user, shift)
-            log_action(self.request.user, shift, CHANGE, "Joined shift via API.")
-
-        except PermissionError:
-            return Response(status=status.HTTP_403_FORBIDDEN)
-        return Response(
-            status=status.HTTP_200_OK, data=self.serializer_class(shift, many=False, context={"request": request}).data
-        )
+    serializer_class = OrderVenueSerializer
+    queryset = OrderVenue.objects.all()

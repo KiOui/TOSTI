@@ -10,11 +10,16 @@ from venues.api.v1.serializers import VenueSerializer
 
 
 class OrderVenueSerializer(serializers.ModelSerializer):
-    venue = VenueSerializer()
+    """Order Venue Serializer."""
+
+    venue = VenueSerializer(many=False, read_only=True)
 
     class Meta:
+        """Meta class."""
+
         model = OrderVenue
         fields = ["venue"]
+        read_only_fields = ["venue"]
 
 
 class ProductSerializer(serializers.ModelSerializer):

@@ -152,14 +152,20 @@
                 }).catch(error => show_error_from_api(error));
             },
             add_time() {
+                let end_date_obj = new Date(this.shift.end);
+                let end_date_obj_plus_5_minutes = new Date(end_date_obj.getTime() + (new Date(5 * 60 * 1000)).getTime());
                 fetch(
-                    '{% url "v1:shifts_add_time" shift=shift %}',
+                    '{% url "v1:shift_retrieveupdate" pk=shift.pk %}',
                     {
                         method: 'PATCH',
                         headers: {
                             "X-CSRFToken": get_csrf_token(),
+                            'Content-Type': 'application/json',
                             "Accept": 'application/json',
-                        }
+                        },
+                        body: JSON.stringify({
+                            'end': end_date_obj_plus_5_minutes.toISOString()
+                        })
                     }
                 ).then(response => {
                         if (response.status === 200) {
@@ -177,13 +183,17 @@
             },
             add_capacity() {
                 fetch(
-                    '{% url "v1:shifts_add_capacity" shift=shift %}',
+                    '{% url "v1:shift_retrieveupdate" pk=shift.pk %}',
                     {
                         method: 'PATCH',
                         headers: {
                             "X-CSRFToken": get_csrf_token(),
+                            'Content-Type': 'application/json',
                             "Accept": 'application/json',
-                        }
+                        },
+                        body: JSON.stringify({
+                            "max_orders_total": this.shift.max_orders_total + 5
+                        })
                     }
                 ).then(response => {
                         if (response.status === 200) {
@@ -202,13 +212,17 @@
             finalize_shift() {
                 if (confirm('Do you really want to finialize this Shift? Finalizing a Shift will make it read-only, this action can not be reverted!')) {
                     fetch(
-                        '{% url "v1:shifts_finalize" shift=shift %}',
+                        '{% url "v1:shift_retrieveupdate" pk=shift.pk %}',
                         {
                             method: 'PATCH',
                             headers: {
                                 "X-CSRFToken": get_csrf_token(),
+                                'Content-Type': 'application/json',
                                 "Accept": 'application/json',
-                            }
+                            },
+                            body: JSON.stringify({
+                                'finalized': true
+                            })
                         }
                     ).then(response => {
                         if (response.status === 200) {
@@ -222,7 +236,9 @@
                         if (typeof (update_refresh_list) !== 'undefined') {
                             update_refresh_list();
                         }
-                    }).catch(error => show_error_from_api(error));
+                    }).catch(() => {
+                        tata.error('', "The shift can't be finalized, are you sure all orders are marked paid and ready?");
+                    });
                 }
             }
         }

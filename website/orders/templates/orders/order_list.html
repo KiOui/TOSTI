@@ -211,13 +211,17 @@
             order_to_bottom_of_list(order) {
                 if (confirm("Are you sure you want to put this order on the bottom of the list?")) {
                     fetch(
-                        `/api/v1/shifts/{{ shift.id }}/orders/${order.id}/to-bottom/`,
+                        `/api/v1/shifts/{{ shift.id }}/orders/${order.id}/`,
                         {
                             method: 'PATCH',
                             headers: {
                                 "X-CSRFToken": get_csrf_token(),
+                                'Content-Type': 'application/json',
                                 "Accept": 'application/json',
-                            }
+                            },
+                            body: JSON.stringify({
+                                'deprioritize': true
+                            })
                         }
                     ).then(response => {
                         if (response.status === 200) {
