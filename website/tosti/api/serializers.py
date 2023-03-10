@@ -12,6 +12,10 @@ class WritableModelSerializer(serializers.ModelSerializer):
     key). Read-only ModelSerializers will not be altered.
     """
 
+    def get_writable_fields(self):
+        """Get writable fields."""
+        return self._writable_fields
+
     @property
     def _writable_fields(self):
         """Alter the writable fields such that ModelSerializers become writable by using their id."""

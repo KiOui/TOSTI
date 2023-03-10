@@ -93,6 +93,16 @@ class OrderRetrieveUpdateDestroyAPIView(LoggedRetrieveUpdateDestroyAPIView):
         "PUT": ["orders:manage"],
         "DELETE": ["orders:manage"],
     }
+    schema = CustomAutoSchema(
+        request_schema={
+            "type": "object",
+            "properties": {
+                "ready": {"type": "boolean"},
+                "paid": {"type": "boolean"},
+                "deprioritize": {"type": "boolean"},
+            },
+        }
+    )
 
     queryset = Order.objects.select_related("user", "product")
 
@@ -188,6 +198,20 @@ class ShiftRetrieveUpdateAPIView(LoggedRetrieveUpdateAPIView):
         "PUT": ["orders:manage"],
         "PATCH": ["orders:manage"],
     }
+    schema = CustomAutoSchema(
+        request_schema={
+            "type": "object",
+            "properties": {
+                "start": {"type": "string", "format": "date-time"},
+                "end": {"type": "string", "format": "date-time"},
+                "can_order": {"type": "boolean"},
+                "finalized": {"type": "boolean"},
+                "max_orders_per_user": {"type": "integer", "nullable": True},
+                "max_orders_total": {"type": "integer", "nullable": True},
+                "assignees": {"type": "array", "items": {"type": "integer"}},
+            },
+        }
+    )
 
     def update(self, request, *args, **kwargs):
         """Update a shift."""

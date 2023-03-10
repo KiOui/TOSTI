@@ -54,7 +54,7 @@ class ProductSerializer(serializers.ModelSerializer):
         read_only_fields = ["current_price"]
 
 
-class OrderSerializer(serializers.ModelSerializer):
+class OrderSerializer(WritableModelSerializer):
     """Serializer for Order model."""
 
     product = ProductSerializer(many=False, read_only=False)
