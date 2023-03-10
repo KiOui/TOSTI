@@ -750,7 +750,7 @@ class SpotifyPlayer(Player):
     def current_track_duration_ms(self):
         """Get the duration of the currently playing song."""
         current_playback = self._current_playback
-        if current_playback is None:
+        if current_playback is None or current_playback["item"] is None:
             return None
         return current_playback["item"]["duration_ms"]
 
@@ -758,7 +758,7 @@ class SpotifyPlayer(Player):
     def volume(self):
         """Get the volume of the playback device of a Player."""
         current_playback = self._current_playback
-        if current_playback is None:
+        if current_playback is None or current_playback["device"] is None:
             return None
         return current_playback["device"]["volume_percent"]
 
