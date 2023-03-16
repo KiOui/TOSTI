@@ -1,0 +1,35 @@
+{% extends 'tosti/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block page %}
+    <div class="container mt-5">
+        <h1>Staff</h1>
+        <p>Users in staff groups are displayed below.</p>
+        {% bootstrap_messages %}
+        {% for group in groups %}
+            {% if forloop.counter0 == 0 or forloop.counter0|divisibleby:2 %}
+                <div class="row">
+            {% endif %}
+            <div class="col-md-6 mb-3">
+                <h2>{{ group.name }}</h2>
+                {% if group.user_set.count == 0 %}
+                    <p>This group has no users.</p>
+                {% else %}
+                    <ul class="text-center" style="font-size: 1.5rem;">
+                        {% for user in group.user_set.all %}
+                            <li>{{ user }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            {% if not forloop.counter0|divisibleby:2 %}
+                </div>
+            {% endif %}
+        {% endfor %}
+        {% if not groups.count|divisibleby:2 %}
+                <div class="col-md-6">
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

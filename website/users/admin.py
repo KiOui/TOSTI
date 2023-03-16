@@ -144,6 +144,7 @@ class GroupSettingsInline(admin.StackedInline):
     model = GroupSettings
     fields = [
         "gets_staff_permissions",
+        "display_on_website",
     ]
     extra = 1
 
