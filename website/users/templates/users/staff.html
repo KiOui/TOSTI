@@ -7,7 +7,7 @@
         <p>Users in staff groups are displayed below.</p>
         {% bootstrap_messages %}
         {% for group in groups %}
-            {% if forloop.counter0 == 0 or forloop.counter0|divisibleby:2 %}
+            {% if forloop.counter0|divisibleby:2 %}
                 <div class="row">
             {% endif %}
             <div class="col-md-6 mb-3">
