@@ -61,7 +61,6 @@ def add_scanned_order(product: Product, shift: Shift, ready=True, paid=True) -> 
 
     :param product: A Product for which an Order has to be created
     :param shift: The shift for which the Orders have to be created
-    :param made: Whether the Order should be directly made made
     :param ready: Whether the Order should be directly made ready
     :param paid: Whether the Order should be directly made paid
     :return: The created Order
@@ -92,7 +91,9 @@ def add_user_order(
     :param product: A Product for which an Order has to be created
     :param shift: The shift for which the Orders have to be created
     :param user: The User for which the Orders have to be created
-    :param deprioritize: Whether to deprioritize the order.
+    :param deprioritize: Whether to deprioritize the order
+    :param paid: Whether the order should be set as paid
+    :param ready: Whether the order should be set as ready
     :return: The created Order
     """
     # Check order permissions
@@ -150,48 +151,3 @@ def add_user_to_assignees_of_shift(user, shift: Shift):
         raise PermissionError("User does not have permissions to manage shifts in this venue.")
     shift.assignees.add(User.objects.get(pk=user.pk))
     shift.save()
-
-
-def set_shift_active(shift, value):
-    """Activate a shift for ordering."""
-    shift.can_order = value
-    shift.save()
-    return shift
-
-
-def set_order_ready(order, value):
-    """Set an order's 'ready' value."""
-    order.ready = value
-    order.save()
-    return order
-
-
-def set_order_paid(order, value):
-    """Set an order's 'paid' value."""
-    order.paid = value
-    order.save()
-    return order
-
-
-def increase_shift_capacity(shift, amount=5):
-    """Increase the maximum amount of accepting orders for a shift."""
-    shift.max_orders_total += amount
-    shift.save()
-    return shift
-
-
-def increase_shift_time(shift, amount_minutes=5):
-    """Extend the end of a shift."""
-    shift.end += datetime.timedelta(minutes=amount_minutes)
-    shift.save()
-    return shift
-
-
-def query_product_name(query):
-    """Query a product name."""
-    return Product.objects.filter(name__icontains=query, available=True)
-
-
-def query_product_barcode(query):
-    """Query a product barcode."""
-    return Product.objects.filter(barcode__startswith=query, available=True)
