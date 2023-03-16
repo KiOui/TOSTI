@@ -1,5 +1,8 @@
+import traceback
+
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
+from rest_framework.utils import model_meta
 
 from orders import models
 from orders.models import Order, Product, OrderVenue
@@ -54,7 +57,7 @@ class ProductSerializer(serializers.ModelSerializer):
         read_only_fields = ["current_price"]
 
 
-class OrderSerializer(WritableModelSerializer):
+class OrderSerializer(serializers.ModelSerializer):
     """Serializer for Order model."""
 
     product = ProductSerializer(many=False, read_only=False)
@@ -115,12 +118,12 @@ class OrderSerializer(WritableModelSerializer):
         read_only_fields = ["id", "created", "user", "product", "order_price", "ready_at", "paid_at", "prioritize"]
 
 
-class ShiftSerializer(WritableModelSerializer):
+class ShiftSerializer(serializers.ModelSerializer):
     """Serializer for Shift objects."""
 
-    assignees = UserSerializer(many=True, read_only=False)
+    assignees = WritableModelSerializer(serializer=UserSerializer, many=True, read_only=False)
     amount_of_orders = serializers.SerializerMethodField()
-    venue = OrderVenueSerializer(many=False, read_only=False)
+    venue = WritableModelSerializer(serializer=OrderVenueSerializer, many=False, read_only=False)
 
     def __init__(self, *args, **kwargs):
         """Override readonly of some fields."""
@@ -140,7 +143,46 @@ class ShiftSerializer(WritableModelSerializer):
         Catch any ValidationError exception that may be caused by the save() method of the Shift object.
         """
         try:
-            return super().create(validated_data)
+            ModelClass = self.Meta.model
+
+            # Remove many-to-many relationships from validated_data.
+            # They are not valid arguments to the default `.create()` method,
+            # as they require that the instance has already been saved.
+            info = model_meta.get_field_info(ModelClass)
+            many_to_many = {}
+            for field_name, relation_info in info.relations.items():
+                if relation_info.to_many and (field_name in validated_data):
+                    many_to_many[field_name] = validated_data.pop(field_name)
+
+            try:
+                instance = ModelClass._default_manager.create(**validated_data)
+            except TypeError:
+                tb = traceback.format_exc()
+                msg = (
+                        'Got a `TypeError` when calling `%s.%s.create()`. '
+                        'This may be because you have a writable field on the '
+                        'serializer class that is not a valid argument to '
+                        '`%s.%s.create()`. You may need to make the field '
+                        'read-only, or override the %s.create() method to handle '
+                        'this correctly.\nOriginal exception was:\n %s' %
+                        (
+                            ModelClass.__name__,
+                            ModelClass._default_manager.name,
+                            ModelClass.__name__,
+                            ModelClass._default_manager.name,
+                            self.__class__.__name__,
+                            tb
+                        )
+                )
+                raise TypeError(msg)
+
+            # Save many-to-many relationships after the instance is created.
+            if many_to_many:
+                for field_name, value in many_to_many.items():
+                    field = getattr(instance, field_name)
+                    field.set(value)
+
+            return instance
         except ValidationError as e:
             raise serializers.ValidationError(e)
 
@@ -151,7 +193,29 @@ class ShiftSerializer(WritableModelSerializer):
         Catch any ValidationError exception that may be caused by the save() method of the Shift object.
         """
         try:
-            return super().update(instance, validated_data)
+            info = model_meta.get_field_info(instance)
+
+            # Simply set each attribute on the instance, and then save it.
+            # Note that unlike `.create()` we don't need to treat many-to-many
+            # relationships as being a special case. During updates we already
+            # have an instance pk for the relationships to be associated with.
+            m2m_fields = []
+            for attr, value in validated_data.items():
+                if attr in info.relations and info.relations[attr].to_many:
+                    m2m_fields.append((attr, value))
+                else:
+                    setattr(instance, attr, value)
+
+            instance.save()
+
+            # Note that many-to-many fields are set after updating instance.
+            # Setting m2m fields triggers signals which could potentially change
+            # updated instance and we do not want it to collide with .update()
+            for attr, value in m2m_fields:
+                field = getattr(instance, attr)
+                field.set(value)
+
+            return instance
         except ValidationError as e:
             raise serializers.ValidationError(e)
 
