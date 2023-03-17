@@ -1,15 +1,17 @@
+import calendar
 import logging
-from datetime import timedelta
+from datetime import timedelta, datetime
 from smtplib import SMTPException
 
 import html2text
 from django.contrib.auth import get_user_model
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
-from django.db.models import Count, Q, Sum
+from django.db.models import Count, Q, Sum, Avg
 from django.utils import timezone
 
 from associations.models import Association
+from borrel.models import ReservationItem
 from orders.models import Product as OrderProduct, OrderVenue
 from thaliedje.models import SpotifyTrack
 
@@ -160,4 +162,55 @@ def generate_product_category_ordered_per_association(category):
         data["labels"].append(str(association))
         data["datasets"][0]["data"].append(association.ordered_beer_amount)
 
+    return data
+
+
+def generate_beer_per_association_per_borrel(category):
+    """Generate statistics about products in a category ordered per association per borrel."""
+    data = {
+        "labels": [],
+        "datasets": [
+            {"data": []},
+        ],
+    }
+
+    last_year = timezone.now() - timedelta(days=365)
+
+    for association in Association.objects.annotate(
+        ordered_beer_amount=Avg(
+            "borrel_reservations__items__amount_used",
+            filter=Q(
+                borrel_reservations__submitted_at__isnull=False,
+                borrel_reservations__start__gte=last_year,
+                borrel_reservations__items__product__category=category,
+            ),
+        )
+    ):
+        data["labels"].append(str(association))
+        data["datasets"][0]["data"].append(association.ordered_beer_amount)
+
+    return data
+
+
+def generate_beer_consumption_over_time(category):
+    """Generate statistics about products in a category ordered per month."""
+    data = {
+        "labels": [],
+        "datasets": [
+            {"data": []},
+        ],
+    }
+
+    last_year = timezone.now() - timedelta(days=365)
+
+    current_month = datetime.now().month - 1
+    for i in range(1, 13):
+        month_to_check = ((current_month + i) % 12) + 1
+        amount_of_beer_ordered = ReservationItem.objects.filter(
+            reservation__end__month=month_to_check, reservation__end__gte=last_year, product__category=category
+        ).aggregate(beer_used=Sum("amount_used"))
+        data["labels"].append(str(calendar.month_name[month_to_check]))
+        data["datasets"][0]["data"].append(
+            amount_of_beer_ordered["beer_used"] if amount_of_beer_ordered["beer_used"] is not None else 0
+        )
     return data
