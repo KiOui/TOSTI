@@ -1,11 +1,16 @@
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from django.urls import reverse
 from django.views.generic import TemplateView
+from django.contrib.auth.models import Group
 
 from tosti.filter import Filter
 from .forms import AccountForm
+
+
+User = get_user_model()
 
 
 class AccountView(LoginRequiredMixin, TemplateView):
@@ -60,3 +65,14 @@ class AccountView(LoginRequiredMixin, TemplateView):
         return render(
             request, self.template_name, {"form": form, "active": "users", "tabs": tabs, "rendered_tab": None}
         )
+
+
+class StaffView(LoginRequiredMixin, TemplateView):
+    """Staff view."""
+
+    template_name = "users/staff.html"
+
+    def get(self, request, **kwargs):
+        """GET request for the staff view."""
+        groups = Group.objects.filter(settings__display_on_website=True)
+        return render(request, self.template_name, {"groups": groups})

@@ -123,7 +123,7 @@ class User(AbstractUser):
 class GroupSettings(models.Model):
     """Extra settings for a Django Group."""
 
-    group = models.OneToOneField(BaseGroup, on_delete=CASCADE, primary_key=True)
+    group = models.OneToOneField(BaseGroup, on_delete=CASCADE, primary_key=True, related_name="settings")
     gets_staff_permissions = models.BooleanField(
         default=False,
         help_text=(
@@ -131,6 +131,9 @@ class GroupSettings(models.Model):
             " status after their next login. This staff status will not be automatically"
             " revoked, though, if the user leaves the group."
         ),
+    )
+    display_on_website = models.BooleanField(
+        default=False, help_text=("If enabled, the members of this group will be displayed on a webpage.")
     )
 
     class Meta:
