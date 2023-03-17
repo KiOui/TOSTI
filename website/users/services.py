@@ -8,7 +8,7 @@ User = get_user_model()
 
 def update_staff_status(user):
     """Update the is_staff value of a user."""
-    if len(user.groups.all().filter(groupsettings__gets_staff_permissions=True)) > 0:
+    if len(user.groups.all().filter(settings__gets_staff_permissions=True)) > 0:
         user.is_staff = True
         user.save()
     elif not user.is_superuser and len(user.user_permissions.all()) == 0:
