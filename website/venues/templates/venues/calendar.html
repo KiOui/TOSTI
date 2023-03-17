@@ -34,7 +34,7 @@
 {% block js %}
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/main.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', async function () {
             let calendarEl = document.getElementById('calendar-all');
             let now = new Date();
             let yearOffset = (24*60*60*1000) * 365; // 365 days
@@ -42,49 +42,56 @@
             let yearInTheFuture = now.getTime() + yearOffset;
             let yearInThePastDate = new Date(yearInThePast);
             let yearInTheFutureDate = new Date(yearInTheFuture);
-            fetch('{% url 'v1:reservations_listcreate' %}' + `?active=true&start__gte=${yearInThePastDate.toISOString()}&start__lte=${yearInTheFutureDate.toISOString()}`).then((response) => response.json()).then((data) => {
-                let calendar = new FullCalendar.Calendar(calendarEl, {
-                    headerToolbar: {
-                        left: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
-                        center: 'title',
-                        right: 'prev,next today'
-                    },
-                    initialView: window.innerWidth < 767 ? 'timeGridDay':'timeGridWeek',
-                    weekNumbers: true,
-                    weekends: true,
-                    firstDay: 1,
-                    slotLabelFormat: {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        hour12: false,
-                    },
-                    slotMinTime: "08:00:00",
-                    slotMaxTime: "21:30:00",
-                    scrollTime: "16:00:00",
-                    slotDuration: '00:30:00',
-                    eventTimeFormat: {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        hour12: false,
-                    },
-                    slotEventOverlap: false,
-                    height: 600,
-                    contentHeight: "100%",
-                    timeZone: 'local',
-                    allDaySlot: false,
-                    nowIndicator: true,
-                    editable: false,
-                    droppable: false,
-                    displayEventEnd: true,
-                    events: data.map((reservation) => {return {'start': reservation.start, 'end': reservation.end,
-                        'title': (reservation.title ?
-                            `${reservation.title} - ${reservation.venue.name}` :
-                            `${reservation.venue.name}`) + (reservation.association ? ` (reserved by ${reservation.association.name})` : ""), 'backgroundColor': `${reservation.venue.color_in_calendar}`}})
+            let allReservations = [];
+            let nextReservationsUrl = '{% url 'v1:reservations_listcreate' %}' + `?active=true&start__gte=${yearInThePastDate.toISOString()}&start__lte=${yearInTheFutureDate.toISOString()}`;
+            while (nextReservationsUrl !== null) {
+                await fetch(nextReservationsUrl).then((response) => response.json()).then((data) => {
+                    allReservations.push(...data.results);
+                    nextReservationsUrl = data.next;
+                }).catch((exception) => {
+                    alert("An error occurred while getting calendar data. Please reload this page.");
+                    nextReservationsUrl = null;
                 });
-                calendar.render();
-            }).catch((exception) => {
-                alert("An error occurred while getting calendar data. Please reload this page.");
+            }
+            let calendar = new FullCalendar.Calendar(calendarEl, {
+                headerToolbar: {
+                    left: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
+                    center: 'title',
+                    right: 'prev,next today'
+                },
+                initialView: window.innerWidth < 767 ? 'timeGridDay':'timeGridWeek',
+                weekNumbers: true,
+                weekends: true,
+                firstDay: 1,
+                slotLabelFormat: {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false,
+                },
+                slotMinTime: "08:00:00",
+                slotMaxTime: "21:30:00",
+                scrollTime: "16:00:00",
+                slotDuration: '00:30:00',
+                eventTimeFormat: {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false,
+                },
+                slotEventOverlap: false,
+                height: 600,
+                contentHeight: "100%",
+                timeZone: 'local',
+                allDaySlot: false,
+                nowIndicator: true,
+                editable: false,
+                droppable: false,
+                displayEventEnd: true,
+                events: allReservations.map((reservation) => {return {'start': reservation.start, 'end': reservation.end,
+                    'title': (reservation.title ?
+                        `${reservation.title} - ${reservation.venue.name}` :
+                        `${reservation.venue.name}`) + (reservation.association ? ` (reserved by ${reservation.association.name})` : ""), 'backgroundColor': `${reservation.venue.color_in_calendar}`}})
             });
+            calendar.render();
         });
     </script>
 {% endblock %}
