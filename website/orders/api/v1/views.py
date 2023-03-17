@@ -27,6 +27,7 @@ from orders.services import (
 from tosti import settings
 from tosti.api.openapi import CustomAutoSchema
 from tosti.api.permissions import IsAuthenticatedOrTokenHasScopeForMethod
+from tosti.api.v1.pagination import StandardResultsSetPagination
 from tosti.api.views import LoggedRetrieveUpdateAPIView, LoggedListCreateAPIView, LoggedRetrieveUpdateDestroyAPIView
 from tosti.utils import log_action
 
@@ -163,6 +164,7 @@ class ShiftListCreateAPIView(LoggedListCreateAPIView):
     }
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     filterset_class = ShiftFilter
+    pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
         """Get the queryset."""

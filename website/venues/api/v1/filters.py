@@ -37,6 +37,7 @@ class ReservationFilter(FilterSet):
             "association": ("exact", "isnull"),
             "start": ("lte", "gte"),
             "end": ("lte", "gte"),
+            "accepted": ("exact", "isnull"),
         }
 
     filter_overrides = {
