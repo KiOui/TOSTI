@@ -1,6 +1,10 @@
 from oauth2_provider.scopes import get_scopes_backend
+from rest_framework import serializers
+from rest_framework.fields import empty
 from rest_framework.reverse import reverse
 from rest_framework.schemas.openapi import SchemaGenerator, AutoSchema
+
+from tosti.api.serializers import WritableModelSerializer
 
 
 class OpenAPISchemaGenerator(SchemaGenerator):
@@ -83,15 +87,54 @@ class CustomAutoSchema(AutoSchema):
 
     def get_request_body(self, path, method):
         """Get custom request body."""
-        if self.request_schema is None:
-            return super().get_request_body(path, method)
-
         if method not in ("PUT", "PATCH", "POST"):
             return {}
 
         self.request_media_types = self.map_parsers(path, method)
 
-        return {"content": {ct: {"schema": self.request_schema} for ct in self.request_media_types}}
+        if self.request_schema is not None:
+            return {"content": {ct: {"schema": self.request_schema} for ct in self.request_media_types}}
+
+        serializer = self.get_request_serializer(path, method)
+
+        if not isinstance(serializer, WritableModelSerializer):
+            return super().get_request_body(path, method)
+
+        content = self.map_writable_model_serializer(serializer)
+        item_schema = content
+
+        return {"content": {ct: {"schema": item_schema} for ct in self.request_media_types}}
+
+    def map_writable_model_serializer(self, serializer):
+        """Map a WritableModelSerializer."""
+        required = []
+        properties = {}
+
+        for field in serializer.get_writable_fields():
+            if isinstance(field, serializers.HiddenField):
+                continue
+
+            if field.required:
+                required.append(field.field_name)
+
+            schema = self.map_field(field)
+            if field.write_only:
+                schema["writeOnly"] = True
+            if field.allow_null:
+                schema["nullable"] = True
+            if field.default is not None and field.default != empty and not callable(field.default):
+                schema["default"] = field.default
+            if field.help_text:
+                schema["description"] = str(field.help_text)
+            self.map_field_validators(field, schema)
+
+            properties[field.field_name] = schema
+
+        result = {"type": "object", "properties": properties}
+        if required:
+            result["required"] = required
+
+        return result
 
     def get_responses(self, path, method):
         """Get custom responses."""

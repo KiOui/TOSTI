@@ -1,9 +1,25 @@
+from django.core.exceptions import ValidationError
 from rest_framework import serializers
 
 from orders import models
-from orders.models import Order, Product
+from orders.models import Order, Product, OrderVenue
 from orders.services import add_user_order, add_scanned_order
+from tosti.api.serializers import WritableModelSerializer
 from users.api.v1.serializers import UserSerializer
+from venues.api.v1.serializers import VenueSerializer
+
+
+class OrderVenueSerializer(serializers.ModelSerializer):
+    """Order Venue Serializer."""
+
+    venue = VenueSerializer(many=False, read_only=True)
+
+    class Meta:
+        """Meta class."""
+
+        model = OrderVenue
+        fields = ["venue"]
+        read_only_fields = ["venue"]
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -38,11 +54,19 @@ class ProductSerializer(serializers.ModelSerializer):
         read_only_fields = ["current_price"]
 
 
-class OrderSerializer(serializers.ModelSerializer):
+class OrderSerializer(WritableModelSerializer):
     """Serializer for Order model."""
 
     product = ProductSerializer(many=False, read_only=False)
     user = UserSerializer(many=False, read_only=True)
+
+    def __init__(self, *args, **kwargs):
+        """Override readonly of some fields."""
+        super().__init__(*args, **kwargs)
+        if self.instance is not None:
+            # If we are updating.
+            self.fields.get("type").read_only = True
+            self.fields.get("product").read_only = True
 
     def validate_product(self, value):
         """Validate the product id."""
@@ -65,8 +89,8 @@ class OrderSerializer(serializers.ModelSerializer):
         :param validated_data: validated serialized data
         :return: an Order if the Order could be successfully added, a ValidationError otherwise
         """
-        if validated_data["type"] == Order.TYPE_ORDERED:
-            return add_user_order(validated_data["product"], validated_data["shift"], validated_data["user"])
+        if validated_data.get("type", Order.TYPE_ORDERED) == Order.TYPE_ORDERED:
+            return add_user_order(**validated_data)
         else:
             return add_scanned_order(validated_data["product"], validated_data["shift"])
 
@@ -88,44 +112,47 @@ class OrderSerializer(serializers.ModelSerializer):
             "prioritize",
             "deprioritize",
         ]
-        read_only_fields = ["id", "created", "user", "order_price", "ready_at", "paid_at"]
+        read_only_fields = ["id", "created", "user", "product", "order_price", "ready_at", "paid_at", "prioritize"]
 
 
-class ShiftSerializer(serializers.ModelSerializer):
+class ShiftSerializer(WritableModelSerializer):
     """Serializer for Shift objects."""
 
-    assignees = UserSerializer(many=True)
+    assignees = UserSerializer(many=True, read_only=False)
     amount_of_orders = serializers.SerializerMethodField()
-    venue_name = serializers.SerializerMethodField()
+    venue = OrderVenueSerializer(many=False, read_only=False)
+
+    def __init__(self, *args, **kwargs):
+        """Override readonly of some fields."""
+        super().__init__(*args, **kwargs)
+        if self.instance is not None:
+            # If we are updating.
+            self.fields.get("venue").read_only = True
 
     def get_amount_of_orders(self, instance):
         """Get the amount of orders in the shift."""
         return instance.orders.filter(type=Order.TYPE_ORDERED).count()
 
-    def get_venue_name(self, instance):
-        """Get the name of the venue."""
-        return instance.venue.venue.name
-
     def create(self, validated_data):
         """
         Create a Shift.
 
-        Catch any ValueError exception that may be caused by the save() method of the Shift object.
+        Catch any ValidationError exception that may be caused by the save() method of the Shift object.
         """
         try:
-            super().create(validated_data)
-        except ValueError as e:
+            return super().create(validated_data)
+        except ValidationError as e:
             raise serializers.ValidationError(e)
 
     def update(self, instance, validated_data):
         """
         Update a Shift.
 
-        Catch any ValueError exception that may be caused by the save() method of the Shift object.
+        Catch any ValidationError exception that may be caused by the save() method of the Shift object.
         """
         try:
             return super().update(instance, validated_data)
-        except ValueError as e:
+        except ValidationError as e:
             raise serializers.ValidationError(e)
 
     class Meta:
@@ -135,7 +162,6 @@ class ShiftSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "venue",
-            "venue_name",
             "start",
             "end",
             "can_order",
@@ -146,4 +172,4 @@ class ShiftSerializer(serializers.ModelSerializer):
             "max_orders_total",
             "assignees",
         ]
-        read_only_fields = ["id", "is_active", "finalized", "amount_of_orders"]
+        read_only_fields = ["id", "is_active", "amount_of_orders"]

@@ -83,9 +83,9 @@
                         <p class="mb-2" style="font-size: 1em;">No open products.</p>
                     </template>
                     <hr>
-                    <h3 class="mt-3">Orders made</h3>
-                    <template v-if="Object.keys(orders_made_grouped).length > 0">
-                        <p v-for="(product_dict, product_name) in orders_made_grouped" class="mb-2" style="font-size: 1em;"><%
+                    <h3 class="mt-3">Orders ready</h3>
+                    <template v-if="Object.keys(orders_ready_grouped).length > 0">
+                        <p v-for="(product_dict, product_name) in orders_ready_grouped" class="mb-2" style="font-size: 1em;"><%
                             product_dict.product.name %> <i :class="`fa-solid fa-${product_dict.product.icon}`"></i> &times;
                             <% product_dict.amount %></p>
                     </template>
@@ -205,19 +205,19 @@
                 });
                 return orders_to_make;
             },
-            orders_made: function() {
+            orders_ready: function() {
                 return this.orders.filter(order => order.ready);
             },
-            orders_made_grouped: function () {
-                let orders_made = {};
-                this.orders_made.forEach(order => {
-                    if (order.product.name in orders_made) {
-                        orders_made[order.product.name].amount += 1;
+            orders_ready_grouped: function () {
+                let orders_ready = {};
+                this.orders_ready.forEach(order => {
+                    if (order.product.name in orders_ready) {
+                        orders_ready[order.product.name].amount += 1;
                     } else {
-                        orders_made[order.product.name] = {"product": order.product, "amount": 1};
+                        orders_ready[order.product.name] = {"product": order.product, "amount": 1};
                     }
                 });
-                return orders_made;
+                return orders_ready;
             },
             orders_grouped: function () {
                 let orders_total = {};
@@ -297,13 +297,17 @@
             },
             toggle_paid(order) {
                 fetch(
-                    `/api/v1/shifts/{{ shift.id }}/orders/${order.id}/paid/`,
+                    `/api/v1/shifts/{{ shift.id }}/orders/${order.id}/`,
                     {
                         method: 'PATCH',
                         headers: {
                             "X-CSRFToken": get_csrf_token(),
                             "Accept": 'application/json',
-                        }
+                            "Content-Type": 'application/json',
+                        },
+                        body: JSON.stringify({
+                            'paid': !order.paid
+                        })
                     }
                 ).then(response => {
                     if (response.status === 200) {
@@ -319,13 +323,17 @@
             },
             toggle_ready(order) {
                 fetch(
-                    `/api/v1/shifts/{{ shift.id }}/orders/${order.id}/ready/`,
+                    `/api/v1/shifts/{{ shift.id }}/orders/${order.id}/`,
                     {
                         method: 'PATCH',
                         headers: {
                             "X-CSRFToken": get_csrf_token(),
                             "Accept": 'application/json',
-                        }
+                            "Content-Type": 'application/json',
+                        },
+                        body: JSON.stringify({
+                            ready: !order.ready
+                        })
                     }
                 ).then(response => {
                     if (response.status === 200) {

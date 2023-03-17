@@ -46,7 +46,9 @@
                                     <a href="{% url 'borrel:delete_reservation' reservation.pk %}" class="btn btn-danger w-100">Cancel reservation</a>
                                 </div>
                             {% elif reservation.can_be_submitted %}
-                                <a href="{% url 'borrel:submit_reservation' reservation.pk %}" class="btn btn-success my-1 w-100">Submit</a>
+                                <a href="{% url 'borrel:submit_reservation' reservation.pk %}" class="btn btn-success my-1 w-100">
+                                    View borrel form
+                                </a>
                             {% else %}
                                 <a href="{% url 'borrel:view_reservation' reservation.pk %}" class="btn btn-outline-secondary my-1 w-100">
                                     {% if reservation.submitted %}

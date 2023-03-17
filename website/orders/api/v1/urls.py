@@ -2,18 +2,12 @@ from django.urls import path, register_converter
 
 from orders.api.v1.views import (
     ShiftListCreateAPIView,
-    ShiftAddTimeAPIView,
-    ShiftAddCapacityAPIView,
     ShiftScannerAPIView,
     OrderListCreateAPIView,
-    OrderRetrieveDestroyAPIView,
+    OrderRetrieveUpdateDestroyAPIView,
     ProductListAPIView,
     ShiftRetrieveUpdateAPIView,
-    OrderTogglePaidAPIView,
-    OrderToggleReadyAPIView,
-    OrderToListBottomAPIView,
-    ShiftFinalizeAPIView,
-    JoinShiftAPIView,
+    OrderVenueListAPIView,
 )
 from orders.converters import ShiftConverter, OrderConverter
 
@@ -26,26 +20,10 @@ urlpatterns = [
     path("shifts/<shift:shift>/orders/", OrderListCreateAPIView.as_view(), name="orders_listcreate"),
     path(
         "shifts/<shift:shift>/orders/<int:pk>/",
-        OrderRetrieveDestroyAPIView.as_view(),
-        name="orders_retrievedestroy",
+        OrderRetrieveUpdateDestroyAPIView.as_view(),
+        name="orders_retrieveupdatedestroy",
     ),
-    path(
-        "shifts/<shift:shift>/orders/<order:order>/paid/", OrderTogglePaidAPIView.as_view(), name="order_toggle_paid"
-    ),
-    path(
-        "shifts/<shift:shift>/orders/<order:order>/ready/",
-        OrderToggleReadyAPIView.as_view(),
-        name="order_toggle_ready",
-    ),
-    path(
-        "shifts/<shift:shift>/orders/<order:order>/to-bottom/",
-        OrderToListBottomAPIView.as_view(),
-        name="order_to_bottom_list",
-    ),
-    path("shifts/<shift:shift>/add-time/", ShiftAddTimeAPIView.as_view(), name="shifts_add_time"),
-    path("shifts/<shift:shift>/add-capacity/", ShiftAddCapacityAPIView.as_view(), name="shifts_add_capacity"),
     path("shifts/<shift:shift>/scanner/", ShiftScannerAPIView.as_view(), name="shifts_scanner"),
     path("shifts/<shift:shift>/products/", ProductListAPIView.as_view(), name="product_list"),
-    path("shifts/<shift:shift>/finalize/", ShiftFinalizeAPIView.as_view(), name="shifts_finalize"),
-    path("shifts/<shift:shift>/join/", JoinShiftAPIView.as_view(), name="join_shift"),
+    path("order-venues/", OrderVenueListAPIView.as_view(), name="ordervenues_list"),
 ]
