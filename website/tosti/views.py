@@ -14,6 +14,8 @@ from tosti.services import (
     generate_users_with_most_song_requests,
     generate_users_per_association,
     generate_product_category_ordered_per_association,
+    generate_beer_per_association_per_borrel,
+    generate_beer_consumption_over_time,
 )
 from borrel.models import ProductCategory as BorrelProductCategory
 from constance import config
@@ -97,9 +99,15 @@ class StatisticsView(LoginRequiredMixin, TemplateView):
             borrel_product_category_ordered_per_association = json.dumps(
                 generate_product_category_ordered_per_association(borrel_product_category)
             )
+            average_beer_per_association_per_borrel = json.dumps(
+                generate_beer_per_association_per_borrel(borrel_product_category)
+            )
+            beer_consumption_over_time = json.dumps(generate_beer_consumption_over_time(borrel_product_category))
         except BorrelProductCategory.DoesNotExist:
             borrel_product_category_ordered_per_association = None
             borrel_product_category = None
+            average_beer_per_association_per_borrel = None
+            beer_consumption_over_time = None
 
         return render(
             request,
@@ -112,6 +120,8 @@ class StatisticsView(LoginRequiredMixin, TemplateView):
                 "users_per_association": users_per_association,
                 "borrel_product_category_ordered_per_association": borrel_product_category_ordered_per_association,
                 "borrel_product_category": borrel_product_category,
+                "average_beer_per_association_per_borrel": average_beer_per_association_per_borrel,
+                "beer_consumption_over_time": beer_consumption_over_time,
             },
         )
 

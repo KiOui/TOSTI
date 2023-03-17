@@ -80,8 +80,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 if (datasets.length > 1) {
                     dataset.backgroundColor = COLORS[index % COLORS.length];
+                    if (chartType === "line") {
+                        dataset.borderColor = COLORS[index % COLORS.length];
+                    }
                 } else {
                     dataset.backgroundColor = COLORS;
+                    if (chartType === "line") {
+                        dataset.borderColor = COLORS;
+                    }
                 }
 
                 config.data.datasets.push(dataset);
