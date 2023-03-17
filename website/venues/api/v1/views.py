@@ -64,7 +64,7 @@ class ReservationListCreateAPIView(ListCreateAPIView):
         return serializer.save(user_created=self.request.user)
 
     def check_permissions(self, request):
-        """Always allow GET requests."""
+        """Check permissions per request method."""
         if request.method in permissions.SAFE_METHODS:
             return True
         else:
