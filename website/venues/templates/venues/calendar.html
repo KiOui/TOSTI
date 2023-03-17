@@ -42,7 +42,7 @@
             let yearInTheFuture = now.getTime() + yearOffset;
             let yearInThePastDate = new Date(yearInThePast);
             let yearInTheFutureDate = new Date(yearInTheFuture);
-            fetch('{% url 'v1:reservations_list' %}' + `?start__gte=${yearInThePastDate.toISOString()}&start__lte=${yearInTheFutureDate.toISOString()}`).then((response) => response.json()).then((data) => {
+            fetch('{% url 'v1:reservations_listcreate' %}' + `?active=true&start__gte=${yearInThePastDate.toISOString()}&start__lte=${yearInTheFutureDate.toISOString()}`).then((response) => response.json()).then((data) => {
                 let calendar = new FullCalendar.Calendar(calendarEl, {
                     headerToolbar: {
                         left: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',

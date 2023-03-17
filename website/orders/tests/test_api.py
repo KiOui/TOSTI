@@ -18,7 +18,7 @@ User = get_user_model()
 logging.disable()
 
 
-class OrderServicesTests(APITestCase):
+class OrderAPITests(APITestCase):
     fixtures = ["users.json", "venues.json"]
 
     @classmethod

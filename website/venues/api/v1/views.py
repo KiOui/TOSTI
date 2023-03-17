@@ -1,6 +1,10 @@
 import django_filters.rest_framework
+from rest_framework import permissions
 from rest_framework.filters import SearchFilter
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, ListCreateAPIView
+from tosti.api.permissions import IsAuthenticatedOrTokenHasScopeForMethod
+from tosti.api.v1.pagination import StandardResultsSetPagination
+
 from venues.models import Venue, Reservation
 from .filters import ReservationFilter, VenueFilter
 from .serializers import VenueSerializer, ReservationSerializer
@@ -35,19 +39,33 @@ class VenueRetrieveAPIView(RetrieveAPIView):
     queryset = Venue.objects.filter(active=True)
 
 
-class ReservationListAPIView(ListAPIView):
+class ReservationListCreateAPIView(ListCreateAPIView):
     """
-    Reservation List API View.
+    Reservation List Create API View.
 
-    Permissions required: None
+    Permissions required: None for GET, write for POST
 
-    Use this endpoint to get the Reservations of a Venue.
+    Use this endpoint to get the Reservations of a Venue or create a Reservation.
     """
 
     serializer_class = ReservationSerializer
-    queryset = Reservation.objects.filter(accepted=True).select_related(
+    queryset = Reservation.objects.all().select_related(
         "venue", "user_created", "user_created__association", "association"
     )
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend, SearchFilter)
     filterset_class = ReservationFilter
     search_fields = ["title"]
+    permission_classes = [IsAuthenticatedOrTokenHasScopeForMethod]
+    required_scopes = ["write"]
+    pagination_class = StandardResultsSetPagination
+
+    def perform_create(self, serializer):
+        """Add user to save."""
+        return serializer.save(user_created=self.request.user)
+
+    def check_permissions(self, request):
+        """Check permissions per request method."""
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        else:
+            return super(ReservationListCreateAPIView, self).check_permissions(request)
