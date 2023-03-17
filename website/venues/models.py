@@ -46,7 +46,8 @@ class Venue(models.Model):
     can_be_reserved = models.BooleanField(default=True)
     automatically_accept_first_reservation = models.BooleanField(
         default=False,
-        help_text="If enabled, a reservation placed on this venue will be automatically accepted if it does not overlap with another reservation.",
+        help_text="If enabled, a reservation placed on this venue will be automatically accepted if it does not "
+        "overlap with another reservation.",
     )
 
     class Meta:
