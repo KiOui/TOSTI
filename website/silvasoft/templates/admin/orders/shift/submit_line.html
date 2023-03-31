@@ -7,13 +7,13 @@
     {% url opts|admin_urlname:'delete' original.pk|admin_urlquote as delete_url %}
     <p class="deletelink-box"><a href="{% add_preserved_filters delete_url %}" class="deletelink">Delete</a></p>
 {% endif %}
-{% if show_push_to_tantalus %}
-    <input type="submit" value="Push to Tantalus" name="_pushtotantalus" id="push-to-tantalus">
+{% if show_push_to_silvasoft %}
+    <input type="submit" value="Push to Silvasoft" name="_pushtosilvasoft" id="push-to-silvasoft">
     <script>
-        // If javascript is enabled, add a confirm popup to the Tantalus button.
-        let push_to_tantalus = document.getElementById('push-to-tantalus');
-        push_to_tantalus.onclick = function(event) {
-            if (!confirm("Do you really want to push this shift to tantalus? This action might have already happened" +
+        // If javascript is enabled, add a confirm popup to the Silvasoft button.
+        let push_to_silvasoft = document.getElementById('push-to-silvasoft');
+        push_to_silvasoft.onclick = function(event) {
+            if (!confirm("Do you really want to push this shift to Silvasoft? This action might have already happened" +
                 " automatically and can not be made undone.")) {
                 event.preventDefault();
             }
