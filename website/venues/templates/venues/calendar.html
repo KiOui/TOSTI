@@ -3,6 +3,14 @@
 
 {% block page %}
     <div class="container mt-5">
+        <div class="row">
+            <div class="form-check form-switch w-auto ms-auto">
+                <input class="form-check-input" type="checkbox" id="flexSwitchReservations" onclick="switchReservationView()">
+                <label class="form-check-label" for="flexSwitchReservations">Show unaccepted reservations</label>
+            </div>
+        </div>
+    </div>
+    <div class="container mt-2">
         <div class="calendar-wrapper pb-5">
             <div id="calendar-all"></div>
         </div>
@@ -34,26 +42,10 @@
 {% block js %}
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/main.min.js"></script>
     <script>
+        let calendar = null;
         document.addEventListener('DOMContentLoaded', async function () {
             let calendarEl = document.getElementById('calendar-all');
-            let now = new Date();
-            let yearOffset = (24*60*60*1000) * 365; // 365 days
-            let yearInThePast = now.getTime() - yearOffset;
-            let yearInTheFuture = now.getTime() + yearOffset;
-            let yearInThePastDate = new Date(yearInThePast);
-            let yearInTheFutureDate = new Date(yearInTheFuture);
-            let allReservations = [];
-            let nextReservationsUrl = '{% url 'v1:reservations_listcreate' %}' + `?active=true&start__gte=${yearInThePastDate.toISOString()}&start__lte=${yearInTheFutureDate.toISOString()}`;
-            while (nextReservationsUrl !== null) {
-                await fetch(nextReservationsUrl).then((response) => response.json()).then((data) => {
-                    allReservations.push(...data.results);
-                    nextReservationsUrl = data.next;
-                }).catch((exception) => {
-                    alert("An error occurred while getting calendar data. Please reload this page.");
-                    nextReservationsUrl = null;
-                });
-            }
-            let calendar = new FullCalendar.Calendar(calendarEl, {
+            calendar = new FullCalendar.Calendar(calendarEl, {
                 headerToolbar: {
                     left: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
                     center: 'title',
@@ -86,12 +78,44 @@
                 editable: false,
                 droppable: false,
                 displayEventEnd: true,
-                events: allReservations.map((reservation) => {return {'start': reservation.start, 'end': reservation.end,
-                    'title': (reservation.title ?
-                        `${reservation.title} - ${reservation.venue.name}` :
-                        `${reservation.venue.name}`) + (reservation.association ? ` (reserved by ${reservation.association.name})` : ""), 'backgroundColor': `${reservation.venue.color_in_calendar}`}})
+                events: function(info, successCallback, failureCallback) {
+                    let formCheckInput = document.getElementById('flexSwitchReservations');
+                    getEvents(info, successCallback, failureCallback, formCheckInput.checked);
+                }
             });
             calendar.render();
         });
+
+        async function getEvents(info, successCallback, failureCallback, accepted) {
+            let nextReservationsUrl = '{% url 'v1:reservations_listcreate' %}' + `?start__gte=${info.start.toISOString()}&start__lte=${info.end.toISOString()}`;
+
+            if (!accepted) {
+                nextReservationsUrl = nextReservationsUrl + '&accepted=true';
+            }
+
+            let allReservations = [];
+            while (nextReservationsUrl !== null) {
+                await fetch(nextReservationsUrl).then((response) => response.json()).then((data) => {
+                    allReservations.push(...data.results);
+                    nextReservationsUrl = data.next;
+                }).catch((exception) => {
+                    alert("An error occurred while getting calendar data. Please reload this page.");
+                    nextReservationsUrl = null;
+                    failureCallback(exception);
+                });
+            }
+
+            let reservationsFormatted = allReservations
+                        .map((reservation) => {return {'start': reservation.start, 'end': reservation.end,
+                        'title': (reservation.title ?
+                            `${reservation.title} - ${reservation.venue.name}` :
+                            `${reservation.venue.name}`) + (reservation.association ? ` (reserved by ${reservation.association.name})` : ""), 'backgroundColor': `${reservation.venue.color_in_calendar}`}});
+
+            successCallback(reservationsFormatted);
+        }
+
+        function switchReservationView() {
+            calendar.refetchEvents();
+        }
     </script>
 {% endblock %}
