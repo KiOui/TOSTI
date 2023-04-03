@@ -147,7 +147,7 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 100000
 
 # OAUTH
 OAUTH2_PROVIDER = {
-    "ALLOWED_REDIRECT_URI_SCHEMES": ["https", "nu.thalia"],
+    "ALLOWED_REDIRECT_URI_SCHEMES": ["https", "http", "nu.thalia"],
     "SCOPES": {
         "read": "Authenticated read access to the website",
         "write": "Authenticated write access to the website",
