@@ -6,12 +6,137 @@ from borrel.admin import BorrelReservationAdmin
 from borrel.models import BorrelReservation
 from orders.admin import ShiftAdmin
 from orders.models import Shift
-from silvasoft.models import SilvasoftShiftSynchronization, SilvasoftBorrelReservationSynchronization
+from silvasoft.forms import (
+    SilvasoftAssociationAdminForm,
+    SilvasoftOrderProductAdminForm,
+    SilvasoftBorrelProductAdminForm,
+)
+from silvasoft.models import (
+    SilvasoftShiftSynchronization,
+    SilvasoftBorrelReservationSynchronization,
+    SilvasoftAssociation,
+    SilvasoftOrderProduct,
+    SilvasoftBorrelProduct,
+)
 from silvasoft.services import (
     synchronize_shift_to_silvasoft,
     synchronize_borrelreservation_to_silvasoft,
     SilvasoftException,
+    get_silvasoft_client,
+    refresh_cached_relations,
+    refresh_cached_products,
 )
+
+
+@admin.register(SilvasoftAssociation)
+class SilvasoftAssociationAdmin(admin.ModelAdmin):
+    """Silvasoft Association Admin."""
+
+    list_display = [
+        "association",
+        "silvasoft_customer_number",
+    ]
+    form = SilvasoftAssociationAdminForm
+
+    def _should_refresh_relations(self, request):
+        """Whether a relations refresh should happen."""
+        return "_refreshrelations" in request.POST
+
+    def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
+        """Add extra action to admin post request."""
+
+        if self._should_refresh_relations(request):
+            try:
+                refresh_cached_relations()
+            except SilvasoftException:
+                self.message_user(
+                    request,
+                    format_html(
+                        "Failed to refresh relations from Silvasoft, please consult the server logs for more "
+                        "information."
+                    ),
+                    level=messages.ERROR,
+                )
+            redirect_url = request.path
+            return HttpResponseRedirect(redirect_url)
+        else:
+            return super(SilvasoftAssociationAdmin, self).changeform_view(
+                request, object_id=object_id, form_url=form_url, extra_context=extra_context
+            )
+
+
+@admin.register(SilvasoftOrderProduct)
+class SilvasoftOrderProductAdmin(admin.ModelAdmin):
+    """Silvasoft Order Product Admin."""
+
+    list_display = [
+        "product",
+        "silvasoft_product_number",
+    ]
+    form = SilvasoftOrderProductAdminForm
+
+    def _should_refresh_products(self, request):
+        """Whether a products refresh should happen."""
+        return "_refreshproducts" in request.POST
+
+    def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
+        """Add extra action to admin post request."""
+
+        if self._should_refresh_products(request):
+            try:
+                refresh_cached_products()
+            except SilvasoftException:
+                self.message_user(
+                    request,
+                    format_html(
+                        "Failed to refresh products from Silvasoft, please consult the server logs for more "
+                        "information."
+                    ),
+                    level=messages.ERROR,
+                )
+            redirect_url = request.path
+            return HttpResponseRedirect(redirect_url)
+        else:
+            return super(SilvasoftOrderProductAdmin, self).changeform_view(
+                request, object_id=object_id, form_url=form_url, extra_context=extra_context
+            )
+
+
+@admin.register(SilvasoftBorrelProduct)
+class SilvasoftBorrelProductAdmin(admin.ModelAdmin):
+    """Silvasoft Borrel Product Admin."""
+
+    list_display = [
+        "product",
+        "silvasoft_product_number",
+    ]
+    form = SilvasoftBorrelProductAdminForm
+
+    def _should_refresh_products(self, request):
+        """Whether a products refresh should happen."""
+        return "_refreshproducts" in request.POST
+
+    def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
+        """Add extra action to admin post request."""
+
+        if self._should_refresh_products(request):
+            try:
+                refresh_cached_products()
+            except SilvasoftException:
+                self.message_user(
+                    request,
+                    format_html(
+                        "Failed to refresh products from Silvasoft, please consult the server logs for more "
+                        "information."
+                    ),
+                    level=messages.ERROR,
+                )
+            redirect_url = request.path
+            return HttpResponseRedirect(redirect_url)
+        else:
+            return super(SilvasoftBorrelProductAdmin, self).changeform_view(
+                request, object_id=object_id, form_url=form_url, extra_context=extra_context
+            )
 
 
 class SilvasoftShiftAdmin(ShiftAdmin):

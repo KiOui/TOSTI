@@ -177,7 +177,7 @@ CONSTANCE_CONFIG = {
     'FOOTER_CREDITS_TEXT': ('TOSTI - Tartarus Order System for Take-away Items',
                             'Text to display in the footer credits', str),
     'CLEANING_SCHEME_URL': ('', 'URL to the cleaning scheme to be accepted when submitting a borrel form', str),
-    'SILVASOFT_API_URL': ('', 'Endpoint for Silvasoft API', str),
+    'SILVASOFT_API_URL': ('https://rest-api.silvasoft.nl/rest/', 'Endpoint for Silvasoft API', str),
     'SILVASOFT_USERNAME': ('', 'Username for Silvasoft integration', str),
     'SILVASOFT_API_KEY': ('', 'API key for Silvasoft integration', str),
     'BORREL_SEND_BORREL_RESERVATION_REQUEST_EMAILS_TO': (
