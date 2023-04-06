@@ -115,7 +115,7 @@ class BorrelReservationAdmin(AutocompleteFilterMixin, ExportMixin, admin.ModelAd
     @staticmethod
     def _change_accepted(queryset, status):
         queryset.update(accepted=status)
-    
+
     readonly_fields = (
         "created_at",
         "user_created",
