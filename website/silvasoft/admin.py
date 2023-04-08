@@ -10,6 +10,7 @@ from silvasoft.forms import (
     SilvasoftAssociationAdminForm,
     SilvasoftOrderProductAdminForm,
     SilvasoftBorrelProductAdminForm,
+    SilvasoftOrderVenueAdminForm,
 )
 from silvasoft.models import (
     SilvasoftShiftSynchronization,
@@ -17,6 +18,9 @@ from silvasoft.models import (
     SilvasoftAssociation,
     SilvasoftOrderProduct,
     SilvasoftBorrelProduct,
+    SilvasoftOrderVenue,
+    SilvasoftShiftInvoice,
+    SilvasoftBorrelReservationInvoice,
 )
 from silvasoft.services import (
     synchronize_shift_to_silvasoft,
@@ -61,6 +65,43 @@ class SilvasoftAssociationAdmin(admin.ModelAdmin):
             return HttpResponseRedirect(redirect_url)
         else:
             return super(SilvasoftAssociationAdmin, self).changeform_view(
+                request, object_id=object_id, form_url=form_url, extra_context=extra_context
+            )
+
+
+@admin.register(SilvasoftOrderVenue)
+class SilvasoftOrderVenueAdmin(admin.ModelAdmin):
+    """Silvasoft Order Venue Admin."""
+
+    list_display = [
+        "order_venue",
+        "silvasoft_customer_number",
+    ]
+    form = SilvasoftOrderVenueAdminForm
+
+    def _should_refresh_relations(self, request):
+        """Whether a relations refresh should happen."""
+        return "_refreshrelations" in request.POST
+
+    def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
+        """Add extra action to admin post request."""
+
+        if self._should_refresh_relations(request):
+            try:
+                refresh_cached_relations()
+            except SilvasoftException:
+                self.message_user(
+                    request,
+                    format_html(
+                        "Failed to refresh relations from Silvasoft, please consult the server logs for more "
+                        "information."
+                    ),
+                    level=messages.ERROR,
+                )
+            redirect_url = request.path
+            return HttpResponseRedirect(redirect_url)
+        else:
+            return super(SilvasoftOrderVenueAdmin, self).changeform_view(
                 request, object_id=object_id, form_url=form_url, extra_context=extra_context
             )
 
@@ -142,6 +183,24 @@ class SilvasoftBorrelProductAdmin(admin.ModelAdmin):
 class SilvasoftShiftAdmin(ShiftAdmin):
     """Add sync to Silvasoft button to ShiftAdmin."""
 
+    list_display = [
+        "date",
+        "start_time",
+        "end_time",
+        "venue",
+        "capacity",
+        "get_is_active",
+        "can_order",
+        "finalized",
+        "pushed_to_silvasoft",
+    ]
+
+    def pushed_to_silvasoft(self, obj):
+        """Reservation is pushed to Silvasoft."""
+        return SilvasoftShiftSynchronization.objects.filter(shift=obj, succeeded=True).exists()
+
+    pushed_to_silvasoft.boolean = True
+
     def change_view(self, request, object_id, form_url="", extra_context=None):
         """Add context to the extra_context."""
         try:
@@ -167,17 +226,20 @@ class SilvasoftShiftAdmin(ShiftAdmin):
             obj = None
 
         if self._should_do_push_to_silvasoft(obj, request):
-            if synchronize_shift_to_silvasoft(obj):
+            silvasoft_invoice, _ = SilvasoftShiftInvoice.objects.get_or_create(shift=obj)
+            try:
+                synchronize_shift_to_silvasoft(obj, silvasoft_invoice.silvasoft_identifier)
                 self.message_user(request, format_html("Silvasoft synchronisation succeeded."), messages.SUCCESS)
-                SilvasoftShiftSynchronization.objects.create(shift=obj)
-            else:
+                SilvasoftShiftSynchronization.objects.create(shift=obj, succeeded=True)
+            except SilvasoftException:
                 self.message_user(
                     request,
                     format_html(
-                        "Failed to synchronize data to Silvasoft, please consult the server logs for more information."
+                        "Failed to synchronize data to Silvasoft, the following exception occurred: '{}'.".format(e)
                     ),
                     level=messages.ERROR,
                 )
+                SilvasoftShiftSynchronization.objects.create(shift=obj, succeeded=False)
             redirect_url = request.path
             return HttpResponseRedirect(redirect_url)
         else:
@@ -209,7 +271,9 @@ class SilvasoftBorrelReservationAdmin(BorrelReservationAdmin):
 
     def pushed_to_silvasoft(self, obj):
         """Reservation is pushed to Silvasoft."""
-        return SilvasoftBorrelReservationSynchronization.objects.filter(borrel_reservation=obj).exists()
+        return SilvasoftBorrelReservationSynchronization.objects.filter(
+            borrel_reservation=obj, succeeded=True
+        ).exists()
 
     pushed_to_silvasoft.boolean = True
 
@@ -225,7 +289,9 @@ class SilvasoftBorrelReservationAdmin(BorrelReservationAdmin):
 
         synchronization_already_done = (
             obj is not None
-            and SilvasoftBorrelReservationSynchronization.objects.filter(borrel_reservation=obj).exists()
+            and SilvasoftBorrelReservationSynchronization.objects.filter(
+                borrel_reservation=obj, succeeded=True
+            ).exists()
         )
 
         extra_context["show_push_to_silvasoft"] = (
@@ -248,18 +314,20 @@ class SilvasoftBorrelReservationAdmin(BorrelReservationAdmin):
             obj = None
 
         if self._should_do_push_to_silvasoft(obj, request):
+            silvasoft_invoice, _ = SilvasoftBorrelReservationInvoice.objects.get_or_create(borrel_reservation=obj)
             try:
-                synchronize_borrelreservation_to_silvasoft(obj)
+                synchronize_borrelreservation_to_silvasoft(obj, silvasoft_invoice.silvasoft_identifier)
                 self.message_user(request, format_html("Silvasoft synchronisation succeeded."), messages.SUCCESS)
-                SilvasoftBorrelReservationSynchronization.objects.create(borrel_reservation=obj)
+                SilvasoftBorrelReservationSynchronization.objects.create(borrel_reservation=obj, succeeded=True)
             except SilvasoftException as e:
                 self.message_user(
                     request,
                     format_html(
-                        "Failed to synchronize data to Silvasoft, the following exception occurred: {}.".format(e)
+                        "Failed to synchronize data to Silvasoft, the following exception occurred: '{}'.".format(e)
                     ),
                     level=messages.ERROR,
                 )
+                SilvasoftBorrelReservationSynchronization.objects.create(borrel_reservation=obj, succeeded=False)
             redirect_url = request.path
             return HttpResponseRedirect(redirect_url)
         else:

@@ -180,6 +180,7 @@ CONSTANCE_CONFIG = {
     'SILVASOFT_API_URL': ('https://rest-api.silvasoft.nl/rest/', 'Endpoint for Silvasoft API', str),
     'SILVASOFT_USERNAME': ('', 'Username for Silvasoft integration', str),
     'SILVASOFT_API_KEY': ('', 'API key for Silvasoft integration', str),
+    'MAXIMUM_SYNC_PER_RUN': (15, 'Maximum amount of synchronizations to run per hour', int),
     'BORREL_SEND_BORREL_RESERVATION_REQUEST_EMAILS_TO': (
         'noreply@example.com', 'Where to send borrel reservation request notifications to (e-mail address)', str),
     'VENUES_SEND_RESERVATION_REQUEST_EMAILS_TO': (
@@ -195,7 +196,7 @@ CONSTANCE_CONFIG = {
 
 CONSTANCE_CONFIG_FIELDSETS = {
     'General settings': ('FOOTER_CREDITS_TEXT', 'CLEANING_SCHEME_URL', 'STATISTICS_BORREL_CATEGORY',),
-    'Silvasoft settings': ('SILVASOFT_API_URL', 'SILVASOFT_USERNAME', 'SILVASOFT_API_KEY',),
+    'Silvasoft settings': ('SILVASOFT_API_URL', 'SILVASOFT_USERNAME', 'SILVASOFT_API_KEY', 'MAXIMUM_SYNC_PER_RUN',),
     'E-mail settings': ('BORREL_SEND_BORREL_RESERVATION_REQUEST_EMAILS_TO', 'VENUES_SEND_RESERVATION_REQUEST_EMAILS_TO',),
     'Shifts settings': ('SHIFTS_DEFAULT_MAX_ORDERS_TOTAL',),
     'Thaliedje settings': ('THALIEDJE_STOP_PLAYERS_AT', 'THALIEDJE_START_PLAYERS_AT', 'THALIEDJE_HOLIDAY_ACTIVE', 'THALIEDJE_START_PLAYER_URI', 'THALIEDJE_MAX_SONG_REQUESTS_PER_HOUR',),
@@ -207,6 +208,7 @@ SITE_ID = 1
 CRON_CLASSES = [
     "thaliedje.crons.StopMusicCronJob",
     "thaliedje.crons.StartMusicCronJob",
+    "silvasoft.crons.SynchronizeSilvasoft",
 ]
 
 DJANGO_CRON_DELETE_LOGS_OLDER_THAN = 14

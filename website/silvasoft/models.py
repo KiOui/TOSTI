@@ -1,8 +1,10 @@
+import uuid
+
 from django.db import models
 
 from associations.models import Association
 from borrel.models import BorrelReservation
-from orders.models import Shift, Product as OrderProduct
+from orders.models import Shift, Product as OrderProduct, OrderVenue
 from borrel.models import Product as BorrelProduct
 
 
@@ -39,6 +41,17 @@ class SilvasoftAssociation(models.Model):
         return "{} ({})".format(self.association, self.silvasoft_customer_number)
 
 
+class SilvasoftOrderVenue(models.Model):
+    """Model for connecting TOSTI OrderVenues to Silvasoft clients."""
+
+    silvasoft_customer_number = models.IntegerField(unique=True)
+    order_venue = models.OneToOneField(OrderVenue, on_delete=models.CASCADE)
+
+    def __str__(self):
+        """Convert this object to string."""
+        return "{} ({})".format(self.order_venue, self.silvasoft_customer_number)
+
+
 class SilvasoftOrderProduct(models.Model):
     """Model for connection TOSTI order products to Silvasoft products."""
 
@@ -61,15 +74,44 @@ class SilvasoftBorrelProduct(models.Model):
         return "{} ({})".format(self.product, self.silvasoft_product_number)
 
 
-class SilvasoftShiftSynchronization(models.Model):
+class SilvasoftInvoice(models.Model):
+
+    silvasoft_identifier = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    class Meta:
+        abstract = True
+
+
+class SilvasoftShiftInvoice(SilvasoftInvoice):
+
+    shift = models.OneToOneField(Shift, on_delete=models.CASCADE, related_name="silvasoft_invoice")
+
+
+class SilvasoftBorrelReservationInvoice(SilvasoftInvoice):
+
+    borrel_reservation = models.OneToOneField(
+        BorrelReservation, on_delete=models.CASCADE, related_name="silvasoft_invoice"
+    )
+
+
+class SilvasoftSynchronization(models.Model):
+
+    created = models.DateTimeField(auto_now_add=True)
+    succeeded = models.BooleanField()
+
+    class Meta:
+        abstract = True
+
+
+class SilvasoftShiftSynchronization(SilvasoftSynchronization):
     """Model for indicating when a TOSTI Shift has been synchronized with Silvasoft."""
 
-    shift = models.ForeignKey(Shift, on_delete=models.CASCADE)
-    created = models.DateTimeField(auto_now_add=True)
+    shift = models.ForeignKey(Shift, on_delete=models.CASCADE, related_name="silvasoft_synchronization")
 
 
-class SilvasoftBorrelReservationSynchronization(models.Model):
+class SilvasoftBorrelReservationSynchronization(SilvasoftSynchronization):
     """Model for indicating when a TOSTI BorrelReservation has been synchronized with Silvasoft."""
 
-    borrel_reservation = models.ForeignKey(BorrelReservation, on_delete=models.CASCADE)
-    created = models.DateTimeField(auto_now_add=True)
+    borrel_reservation = models.ForeignKey(
+        BorrelReservation, on_delete=models.CASCADE, related_name="silvasoft_synchronization"
+    )
