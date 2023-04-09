@@ -1,10 +1,8 @@
 import logging
 import urllib.parse
-import uuid
 
 import requests
 from constance import config
-from django.utils.datetime_safe import datetime
 
 from borrel.models import BorrelReservation
 from orders.models import Shift, Order
@@ -203,9 +201,7 @@ def synchronize_shift_to_silvasoft(shift: Shift, silvasoft_identifier):
 def synchronize_borrelreservation_to_silvasoft(borrel_reservation: BorrelReservation, silvasoft_identifier):
     """Synchronize a Borrel Reservation to Silvasoft."""
     if borrel_reservation.association is None:
-        raise SilvasoftException(
-            "No association set for {}.".format(borrel_reservation)
-        )
+        raise SilvasoftException("No association set for {}.".format(borrel_reservation))
 
     try:
         silvasoft_association = SilvasoftAssociation.objects.get(association=borrel_reservation.association)
@@ -252,8 +248,8 @@ def synchronize_borrelreservation_to_silvasoft(borrel_reservation: BorrelReserva
 
     if len(order_lines) > 75:
         raise SilvasoftException(
-            "Synchronization for Borrel Reservation {} failed because the invoice has more than 75 line items and this "
-            "is not supported by Silvasoft.".format(borrel_reservation)
+            "Synchronization for Borrel Reservation {} failed because the invoice has more than 75 line items and this"
+            " is not supported by Silvasoft.".format(borrel_reservation)
         )
 
     silvasoft_client.add_sales_invoice(

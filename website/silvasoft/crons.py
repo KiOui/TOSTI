@@ -1,5 +1,4 @@
 from constance import config
-from django.db.models import Q
 from django_cron import CronJobBase, Schedule
 
 from borrel.models import BorrelReservation

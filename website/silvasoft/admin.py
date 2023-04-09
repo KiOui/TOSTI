@@ -26,7 +26,6 @@ from silvasoft.services import (
     synchronize_shift_to_silvasoft,
     synchronize_borrelreservation_to_silvasoft,
     SilvasoftException,
-    get_silvasoft_client,
     refresh_cached_relations,
     refresh_cached_products,
 )
@@ -180,6 +179,58 @@ class SilvasoftBorrelProductAdmin(admin.ModelAdmin):
             )
 
 
+class SilvasoftShiftSynchronizationInline(admin.StackedInline):
+    """Inline for Silvasoft Shift Synchronization."""
+
+    model = SilvasoftShiftSynchronization
+    fields = [
+        "created",
+        "succeeded",
+    ]
+    readonly_fields = [
+        "created",
+        "succeeded",
+    ]
+    extra = 0
+
+    def has_add_permission(self, request, obj):
+        """No add permission."""
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        """No change permission."""
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        """No delete permission."""
+        return False
+
+
+class SilvasoftShiftInvoiceInline(admin.StackedInline):
+    """Inline for Silvasoft Shift Invoice."""
+
+    model = SilvasoftShiftInvoice
+    fields = [
+        "silvasoft_identifier",
+    ]
+    readonly_fields = [
+        "silvasoft_identifier",
+    ]
+    extra = 0
+
+    def has_add_permission(self, request, obj):
+        """No add permission."""
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        """No change permission."""
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        """No delete permission."""
+        return False
+
+
 class SilvasoftShiftAdmin(ShiftAdmin):
     """Add sync to Silvasoft button to ShiftAdmin."""
 
@@ -193,6 +244,10 @@ class SilvasoftShiftAdmin(ShiftAdmin):
         "can_order",
         "finalized",
         "pushed_to_silvasoft",
+    ]
+    inlines = [
+        SilvasoftShiftSynchronizationInline,
+        SilvasoftShiftInvoiceInline,
     ]
 
     def pushed_to_silvasoft(self, obj):
@@ -231,7 +286,7 @@ class SilvasoftShiftAdmin(ShiftAdmin):
                 synchronize_shift_to_silvasoft(obj, silvasoft_invoice.silvasoft_identifier)
                 self.message_user(request, format_html("Silvasoft synchronisation succeeded."), messages.SUCCESS)
                 SilvasoftShiftSynchronization.objects.create(shift=obj, succeeded=True)
-            except SilvasoftException:
+            except SilvasoftException as e:
                 self.message_user(
                     request,
                     format_html(
@@ -255,6 +310,56 @@ class SilvasoftShiftAdmin(ShiftAdmin):
             return super(SilvasoftShiftAdmin, self).has_change_permission(request, obj=obj)
 
 
+class SilvasoftBorrelReservationSynchronizationInline(admin.StackedInline):
+    """Inline for Silvasoft Borrel Reservation Synchronization."""
+
+    model = SilvasoftBorrelReservationSynchronization
+    fields = [
+        "created",
+        "succeeded",
+    ]
+    readonly_fields = [
+        "created",
+        "succeeded",
+    ]
+    extra = 0
+
+    def has_add_permission(self, request, obj):
+        """No add permission."""
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        """No change permission."""
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        """No delete permission."""
+        return False
+
+
+class SilvasoftBorrelReservationInvoiceInline(admin.StackedInline):
+    """Inline for Silvasoft Borrel Reservation Invoice."""
+
+    model = SilvasoftBorrelReservationInvoice
+    fields = [
+        "silvasoft_identifier",
+    ]
+    readonly_fields = ["silvasoft_identifier"]
+    extra = 0
+
+    def has_add_permission(self, request, obj):
+        """No add permission."""
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        """No change permission."""
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        """No delete permission."""
+        return False
+
+
 class SilvasoftBorrelReservationAdmin(BorrelReservationAdmin):
     """Add sync to Silvasoft button to BorrelReservationAdmin."""
 
@@ -267,6 +372,10 @@ class SilvasoftBorrelReservationAdmin(BorrelReservationAdmin):
         "accepted",
         "submitted",
         "pushed_to_silvasoft",
+    ]
+    inlines = [
+        SilvasoftBorrelReservationSynchronizationInline,
+        SilvasoftBorrelReservationInvoiceInline,
     ]
 
     def pushed_to_silvasoft(self, obj):

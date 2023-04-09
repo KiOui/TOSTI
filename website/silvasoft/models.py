@@ -75,31 +75,47 @@ class SilvasoftBorrelProduct(models.Model):
 
 
 class SilvasoftInvoice(models.Model):
+    """Abstract model for indicating a connected invoice ID in Silvasoft."""
 
     silvasoft_identifier = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     class Meta:
+        """Meta class."""
+
         abstract = True
 
 
 class SilvasoftShiftInvoice(SilvasoftInvoice):
+    """Model for indicating a connected invoice ID in Silvasoft for Shifts."""
 
     shift = models.OneToOneField(Shift, on_delete=models.CASCADE, related_name="silvasoft_invoice")
 
+    def __str__(self):
+        """Convert this object to string."""
+        return "Silvasoft identifier: {}".format(self.silvasoft_identifier)
+
 
 class SilvasoftBorrelReservationInvoice(SilvasoftInvoice):
+    """Model for indicating a connected invoice ID in Silvasoft for Borrel Reservations."""
 
     borrel_reservation = models.OneToOneField(
         BorrelReservation, on_delete=models.CASCADE, related_name="silvasoft_invoice"
     )
 
+    def __str__(self):
+        """Convert this object to string."""
+        return "Silvasoft identifier: {}".format(self.silvasoft_identifier)
+
 
 class SilvasoftSynchronization(models.Model):
+    """Abstract Synchronization model."""
 
     created = models.DateTimeField(auto_now_add=True)
     succeeded = models.BooleanField()
 
     class Meta:
+        """Meta class."""
+
         abstract = True
 
 
@@ -108,6 +124,12 @@ class SilvasoftShiftSynchronization(SilvasoftSynchronization):
 
     shift = models.ForeignKey(Shift, on_delete=models.CASCADE, related_name="silvasoft_synchronization")
 
+    def __str__(self):
+        """Convert this object to string."""
+        return "Shift {} synchronized at {}: {}".format(
+            self.shift, self.created, "succeeded" if self.succeeded else "failed"
+        )
+
 
 class SilvasoftBorrelReservationSynchronization(SilvasoftSynchronization):
     """Model for indicating when a TOSTI BorrelReservation has been synchronized with Silvasoft."""
@@ -115,3 +137,9 @@ class SilvasoftBorrelReservationSynchronization(SilvasoftSynchronization):
     borrel_reservation = models.ForeignKey(
         BorrelReservation, on_delete=models.CASCADE, related_name="silvasoft_synchronization"
     )
+
+    def __str__(self):
+        """Convert this object to string."""
+        return "Borrel Reservation {} synchronized at {}: {}".format(
+            self.borrel_reservation, self.created, "succeeded" if self.succeeded else "failed"
+        )

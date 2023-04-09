@@ -84,34 +84,36 @@ class SilvasoftServicesTests(TestCase):
         silvasoft_client_mock.add_sales_invoice.assert_called_with(
             json={
                 "CustomerNumber": self.silvasoft_association.silvasoft_customer_number,
-                "InvoiceNotes": "Borrel reservation: {}<br>Date: {}<br>Responsible: {}<br>Synchronisation ID: {}".format(
+                "InvoiceNotes": "Borrel reservation: {}<br>Date: {}<br>Responsible: {}<br>"
+                "Synchronisation ID: {}".format(
                     self.borrel_reservation.id,
                     self.borrel_reservation.start.strftime("%d-%m-%Y"),
                     self.borrel_reservation.user_submitted,
                     "test-identifier",
                 ),
                 "Invoice_InvoiceLine": [
-                {
-                    "ProductNumber": self.silvasoft_product_1.silvasoft_product_number,
-                    "Quantity": 5,
-                    "UseArticlePrice": True,
-                },
-                {
-                    "ProductNumber": self.silvasoft_product_2.silvasoft_product_number,
-                    "Quantity": 18,
-                    "UseArticlePrice": True,
-                },
-                {
-                    "ProductNumber": self.silvasoft_product_3.silvasoft_product_number,
-                    "Quantity": 9,
-                    "UseArticlePrice": True,
-                },
-                {
-                    "ProductNumber": self.silvasoft_product_4.silvasoft_product_number,
-                    "Quantity": 1,
-                    "UseArticlePrice": True,
-                },
-            ]},
+                    {
+                        "ProductNumber": self.silvasoft_product_1.silvasoft_product_number,
+                        "Quantity": 5,
+                        "UseArticlePrice": True,
+                    },
+                    {
+                        "ProductNumber": self.silvasoft_product_2.silvasoft_product_number,
+                        "Quantity": 18,
+                        "UseArticlePrice": True,
+                    },
+                    {
+                        "ProductNumber": self.silvasoft_product_3.silvasoft_product_number,
+                        "Quantity": 9,
+                        "UseArticlePrice": True,
+                    },
+                    {
+                        "ProductNumber": self.silvasoft_product_4.silvasoft_product_number,
+                        "Quantity": 1,
+                        "UseArticlePrice": True,
+                    },
+                ],
+            },
         )
 
     @patch("silvasoft.services.SilvasoftClient.can_create_client")
@@ -124,7 +126,9 @@ class SilvasoftServicesTests(TestCase):
         self.assertRaises(SilvasoftException, throw_exception)
 
     @patch("silvasoft.services.get_silvasoft_client")
-    def test_synchronize_borrelreservation_to_silvasoft_no_association_set(self, _get_silvasoft_client_mock: MagicMock):
+    def test_synchronize_borrelreservation_to_silvasoft_no_association_set(
+        self, _get_silvasoft_client_mock: MagicMock
+    ):
         _get_silvasoft_client_mock.return_value = None
         self.borrel_reservation.association = None
         self.borrel_reservation.save()
@@ -136,7 +140,7 @@ class SilvasoftServicesTests(TestCase):
 
     @patch("silvasoft.services.get_silvasoft_client")
     def test_synchronize_borrelreservation_to_silvasoft_no_silvasoft_association_set(
-            self, _get_silvasoft_client_mock: MagicMock
+        self, _get_silvasoft_client_mock: MagicMock
     ):
         _get_silvasoft_client_mock.return_value = None
         association_without_silvasoft = Association.objects.create(name="No silvasoft association set")
@@ -149,7 +153,9 @@ class SilvasoftServicesTests(TestCase):
         self.assertRaises(SilvasoftException, throw_exception)
 
     @patch("silvasoft.services.get_silvasoft_client")
-    def test_synchronize_borrelreservation_to_silvasoft_no_amount_used_set(self, _get_silvasoft_client_mock: MagicMock):
+    def test_synchronize_borrelreservation_to_silvasoft_no_amount_used_set(
+        self, _get_silvasoft_client_mock: MagicMock
+    ):
         _get_silvasoft_client_mock.return_value = None
         self.set_amounts_used()
         self.reservation_item_3.amount_used = None
@@ -172,34 +178,36 @@ class SilvasoftServicesTests(TestCase):
         silvasoft_client_mock.add_sales_invoice.assert_called_with(
             json={
                 "CustomerNumber": self.silvasoft_association.silvasoft_customer_number,
-                "InvoiceNotes": "Borrel reservation: {}<br>Date: {}<br>Responsible: {}<br>Synchronisation ID: {}".format(
+                "InvoiceNotes": "Borrel reservation: {}<br>Date: {}<br>Responsible: {}<br>"
+                "Synchronisation ID: {}".format(
                     self.borrel_reservation.id,
                     self.borrel_reservation.start.strftime("%d-%m-%Y"),
                     self.borrel_reservation.user_submitted,
                     "test-identifier",
                 ),
                 "Invoice_InvoiceLine": [
-                {
-                    "ProductNumber": self.silvasoft_product_1.silvasoft_product_number,
-                    "Quantity": 5,
-                    "UseArticlePrice": True,
-                },
-                {
-                    "ProductNumber": self.silvasoft_product_2.silvasoft_product_number,
-                    "Quantity": 18,
-                    "UseArticlePrice": True,
-                },
-                {
-                    "ProductNumber": self.silvasoft_product_3.silvasoft_product_number,
-                    "Quantity": 9,
-                    "UseArticlePrice": True,
-                },
-            ]},
+                    {
+                        "ProductNumber": self.silvasoft_product_1.silvasoft_product_number,
+                        "Quantity": 5,
+                        "UseArticlePrice": True,
+                    },
+                    {
+                        "ProductNumber": self.silvasoft_product_2.silvasoft_product_number,
+                        "Quantity": 18,
+                        "UseArticlePrice": True,
+                    },
+                    {
+                        "ProductNumber": self.silvasoft_product_3.silvasoft_product_number,
+                        "Quantity": 9,
+                        "UseArticlePrice": True,
+                    },
+                ],
+            },
         )
 
     @patch("silvasoft.services.get_silvasoft_client")
     def test_synchronize_borrelreservation_to_silvasoft_no_borrelproduct_registered(
-            self, _get_silvasoft_client_mock: MagicMock
+        self, _get_silvasoft_client_mock: MagicMock
     ):
         self.set_amounts_used()
         SilvasoftBorrelProduct.objects.get(product=self.reservation_item_2.product).delete()
@@ -211,7 +219,7 @@ class SilvasoftServicesTests(TestCase):
 
     @patch("silvasoft.services.get_silvasoft_client")
     def test_synchronize_borrelreservation_to_silvasoft_more_than_75_line_items(
-            self, _get_silvasoft_client_mock: MagicMock
+        self, _get_silvasoft_client_mock: MagicMock
     ):
         _get_silvasoft_client_mock.return_value = None
         borrel_reservation_too_many_line_items = BorrelReservation.objects.create(
@@ -239,14 +247,17 @@ class SilvasoftServicesTests(TestCase):
                 product_name="Product test {}".format(i),
                 product_price_per_unit=10,
             )
+
         def throw_exception():
-            services.synchronize_borrelreservation_to_silvasoft(borrel_reservation_too_many_line_items, "test-identifier")
+            services.synchronize_borrelreservation_to_silvasoft(
+                borrel_reservation_too_many_line_items, "test-identifier"
+            )
 
         self.assertRaises(SilvasoftException, throw_exception)
 
     @patch("silvasoft.services.get_silvasoft_client")
     def test_synchronize_borrelreservation_to_silvasoft_non_submittable_product(
-            self, _get_silvasoft_client_mock: MagicMock
+        self, _get_silvasoft_client_mock: MagicMock
     ):
         self.set_amounts_used()
         ReservationItem.objects.create(
@@ -261,39 +272,41 @@ class SilvasoftServicesTests(TestCase):
         silvasoft_client_mock.add_sales_invoice.assert_called_with(
             json={
                 "CustomerNumber": self.silvasoft_association.silvasoft_customer_number,
-                "InvoiceNotes": "Borrel reservation: {}<br>Date: {}<br>Responsible: {}<br>Synchronisation ID: {}".format(
+                "InvoiceNotes": "Borrel reservation: {}<br>Date: {}<br>Responsible: {}<br>"
+                "Synchronisation ID: {}".format(
                     self.borrel_reservation.id,
                     self.borrel_reservation.start.strftime("%d-%m-%Y"),
                     self.borrel_reservation.user_submitted,
                     "test-identifier",
                 ),
                 "Invoice_InvoiceLine": [
-                {
-                    "ProductNumber": self.silvasoft_product_1.silvasoft_product_number,
-                    "Quantity": 5,
-                    "UseArticlePrice": True,
-                },
-                {
-                    "ProductNumber": self.silvasoft_product_2.silvasoft_product_number,
-                    "Quantity": 18,
-                    "UseArticlePrice": True,
-                },
-                {
-                    "ProductNumber": self.silvasoft_product_3.silvasoft_product_number,
-                    "Quantity": 9,
-                    "UseArticlePrice": True,
-                },
-                {
-                    "ProductNumber": self.silvasoft_product_4.silvasoft_product_number,
-                    "Quantity": 1,
-                    "UseArticlePrice": True,
-                },
-            ]},
+                    {
+                        "ProductNumber": self.silvasoft_product_1.silvasoft_product_number,
+                        "Quantity": 5,
+                        "UseArticlePrice": True,
+                    },
+                    {
+                        "ProductNumber": self.silvasoft_product_2.silvasoft_product_number,
+                        "Quantity": 18,
+                        "UseArticlePrice": True,
+                    },
+                    {
+                        "ProductNumber": self.silvasoft_product_3.silvasoft_product_number,
+                        "Quantity": 9,
+                        "UseArticlePrice": True,
+                    },
+                    {
+                        "ProductNumber": self.silvasoft_product_4.silvasoft_product_number,
+                        "Quantity": 1,
+                        "UseArticlePrice": True,
+                    },
+                ],
+            },
         )
 
     @patch("silvasoft.services.get_silvasoft_client")
     def test_synchronize_borrelreservation_to_silvasoft_non_reservable_product(
-            self, _get_silvasoft_client_mock: MagicMock
+        self, _get_silvasoft_client_mock: MagicMock
     ):
         self.set_amounts_used()
         ReservationItem.objects.create(
@@ -306,17 +319,19 @@ class SilvasoftServicesTests(TestCase):
         silvasoft_client_mock.add_sales_invoice.assert_called_with(
             json={
                 "CustomerNumber": self.silvasoft_association.silvasoft_customer_number,
-                "InvoiceNotes": "Borrel reservation: {}<br>Date: {}<br>Responsible: {}<br>Synchronisation ID: {}".format(
+                "InvoiceNotes": "Borrel reservation: {}<br>Date: {}<br>Responsible: {}<br>"
+                "Synchronisation ID: {}".format(
                     self.borrel_reservation.id,
                     self.borrel_reservation.start.strftime("%d-%m-%Y"),
                     self.borrel_reservation.user_submitted,
                     "test-identifier",
                 ),
-                "Invoice_InvoiceLine": [{
-                    "ProductNumber": self.silvasoft_product_1.silvasoft_product_number,
-                    "Quantity": 5,
-                    "UseArticlePrice": True,
-                },
+                "Invoice_InvoiceLine": [
+                    {
+                        "ProductNumber": self.silvasoft_product_1.silvasoft_product_number,
+                        "Quantity": 5,
+                        "UseArticlePrice": True,
+                    },
                     {
                         "ProductNumber": self.silvasoft_product_2.silvasoft_product_number,
                         "Quantity": 18,
@@ -336,6 +351,7 @@ class SilvasoftServicesTests(TestCase):
                         "ProductNumber": self.silvasoft_product_6.silvasoft_product_number,
                         "Quantity": 17,
                         "UseArticlePrice": True,
-                    }],
+                    },
+                ],
             },
         )
