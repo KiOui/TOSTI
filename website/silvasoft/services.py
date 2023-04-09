@@ -25,6 +25,7 @@ class SilvasoftException(Exception):
     """Silvasoft Exception."""
 
     def __init__(self, response=None):
+        """Initialize the Silvasoft Exception."""
         self.response = response
 
 
@@ -47,6 +48,7 @@ class SilvasoftClient:
         return "{}{}".format(self.endpoint_url, path)
 
     def get_authentication_headers(self):
+        """Add username and API key to requests."""
         return {"ApiKey": self.api_key, "Username": self.username}
 
     def get(self, path, **kwargs):
@@ -64,6 +66,7 @@ class SilvasoftClient:
 
     @staticmethod
     def get_all(func, max_per_iteration=50, *args, **kwargs):
+        """Use Limit and Offset parameters to get all items of an endpoint."""
         start = 0
         zero_results = False
         all_results = []
@@ -93,12 +96,15 @@ class SilvasoftClient:
             return response.json()
 
     def list_relations(self, **kwargs):
+        """List relations request."""
         return self.get(self.list_relations_url, **kwargs)
 
     def list_products(self, **kwargs):
+        """List products request."""
         return self.get(self.list_products_url, **kwargs)
 
     def add_sales_invoice(self, **kwargs):
+        """Add sales invoice request."""
         return self.post(self.add_sales_invoice_url, **kwargs)
 
     @property
@@ -267,6 +273,7 @@ def synchronize_borrelreservation_to_silvasoft(borrel_reservation: BorrelReserva
 
 
 def refresh_cached_relations():
+    """Refresh the relations cached in TOSTI."""
     client = get_silvasoft_client()
     relations = SilvasoftClient.get_all(client.list_relations, url_parameters={"IsCustomer": True})
     CachedRelation.objects.all().delete()
@@ -275,6 +282,7 @@ def refresh_cached_relations():
 
 
 def refresh_cached_products():
+    """Refresh the products cached in TOSTI."""
     client = get_silvasoft_client()
     products = SilvasoftClient.get_all(client.list_products)
     CachedProduct.objects.all().delete()

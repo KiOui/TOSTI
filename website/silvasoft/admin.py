@@ -47,7 +47,6 @@ class SilvasoftAssociationAdmin(admin.ModelAdmin):
 
     def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
         """Add extra action to admin post request."""
-
         if self._should_refresh_relations(request):
             try:
                 refresh_cached_relations()
@@ -84,7 +83,6 @@ class SilvasoftOrderVenueAdmin(admin.ModelAdmin):
 
     def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
         """Add extra action to admin post request."""
-
         if self._should_refresh_relations(request):
             try:
                 refresh_cached_relations()
@@ -121,7 +119,6 @@ class SilvasoftOrderProductAdmin(admin.ModelAdmin):
 
     def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
         """Add extra action to admin post request."""
-
         if self._should_refresh_products(request):
             try:
                 refresh_cached_products()
@@ -158,7 +155,6 @@ class SilvasoftBorrelProductAdmin(admin.ModelAdmin):
 
     def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
         """Add extra action to admin post request."""
-
         if self._should_refresh_products(request):
             try:
                 refresh_cached_products()
