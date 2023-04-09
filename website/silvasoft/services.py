@@ -55,7 +55,7 @@ class SilvasoftClient:
         """Send a GET request."""
         headers = self.get_authentication_headers()
         headers["Content-Type"] = "application/json"
-        parameters_dict = kwargs.get("url_parameters", {})
+        parameters_dict = kwargs.pop("url_parameters", {})
         parameters = urllib.parse.urlencode(parameters_dict)
         path = "{}?{}".format(path, parameters)
         response = requests.get(path, headers=headers, **kwargs)
@@ -69,14 +69,15 @@ class SilvasoftClient:
         start = 0
         zero_results = False
         all_results = []
-        function_kwargs = {
+        parameters_dict = kwargs.pop("url_parameters", {})
+        get_parameters = {
             "Sorting": "createdDate",
             "SortDir": "DEC",
         }
-        function_kwargs.update(kwargs)
+        get_parameters.update(parameters_dict)
         while not zero_results:
-            function_kwargs.update(Limit=max_per_iteration, Offset=start)
-            results = func(*args, **function_kwargs)
+            get_parameters.update(Limit=max_per_iteration, Offset=start)
+            results = func(url_parameters=get_parameters, *args, **kwargs)
             all_results = all_results + results
             start = start + max_per_iteration
             if len(results) != max_per_iteration:
@@ -191,7 +192,7 @@ def synchronize_shift_to_silvasoft(shift: Shift, silvasoft_identifier):
     silvasoft_client.add_sales_invoice(
         json={
             "CustomerNumber": silvasoft_order_venue.silvasoft_customer_number,
-            "InvoiceNotes": "Shift #{}\nDate: {}\nSynchronisation ID: {}".format(
+            "InvoiceNotes": "Shift #{}<br>Date: {}<br>Synchronisation ID: {}".format(
                 shift.id, shift.start.strftime("%d-%m-%Y"), silvasoft_identifier
             ),
             "Invoice_InvoiceLine": order_lines,
@@ -201,14 +202,18 @@ def synchronize_shift_to_silvasoft(shift: Shift, silvasoft_identifier):
 
 def synchronize_borrelreservation_to_silvasoft(borrel_reservation: BorrelReservation, silvasoft_identifier):
     """Synchronize a Borrel Reservation to Silvasoft."""
+    if borrel_reservation.association is None:
+        raise SilvasoftException(
+            "No association set for {}.".format(borrel_reservation)
+        )
+
     try:
         silvasoft_association = SilvasoftAssociation.objects.get(association=borrel_reservation.association)
     except SilvasoftAssociation.DoesNotExist:
-        logger.warning(
+        raise SilvasoftException(
             "No Silvasoft client for {} exists, if you want to automatically synchronize borrel reservations to "
             "Silvasoft, please add a SilvasoftAssociation for it.".format(borrel_reservation.association)
         )
-        return False
 
     try:
         silvasoft_client = get_silvasoft_client()
@@ -240,7 +245,7 @@ def synchronize_borrelreservation_to_silvasoft(borrel_reservation: BorrelReserva
         order_lines.append(
             {
                 "ProductNumber": silvasoft_borrel_product.silvasoft_product_number,
-                "Quantity": reservation_item.amount,
+                "Quantity": reservation_item.amount_used,
                 "UseArticlePrice": True,
             }
         )
@@ -254,7 +259,7 @@ def synchronize_borrelreservation_to_silvasoft(borrel_reservation: BorrelReserva
     silvasoft_client.add_sales_invoice(
         json={
             "CustomerNumber": silvasoft_association.silvasoft_customer_number,
-            "InvoiceNotes": "Borrel reservation: {}\nDate: {}\nResponsible: {}\nSynchronisation ID: {}".format(
+            "InvoiceNotes": "Borrel reservation: {}<br>Date: {}<br>Responsible: {}<br>Synchronisation ID: {}".format(
                 borrel_reservation.id,
                 borrel_reservation.start.strftime("%d-%m-%Y"),
                 borrel_reservation.user_submitted,

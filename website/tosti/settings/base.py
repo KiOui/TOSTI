@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "thaliedje",
     "orders",
     "silvasoft",
+    "tantalus",
     "oauth2_provider",
     "corsheaders",
 ]
