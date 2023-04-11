@@ -248,7 +248,12 @@ class SilvasoftShiftAdmin(ShiftAdmin):
 
     def pushed_to_silvasoft(self, obj):
         """Reservation is pushed to Silvasoft."""
-        return SilvasoftShiftSynchronization.objects.filter(shift=obj, succeeded=True).exists()
+        if SilvasoftShiftSynchronization.objects.filter(shift=obj, succeeded=True).exists():
+            return True
+        elif SilvasoftShiftSynchronization.objects.filter(shift=obj, succeeded=False).exists():
+            return False
+        else:
+            return None
 
     pushed_to_silvasoft.boolean = True
 
@@ -376,9 +381,14 @@ class SilvasoftBorrelReservationAdmin(BorrelReservationAdmin):
 
     def pushed_to_silvasoft(self, obj):
         """Reservation is pushed to Silvasoft."""
-        return SilvasoftBorrelReservationSynchronization.objects.filter(
-            borrel_reservation=obj, succeeded=True
-        ).exists()
+        if SilvasoftBorrelReservationSynchronization.objects.filter(borrel_reservation=obj, succeeded=True).exists():
+            return True
+        elif SilvasoftBorrelReservationSynchronization.objects.filter(
+            borrel_reservation=obj, succeeded=False
+        ).exists():
+            return False
+        else:
+            return None
 
     pushed_to_silvasoft.boolean = True
 
