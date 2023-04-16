@@ -1,0 +1,58 @@
+[
+  {
+    "model": "silvasoft.silvasoftassociation",
+    "pk": 1,
+    "fields": {
+      "association": 1,
+      "silvasoft_customer_number": 1
+    }
+  },
+  {
+    "model": "silvasoft.silvasoftassociation",
+    "pk": 2,
+    "fields": {
+      "association": 2,
+      "silvasoft_customer_number": 2
+    }
+  },
+  {
+    "model": "silvasoft.silvasoftborrelproduct",
+    "pk": 1,
+    "fields": {
+      "product": 1,
+      "silvasoft_product_number": 21
+    }
+  },
+  {
+    "model": "silvasoft.silvasoftborrelproduct",
+    "pk": 2,
+    "fields": {
+      "product": 2,
+      "silvasoft_product_number": 22
+    }
+  },
+  {
+    "model": "silvasoft.silvasoftborrelproduct",
+    "pk": 3,
+    "fields": {
+      "product": 3,
+      "silvasoft_product_number": 23
+    }
+  },
+  {
+    "model": "silvasoft.silvasoftborrelproduct",
+    "pk": 4,
+    "fields": {
+      "product": 4,
+      "silvasoft_product_number": 24
+    }
+  },
+  {
+    "model": "silvasoft.silvasoftborrelproduct",
+    "pk": 5,
+    "fields": {
+      "product": 6,
+      "silvasoft_product_number": 26
+    }
+  }
+]

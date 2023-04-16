@@ -7,19 +7,16 @@
     {% url opts|admin_urlname:'delete' original.pk|admin_urlquote as delete_url %}
     <p class="deletelink-box"><a href="{% add_preserved_filters delete_url %}" class="deletelink">Delete</a></p>
 {% endif %}
-{% if show_push_to_tantalus %}
-    <input type="submit" value="Push to Tantalus" name="_pushtotantalus" id="push-to-tantalus">
-    <script>
-        // If javascript is enabled, add a confirm popup to the Tantalus button.
-        let push_to_tantalus = document.getElementById('push-to-tantalus');
-        push_to_tantalus.onclick = function(event) {
-            if (!confirm("Do you really want to push this shift to tantalus? This action might have already happened" +
-                " automatically and can not be made undone.")) {
-                event.preventDefault();
-            }
+<input type="submit" value="Refresh products" name="_refreshproducts" id="refresh-products">
+<script>
+    const refresh_button = document.getElementById('refresh-products');
+    refresh_button.onclick = function(event) {
+        if (!confirm("Are you sure you want to refresh cached Silvasoft products? All information entered will " +
+            "be lost.")) {
+            event.preventDefault();
         }
-    </script>
-{% endif %}
+    }
+</script>
 {% if show_save_as_new %}<input type="submit" value="Save as new" name="_saveasnew">{% endif %}
 {% if show_save_and_add_another %}<input type="submit" value="Save and add another" name="_addanother">{% endif %}
 {% if show_save_and_continue %}<input type="submit" value="{% if can_change %}Save and continue editing{% else %}Save and view{% endif %}" name="_continue">{% endif %}

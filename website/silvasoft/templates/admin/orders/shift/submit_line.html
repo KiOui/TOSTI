@@ -1,0 +1,28 @@
+{% extends 'admin/submit_line.html' %}
+{% load i18n admin_urls %}
+<div class="submit-row">
+{% block submit-row %}
+{% if show_save %}<input type="submit" value="Save" class="default" name="_save">{% endif %}
+{% if show_delete_link and original %}
+    {% url opts|admin_urlname:'delete' original.pk|admin_urlquote as delete_url %}
+    <p class="deletelink-box"><a href="{% add_preserved_filters delete_url %}" class="deletelink">Delete</a></p>
+{% endif %}
+{% if show_push_to_silvasoft %}
+    <input type="submit" value="Push to Silvasoft" name="_pushtosilvasoft" id="push-to-silvasoft">
+    <script>
+        // If javascript is enabled, add a confirm popup to the Silvasoft button.
+        let push_to_silvasoft = document.getElementById('push-to-silvasoft');
+        push_to_silvasoft.onclick = function(event) {
+            if (!confirm("Do you really want to push this shift to Silvasoft? This action might have already happened" +
+                " automatically and can not be made undone.")) {
+                event.preventDefault();
+            }
+        }
+    </script>
+{% endif %}
+{% if show_save_as_new %}<input type="submit" value="Save as new" name="_saveasnew">{% endif %}
+{% if show_save_and_add_another %}<input type="submit" value="Save and add another" name="_addanother">{% endif %}
+{% if show_save_and_continue %}<input type="submit" value="{% if can_change %}Save and continue editing{% else %}Save and view{% endif %}" name="_continue">{% endif %}
+{% if show_close %}<a href="{% url opts|admin_urlname:'changelist' %}" class="closelink">Close</a>{% endif %}
+{% endblock %}
+</div>

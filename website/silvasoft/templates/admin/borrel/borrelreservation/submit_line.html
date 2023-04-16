@@ -7,15 +7,15 @@
     {% url opts|admin_urlname:'delete' original.pk|admin_urlquote as delete_url %}
     <p class="deletelink-box"><a href="{% add_preserved_filters delete_url %}" class="deletelink">Delete</a></p>
 {% endif %}
-{% if show_push_to_tantalus %}
-    <input type="submit" value="Push to Tantalus" name="_pushtotantalus" id="push-to-tantalus">
+{% if show_push_to_silvasoft %}
+    <input type="submit" value="Push to Silvasoft" name="_pushtosilvasoft" id="push-to-silvasoft">
 {% endif %}
-{% if show_force_push_to_tantalus %}
-    <input type="submit" value="Force push to Tantalus" name="_pushtotantalus" id="force-push-to-tantalus">
+{% if show_force_push_to_silvasoft %}
+    <input type="submit" value="Force push to Silvasoft" name="_pushtosilvasoft" id="force-push-to-silvasoft">
     <script>
-        const force_push_button = document.getElementById('force-push-to-tantalus');
+        const force_push_button = document.getElementById('force-push-to-silvasoft');
         force_push_button.onclick = function(event) {
-            if (!confirm("Are you sure you want to force push this borrel reservation to Tantalus? TOSTI has already " +
+            if (!confirm("Are you sure you want to force push this borrel reservation to Silvasoft? TOSTI has already " +
                 "pushed this borrel reservation once so you might create duplicate invoices.")) {
                 event.preventDefault();
             }
