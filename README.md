@@ -76,14 +76,18 @@ The Thaliedje module makes use of the [Spotify API](https://developer.spotify.co
 - Controlling the queue and controls for play/pausing the song and skipping/reverting a track
 - Different permissions
 
-### Tantalus
-The `tantalus` module is used to synchronize Orders to a [Tantalus](https://github.com/thijsmie/tantalus) instance. The following (Docker environment) settings must be set in order for synchronization to work:
+### Silvasoft
+The `silvasoft` module is used to synchronize Orders to [Silvasoft](https://www.silvasoft.online). The following constance settings must be set in order for the Silvasoft synchronization to work: 
 
-- `TANTALUS_ENDPOINT_URL`: the endpoint of the Tantalus client, usually ending with `/poscl/`
-- `TANTALUS_USERNAME`: the username of the account that is used to log into Tantalus
-- `TANTALUS_PASSWORD`: the password of the account that is used to log into Tantalus
+- `SILVASOFT_API_URL`: the endpoint of Silvasoft, this can be left to the default setting.
+- `SILVASOFT_USERNAME`: the username of the account that is used to log into Silvasoft.
+- `SILVASOFT_API_KEY`: the API key of the account that is used to log into Silvasoft.
 
-Order registration will happen once a `Shift` is made finalized for all `Product` objects with a registered `TantalusProduct` object and if the `OrderVenue` of the `Shift` has a registered `TantalusOrderVenue`  (and thus Tantalus endpoint).
+Because Silvasoft has a cap of the amount of API requests that can be done per hour, a `MAXIMUM_SYNC_PER_RUN` setting exists that caps the amount of Shifts and Borrel Reservations that will be synchronized per hour.
+
+The `silvasoft` module adds a cron job that is ran every hour. The cron job collects all Shifts and Borrel Reservations that have not been synchronized to Silvasoft yet and will try to synchronize these to Silvasoft. Upon synchronization, an invoice ID is generated within the `silvasoft` application and is connected to the object that will be synchronized (so either a Shift or a Borrel Reservation). When synchronization is done, a Silvasoft Synchronization object is created indicating whether the synchronization was successful and when the synchronization was performed.
+
+Note that synchronizations to Silvasoft will not work when the generated invoice has more than 75 line items. When this is the case, the invoice should be manually moved to Silvasoft.
 
 ## Deploying
 0. Clone this repo in `/www/tosti/live/repo` (on the science filesystem)
