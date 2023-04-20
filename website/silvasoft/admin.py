@@ -2,7 +2,7 @@ from django.contrib import admin, messages
 from django.http import HttpResponseRedirect
 from django.utils.html import format_html
 
-from borrel.admin import BorrelReservationAdmin
+from borrel.admin import BorrelReservationAdmin, ReservationItemInline
 from borrel.models import BorrelReservation
 from orders.admin import ShiftAdmin
 from orders.models import Shift
@@ -375,6 +375,7 @@ class SilvasoftBorrelReservationAdmin(BorrelReservationAdmin):
         "pushed_to_silvasoft",
     ]
     inlines = [
+        ReservationItemInline,
         SilvasoftBorrelReservationSynchronizationInline,
         SilvasoftBorrelReservationInvoiceInline,
     ]
