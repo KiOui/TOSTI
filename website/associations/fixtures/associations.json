@@ -31,7 +31,7 @@
     "model": "associations.association",
     "pk": 5,
     "fields": {
-      "name": "Marie-Curie"
+      "name": "Marie Curie"
     }
   },
   {

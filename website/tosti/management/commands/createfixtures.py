@@ -10,6 +10,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         """Create random fixtures, in order of filters."""
-        print("bla")
         creators_list = self.fixture_creators.do_filter([])
-        print(creators_list)
+        for creator in creators_list:
+            creator()
