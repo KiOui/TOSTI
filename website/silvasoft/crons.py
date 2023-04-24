@@ -12,7 +12,7 @@ from silvasoft.models import (
 from silvasoft.services import (
     synchronize_shift_to_silvasoft,
     SilvasoftException,
-    synchronize_borrelreservation_to_silvasoft,
+    synchronize_borrelreservation_to_silvasoft, SilvasoftClient,
 )
 
 
@@ -26,6 +26,9 @@ class SynchronizeSilvasoft(CronJobBase):
 
     def do(self):
         """Synchronize Shifts and Borrel Reservations to Silvasoft."""
+        if not SilvasoftClient.can_create_client():
+            return
+
         maximum_synchronizations_to_run = config.MAXIMUM_SYNC_PER_RUN
 
         borrel_reservations_to_synchronize = BorrelReservation.objects.filter(
