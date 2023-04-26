@@ -12,7 +12,8 @@ from silvasoft.models import (
 from silvasoft.services import (
     synchronize_shift_to_silvasoft,
     SilvasoftException,
-    synchronize_borrelreservation_to_silvasoft, SilvasoftClient,
+    synchronize_borrelreservation_to_silvasoft,
+    SilvasoftClient,
 )
 
 
