@@ -37,6 +37,7 @@ django-cron = "^0.6.0"
 djangosaml2 = "^1.5.5"
 django-model-utils = "^4.3.1"
 setuptools = "^67.7.1"
+faker-commerce = "^1.0.3"
 
 [tool.poetry.dev-dependencies]
 pydocstyle = "^6.1.1"

@@ -151,8 +151,3 @@ def add_user_to_assignees_of_shift(user, shift: Shift):
         raise PermissionError("User does not have permissions to manage shifts in this venue.")
     shift.assignees.add(User.objects.get(pk=user.pk))
     shift.save()
-
-
-def create_random_fixtures():
-    """Create fixtures for the orders app."""
-    return

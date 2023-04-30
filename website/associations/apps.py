@@ -17,7 +17,7 @@ class AssociationsConfig(AppConfig):
 
         def filter_create_fixtures_command(fixture_creators_list: list):
             """Add fixture for orders."""
-            fixture_creators_list.append(create_fixtures)
+            fixture_creators_list.append({"app": "associations", "creator": create_fixtures})
             return fixture_creators_list
 
         CreateFixturesCommand.fixture_creators.add_filter(filter_create_fixtures_command)

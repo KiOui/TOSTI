@@ -21,7 +21,7 @@ class OrdersConfig(AppConfig):
         )
         from tosti.views import ExplainerView
         from tosti.management.commands.createfixtures import Command as CreateFixturesCommand
-        from orders.services import create_random_fixtures
+        from orders.fixtures import create_random_fixtures
 
         def filter_user_page(user_page_list: list):
             """Add Ordered items tab on accounts page."""
@@ -54,7 +54,7 @@ class OrdersConfig(AppConfig):
 
         def filter_create_fixtures_command(fixture_creators_list: list):
             """Add fixture for orders."""
-            fixture_creators_list.append(create_random_fixtures)
+            fixture_creators_list.append({"app": "orders", "creator": create_random_fixtures})
             return fixture_creators_list
 
         AccountView.user_data_tabs.add_filter(filter_user_page)

@@ -11,6 +11,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         """Create random fixtures, in order of filters."""
         creators_list = self.fixture_creators.do_filter([])
+        creators_list.reverse()
         for creator in creators_list:
-            print("Running {}".format(creator))
-            creator()
+            print("Running {}".format(creator['app']))
+            creator['creator']()

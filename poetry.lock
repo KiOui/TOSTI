@@ -830,7 +830,7 @@ doc = ["Sphinx", "sphinx-rtd-theme", "sphinxcontrib-spelling"]
 name = "faker"
 version = "18.4.0"
 description = "Faker is a Python package that generates fake data for you."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -840,6 +840,21 @@ files = [
 
 [package.dependencies]
 python-dateutil = ">=2.4"
+
+[[package]]
+name = "faker-commerce"
+version = "1.0.3"
+description = "Provider for Faker which adds fake commerce product names, prices, categories and descriptions."
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "faker-commerce-1.0.3.tar.gz", hash = "sha256:6eb0a5e7e9dcded86edf96980c56af63bc12f56c3ab860f88eb99a5b53c14073"},
+    {file = "faker_commerce-1.0.3-py3-none-any.whl", hash = "sha256:f76bfcac5ba17c68e15fd6d077d98fdff5087d65d015246db99d1b17efe4a3bd"},
+]
+
+[package.dependencies]
+faker = "*"
 
 [[package]]
 name = "flake8"
@@ -1849,4 +1864,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8.10"
-content-hash = "4a878f794ae9da13945ea0ba8902a0b85b2e7b532f4f39a2714bcb6f03852c50"
+content-hash = "5533a34f40f094e25333dee1f95ec846cbffd3882a06ef7b300ed91608407d02"
