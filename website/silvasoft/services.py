@@ -179,13 +179,17 @@ def synchronize_shift_to_silvasoft(shift: Shift, silvasoft_identifier):
                 "Skipping Silvasoft synchronization for Shift {} as one of the Products ({}) is not connected"
                 "to any Silvasoft Product.".format(shift, product)
             )
-        order_lines.append(
-            {
-                "ProductNumber": silvasoft_order_product.silvasoft_product_number,
-                "Quantity": len(order_list),
-                "UseArticlePrice": True,
-            }
-        )
+
+        order_line_to_append = {
+            "ProductNumber": silvasoft_order_product.silvasoft_product_number,
+            "Quantity": len(order_list),
+            "UseArticlePrice": True,
+        }
+
+        if silvasoft_order_product.cost_center:
+            order_line_to_append["CostCenter"] = silvasoft_order_product.cost_center
+
+        order_lines.append(order_line_to_append)
 
     if len(order_lines) > 75:
         raise SilvasoftException(
@@ -244,13 +248,16 @@ def synchronize_borrelreservation_to_silvasoft(borrel_reservation: BorrelReserva
                 " please add a Silvasoft Borrel Product for it.".format(reservation_item.product)
             )
 
-        order_lines.append(
-            {
-                "ProductNumber": silvasoft_borrel_product.silvasoft_product_number,
-                "Quantity": reservation_item.amount_used,
-                "UseArticlePrice": True,
-            }
-        )
+        order_line_to_append = {
+            "ProductNumber": silvasoft_borrel_product.silvasoft_product_number,
+            "Quantity": reservation_item.amount_used,
+            "UseArticlePrice": True,
+        }
+
+        if silvasoft_borrel_product.cost_center:
+            order_line_to_append["CostCenter"] = silvasoft_borrel_product.cost_center
+
+        order_lines.append(order_line_to_append)
 
     if len(order_lines) > 75:
         raise SilvasoftException(
@@ -262,7 +269,7 @@ def synchronize_borrelreservation_to_silvasoft(borrel_reservation: BorrelReserva
         json={
             "CustomerNumber": silvasoft_association.silvasoft_customer_number,
             "InvoiceNotes": "Borrel reservation: {}<br>Date: {}<br>Responsible: {}<br>Synchronisation ID: {}".format(
-                borrel_reservation.id,
+                borrel_reservation.title,
                 borrel_reservation.start.strftime("%d-%m-%Y"),
                 borrel_reservation.user_submitted,
                 silvasoft_identifier,

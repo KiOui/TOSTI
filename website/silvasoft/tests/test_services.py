@@ -86,7 +86,7 @@ class SilvasoftServicesTests(TestCase):
                 "CustomerNumber": self.silvasoft_association.silvasoft_customer_number,
                 "InvoiceNotes": "Borrel reservation: {}<br>Date: {}<br>Responsible: {}<br>"
                 "Synchronisation ID: {}".format(
-                    self.borrel_reservation.id,
+                    self.borrel_reservation.title,
                     self.borrel_reservation.start.strftime("%d-%m-%Y"),
                     self.borrel_reservation.user_submitted,
                     "test-identifier",
@@ -180,7 +180,7 @@ class SilvasoftServicesTests(TestCase):
                 "CustomerNumber": self.silvasoft_association.silvasoft_customer_number,
                 "InvoiceNotes": "Borrel reservation: {}<br>Date: {}<br>Responsible: {}<br>"
                 "Synchronisation ID: {}".format(
-                    self.borrel_reservation.id,
+                    self.borrel_reservation.title,
                     self.borrel_reservation.start.strftime("%d-%m-%Y"),
                     self.borrel_reservation.user_submitted,
                     "test-identifier",
@@ -199,6 +199,54 @@ class SilvasoftServicesTests(TestCase):
                     {
                         "ProductNumber": self.silvasoft_product_3.silvasoft_product_number,
                         "Quantity": 9,
+                        "UseArticlePrice": True,
+                    },
+                ],
+            },
+        )
+
+    @patch("silvasoft.services.get_silvasoft_client")
+    def test_synchronize_borrelreservation_to_silvasoft_cost_center_set(self, _get_silvasoft_client_mock: MagicMock):
+        self.set_amounts_used()
+        self.silvasoft_product_1.cost_center = "Test Cost Center"
+        self.silvasoft_product_2.cost_center = "Test Cost Center 2"
+        self.silvasoft_product_1.save()
+        self.silvasoft_product_2.save()
+        silvasoft_client_mock = MagicMock()
+        silvasoft_client_mock.add_sales_invoice.return_value = True
+        _get_silvasoft_client_mock.return_value = silvasoft_client_mock
+        services.synchronize_borrelreservation_to_silvasoft(self.borrel_reservation, "test-identifier")
+        silvasoft_client_mock.add_sales_invoice.assert_called_with(
+            json={
+                "CustomerNumber": self.silvasoft_association.silvasoft_customer_number,
+                "InvoiceNotes": "Borrel reservation: {}<br>Date: {}<br>Responsible: {}<br>"
+                "Synchronisation ID: {}".format(
+                    self.borrel_reservation.title,
+                    self.borrel_reservation.start.strftime("%d-%m-%Y"),
+                    self.borrel_reservation.user_submitted,
+                    "test-identifier",
+                ),
+                "Invoice_InvoiceLine": [
+                    {
+                        "ProductNumber": self.silvasoft_product_1.silvasoft_product_number,
+                        "Quantity": 5,
+                        "UseArticlePrice": True,
+                        "CostCenter": "Test Cost Center",
+                    },
+                    {
+                        "ProductNumber": self.silvasoft_product_2.silvasoft_product_number,
+                        "Quantity": 18,
+                        "UseArticlePrice": True,
+                        "CostCenter": "Test Cost Center 2",
+                    },
+                    {
+                        "ProductNumber": self.silvasoft_product_3.silvasoft_product_number,
+                        "Quantity": 9,
+                        "UseArticlePrice": True,
+                    },
+                    {
+                        "ProductNumber": self.silvasoft_product_4.silvasoft_product_number,
+                        "Quantity": 1,
                         "UseArticlePrice": True,
                     },
                 ],
@@ -274,7 +322,7 @@ class SilvasoftServicesTests(TestCase):
                 "CustomerNumber": self.silvasoft_association.silvasoft_customer_number,
                 "InvoiceNotes": "Borrel reservation: {}<br>Date: {}<br>Responsible: {}<br>"
                 "Synchronisation ID: {}".format(
-                    self.borrel_reservation.id,
+                    self.borrel_reservation.title,
                     self.borrel_reservation.start.strftime("%d-%m-%Y"),
                     self.borrel_reservation.user_submitted,
                     "test-identifier",
@@ -321,7 +369,7 @@ class SilvasoftServicesTests(TestCase):
                 "CustomerNumber": self.silvasoft_association.silvasoft_customer_number,
                 "InvoiceNotes": "Borrel reservation: {}<br>Date: {}<br>Responsible: {}<br>"
                 "Synchronisation ID: {}".format(
-                    self.borrel_reservation.id,
+                    self.borrel_reservation.title,
                     self.borrel_reservation.start.strftime("%d-%m-%Y"),
                     self.borrel_reservation.user_submitted,
                     "test-identifier",
