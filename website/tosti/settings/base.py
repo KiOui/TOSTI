@@ -159,7 +159,6 @@ OAUTH2_PROVIDER = {
 }
 
 LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/users/account/'
 LOGOUT_REDIRECT_URL = "/"
 
 # Messages
