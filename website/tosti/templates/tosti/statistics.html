@@ -9,14 +9,14 @@
     <div class="container mt-5">
         <h1>Statistics</h1>
         <div class="row mb-5">
-            <div class="col-6">
+            <div class="col-lg">
                 <canvas id="ordered-items-chart"
                     data-data="{{ ordered_items_distribution }}"
                     data-title="Ordered items"
                     data-chart-type="pie">
                 </canvas>
             </div>
-            <div class="col-6">
+            <div class="col-lg">
                 <canvas id="orders-per-venue-chart"
                     data-data="{{ orders_per_venue }}"
                     data-title="Orders per venue"
@@ -25,14 +25,14 @@
             </div>
         </div>
         <div class="row mb-5">
-            <div class="col-6">
+            <div class="col-lg">
                 <canvas id="most-requested-songs-chart"
                     data-data="{{ most_requested_songs }}"
                     data-title="Most requested songs"
                     data-chart-type="bar">
                 </canvas>
             </div>
-            <div class="col-6">
+            <div class="col-lg">
                 <canvas id="users-with-most-requests-chart"
                     data-data="{{ users_with_most_requests }}"
                     data-title="Users with most requests"

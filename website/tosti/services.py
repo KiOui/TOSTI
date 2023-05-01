@@ -1,17 +1,17 @@
 import calendar
 import logging
-from datetime import timedelta, datetime
+from datetime import timedelta
 from smtplib import SMTPException
 
 import html2text
 from django.contrib.auth import get_user_model
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
-from django.db.models import Count, Q, Sum, Avg
+from django.db.models import Count, Q, Sum
 from django.utils import timezone
 
 from associations.models import Association
-from borrel.models import ReservationItem, BorrelReservation
+from borrel.models import ReservationItem
 from orders.models import Product as OrderProduct, OrderVenue
 from thaliedje.models import SpotifyTrack
 
@@ -217,14 +217,32 @@ def generate_beer_consumption_over_time(category):
 
     last_year = timezone.now() - timedelta(days=365)
 
-    current_month = datetime.now().month - 1
-    for i in range(1, 13):
-        month_to_check = ((current_month + i) % 12) + 1
+    current_year = last_year.year
+    current_month = last_year.month
+
+    for i in range(0, 13):
+
+        next_month = current_month + 1
+        if next_month > 12:
+            next_month = 1
+            next_year = current_year + 1
+        else:
+            next_year = current_year
+
+        begin_date = timezone.make_aware(timezone.datetime(year=current_year, month=current_month, day=1))
+        end_date = timezone.make_aware(timezone.datetime(year=next_year, month=next_month, day=1))
+
         amount_of_beer_ordered = ReservationItem.objects.filter(
-            reservation__end__month=month_to_check, reservation__end__gte=last_year, product__category=category
+            reservation__end__gte=begin_date, reservation__end__lt=end_date, product__category=category
         ).aggregate(beer_used=Sum("amount_used"))
-        data["labels"].append(str(calendar.month_name[month_to_check]))
+        data["labels"].append(str(calendar.month_name[current_month]))
         data["datasets"][0]["data"].append(
             amount_of_beer_ordered["beer_used"] if amount_of_beer_ordered["beer_used"] is not None else 0
         )
+
+        current_month = current_month + 1
+        if current_month > 12:
+            current_month = 1
+            current_year = current_year + 1
+
     return data
