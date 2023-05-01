@@ -11,7 +11,7 @@ from django.db.models import Count, Q, Sum, Avg
 from django.utils import timezone
 
 from associations.models import Association
-from borrel.models import ReservationItem
+from borrel.models import ReservationItem, BorrelReservation
 from orders.models import Product as OrderProduct, OrderVenue
 from thaliedje.models import SpotifyTrack
 
@@ -177,17 +177,31 @@ def generate_beer_per_association_per_borrel(category):
     last_year = timezone.now() - timedelta(days=365)
 
     for association in Association.objects.annotate(
-        ordered_beer_amount=Avg(
+        ordered_beer_amount=Sum(
             "borrel_reservations__items__amount_used",
             filter=Q(
                 borrel_reservations__submitted_at__isnull=False,
                 borrel_reservations__start__gte=last_year,
                 borrel_reservations__items__product__category=category,
             ),
-        )
+        ),
+        borrel_reservation_amount=Count(
+            "borrel_reservations",
+            filter=Q(
+                borrel_reservations__submitted_at__isnull=False,
+                borrel_reservations__start__gte=last_year,
+            ),
+            distinct=True,
+        ),
     ):
+        if association.ordered_beer_amount is None:
+            association.ordered_beer_amount = 0
         data["labels"].append(str(association))
-        data["datasets"][0]["data"].append(association.ordered_beer_amount)
+        data["datasets"][0]["data"].append(
+            association.ordered_beer_amount / association.borrel_reservation_amount
+            if association.borrel_reservation_amount != 0
+            else 0
+        )
 
     return data
 
