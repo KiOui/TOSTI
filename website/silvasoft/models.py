@@ -57,7 +57,7 @@ class SilvasoftOrderProduct(models.Model):
 
     silvasoft_product_number = models.CharField(max_length=100, unique=True)
     product = models.OneToOneField(OrderProduct, on_delete=models.CASCADE)
-    cost_center = models.TextField(max_length=100, null=True, blank=True)
+    cost_center = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
         """Convert this object to string."""
@@ -69,7 +69,7 @@ class SilvasoftBorrelProduct(models.Model):
 
     silvasoft_product_number = models.CharField(max_length=100, unique=True)
     product = models.OneToOneField(BorrelProduct, on_delete=models.CASCADE)
-    cost_center = models.TextField(max_length=100, null=True, blank=True)
+    cost_center = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
         """Convert this object to string."""
