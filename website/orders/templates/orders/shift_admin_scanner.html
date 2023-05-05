@@ -139,7 +139,7 @@
             },
             search() {
                 fetch(
-                    `{% url 'v1:product_list' shift=shift %}?search=${this.search_input}`,
+                    `{% url 'v1:product_list' shift=shift %}?search=${this.search_input}&available=true`,
                     {
                         data: this.search_input,
                         headers: {
