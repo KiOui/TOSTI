@@ -20,6 +20,8 @@ class OrdersConfig(AppConfig):
             explainer_page_how_to_manage_shift_tab,
         )
         from tosti.views import ExplainerView
+        from tosti.management.commands.createfixtures import Command as CreateFixturesCommand
+        from orders.fixtures import create_random_fixtures
 
         def filter_user_page(user_page_list: list):
             """Add Ordered items tab on accounts page."""
@@ -50,8 +52,15 @@ class OrdersConfig(AppConfig):
             )
             return explainer_page_list
 
+        def filter_create_fixtures_command(fixture_creators_list: list):
+            """Add fixture for orders."""
+            fixture_creators_list.append({"app": "orders", "creator": create_random_fixtures})
+            return fixture_creators_list
+
         AccountView.user_data_tabs.add_filter(filter_user_page)
         ExplainerView.explainer_tabs.add_filter(filter_explainer_page)
+        CreateFixturesCommand.fixture_creators.add_filter(filter_create_fixtures_command)
+
 
     def announcements(self, request):
         """Add announcements."""

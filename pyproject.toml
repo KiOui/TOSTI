@@ -36,6 +36,8 @@ django-queryable-properties = "^1.8.3"
 django-cron = "^0.6.0"
 djangosaml2 = "^1.5.5"
 django-model-utils = "^4.3.1"
+setuptools = "^67.7.1"
+faker-commerce = "^1.0.3"
 
 [tool.poetry.dev-dependencies]
 pydocstyle = "^6.1.1"
@@ -43,6 +45,10 @@ flake8 = "^6.0.0"
 freezegun = "^1.2.1"
 black = "^22.3.0"
 tomli = "^2.0.1"
+faker = "^18.4.0"
+
+[tool.poetry.group.dev-dependencies.dependencies]
+factory-boy = "^3.2.1"
 
 [tool.black]
 line-length = 119
