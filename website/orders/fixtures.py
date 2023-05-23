@@ -1,11 +1,14 @@
 import random
+from datetime import timedelta, datetime
 
 import django.db.utils
 import faker_commerce
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from django.db.models import Q
+from django.utils import timezone
 
-from orders.models import OrderVenue, Product
+from orders.models import OrderVenue, Product, Shift
 from venues.models import Venue
 from faker import Factory as FakerFactory
 
@@ -16,6 +19,42 @@ def create_random_fixtures():
     """Create random fixtures."""
     create_order_venues()
     create_products()
+    create_shifts()
+
+
+def get_random_users(amount=2):
+    """Get random users."""
+    users = User.objects.order_by("?")
+    if amount > users.count():
+        return list(users)
+    else:
+        return users[:amount]
+
+
+def create_shifts():
+    """Create fixtures for Shifts."""
+    today = timezone.now()
+    one_month_ago = today + timedelta(days=31)
+    date_to_check = one_month_ago
+    order_venues = OrderVenue.objects.filter(Q(
+        venue__name="Noordkantine"
+    ) | Q(venue__name="Zuidkantine"))
+    for _ in range(0, 31):
+        date_to_check = date_to_check + timedelta(days=1)
+        if date_to_check.weekday() < 5:
+            for order_venue in order_venues:
+                create_shift = random.randint(0, 10)
+                if create_shift != 0:
+                    shift_start = timezone.make_aware(datetime(year=date_to_check.year, month=date_to_check.month, day=date_to_check.day, hour=12, minute=15))
+                    shift_end = timezone.make_aware(datetime(year=date_to_check.year, month=date_to_check.month, day=date_to_check.day, hour=13, minute=30))
+                    created_shift = Shift.objects.create(
+                        venue=order_venue,
+                        start=shift_start,
+                        end=shift_end,
+                    )
+                    for user in get_random_users():
+                        created_shift.assignees.add(user)
+                    created_shift.save()
 
 
 def create_order_venues():
