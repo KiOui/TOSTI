@@ -63,7 +63,7 @@
             </div>
         {% endwith %}
         {% if venue_reservation and show_venue_reservation %}
-            <div class="card-body rounded-bottom bg-dark text-center">
+            <div class="card-footer rounded-bottom text-center" style="background-color: var(--card-background);">
                     <span class="my-2">
                         Currently reserved{% if venue_reservation.association %} by {{ venue_reservation.association }}{% endif %} until {{venue_reservation.end|date:'D H:i'}} for
                     </span>
