@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.db.models.signals import post_save, m2m_changed, pre_save
+from django.db.models.signals import post_save, m2m_changed
 from django.dispatch import receiver
 
 from users.models import GroupSettings
