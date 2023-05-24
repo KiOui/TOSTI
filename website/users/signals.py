@@ -19,7 +19,5 @@ def after_group_change(sender, instance, **kwargs):
 def after_user_groups_changed(sender, instance, **kwargs):
     """Update the is_staff value of the users when they are added to groups."""
     action = kwargs.get("action")
-    pk_set = kwargs.get("pk_set")
     if action == "post_add" or action == "post_remove":
-        for user in User.objects.filter(pk__in=pk_set):
-            update_staff_status(user)
+        update_staff_status(instance)
