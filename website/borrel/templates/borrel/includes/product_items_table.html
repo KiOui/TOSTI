@@ -29,10 +29,10 @@
             </th>
             <td class="px-2">{{ form.product_description.value }}</td>
             <td class="px-2">{% if form.product_price_per_unit.value != 0 %}{{ form.product_price_per_unit.value }}{% else %}Free{% endif %}</td>
-            <td class="px-2"><input class="form-control" type="number" value="{{ form.amount_reserved.value|default_if_none:'' }}" name="{{ form.amount_reserved.html_name }}" min="0" id="{{ form.amount_reserved.id_for_label }}" {% if form.amount_reserved.field.disabled %}disabled{% endif %}></td>
+            <td class="px-2"><input class="form-control form-input-reserved" type="number" data-price="{{ form.product_price_per_unit.value }}" value="{{ form.amount_reserved.value|default_if_none:'' }}" name="{{ form.amount_reserved.html_name }}" min="0" id="{{ form.amount_reserved.id_for_label }}" {% if form.amount_reserved.field.disabled %}disabled{% endif %}></td>
             <td class="px-2"><input class="form-control" type="number" value="{{ form.amount_before.value|default_if_none:'' }}" name="{{ form.amount_before.html_name }}" min="0" id="{{ form.amount_before.id_for_label }}" {% if form.amount_before.field.disabled %}disabled{% endif %}></td>
             <td class="px-2"><input class="form-control" type="number" value="{{ form.amount_after.value|default_if_none:'' }}" name="{{ form.amount_after.html_name }}" min="0" id="{{ form.amount_after.id_for_label }}" {% if form.amount_after.field.disabled %}disabled{% endif %}></td>
-            <td class="px-2"><input class="form-control" type="number" value="{{ form.amount_used.value|default_if_none:'' }}" name="{{ form.amount_used.html_name }}" min="0" id="{{ form.amount_used.id_for_label }}" {% if form.amount_used.field.disabled %}disabled{% endif %}></td>
+            <td class="px-2"><input class="form-control form-input-used" type="number" data-price="{{ form.product_price_per_unit.value }}" value="{{ form.amount_used.value|default_if_none:'' }}" name="{{ form.amount_used.html_name }}" min="0" id="{{ form.amount_used.id_for_label }}" {% if form.amount_used.field.disabled %}disabled{% endif %}></td>
         </tr>
         {% bootstrap_form_errors form %}
         <script>
@@ -56,5 +56,56 @@
             }
         </script>
     {% endfor %}
+    <tr>
+        <td><strong>Total</strong></td>
+        <td colspan="2"></td>
+        <td class="text-center" id="price-total-reserved">0.00</td>
+        <td colspan="2"></td>
+        <td class="text-center" id="price-total-used">0.00</td>
+    </tr>
     {% bootstrap_formset_errors items %}
 </table>
+<script>
+    function calculate_reserved_total() {
+        const form_input_reserved_elements = document.getElementsByClassName("form-input-reserved");
+        let total = 0;
+        for (let i = 0; i < form_input_reserved_elements.length; i++) {
+            if (form_input_reserved_elements[i].hasAttribute('data-price')) {
+                const price = Number(form_input_reserved_elements[i].getAttribute('data-price'));
+                const line_price = price * form_input_reserved_elements[i].value;
+                total = total + line_price;
+            }
+        }
+        document.getElementById('price-total-reserved').innerText = "€" + total.toFixed(2);
+    }
+
+    function calculate_used_total() {
+        const form_input_used_elements = document.getElementsByClassName("form-input-used");
+        let total = 0;
+        for (let i = 0; i < form_input_used_elements.length; i++) {
+            if (form_input_used_elements[i].hasAttribute('data-price')) {
+                const price = Number(form_input_used_elements[i].getAttribute('data-price'));
+                const line_price = price * form_input_used_elements[i].value;
+                total = total + line_price;
+            }
+        }
+        document.getElementById('price-total-used').innerText = "€" + total.toFixed(2);
+    }
+
+    const form_input_reserved_elements = document.getElementsByClassName("form-input-reserved");
+    for (let i = 0; i < form_input_reserved_elements.length; i++) {
+        form_input_reserved_elements[i].addEventListener("change", function() {
+            calculate_reserved_total();
+        });
+    }
+
+    const form_input_used_elements = document.getElementsByClassName("form-input-used");
+    for (let i = 0; i < form_input_used_elements.length; i++) {
+        form_input_used_elements[i].addEventListener("change", function() {
+            calculate_used_total();
+        });
+    }
+
+    calculate_reserved_total();
+    calculate_used_total();
+</script>
