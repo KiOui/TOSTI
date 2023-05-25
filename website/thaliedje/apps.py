@@ -8,8 +8,8 @@ class ThaliedjeConfig(AppConfig):
 
     def ready(self):
         """Ready method."""
-        from users.views import AccountView
-        from thaliedje.views import render_account_history_tab
+        from users.views import AccountFilterView
+        from thaliedje.views import AccountHistoryTabView
 
         def filter_user_page(user_page_list: list):
             """Add requested songs as a tab to users page."""
@@ -17,12 +17,12 @@ class ThaliedjeConfig(AppConfig):
                 {
                     "name": "Requested songs",
                     "slug": "requested_songs",
-                    "renderer": render_account_history_tab,
+                    "view": AccountHistoryTabView.as_view(),
                 }  # noqa
             )
             return user_page_list
 
-        AccountView.user_data_tabs.add_filter(filter_user_page)
+        AccountFilterView.user_data_tabs.add_filter(filter_user_page)
 
     def announcements(self, request):
         """Add announcements."""

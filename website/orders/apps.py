@@ -13,9 +13,9 @@ class OrdersConfig(AppConfig):
         :return: None
         """
         from orders import signals  # noqa
-        from users.views import AccountView
+        from users.views import AccountFilterView
         from orders.views import (
-            render_ordered_items_tab,
+            AccountHistoryTabView,
             explainer_page_how_to_order_tab,
             explainer_page_how_to_manage_shift_tab,
         )
@@ -27,7 +27,7 @@ class OrdersConfig(AppConfig):
                 {
                     "name": "Ordered items",
                     "slug": "ordered_items",
-                    "renderer": render_ordered_items_tab,
+                    "view": AccountHistoryTabView.as_view(),
                 }  # noqa
             )
             return user_page_list
@@ -50,7 +50,7 @@ class OrdersConfig(AppConfig):
             )
             return explainer_page_list
 
-        AccountView.user_data_tabs.add_filter(filter_user_page)
+        AccountFilterView.user_data_tabs.add_filter(filter_user_page)
         ExplainerView.explainer_tabs.add_filter(filter_explainer_page)
 
     def announcements(self, request):

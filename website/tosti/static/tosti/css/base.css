@@ -216,3 +216,7 @@ a:hover {
 .card a, .card a:hover, .card a:visited, .card a:active {
     color: unset;
 }
+
+.modal .form-text {
+    color: unset;
+}

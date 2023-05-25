@@ -1,8 +1,9 @@
 from django.contrib import messages
 from django.contrib.admin.models import CHANGE, ADDITION
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
@@ -55,15 +56,29 @@ class NowPlayingView(TemplateView):
         return context
 
 
-def render_account_history_tab(request, item, current_page_url):
-    """Render the account history tab on the user page."""
-    song_requests = SpotifyQueueItem.objects.filter(requested_by=request.user).order_by("-added")
-    page = request.GET.get("page", 1) if (item["slug"] == request.GET.get("active", False)) else 1
-    paginator = Paginator(song_requests, per_page=50)
-    return render_to_string(
-        "thaliedje/account_history.html",
-        context={"page_obj": paginator.get_page(page), "current_page_url": current_page_url, "item": item},
-    )
+class AccountHistoryTabView(LoginRequiredMixin, TemplateView):
+    """History tab on user page."""
+
+    template_name = "users/account.html"
+
+    def get(self, request, **kwargs):
+        """GET request for history tab."""
+        song_requests = SpotifyQueueItem.objects.filter(requested_by=request.user).order_by("-added")
+        page = request.GET.get("page", 1)
+        paginator = Paginator(song_requests, per_page=50)
+        rendered_tab = render_to_string(
+            "thaliedje/account_history.html",
+            context={"page_obj": paginator.get_page(page)},
+        )
+        return render(
+            request,
+            self.template_name,
+            {
+                "active": kwargs.get("active"),
+                "tabs": kwargs.get("tabs"),
+                "rendered_tab": rendered_tab,
+            },
+        )
 
 
 @method_decorator(login_required, name="dispatch")

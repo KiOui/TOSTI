@@ -1,8 +1,9 @@
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponseNotFound
 from django.shortcuts import render
-from django.urls import reverse
+from django.template.loader import render_to_string
 from django.views.generic import TemplateView
 from django.contrib.auth.models import Group
 
@@ -13,21 +14,13 @@ from .forms import AccountForm
 User = get_user_model()
 
 
-class AccountView(LoginRequiredMixin, TemplateView):
-    """Account view."""
+class AccountView(TemplateView):
+    """Account View."""
 
     template_name = "users/account.html"
 
-    user_data_tabs = Filter()
-
     def get(self, request, **kwargs):
-        """
-        GET request for the account view.
-
-        :param request: the request
-        :param kwargs: keyword arguments
-        :return: a render of the account view
-        """
+        """GET request for the Account view."""
         form = AccountForm(
             initial={
                 "full_name": request.user.full_name,
@@ -38,14 +31,15 @@ class AccountView(LoginRequiredMixin, TemplateView):
                 "association": request.user.association,
             }
         )
-        active = request.GET.get("active", "users")
-        tabs = self.user_data_tabs.do_filter([])
-        rendered_tab = None
-        for tab in tabs:
-            if active == tab["slug"]:
-                rendered_tab = tab["renderer"](request, tab, reverse("users:account"))
+        rendered_tab = render_to_string("users/user_profile_form.html", context={"form": form}, request=request)
         return render(
-            request, self.template_name, {"form": form, "active": active, "tabs": tabs, "rendered_tab": rendered_tab}
+            request,
+            self.template_name,
+            {
+                "active": kwargs.get("active"),
+                "tabs": kwargs.get("tabs"),
+                "rendered_tab": rendered_tab,
+            },
         )
 
     def post(self, request, **kwargs):
@@ -57,14 +51,50 @@ class AccountView(LoginRequiredMixin, TemplateView):
         :return: a render of the account view
         """
         form = AccountForm(request.POST)
-        tabs = self.user_data_tabs.do_filter([])
         if form.is_valid():
             request.user.association = form.cleaned_data.get("association")
             request.user.save()
             messages.add_message(self.request, messages.SUCCESS, "Your profile has been saved.")
+        rendered_tab = render_to_string("users/user_profile_form.html", context={"form": form}, request=request)
         return render(
-            request, self.template_name, {"form": form, "active": "users", "tabs": tabs, "rendered_tab": None}
+            request,
+            self.template_name,
+            {"active": kwargs.get("active"), "tabs": kwargs.get("tabs"), "rendered_tab": rendered_tab},
         )
+
+
+class AccountFilterView(LoginRequiredMixin, TemplateView):
+    """Account Filter view."""
+
+    template_name = "users/account.html"
+
+    user_data_tabs = Filter()
+
+    DEFAULT_ACTIVE_TAB = "account"
+
+    def dispatch(self, request, *args, **kwargs):
+        """Dispatch a request by picking the correct subclass."""
+        method = request.method.lower()
+        if method == "get":
+            active = request.GET.get("active", self.DEFAULT_ACTIVE_TAB)
+        elif method == "post":
+            active = request.POST.get("active", self.DEFAULT_ACTIVE_TAB)
+        else:
+            return self.http_method_not_allowed(request, *args, **kwargs)
+
+        tabs = self.user_data_tabs.do_filter([])
+        tabs.reverse()
+
+        new_kwargs = {
+            "active": active,
+            "tabs": tabs,
+        }
+        new_kwargs.update(kwargs)
+
+        for tab in tabs:
+            if active == tab["slug"]:
+                return tab["view"](request, *args, **new_kwargs)
+        return HttpResponseNotFound()
 
 
 class StaffView(LoginRequiredMixin, TemplateView):
