@@ -30,7 +30,6 @@ class TostiFilterTests(TestCase):
         self.assertEqual(result[0], "test-item-1")
         self.filter.add_filter(self.change_filter_add_list_item_2, 3)
         result = self.filter.do_filter([])
-        print(result)
         self.assertEqual(result[0], "test-item-1")
         self.assertEqual(result[1], "test-item-2")
         self.filter.add_filter(self.change_filter_add_list_item_3, 1)
