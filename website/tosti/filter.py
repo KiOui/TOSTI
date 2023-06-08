@@ -15,27 +15,27 @@ class PrioritizedFunction:
         return self.callback.__name__
 
     def __lt__(self, obj):
-        """self < obj."""
+        """Less than."""
         return str(self) < str(obj)
 
     def __le__(self, obj):
-        """self <= obj."""
+        """Less than or equal."""
         return str(self) <= str(obj)
 
     def __eq__(self, obj):
-        """self == obj."""
+        """Equal."""
         return str(self) == str(obj)
 
     def __ne__(self, obj):
-        """self != obj."""
+        """Not equal."""
         return str(self) != str(obj)
 
     def __gt__(self, obj):
-        """self > obj."""
+        """Greater."""
         return str(self) > str(obj)
 
     def __ge__(self, obj):
-        """self >= obj."""
+        """Greater or equal."""
         return str(self) >= str(obj)
 
 
