@@ -83,7 +83,6 @@ class AccountFilterView(LoginRequiredMixin, TemplateView):
             return self.http_method_not_allowed(request, *args, **kwargs)
 
         tabs = self.user_data_tabs.do_filter([])
-        tabs.reverse()
 
         new_kwargs = {
             "active": active,
