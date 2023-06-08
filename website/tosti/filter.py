@@ -1,5 +1,42 @@
 import copy
+from queue import PriorityQueue
 from typing import Callable
+
+
+class PrioritizedFunction:
+    """Generic Prioritized function class."""
+
+    def __init__(self, callback: Callable):
+        """Initialize."""
+        self.callback = callback
+
+    def __str__(self) -> str:
+        """Convert this object to string."""
+        return self.callback.__name__
+
+    def __lt__(self, obj):
+        """self < obj."""
+        return str(self) < str(obj)
+
+    def __le__(self, obj):
+        """self <= obj."""
+        return str(self) <= str(obj)
+
+    def __eq__(self, obj):
+        """self == obj."""
+        return str(self) == str(obj)
+
+    def __ne__(self, obj):
+        """self != obj."""
+        return str(self) != str(obj)
+
+    def __gt__(self, obj):
+        """self > obj."""
+        return str(self) > str(obj)
+
+    def __ge__(self, obj):
+        """self >= obj."""
+        return str(self) >= str(obj)
 
 
 class Filter:
@@ -11,9 +48,9 @@ class Filter:
 
     def __init__(self):
         """Initialize."""
-        self.filters = []
+        self.filters = PriorityQueue()
 
-    def add_filter(self, callback: Callable, place: int = 0):
+    def add_filter(self, callback: Callable, place: int = 1):
         """
         Add a function to a filter with a specified name and place.
 
@@ -21,7 +58,7 @@ class Filter:
         :param place: the place in the order to add the function
         :return: None
         """
-        self.filters.insert(place, callback)
+        self.filters.put((-place, PrioritizedFunction(callback)))
 
     def do_filter(self, *args):
         """
@@ -30,7 +67,10 @@ class Filter:
         :param args: the arguments to provide to the functions
         :return: filtered arguments
         """
+        queue_copy = PriorityQueue()
+        queue_copy.queue = copy.copy(self.filters.queue)
         args_copy = copy.deepcopy(*args)
-        for filter_callback in self.filters:
-            args_copy = filter_callback(args_copy)
+        while not queue_copy.empty():
+            _, prioritized_function = queue_copy.get()
+            args_copy = prioritized_function.callback(args_copy)
         return args_copy

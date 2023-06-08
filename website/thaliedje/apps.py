@@ -22,7 +22,7 @@ class ThaliedjeConfig(AppConfig):
             )
             return user_page_list
 
-        AccountFilterView.user_data_tabs.add_filter(filter_user_page)
+        AccountFilterView.user_data_tabs.add_filter(filter_user_page, 3)
 
     def announcements(self, request):
         """Add announcements."""
