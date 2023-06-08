@@ -48,11 +48,13 @@ class Filter:
     """
     Generic Filter class.
 
-    This class can create filters and execute them on arguments. A filter is essentially a prioritized list of functions
-    that work as a pipeline. The function pipeline gets its input arguments from do_filter and first executes the first
-    function in the pipeline. The second function then gets as input the output of the first function and so on.
+    This class can create filters and execute them on arguments. A filter is essentially a prioritized list of
+    functions that work as a pipeline. The function pipeline gets its input arguments from do_filter and first executes
+    the first function in the pipeline. The second function then gets as input the output of the first function and so
+    on.
 
-    Functions can be passed with a priority (e.g. 5). This means that any functions with a higher priority (e.g.
+    Functions can be passed with a priority (e.g. 5). This means that any functions with a higher priority (e.g. 1, 2,
+    3, 4) will be run first.
     """
 
     def __init__(self):
