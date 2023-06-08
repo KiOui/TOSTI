@@ -4,7 +4,11 @@ from typing import Callable
 
 
 class PrioritizedFunction:
-    """Generic Prioritized function class."""
+    """
+    Generic Prioritized function class.
+
+    We need this class because there are no comparison operators defined on the function type.
+    """
 
     def __init__(self, callback: Callable):
         """Initialize."""
