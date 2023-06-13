@@ -30,8 +30,8 @@
 <div class="container-fluid mt-3 text-center">
     <span class="step-links">
         {% if page_obj.has_previous %}
-            <a href="{{ current_page_url }}?page=1&active={{ item.slug }}">&laquo; first</a>
-            <a href="{{ current_page_url }}?page={{ page_obj.previous_page_number }}&active={{ item.slug }}">previous</a>
+            <a href="{% url 'users:account' %}?page=1&active=requested_songs">&laquo; first</a>
+            <a href="{% url 'users:account' %}?page={{ page_obj.previous_page_number }}&active=requested_songs">previous</a>
         {% endif %}
 
         <span class="current">
@@ -39,8 +39,8 @@
         </span>
 
         {% if page_obj.has_next %}
-            <a href="{{ current_page_url }}?page={{ page_obj.next_page_number }}&active={{ item.slug }}">next</a>
-            <a href="{{ current_page_url }}?page={{ page_obj.paginator.num_pages }}&active={{ item.slug }}">last &raquo;</a>
+            <a href="{% url 'users:account' %}?page={{ page_obj.next_page_number }}&active=requested_songs">next</a>
+            <a href="{% url 'users:account' %}?page={{ page_obj.paginator.num_pages }}&active=requested_songs">last &raquo;</a>
         {% endif %}
     </span>
 </div>

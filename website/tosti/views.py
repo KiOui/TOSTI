@@ -2,11 +2,17 @@ import json
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
+from django.http import HttpResponseNotFound
 from django.shortcuts import render, redirect
+from django.template.loader import render_to_string
 from django.urls import reverse
 from django.views.generic import TemplateView, RedirectView
+from oauth2_provider.generators import generate_client_secret
+from oauth2_provider.models import Application
 
 from tosti.filter import Filter
+from tosti.forms import OAuthCredentialsForm
 from tosti.services import (
     generate_order_statistics,
     generate_orders_per_venue_statistics,
@@ -124,6 +130,183 @@ class StatisticsView(LoginRequiredMixin, TemplateView):
                 "beer_consumption_over_time": beer_consumption_over_time,
             },
         )
+
+
+class OAuthCredentialsRequestView(TemplateView):
+    """View for requesting OAuth credentials for the API."""
+
+    template_name = "users/account.html"
+
+    def get_paginator_page(self, request, page):
+        """Get paginator page."""
+        registered_applications = Application.objects.filter(user=request.user).order_by("-created")
+        paginator = Paginator(registered_applications, per_page=50)
+        paginator_page = paginator.get_page(page)
+
+        for application in paginator_page:
+            application.modify_form = OAuthCredentialsForm(instance=application)
+
+        return paginator_page
+
+    def render_tab(
+        self,
+        request,
+        paginator_page_with_modify_forms,
+        create_form=None,
+        create_form_open=False,
+        created_application=None,
+        open_modify_form_id=None,
+    ):
+        """Render the tab."""
+        if create_form is None:
+            create_form = OAuthCredentialsForm()
+
+        return render_to_string(
+            "tosti/oauth_credentials.html",
+            context={
+                "page_obj": paginator_page_with_modify_forms,
+                "create_form": create_form,
+                "create_form_open": create_form_open,
+                "created_application": created_application,
+                "open_modify_form_id": open_modify_form_id,
+            },
+            request=request,
+        )
+
+    def get(self, request, **kwargs):
+        """GET request for OAuth credentials."""
+        paginator_page = self.get_paginator_page(request, request.GET.get("page", 1))
+        return render(
+            request,
+            self.template_name,
+            {
+                "active": kwargs.get("active"),
+                "tabs": kwargs.get("tabs"),
+                "rendered_tab": self.render_tab(request, paginator_page),
+            },
+        )
+
+    def do_create(self, request, **kwargs):
+        """Create a new OAuth Application."""
+        create_form = OAuthCredentialsForm(request.POST)
+        if create_form.is_valid():
+            client_secret = generate_client_secret()
+            application = Application.objects.create(
+                user=request.user,
+                redirect_uris=create_form.cleaned_data.get("redirect_uris"),
+                client_type=Application.CLIENT_PUBLIC,
+                authorization_grant_type=Application.GRANT_AUTHORIZATION_CODE,
+                name=create_form.cleaned_data.get("name"),
+                client_secret=client_secret,
+            )
+            application.client_secret = client_secret
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                "Successfully created a new application, press the details button to show the application details.",
+            )
+            paginator_page = self.get_paginator_page(request, request.POST.get("page", 1))
+            return render(
+                request,
+                self.template_name,
+                {
+                    "active": kwargs.get("active"),
+                    "tabs": kwargs.get("tabs"),
+                    "rendered_tab": self.render_tab(request, paginator_page, created_application=application),
+                },
+            )
+        else:
+            paginator_page = self.get_paginator_page(request, request.POST.get("page", 1))
+            return render(
+                request,
+                self.template_name,
+                {
+                    "active": kwargs.get("active"),
+                    "tabs": kwargs.get("tabs"),
+                    "rendered_tab": self.render_tab(
+                        request, paginator_page, create_form=create_form, create_form_open=True
+                    ),
+                },
+            )
+
+    def do_update(self, request, **kwargs):
+        """Update an OAuth application."""
+        id_to_modify = request.POST.get("id", None)
+        try:
+            application_to_modify = Application.objects.get(id=id_to_modify, user=request.user)
+        except Application.DoesNotExist:
+            return HttpResponseNotFound()
+
+        modify_form = OAuthCredentialsForm(request.POST, instance=application_to_modify)
+
+        paginator_page = self.get_paginator_page(request, request.POST.get("page", 1))
+
+        for application in paginator_page:
+            if application.id == application_to_modify.id:
+                application.modify_form = modify_form
+
+        if modify_form.is_valid():
+            application_to_modify.redirect_uris = modify_form.cleaned_data.get("redirect_uris")
+            application_to_modify.name = modify_form.cleaned_data.get("name")
+            application_to_modify.save()
+            messages.add_message(request, messages.SUCCESS, "Successfully updated the application.")
+            return render(
+                request,
+                self.template_name,
+                {
+                    "active": kwargs.get("active"),
+                    "tabs": kwargs.get("tabs"),
+                    "rendered_tab": self.render_tab(request, paginator_page),
+                },
+            )
+        else:
+            return render(
+                request,
+                self.template_name,
+                {
+                    "active": kwargs.get("active"),
+                    "tabs": kwargs.get("tabs"),
+                    "rendered_tab": self.render_tab(
+                        request, paginator_page, open_modify_form_id=application_to_modify.id
+                    ),
+                },
+            )
+
+    def do_destroy(self, request, **kwargs):
+        """Destroy an OAuth Application."""
+        id_to_destroy = request.POST.get("id", None)
+        try:
+            application_to_destroy = Application.objects.get(id=id_to_destroy, user=request.user)
+        except Application.DoesNotExist:
+            return HttpResponseNotFound()
+
+        application_to_destroy.delete()
+
+        messages.add_message(request, messages.SUCCESS, "OAuth credentials deleted successfully.")
+
+        paginator_page = self.get_paginator_page(request, 1)
+
+        return render(
+            request,
+            self.template_name,
+            {
+                "active": kwargs.get("active"),
+                "tabs": kwargs.get("tabs"),
+                "rendered_tab": self.render_tab(request, paginator_page),
+            },
+        )
+
+    def post(self, request, **kwargs):
+        """POST request for OAuth credentials."""
+        action = request.POST.get("action", None)
+        if action == "create":
+            return self.do_create(request, **kwargs)
+        elif action == "update":
+            return self.do_update(request, **kwargs)
+        elif action == "destroy":
+            return self.do_destroy(request, **kwargs)
+        else:
+            return HttpResponseNotFound()
 
 
 def handler403(request, exception):

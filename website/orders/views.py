@@ -135,15 +135,29 @@ class JoinShiftView(LoginRequiredMixin, TemplateView):
             return render(request, self.template_name, {"shift": shift})
 
 
-def render_ordered_items_tab(request, item, current_page_url):
-    """Render the ordered items tab on the user page."""
-    ordered_items = Order.objects.filter(user=request.user).order_by("-created")
-    page = request.GET.get("page", 1) if (item["slug"] == request.GET.get("active", False)) else 1
-    paginator = Paginator(ordered_items, per_page=50)
-    return render_to_string(
-        "orders/account_history.html",
-        context={"page_obj": paginator.get_page(page), "current_page_url": current_page_url, "item": item},
-    )
+class AccountHistoryTabView(LoginRequiredMixin, TemplateView):
+    """Account order history view."""
+
+    template_name = "users/account.html"
+
+    def get(self, request, **kwargs):
+        """GET request for account history view."""
+        ordered_items = Order.objects.filter(user=request.user).order_by("-created")
+        page = request.GET.get("page", 1)
+        paginator = Paginator(ordered_items, per_page=50)
+        rendered_tab = render_to_string(
+            "orders/account_history.html",
+            context={"page_obj": paginator.get_page(page)},
+        )
+        return render(
+            request,
+            self.template_name,
+            {
+                "active": kwargs.get("active"),
+                "tabs": kwargs.get("tabs"),
+                "rendered_tab": rendered_tab,
+            },
+        )
 
 
 def explainer_page_how_to_order_tab(request, item):
