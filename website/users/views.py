@@ -72,28 +72,30 @@ class AccountFilterView(LoginRequiredMixin, TemplateView):
 
     DEFAULT_ACTIVE_TAB = "account"
 
-    def dispatch(self, request, *args, **kwargs):
-        """Dispatch a request by picking the correct subclass."""
-        method = request.method.lower()
-        if method == "get":
-            active = request.GET.get("active", self.DEFAULT_ACTIVE_TAB)
-        elif method == "post":
-            active = request.POST.get("active", self.DEFAULT_ACTIVE_TAB)
-        else:
-            return self.http_method_not_allowed(request, *args, **kwargs)
-
+    def dispatch_to_view(self, active_view, request, *args, **kwargs):
+        """Dispatch to the correct view."""
         tabs = self.user_data_tabs.do_filter([])
 
         new_kwargs = {
-            "active": active,
+            "active": active_view,
             "tabs": tabs,
         }
         new_kwargs.update(kwargs)
 
         for tab in tabs:
-            if active == tab["slug"]:
+            if active_view == tab["slug"]:
                 return tab["view"](request, *args, **new_kwargs)
         return HttpResponseNotFound()
+
+    def get(self, request, **kwargs):
+        """Dispatch a request by picking the correct subclass."""
+        active = request.GET.get("active", self.DEFAULT_ACTIVE_TAB)
+        return self.dispatch_to_view(active, request, **kwargs)
+
+    def post(self, request, **kwargs):
+        """Dispatch a request by picking the correct subclass."""
+        active = request.POST.get("active", self.DEFAULT_ACTIVE_TAB)
+        return self.dispatch_to_view(active, request, **kwargs)
 
 
 class StaffView(LoginRequiredMixin, TemplateView):

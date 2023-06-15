@@ -239,17 +239,18 @@ class OAuthCredentialsRequestView(TemplateView):
 
         modify_form = OAuthCredentialsForm(request.POST, instance=application_to_modify)
 
-        paginator_page = self.get_paginator_page(request, request.POST.get("page", 1))
-
-        for application in paginator_page:
-            if application.id == application_to_modify.id:
-                application.modify_form = modify_form
-
         if modify_form.is_valid():
             application_to_modify.redirect_uris = modify_form.cleaned_data.get("redirect_uris")
             application_to_modify.name = modify_form.cleaned_data.get("name")
             application_to_modify.save()
             messages.add_message(request, messages.SUCCESS, "Successfully updated the application.")
+
+            paginator_page = self.get_paginator_page(request, request.POST.get("page", 1))
+
+            for application in paginator_page:
+                if application.id == application_to_modify.id:
+                    application.modify_form = modify_form
+
             return render(
                 request,
                 self.template_name,
@@ -260,6 +261,12 @@ class OAuthCredentialsRequestView(TemplateView):
                 },
             )
         else:
+            paginator_page = self.get_paginator_page(request, request.POST.get("page", 1))
+
+            for application in paginator_page:
+                if application.id == application_to_modify.id:
+                    application.modify_form = modify_form
+
             return render(
                 request,
                 self.template_name,
