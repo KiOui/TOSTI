@@ -624,7 +624,7 @@ class SpotifyPlayer(Player):
             {
                 "track_id": item["id"],
                 "track_name": item["name"],
-                "track_artists": [x["name"] for x in item["artists"]],
+                "track_artists": self.get_artists_for_spotify_track(item),
                 "duration_ms": item["duration_ms"],
             }
             for item in queue["queue"]
@@ -718,7 +718,7 @@ class SpotifyPlayer(Player):
         if current_playback is None:
             return []
         try:
-            return [x["name"] for x in self._current_playback["item"]["artists"]]
+            return self.get_artists_for_spotify_track(self._current_playback["item"])
         except (KeyError, IndexError, TypeError):
             return []
 
@@ -761,6 +761,14 @@ class SpotifyPlayer(Player):
         if current_playback is None or current_playback["device"] is None:
             return None
         return current_playback["device"]["volume_percent"]
+
+    @staticmethod
+    def get_artists_for_spotify_track(spotify_track):
+        """Get the artists for a spotify track."""
+        try:
+            return [x["name"] for x in spotify_track["artists"]]
+        except KeyError:
+            return []
 
     @volume.setter
     def volume(self, volume_percent):
@@ -825,7 +833,7 @@ class SpotifyPlayer(Player):
                     {
                         "type": x["type"],
                         "name": x["name"],
-                        "artists": [y["name"] for y in x["artists"]],
+                        "artists": self.get_artists_for_spotify_track(x),
                         "id": x["id"],
                         "uri": x["uri"],
                         "image": x["album"]["images"][0]["url"],
@@ -838,7 +846,7 @@ class SpotifyPlayer(Player):
                     {
                         "type": x["type"],
                         "name": x["name"],
-                        "artists": [y["name"] for y in x["artists"]],
+                        "artists": self.get_artists_for_spotify_track(x),
                         "id": x["id"],
                         "uri": x["uri"],
                         "image": x["images"][0]["url"],
@@ -916,7 +924,11 @@ class SpotifyTrack(models.Model):
             obj.track_name = spotify_data["name"]
             updated = True
 
-        artists = [SpotifyArtist.get_or_create_from_spotify(x) for x in spotify_data["artists"]]
+        artists = (
+            [SpotifyArtist.get_or_create_from_spotify(x) for x in spotify_data["artists"]]
+            if "artists" in spotify_data.keys()
+            else []
+        )
 
         if set(obj.track_artists.all()) != set(artists):
             [obj.track_artists.add(x) for x in artists]
