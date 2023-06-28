@@ -11,6 +11,7 @@ class QrCodeReader {
         };
         return this;
     }
+
     decodeImage(inputImageWrapper) {
         const data = inputImageWrapper.getAsRGBA();
         const result = jsQR(data, inputImageWrapper.size.x, inputImageWrapper.size.y);
@@ -22,7 +23,13 @@ class QrCodeReader {
                 codeResult: {
                     code: result.data,
                     format: this.FORMAT.value,
-                }
+                },
+                box: [
+                    [result.location.bottomLeftCorner.x, result.location.bottomLeftCorner.y],
+                    [result.location.topLeftCorner.x, result.location.topLeftCorner.y],
+                    [result.location.topRightCorner.x, result.location.topRightCorner.y],
+                    [result.location.bottomRightCorner.x, result.location.bottomRightCorner.y],
+                ],
             }, result);
         }
     }
@@ -83,21 +90,19 @@ function start_scanner() {
             drawingCanvas = Quagga.canvas.dom.overlay;
 
         if (result) {
-            console.log(result);
-            if (result.boxes) {
-                drawingCtx.clearRect(0, 0, parseInt(drawingCanvas.getAttribute("width")), parseInt(drawingCanvas.getAttribute("height")));
-                result.boxes.filter(function (box) {
-                    return box !== result.box;
-                }).forEach(function (box) {
-                    Quagga.ImageDebug.drawPath(box, {x: 0, y: 1}, drawingCtx, {color: "green", lineWidth: 2});
-                });
+            let color;
+            if (result.codeResult && result.codeResult.format === "qr_code") {
+                color = 'green';
+            } else {
+                color = '#00F';
             }
 
             if (result.box) {
-                Quagga.ImageDebug.drawPath(result.box, {x: 0, y: 1}, drawingCtx, {color: "#00F", lineWidth: 2});
+                drawingCtx.clearRect(0, 0, parseInt(drawingCanvas.getAttribute("width")), parseInt(drawingCanvas.getAttribute("height")));
+                Quagga.ImageDebug.drawPath(result.box, {x: 0, y: 1}, drawingCtx, {color: color, lineWidth: 2});
             }
 
-            if (result.codeResult && result.codeResult.code) {
+            if (result.codeResult && result.codeResult.code && result.line) {
                 Quagga.ImageDebug.drawPath(result.line, {x: 'x', y: 'y'}, drawingCtx, {color: 'red', lineWidth: 3});
             }
         }
