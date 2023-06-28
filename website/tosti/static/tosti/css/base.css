@@ -220,3 +220,16 @@ a:hover {
 .modal .form-text {
     color: unset;
 }
+
+/* QR button header, menu button header. */
+.qr-button button, .hamburger-menu-button {
+    padding: 10px 10px 7px 10px;
+    background-color: var(--primary-shade);
+    border-color: var(--primary-shade);
+    color: var(--primary-contrast);
+}
+
+.qr-button button:hover, .hamburger-menu-button:hover, .qr-button button:focus, .hamburger-menu-button:focus {
+    background-color: var(--primary-shade-hover);
+    border-color: var(--primary-shade-hover);
+}

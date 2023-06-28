@@ -1,4 +1,39 @@
 let scanned_codes = [];
+class QrCodeReader {
+    constructor(config, supplements) {
+        // Quagga may have a dependency on the name of the property _row
+        this._row = [];
+        this.config = config || {};
+        this.supplements = supplements;
+        this.FORMAT = {
+            value: 'qr_code',
+            writeable: false,
+        };
+        return this;
+    }
+    decodeImage(inputImageWrapper) {
+        const data = inputImageWrapper.getAsRGBA();
+        const result = jsQR(data, inputImageWrapper.size.x, inputImageWrapper.size.y);
+
+        if (result === null) {
+            return null;
+        } else {
+            return Object.assign({
+                codeResult: {
+                    code: result.data,
+                    format: this.FORMAT.value,
+                }
+            }, result);
+        }
+    }
+    decodePattern(pattern) {
+        // STUB, this is probably meaningless to QR, but needs to be implemented for Quagga, in case
+        // it thinks there's a potential barcode in the image
+        return null;
+    }
+}
+
+Quagga.registerReader('qrcode', QrCodeReader);
 
 function start_scanner() {
     Quagga.init({
@@ -15,7 +50,8 @@ function start_scanner() {
         decoder: {
             readers: [
                 "ean_reader",
-                "ean_8_reader"
+                "ean_8_reader",
+                "qrcode"
             ],
             debug: {
                 showCanvas: true,
@@ -47,6 +83,7 @@ function start_scanner() {
             drawingCanvas = Quagga.canvas.dom.overlay;
 
         if (result) {
+            console.log(result);
             if (result.boxes) {
                 drawingCtx.clearRect(0, 0, parseInt(drawingCanvas.getAttribute("width")), parseInt(drawingCanvas.getAttribute("height")));
                 result.boxes.filter(function (box) {
