@@ -11,7 +11,7 @@ User = get_user_model()
 class Account(models.Model):
     """Financial account of a user."""
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.PROTECT)
     created_at = models.DateTimeField(auto_now_add=True)
 
     @property
@@ -40,9 +40,7 @@ class Transaction(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
-    account = models.ForeignKey(
-        Account, on_delete=models.SET_NULL, null=True, blank=False, related_name="transactions"
-    )
+    account = models.ForeignKey(Account, on_delete=models.PROTECT, null=True, blank=False, related_name="transactions")
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     timestamp = models.DateTimeField(auto_now_add=True, editable=False)
 
