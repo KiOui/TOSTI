@@ -54,10 +54,19 @@
                     <a class="navbar-brand drop-out-header-mobile" href="/"><img
                             src="{% static 'tosti/svg/TOSTI-logo.svg' %}" height="80"/></a>
                 </div>
-                <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="offcanvas"
+                <div class="ms-auto d-lg-none d-flex justify-content-end">
+                    <button class="btn btn-primary hamburger-menu-button" type="button" data-bs-toggle="offcanvas"
                         data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+                        <i class="fa-solid fa-bars fa-xl"></i>
+                    </button>
+                    {% if user.is_authenticated %}
+                        <div class="align-items-center qr-button ms-2">
+                            <button class="btn" data-bs-toggle="modal" data-bs-target="#qr-popup">
+                                <i class="fa-solid fa-qrcode fa-xl"></i>
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
                 <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar"
                      aria-labelledby="offcanvasNavbarLabel">
                     <div class="offcanvas-header" style="background-color: var(--nav-background-color);">
@@ -138,12 +147,31 @@
                                         </a>
                                     </div>
                                 </li>
+                                <li class="nav-item d-none d-lg-flex align-items-center qr-button">
+                                    <button class="btn" data-bs-toggle="modal" data-bs-target="#qr-popup">
+                                        <i class="fa-solid fa-qrcode fa-xl"></i>
+                                    </button>
+                                </li>
                             {% endif %}
                         </ul>
                     </div>
                 </div>
             </div>
         </nav>
+        <div class="modal" id="qr-popup">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header fs-2">
+                        Identify yourself
+                    </div>
+                    <div class="modal-body">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     {% endblock %}
     <div class="page">
         {% block page %}{% endblock %}
