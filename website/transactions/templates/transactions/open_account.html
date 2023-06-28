@@ -1,0 +1,11 @@
+{% load static django_bootstrap5 %}
+
+<h2>Transactions</h2>
+<p>Open an account at TOSTI to make and receive transactions.</p>
+<div class="d-flex flex-column justify-content-center align-items-center">
+    <form method="POST">
+        {% csrf_token %}
+        <input name="active" type="hidden" value="transactions"/>
+        {% bootstrap_button button_type="submit" content="Open account" extra_classes="w-100" %}
+    </form>
+</div>
