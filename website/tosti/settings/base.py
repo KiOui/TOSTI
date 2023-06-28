@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     "associations",
     "borrel",
     "thaliedje",
+    "transactions",
     "orders",
     "silvasoft",
     "oauth2_provider",
