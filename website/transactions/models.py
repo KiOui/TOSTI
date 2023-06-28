@@ -4,7 +4,6 @@ from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models, IntegrityError
-from django.utils import timezone
 
 User = get_user_model()
 
@@ -66,9 +65,24 @@ class Transaction(models.Model):
 
     def save(self, *args, **kwargs):
         """Save the transaction maintaining integrity of the account history."""
+        if not self._state.adding:
+            old_obj = Transaction.objects.get(pk=self.pk)
+            if (
+                old_obj.account != self.account
+                or old_obj.amount != self.amount
+                or old_obj.timestamp != self.timestamp
+                or old_obj._balance_after != self._balance_after
+                or old_obj._previous_transaction != self._previous_transaction
+            ):
+                # These fields should be immutable
+                raise IntegrityError("Transaction integrity is not maintained")
+
+            # If the transaction already exists, we can skip the integrity checks
+            # This avoids our model from breaking when the history would become inconsistent for some reason
+            return super().save(*args, **kwargs)
+
         # Calculate what the values of balance_after and previous_transaction should be
-        self.timestamp = self.timestamp or timezone.now()
-        previous_transaction = self.account.transactions.filter(timestamp__lt=self.timestamp).last()
+        previous_transaction = self.account.transactions.last()
         if previous_transaction:
             balance_after = previous_transaction._balance_after + self.amount
         else:
@@ -111,14 +125,6 @@ class Transaction(models.Model):
             return self._previous_transaction
         except Transaction.DoesNotExist:
             return None
-
-    def delete(self, *args, **kwargs):
-        """Delete a transaction and also delete all previous transactions as well, to maintain consistency."""
-        if self.next_transaction and self.previous_transaction:
-            super().delete(*args, **kwargs)
-            self.previous_transaction.delete()
-        else:
-            super().delete(*args, **kwargs)
 
     class Meta:
         """Meta options for the transaction model."""

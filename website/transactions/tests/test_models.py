@@ -112,9 +112,10 @@ class TransactionModelTestCase(TestCase):
 
         self.assertEqual(self.account.balance, 31)
         self.assertEqual(
-            self.account.transactions.count(), 1
-        )  # t2 should now also be deleted, to maintain consistent account history
-        self.assertEqual(self.account.transactions.first(), t5)
+            self.account.transactions.count(), 2
+        )  # t2 still exists, but t3 is gone, so there are only 2 transactions left
+        # Note that our history is now broken, but the balance is still correct
+        self.assertEqual(self.account.transactions.first(), t2)
         self.assertEqual(self.account.transactions.last(), t5)
         self.assertEqual(t5._previous_transaction, None)
         self.assertEqual(t5._balance_after, 31)
@@ -141,3 +142,12 @@ class TransactionModelTestCase(TestCase):
             self.account.transactions.create(
                 amount=7, description="test", transaction_type="test", processor=self.user, _balance_after=20
             )
+
+    def test_alter_transaction(self):
+        """Test altering a transaction."""
+        t1 = self.account.transactions.create(
+            amount=10, description="test", transaction_type="test", processor=self.user
+        )
+        t1.amount = 7
+        with self.assertRaises(IntegrityError):
+            t1.save()
