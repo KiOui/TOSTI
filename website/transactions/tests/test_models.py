@@ -19,9 +19,7 @@ class TransactionModelTestCase(TestCase):
     def test_create_transaction(self):
         """Test creating a chain of transactions."""
         # Create a first transaction
-        t1 = self.account.transactions.create(
-            amount=10, description="test", transaction_type="test", processor=self.user
-        )
+        t1 = self.account.transactions.create(amount=10, description="test", processor=self.user)
         self.assertEqual(self.account.transactions.last(), t1)
         self.assertEqual(self.account.balance, 10)
         self.assertEqual(self.account.transactions.count(), 1)
@@ -29,9 +27,7 @@ class TransactionModelTestCase(TestCase):
         self.assertEqual(t1._previous_transaction, None)
 
         # Create a second transaction, this should link to the first one
-        t2 = self.account.transactions.create(
-            amount=5, description="test", transaction_type="test", processor=self.user
-        )
+        t2 = self.account.transactions.create(amount=5, description="test", processor=self.user)
         self.account.refresh_from_db()
 
         self.assertEqual(self.account.transactions.last(), t2)
@@ -41,9 +37,7 @@ class TransactionModelTestCase(TestCase):
         self.assertEqual(t2._previous_transaction, t1)
 
         # Create a third transaction, this should link to the second one
-        t3 = self.account.transactions.create(
-            amount=7, description="test", transaction_type="test", processor=self.user
-        )
+        t3 = self.account.transactions.create(amount=7, description="test", processor=self.user)
         self.account.refresh_from_db()
 
         self.assertEqual(self.account.transactions.last(), t3)
@@ -73,9 +67,7 @@ class TransactionModelTestCase(TestCase):
         self.assertEqual(self.account.transactions.last(), t3)
 
         # Now create yet another transaction, this should link to the last one
-        t4 = self.account.transactions.create(
-            amount=2, description="test", transaction_type="test", processor=self.user
-        )
+        t4 = self.account.transactions.create(amount=2, description="test", processor=self.user)
         self.account.refresh_from_db()
 
         self.assertEqual(self.account.balance, 24)
@@ -90,9 +82,7 @@ class TransactionModelTestCase(TestCase):
         self.assertEqual(self.account.balance, 22)
         self.assertEqual(self.account.transactions.count(), 2)
 
-        t5 = self.account.transactions.create(
-            amount=9, description="test", transaction_type="test", processor=self.user
-        )
+        t5 = self.account.transactions.create(amount=9, description="test", processor=self.user)
         self.account.refresh_from_db()
 
         self.assertEqual(self.account.balance, 31)
@@ -123,31 +113,25 @@ class TransactionModelTestCase(TestCase):
 
     def test_create_invalid_history_transaction(self):
         """Test creating a transaction with an invalid history."""
-        t1 = self.account.transactions.create(
-            amount=10, description="test", transaction_type="test", processor=self.user
-        )
-        self.account.transactions.create(amount=5, description="test", transaction_type="test", processor=self.user)
+        t1 = self.account.transactions.create(amount=10, description="test", processor=self.user)
+        self.account.transactions.create(amount=5, description="test", processor=self.user)
 
         with self.assertRaises(IntegrityError):
             self.account.transactions.create(
-                amount=7, description="test", transaction_type="test", processor=self.user, _previous_transaction=t1
+                amount=7, description="test", processor=self.user, _previous_transaction=t1
             )
 
     def test_create_invalid_balance_transaction(self):
         """Test creating a transaction with an invalid balance."""
-        self.account.transactions.create(amount=10, description="test", transaction_type="test", processor=self.user)
-        self.account.transactions.create(amount=5, description="test", transaction_type="test", processor=self.user)
+        self.account.transactions.create(amount=10, description="test", processor=self.user)
+        self.account.transactions.create(amount=5, description="test", processor=self.user)
 
         with self.assertRaises(IntegrityError):
-            self.account.transactions.create(
-                amount=7, description="test", transaction_type="test", processor=self.user, _balance_after=20
-            )
+            self.account.transactions.create(amount=7, description="test", processor=self.user, _balance_after=20)
 
     def test_alter_transaction(self):
         """Test altering a transaction."""
-        t1 = self.account.transactions.create(
-            amount=10, description="test", transaction_type="test", processor=self.user
-        )
+        t1 = self.account.transactions.create(amount=10, description="test", processor=self.user)
         t1.amount = 7
         with self.assertRaises(IntegrityError):
             t1.save()

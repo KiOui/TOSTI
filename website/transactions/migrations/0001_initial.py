@@ -40,7 +40,6 @@ class Migration(migrations.Migration):
                 ("amount", models.DecimalField(decimal_places=2, max_digits=10)),
                 ("timestamp", models.DateTimeField(auto_now_add=True)),
                 ("description", models.CharField(max_length=255)),
-                ("transaction_type", models.CharField(max_length=255)),
                 ("payable_object_id", models.CharField(blank=True, max_length=255, null=True)),
                 ("_balance_after", models.DecimalField(decimal_places=2, editable=False, max_digits=10)),
                 (

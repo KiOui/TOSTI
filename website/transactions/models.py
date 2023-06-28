@@ -47,7 +47,6 @@ class Transaction(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True, editable=False)
 
     description = models.CharField(max_length=255)
-    transaction_type = models.CharField(max_length=255)
     processor = models.ForeignKey(
         User, on_delete=models.SET_NULL, null=True, blank=False, related_name="transactions_processed"
     )
