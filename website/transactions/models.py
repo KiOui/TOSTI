@@ -53,8 +53,8 @@ class Transaction(models.Model):
         User, on_delete=models.SET_NULL, null=True, blank=False, related_name="transactions_processed"
     )
 
-    payable_content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True, blank=True)
-    payable_object_id = models.PositiveIntegerField(null=True, blank=True)
+    payable_content_type = models.ForeignKey(ContentType, on_delete=models.SET_NULL, null=True, blank=True)
+    payable_object_id = models.CharField(max_length=255, null=True, blank=True)
     payable_object = GenericForeignKey("payable_content_type", "payable_object_id")
 
     # The following fields are used to link transactions together and maintain the integrity of the account
