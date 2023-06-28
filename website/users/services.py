@@ -1,9 +1,34 @@
 from datetime import timedelta
 
 from django.contrib.auth import get_user_model
+from django.core.signing import TimestampSigner
 from django.utils import timezone
 
 User = get_user_model()
+
+
+def get_identification_token(user):
+    """Get the identification token for a user."""
+    signer = TimestampSigner()
+    token = signer.sign(user.username)
+    return token
+
+
+def get_user_from_identification_token(token, max_age=timedelta(seconds=20)):
+    """
+    Get the user from an identification token.
+
+    :param token: identification token
+    :param max_age: maximum age of the token (in seconds or timedelta, default 20 seconds)
+    :return: the user
+    :raises SignatureExpired: if the token is expired
+    :raises BadSignature: if the token is invalid
+    :raises User.DoesNotExist: if the user does not exist
+    """
+    signer = TimestampSigner()
+    username = signer.unsign(token, max_age=max_age)
+    user = User.objects.get(username=username)
+    return user
 
 
 def update_staff_status(user):
