@@ -11,6 +11,7 @@ urlpatterns = [
     path("venues/", include("venues.api.v1.urls")),
     path("associations/", include("associations.api.v1.urls")),
     path("users/", include("users.api.v1.urls")),
+    path("fridges/", include("fridges.api.v1.urls")),
     path(
         "schema",
         get_schema_view(

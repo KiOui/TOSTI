@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "silvasoft",
     "oauth2_provider",
     "corsheaders",
+    "fridges",
 ]
 
 AUTH_USER_MODEL = 'users.User'
