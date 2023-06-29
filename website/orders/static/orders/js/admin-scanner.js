@@ -109,12 +109,28 @@ function start_scanner() {
     });
 
 
-    Quagga.onDetected(add_product_from_barcode);
+    Quagga.onDetected(detected_qr_code_or_barcode);
 }
 
 function stop_scanner() {
     scanned_codes = [];
     Quagga.stop();
+}
+
+function detected_qr_code_or_barcode(result) {
+    if (!result.codeResult) {
+        return;
+    }
+
+    if (result.codeResult.format === "qr_code") {
+        return scan_qr_code(result);
+    } else {
+        return add_product_from_barcode(result);
+    }
+}
+
+function scan_qr_code(result) {
+
 }
 
 function add_product_from_barcode(result) {
