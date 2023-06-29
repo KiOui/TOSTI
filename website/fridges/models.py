@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from django.db import models
+from oauth2_provider.models import Application
 
 
 class Fridge(models.Model):
@@ -17,6 +18,14 @@ class Fridge(models.Model):
     )
     unlock_for_how_long = models.DurationField(
         default=timedelta(minutes=1), help_text="How long to unlock the fridge for by default (HH:MM:SS)."
+    )
+
+    oauth_client = models.ForeignKey(
+        Application,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        help_text="The OAuth2 client to use for opening the fridge. If left blank, any client will be accepted.",
     )
 
     def __str__(self):

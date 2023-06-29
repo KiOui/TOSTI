@@ -17,7 +17,7 @@ class FridgeUnlockAPIView(ClientProtectedResourceMixin, APIView):
         Unlock a fridge.
         """
 
-        if "fridge" not in request.auth.application.name.lower():
+        if fridge.oauth_client is not None and fridge.oauth_client != request.auth.application:
             return Response(
                 {"detail": "Invalid application"},
                 status=status.HTTP_400_BAD_REQUEST,

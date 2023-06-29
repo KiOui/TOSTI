@@ -159,6 +159,7 @@ OAUTH2_PROVIDER = {
         "thaliedje:manage": "Manage music players on your behalf",
     },
 }
+OAUTH2_PROVIDER_APPLICATION_MODEL = 'oauth2_provider.Application'
 
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
