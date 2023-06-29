@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.core.signing import SignatureExpired, BadSignature
+from oauth2_provider.views.mixins import ClientProtectedResourceMixin
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -10,11 +11,17 @@ from users.services import get_user_from_identification_token
 User = get_user_model()
 
 
-class FridgeUnlockAPIView(APIView):
+class FridgeUnlockAPIView(ClientProtectedResourceMixin, APIView):
     def post(self, request, fridge):
         """
         Unlock a fridge.
         """
+
+        if "fridge" not in request.auth.application.name.lower():
+            return Response(
+                {"detail": "Invalid application"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         user_token = request.data.get("user_token", None)
         if user_token is None:
