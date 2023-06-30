@@ -12,15 +12,16 @@ User = get_user_model()
 
 
 class FridgeUnlockAPIView(ClientProtectedResourceMixin, APIView):
-    def post(self, request, fridge):
+    def post(self, request, *args, **kwargs):
         """
-        Unlock a fridge.
+        Process a request to unlock.
         """
+        fridge_candidates = request.auth.application.fridges.all()
 
-        if fridge.oauth_client is not None and fridge.oauth_client != request.auth.application:
+        if fridge_candidates.count() == 0:
             return Response(
-                {"detail": "Invalid application"},
-                status=status.HTTP_400_BAD_REQUEST,
+                {"detail": "No fridges available"},
+                status=status.HTTP_401_UNAUTHORIZED,
             )
 
         user_token = request.data.get("user_token", None)
@@ -38,17 +39,14 @@ class FridgeUnlockAPIView(ClientProtectedResourceMixin, APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        user_can_open, how_long = user_can_open_fridge(user, fridge)
-
-        if not user_can_open:
-            return Response(
-                {"detail": "User cannot open fridge"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        log_access(user, fridge)
+        response = []
+        for fridge in fridge_candidates:
+            user_can_open, how_long = user_can_open_fridge(user, fridge)
+            if user_can_open:
+                log_access(user, fridge)
+                response.append({"fridge": fridge.slug, "unlock_for": how_long})
 
         return Response(
-            {"user": user.username, "unlock_for": how_long},
+            {"user": user.username, "unlock": response},
             status=status.HTTP_200_OK,
         )

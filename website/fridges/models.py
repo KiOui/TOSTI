@@ -23,9 +23,8 @@ class Fridge(models.Model):
     oauth_client = models.ForeignKey(
         Application,
         on_delete=models.PROTECT,
-        null=True,
-        blank=True,
-        help_text="The OAuth2 client to use for opening the fridge. If left blank, any client will be accepted.",
+        help_text="The OAuth2 client that may request opening the fridge.",
+        related_name="fridges",
     )
 
     def __str__(self):
