@@ -46,6 +46,10 @@ urlpatterns = [
         "thaliedje/",
         include(("thaliedje.urls", "thaliedje"), namespace="thaliedje"),
     ),
+    path(
+        "fridges/",
+        include(("fridges.urls", "fridges"), namespace="fridges"),
+    ),
     path("api/", include("tosti.api.urls")),
     path("saml/", include("djangosaml2.urls")),
     path(

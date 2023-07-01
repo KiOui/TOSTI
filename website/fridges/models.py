@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from django.db import models
+from django.utils import timezone
 from oauth2_provider.models import Application
 
 
@@ -45,6 +46,42 @@ class Fridge(models.Model):
             return self.accesslog_set.latest().user
         except AccessLog.DoesNotExist:
             return None
+
+    @property
+    def current_opening_hours(self):
+        current_time = timezone.now().astimezone()
+        weekday = current_time.weekday()
+        opening_hours = self.generalopeninghours_set.filter(
+            weekday=weekday, start_time__lte=current_time.time(), end_time__gte=current_time.time()
+        )
+        return opening_hours
+
+    @property
+    def can_be_opened(self):
+        return self.current_opening_hours.filter(
+            restrict_to_groups__isnull=True,
+        ).exists()
+
+    def opens_today_at(self):
+        """Return the time the fridge opens today, or None if it doesn't open today."""
+        current_time = timezone.now().astimezone()
+
+        if self.can_be_opened:
+            return current_time.time()
+
+        next_opening_times_today = (
+            self.generalopeninghours_set.filter(
+                weekday=current_time.weekday(),
+                start_time__gte=current_time.time(),
+                restrict_to_groups__isnull=True,
+            )
+            .order_by("start_time")
+            .first()
+        )
+
+        if next_opening_times_today:
+            return next_opening_times_today.start_time
+        return None
 
     class Meta:
         verbose_name = "fridge"

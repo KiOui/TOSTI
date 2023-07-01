@@ -1,7 +1,4 @@
-from datetime import timedelta
-
 from django.db.models import Q
-from django.utils import timezone
 
 from fridges.models import AccessLog
 
@@ -22,11 +19,8 @@ def user_can_open_fridge(user, fridge):
     if user_is_blacklisted(user, fridge):
         return False, None
 
-    current_time = timezone.now()
-    weekday = current_time.weekday()
-    opening_hours = fridge.generalopeninghours_set.filter(
-        weekday=weekday, start_time__lte=current_time.time(), end_time__gte=current_time.time()
-    )
+    opening_hours = fridge.current_opening_hours
+
     if not opening_hours.exists():
         return False, None
 
