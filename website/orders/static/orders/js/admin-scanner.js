@@ -130,7 +130,44 @@ function detected_qr_code_or_barcode(result) {
 }
 
 function scan_qr_code(result) {
-
+    let qrcode = result.codeResult.code;
+    if (!scanned_codes.includes(qrcode)) {
+        scanned_codes.push(qrcode);
+        fetch(
+            TRANSACTION_USER_DATA_URL,
+            {
+                method: 'POST',
+                body: JSON.stringify({
+                    'csrfmiddlewaretoken': get_csrf_token(),
+                    'token': qrcode,
+                }),
+                headers: {
+                    "X-CSRFToken": get_csrf_token(),
+                    "Accept": 'application/json',
+                    "Content-Type": 'application/json',
+                }
+            }
+        ).then(response => {
+            if (response.status === 200) {
+                return response.json();
+            } else {
+                throw response;
+            }
+        }).then(data => {
+            console.log(data);
+        }).catch(error => {
+            if (error.status === 404) {
+                tata.error("", "The user was identified but does not have an open account yet. Please first open an account and then scan the QR code again.")
+            } else {
+                tata.error("", "The QR code is not valid (anymore), please scan a new QR code.")
+            }
+        }).finally(() => {
+            Quagga.stop();
+            scanned_codes = [];
+            let modal = bootstrap.Modal.getInstance(document.getElementById(POPUP_MODAL_ID));
+            modal.hide();
+        });
+    }
 }
 
 function add_product_from_barcode(result) {

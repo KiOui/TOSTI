@@ -1,7 +1,7 @@
 from datetime import timedelta
 
 from django.contrib.auth import get_user_model
-from django.core.signing import TimestampSigner
+from django.core.signing import TimestampSigner, SignatureExpired, BadSignature
 from django.utils import timezone
 
 User = get_user_model()
@@ -12,6 +12,17 @@ def get_identification_token(user):
     signer = TimestampSigner()
     token = signer.sign(user.username)
     return token
+
+
+def verify_identification_token(token: str, max_age=900) -> (bool, str):
+    """Verify an identification token."""
+    signer = TimestampSigner()
+    try:
+        return True, signer.unsign(token, max_age=max_age)
+    except SignatureExpired:
+        return False, None
+    except BadSignature:
+        return False, None
 
 
 def get_user_from_identification_token(token, max_age=timedelta(seconds=20)):

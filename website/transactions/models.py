@@ -15,7 +15,7 @@ class Account(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     @property
-    def balance(self):
+    def balance(self) -> float:
         """Return the balance of the account."""
         last_transaction = self.transactions.last()
         if last_transaction:

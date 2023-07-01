@@ -41,6 +41,7 @@
 
 <script>
     const SCANNER_DATA_URL = "{% url 'v1:shifts_scanner' shift=shift %}";
+    const TRANSACTION_USER_DATA_URL = "{% url 'v1:account_retrieve' %}";
 </script>
 <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
 <script src="{% static "orders/js/jsQR.min.js" %}"></script>
