@@ -6,19 +6,19 @@ from announcements.models import Announcement
 
 def sanitize_closed_announcements(closed_announcements) -> list:
     """Convert a cookie (closed_announcements) to a list of id's of closed announcements."""
-    if closed_announcements is None or type(closed_announcements) != str:
+    if closed_announcements is None or not isinstance(closed_announcements, str):
         return []
     try:
         closed_announcements_list = json.loads(urllib.parse.unquote(closed_announcements))
     except json.JSONDecodeError:
         return []
 
-    if type(closed_announcements_list) != list:
+    if not isinstance(closed_announcements_list, list):
         return []
 
     closed_announcements_list_ints = []
     for closed_announcement in closed_announcements_list:
-        if type(closed_announcement) == int:
+        if isinstance(closed_announcement, int):
             closed_announcements_list_ints.append(closed_announcement)
     return closed_announcements_list_ints
 
