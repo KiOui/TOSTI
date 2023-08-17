@@ -333,7 +333,7 @@ class PlayerShuffleAPIView(APIView):
         if state is None:
             raise ValidationError("A state is required.")
 
-        if type(state) != bool:
+        if not isinstance(state, bool):
             raise ValidationError("The state parameter should be a boolean.")
 
         try:

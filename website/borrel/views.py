@@ -104,7 +104,7 @@ class BorrelReservationBaseView(FormView):
         # objects. This is not required for the extra_forms, as those are already
         # initialized with full objects by `_initialize_forms()`
         for form in formset.forms:
-            if type(form.initial["product"]) == int:
+            if isinstance(form.initial["product"], int):
                 form.initial["product"] = Product.objects.get(id=form.initial["product"])
 
         # Do the actual sorting

@@ -27,7 +27,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
     def to_internal_value(self, data):
         """Convert a single integer (primary key) to a Product."""
-        if type(data) == int:
+        if isinstance(data, int):
             try:
                 return Product.objects.get(id=data)
             except Product.DoesNotExist:
