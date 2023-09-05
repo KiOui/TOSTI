@@ -30,7 +30,7 @@ class AccountRetrieveAPIView(CreateAPIView):
         if token is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        valid, signed_material = verify_identification_token(token, 900000)
+        valid, signed_material = verify_identification_token(token)
         if not valid:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         try:
