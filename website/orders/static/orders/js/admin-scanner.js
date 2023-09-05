@@ -154,7 +154,9 @@ function scan_qr_code(result) {
                 throw response;
             }
         }).then(data => {
-            console.log(data);
+            transaction_vue.user = data;
+            const modal = new bootstrap.Modal(document.getElementById(TRANSACTION_POPUP_MODAL_ID));
+            modal.show();
         }).catch(error => {
             if (error.status === 404) {
                 tata.error("", "The user was identified but does not have an open account yet. Please first open an account and then scan the QR code again.")

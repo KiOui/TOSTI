@@ -15,7 +15,7 @@
                     >
                         <span :class="{ invisible: addingOrder }"><i v-if="product.icon !== null" :class="`fa-solid fa-${product.icon} me-2`"></i></span>
                         <span :class="{ invisible: addingOrder }">Order <% product.name %></span>
-                        <span class="small" :class="{ invisible: addingOrder }"><% format_price(product.current_price) %></span>
+                        <span class="small" :class="{ invisible: addingOrder }"><% formatPrice(product.current_price) %></span>
                     </button>
                     <div class="card-footer rounded-bottom text-center"
                          v-if="orders.length >= shift.max_orders_total || user_orders_with_shift_restrictions.length >= shift.max_orders_per_user && !product.ignore_shift_restrictions || product.max_allowed_per_shift !== null && user_orders_with_product_id(product.id).length >= product.max_allowed_per_shift"
@@ -48,7 +48,7 @@
             <li v-for="(order, index) of orders" :key="`orderlist_order_${order.id}`" class="pt-2 pb-2 item-list" :class="{ 'user-order-background': (order.user !== null && {{ user.id }} === order.user.id)}">
                 <div class="information-row">
                     <p class="item-counter"><% index + 1 %>.</p>
-                    <p class="item-name"><% order.product.name %> (<% format_price(order.order_price) %>)</p>
+                    <p class="item-name"><% order.product.name %> (<% formatPrice(order.order_price) %>)</p>
                     <i v-if="order.product.icon !== null" :class="`fa-solid fa-${order.product.icon} item-icon`"></i>
                     <div>
                         <span v-if="!order.paid && order.user !== null && {{ user.id }} === order.user.id" class="badge rounded-pill bg-danger" style="max-height: fit-content;">Not paid</span>
@@ -146,13 +146,6 @@
              },
          },
         methods: {
-            format_price(priceToFormat) {
-                return new Intl.NumberFormat('nl-NL', {
-                    style: 'currency',
-                    currency: 'EUR',
-                    currencyDisplay: "symbol"
-                }).format(priceToFormat).trim();
-            },
             refresh() {
                 return Promise.all([
                     fetch('{% url "v1:product_list" shift=shift %}?orderable=true&available=true')

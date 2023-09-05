@@ -148,5 +148,13 @@ function visibilityChange(event) {
     }
 }
 
+function formatPrice(priceToFormat) {
+    return new Intl.NumberFormat('nl-NL', {
+        style: 'currency',
+        currency: 'EUR',
+        currencyDisplay: "symbol"
+    }).format(priceToFormat).trim();
+}
+
 update_refresh_list();
 document.addEventListener("visibilitychange", visibilityChange);

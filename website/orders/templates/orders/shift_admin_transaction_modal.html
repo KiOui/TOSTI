@@ -5,30 +5,42 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header" style="border-bottom: 0">
-                    <input v-model="search_input" type="text" placeholder="Search for a product" class="container-fluid form-control form-control-lg" id="product-search"/>
+                    <h2 class="mb-0">Transaction administration</h2>
                 </div>
-                <div class="modal-body search-list py-0"  id="results">
-                    <div class="row">
-                        <template v-if="search_input !== ''">
-                            <div v-if="search_results.length > 0" class="py-3" id="search-results">
-                                <div v-for="product in search_results" class="search-item pb-2">
-                                    <p class="search-item-name"><% product.name %></p>
-                                    <p class="search-item-price"><% format_price(product.current_price) %></p>
-                                    <input type="button" class="btn btn-success" v-on:click="add_order(product)" value="Add"/>
-                                </div>
+                <div class="modal-body">
+                    <template v-if="user !== null && balance !== null">
+                        <p class="mb-0">User: <% user.display_name %><br>
+                            Current balance: <span v-if="balance < 0" class="text-danger"><% formatPrice(balance) %></span>
+                            <span v-else><% formatPrice(balance) %></span>
+                        </p>
+                        <hr>
+                        <h3>Add a transaction</h3>
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-center align-items-center w-100">
+                                <button v-on:click="addTransactionAmount(-0.15)" class="btn btn-danger flex-grow-1 m-1">- <% formatPrice(0.15) %></button>
+                                <button v-on:click="addTransactionAmount(0.15)" class="btn btn-success flex-grow-1 m-1">+ <% formatPrice(0.15) %></button>
                             </div>
-                            <div v-else id="search-results" class="py-3">
-                                <div class="search-item">
-                                    <p class="search-item-name">No products found</p>
-                                </div>
+                            <div class="d-flex justify-content-center align-items-center w-100">
+                                <button v-on:click="addTransactionAmount(-1)" class="btn btn-danger flex-grow-1 m-1">- <% formatPrice(1) %></button>
+                                <button v-on:click="addTransactionAmount(1)" class="btn btn-success flex-grow-1 m-1">+ <% formatPrice(1) %></button>
                             </div>
-                        </template>
-                    </div>
-                </div>
-                <div class="modal-body d-flex justify-content-center p-0">
-                    <div id="scanner"></div>
+                        </div>
+                        <label for="transaction-amount">
+                            Transaction amount
+                        </label>
+                        <input v-model="transactionAmount" type="number" id="transaction-amount" class="container-fluid form-control form-control-lg mb-2" step=".01"/>
+                        <button v-if="loading" class="w-100 btn btn-primary disabled">Add transaction <span class="loader"></span></button>
+                        <button v-else-if="transactionAmount === 0 || (transactionAmount < 0 && transactionAmount * -1 > balance)" class="w-100 btn btn-primary disabled">Add transaction</button>
+                        <button v-else v-on:click="addTransaction" class="w-100 btn btn-primary">Add transaction</button>
+                    </template>
+                    <template v-else>
+                        <p class="alert alert-danger">
+                            An error occurred while loading the user, please reload this page.
+                        </p>
+                    </template>
                 </div>
                 <div class="modal-footer" style="border-top: 0">
+                    <button v-on:click="goBack()" type="button" class="btn btn-primary me-auto">Back</button>
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -37,31 +49,71 @@
 </div>
 
 <script>
+    const TRANSACTION_POPUP_MODAL_ID = "transaction-popup";
     let transaction_vue = new Vue({
         el: '#transaction-wrapper-{{ shift.id }}',
         delimiters: ['<%', '%>'],
         data: {
-            orders: [],
-            search_results: [],
-            search_input: "",
-            typing_timer: null,
-            user: {},
-        },
-        watch: {
-            search_input: {
-                handler(val, oldVal) {
-                    clearTimeout(this.typing_timer);
-                    if (this.search_input !== "") {
-                        this.typing_timer = setTimeout(this.search, 200);
-                    }
-                }
-            },
+            user: null,
+            balance: null,
+            transactionAmount: 0,
+            loading: false,
         },
         created() {
         },
         mounted() {
         },
         methods: {
+            goBack() {
+                const transactionModal = bootstrap.Modal.getInstance(document.getElementById(TRANSACTION_POPUP_MODAL_ID));
+                transactionModal.hide();
+                const scannerModal = new bootstrap.Modal(document.getElementById(POPUP_MODAL_ID));
+                scannerModal.show();
+            },
+            addTransactionAmount(amount) {
+                this.transactionAmount = +(this.transactionAmount + amount).toFixed(2);
+            },
+            addTransaction() {
+                this.loading = true;
+                if (this.user === null || this.balance === null) {
+                    tata.error("", "Transaction could not be added because user or balance was not loaded correctly, please reload this page.");
+                    this.loading = false;
+                    return;
+                }
+                else if (this.transactionAmount < 0 && this.transactionAmount * -1 > this.balance) {
+                    tata.error("", "Transaction could not be added because user has insufficient balance.");
+                    this.loading = false;
+                    return;
+                }
+                else if (this.transactionAmount === 0) {
+                    tata.error("", "A transaction with amount of 0 can not be added.");
+                    this.loading = false;
+                    return;
+                }
+
+                fetch();
+            }
         }
     });
+
+    // TODO: Remove test data
+    window.onload = function() {
+        const testData = {
+            "user": {
+                "id": 52,
+                "first_name": "",
+                "last_name": "",
+                "full_name": "",
+                "display_name": "lvrhijn",
+                "short_name": "lvrhijn",
+                "association": null
+            },
+            "created_at": "2023-09-05T09:43:40.160417+02:00",
+            "balance": 0
+        };
+        transaction_vue.user = testData.user;
+        transaction_vue.balance = testData.balance;
+        const modal = new bootstrap.Modal(document.getElementById(TRANSACTION_POPUP_MODAL_ID));
+        modal.show();
+    }
 </script>
