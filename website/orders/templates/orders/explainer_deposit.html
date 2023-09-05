@@ -1,0 +1,36 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'orders/css/item-list.css' %}"/>
+<link rel="stylesheet" href="{% static 'orders/css/explainer.css' %}"/>
+
+<div class="container mt-5 mb-5 text-center">
+    <h2>How to hand in deposit or use your balance?</h2>
+    <h6>Get a discount by handing in deposit!</h6>
+</div>
+<p>
+    The canteens sell items that sometimes have a deposit on them (for example, the tin cans with soda). These cans can
+    be handed in at the counter for recycling. If you hand in a used can with deposit, you will receive a balance in
+    T.O.S.T.I. that can be used for discount on future purchases. This guide will show you how to open an account and
+    hand in tin cans to get a discount on your purchases!
+</p>
+<hr>
+<h3><i class="fa-solid fa-piggy-bank"></i><br>1. Open an account</h3>
+<p>
+    Before you can hand in a deposit, you need to open an account in T.O.S.T.I. You can open an account by
+    going to the <a href="{% url 'users:account' %}?active=transactions">"Transactions" tab under the Account view</a>.
+</p>
+<hr>
+<h3><i class="fa-solid fa-cash-register"></i><br>2. Go to the counter</h3>
+<p>
+    You can now go to the counter to either hand in some deposit or use your balance. Tell the person behind the counter
+    what you would like to do.
+</p>
+<hr>
+<h3><i class="fa-solid fa-qrcode"></i><br>3. Open your QR code</h3>
+<p>
+    The person behind the counter can only access your account with a valid QR code. You can open your QR code by
+    clicking the <i class="fa-solid fa-qrcode fa-xl"></i> button in the header.
+</p>
+<p>
+    The person behind the counter will now scan your QR code and process your deposit or discount!
+</p>
