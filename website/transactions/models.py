@@ -11,6 +11,7 @@ User = get_user_model()
 class Account(models.Model):
     """Financial account of a user."""
 
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.OneToOneField(User, on_delete=models.PROTECT)
     created_at = models.DateTimeField(auto_now_add=True)
 

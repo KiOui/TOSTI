@@ -1,5 +1,7 @@
 {% load static %}
 
+<link rel="stylesheet" href="{% static 'orders/css/transaction-popup.css' %}"/>
+
 <div id="transaction-wrapper-{{ shift.id }}">
     <div class="modal" id="transaction-popup">
         <div class="modal-dialog">
@@ -8,30 +10,34 @@
                     <h2 class="mb-0">Transaction administration</h2>
                 </div>
                 <div class="modal-body">
-                    <template v-if="user !== null && balance !== null">
-                        <p class="mb-0">User: <% user.display_name %><br>
-                            Current balance: <span v-if="balance < 0" class="text-danger"><% formatPrice(balance) %></span>
-                            <span v-else><% formatPrice(balance) %></span>
+                    <template v-if="account !== null">
+                        <p class="mb-0">User: <% account.user.display_name %><br>
+                            Current balance: <span :class="{'updated-text': textUpdated}"><% formatPrice(account.balance) %></span>
                         </p>
-                        <hr>
-                        <h3>Add a transaction</h3>
-                        <div class="mb-2">
-                            <div class="d-flex justify-content-center align-items-center w-100">
-                                <button v-on:click="addTransactionAmount(-0.15)" class="btn btn-danger flex-grow-1 m-1">- <% formatPrice(0.15) %></button>
-                                <button v-on:click="addTransactionAmount(0.15)" class="btn btn-success flex-grow-1 m-1">+ <% formatPrice(0.15) %></button>
+                        <template v-if="!transactionAdded">
+                            <hr>
+                            <h3>Add a transaction</h3>
+                            <div class="mb-2">
+                                <div class="d-flex justify-content-center align-items-center w-100">
+                                    <button v-on:click="addTransactionAmount(-0.15)" class="btn btn-danger flex-grow-1 m-1">- <% formatPrice(0.15) %></button>
+                                    <button v-on:click="addTransactionAmount(0.15)" class="btn btn-success flex-grow-1 m-1">+ <% formatPrice(0.15) %></button>
+                                </div>
+                                <div class="d-flex justify-content-center align-items-center w-100">
+                                    <button v-on:click="addTransactionAmount(-1)" class="btn btn-danger flex-grow-1 m-1">- <% formatPrice(1) %></button>
+                                    <button v-on:click="addTransactionAmount(1)" class="btn btn-success flex-grow-1 m-1">+ <% formatPrice(1) %></button>
+                                </div>
                             </div>
-                            <div class="d-flex justify-content-center align-items-center w-100">
-                                <button v-on:click="addTransactionAmount(-1)" class="btn btn-danger flex-grow-1 m-1">- <% formatPrice(1) %></button>
-                                <button v-on:click="addTransactionAmount(1)" class="btn btn-success flex-grow-1 m-1">+ <% formatPrice(1) %></button>
-                            </div>
+                            <label for="transaction-amount">
+                                Transaction amount
+                            </label>
+                            <input v-model="transactionAmount" type="number" id="transaction-amount" class="container-fluid form-control form-control-lg mb-2" step=".01"/>
+                            <button v-if="loading" class="w-100 btn btn-primary disabled">Add transaction <span class="loader"></span></button>
+                            <button v-else-if="transactionAmount === 0 || (transactionAmount < 0 && transactionAmount * -1 > account.balance)" class="w-100 btn btn-primary disabled">Add transaction</button>
+                            <button v-else v-on:click="addTransaction" class="w-100 btn btn-primary">Add transaction</button>
+                        </template>
+                        <div v-else class="d-flex justify-content-center">
+                            <button class="btn btn-link add-another-transaction-button" v-on:click="transactionAdded = false">Add another transaction</button>
                         </div>
-                        <label for="transaction-amount">
-                            Transaction amount
-                        </label>
-                        <input v-model="transactionAmount" type="number" id="transaction-amount" class="container-fluid form-control form-control-lg mb-2" step=".01"/>
-                        <button v-if="loading" class="w-100 btn btn-primary disabled">Add transaction <span class="loader"></span></button>
-                        <button v-else-if="transactionAmount === 0 || (transactionAmount < 0 && transactionAmount * -1 > balance)" class="w-100 btn btn-primary disabled">Add transaction</button>
-                        <button v-else v-on:click="addTransaction" class="w-100 btn btn-primary">Add transaction</button>
                     </template>
                     <template v-else>
                         <p class="alert alert-danger">
@@ -54,14 +60,21 @@
         el: '#transaction-wrapper-{{ shift.id }}',
         delimiters: ['<%', '%>'],
         data: {
-            user: null,
-            balance: null,
+            account: null,
             transactionAmount: 0,
             loading: false,
-        },
-        created() {
+            transactionAdded: false,
+            textUpdated: false,
         },
         mounted() {
+            //call function on hiding modal
+            document.getElementById(TRANSACTION_POPUP_MODAL_ID).addEventListener('hidden.bs.modal', () => {
+                this.account = null;
+                this.transactionAmount = 0;
+                this.loading = false;
+                this.transactionAdded = false;
+                this.textUpdated = false;
+            });
         },
         methods: {
             goBack() {
@@ -75,8 +88,8 @@
             },
             addTransaction() {
                 this.loading = true;
-                if (this.user === null || this.balance === null) {
-                    tata.error("", "Transaction could not be added because user or balance was not loaded correctly, please reload this page.");
+                if (this.account === null) {
+                    tata.error("", "Transaction could not be added because account was not loaded correctly, please reload this page.");
                     this.loading = false;
                     return;
                 }
@@ -91,14 +104,48 @@
                     return;
                 }
 
-                fetch();
+                fetch('{% url 'v1:transaction_create' %}', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        'csrfmiddlewaretoken': get_csrf_token(),
+                        'account': this.account.id,
+                        'amount': this.transactionAmount,
+                        'description': "Manual transaction",
+                    }),
+                    headers: {
+                        "X-CSRFToken": get_csrf_token(),
+                        "Accept": 'application/json',
+                        "Content-Type": 'application/json',
+                    }
+                }).then(response => {
+                    if (response.status === 201) {
+                        return response.json();
+                    } else {
+                        throw response;
+                    }
+                }).then((data) => {
+                    tata.success('', "Transaction added successfully!");
+                    this.account = data.account;
+                    this.textUpdated = true;
+                    this.transactionAdded = true;
+                    this.transactionAmount = 0;
+                }).catch(() => {
+                    tata.error('', 'Failed to add transaction, please try again.')
+                }).finally(() => {
+                    this.loading = false;
+                    setTimeout(this.unsetTextUpdated, 1000);
+                });
+            },
+            unsetTextUpdated() {
+                this.textUpdated = false;
             }
         }
     });
 
     // TODO: Remove test data
     window.onload = function() {
-        const testData = {
+        transaction_vue.account = {
+            "id": "f163cfce-009d-40e1-8e31-135c4832d5e6",
             "user": {
                 "id": 52,
                 "first_name": "",
@@ -111,8 +158,6 @@
             "created_at": "2023-09-05T09:43:40.160417+02:00",
             "balance": 0
         };
-        transaction_vue.user = testData.user;
-        transaction_vue.balance = testData.balance;
         const modal = new bootstrap.Modal(document.getElementById(TRANSACTION_POPUP_MODAL_ID));
         modal.show();
     }

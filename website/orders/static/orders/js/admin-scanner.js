@@ -154,7 +154,8 @@ function scan_qr_code(result) {
                 throw response;
             }
         }).then(data => {
-            transaction_vue.user = data;
+            tata.success('', `Scanned user ${data.user.display_name}`);
+            transaction_vue.account = data;
             const modal = new bootstrap.Modal(document.getElementById(TRANSACTION_POPUP_MODAL_ID));
             modal.show();
         }).catch(error => {
