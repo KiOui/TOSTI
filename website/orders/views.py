@@ -174,3 +174,14 @@ def explainer_page_how_to_manage_shift_tab(request, item):
         return render_to_string("orders/explainer_admin.html", context={"request": request, "item": item})
     else:
         return None
+
+
+def explainer_page_how_to_handle_a_deposit(request, item):
+    """Render the explainer how to manage a deposit."""
+    if (
+        request.user.is_authenticated
+        and get_objects_for_user(request.user, "orders.can_manage_shift_in_venue").exists()
+    ):
+        return render_to_string("orders/explainer_transactions.html", context={"request": request, "item": item})
+    else:
+        return None

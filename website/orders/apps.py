@@ -18,6 +18,7 @@ class OrdersConfig(AppConfig):
             AccountHistoryTabView,
             explainer_page_how_to_order_tab,
             explainer_page_how_to_manage_shift_tab,
+            explainer_page_how_to_handle_a_deposit,
         )
         from tosti.views import ExplainerView
 
@@ -46,6 +47,13 @@ class OrdersConfig(AppConfig):
                     "name": "How to manage a shift?",
                     "slug": "how-to-manage-shift",
                     "renderer": explainer_page_how_to_manage_shift_tab,
+                }
+            )
+            explainer_page_list.append(
+                {
+                    "name": "How to handle a deposit?",
+                    "slug": "how-to-handle-a-deposit",
+                    "renderer": explainer_page_how_to_handle_a_deposit,
                 }
             )
             return explainer_page_list
