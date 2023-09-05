@@ -141,24 +141,4 @@
             }
         }
     });
-
-    // TODO: Remove test data
-    window.onload = function() {
-        transaction_vue.account = {
-            "id": "f163cfce-009d-40e1-8e31-135c4832d5e6",
-            "user": {
-                "id": 52,
-                "first_name": "",
-                "last_name": "",
-                "full_name": "",
-                "display_name": "lvrhijn",
-                "short_name": "lvrhijn",
-                "association": null
-            },
-            "created_at": "2023-09-05T09:43:40.160417+02:00",
-            "balance": 0
-        };
-        const modal = new bootstrap.Modal(document.getElementById(TRANSACTION_POPUP_MODAL_ID));
-        modal.show();
-    }
 </script>
