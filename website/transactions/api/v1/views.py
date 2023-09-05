@@ -26,6 +26,7 @@ class AccountRetrieveAPIView(CreateAPIView):
     queryset = Account.objects.all()
 
     def post(self, request, **kwargs):
+        """POST handler."""
         token = request.data.get("token", None)
         if token is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
