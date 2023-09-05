@@ -84,7 +84,11 @@
                 scannerModal.show();
             },
             addTransactionAmount(amount) {
-                this.transactionAmount = +(this.transactionAmount + amount).toFixed(2);
+                if (typeof(this.transactionAmount) === "number") {
+                    this.transactionAmount = +(this.transactionAmount + amount).toFixed(2);
+                } else {
+                    this.transactionAmount = +(amount).toFixed(2)
+                }
             },
             addTransaction() {
                 this.loading = true;
