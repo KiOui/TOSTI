@@ -35,7 +35,7 @@
 
 <script type="module">
     import { createApp } from 'vue';
-    let player_{{ player.id }}_requests_vue = createApp({
+    window.player_{{ player.id }}_requests_vue = createApp({
         delimiters: ['${', '}$'],
         data() {
             return {

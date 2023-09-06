@@ -46,10 +46,12 @@
 <script src="{% static "orders/js/quagga.min.js" %}"></script>
 <script src="{% static "orders/js/admin-scanner.js" %}"></script>
 
+<script>
+    const POPUP_MODAL_ID = "scanner-popup";
+</script>
 <script type="module">
     import { createApp } from 'vue';
-    const POPUP_MODAL_ID = "scanner-popup";
-    let scanner_vue = createApp({
+    window.scanner_vue = createApp({
         delimiters: ['${', '}$'],
         data() {
             return {

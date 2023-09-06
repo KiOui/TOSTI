@@ -93,7 +93,7 @@
 </div>
 <script type="module">
     import { createApp } from 'vue';
-    let player_{{ player.id }}_vue = createApp({
+    window.player_{{ player.id }}_vue = createApp({
         delimiters: ['${', '}$'],
         data() {
             return {
