@@ -12,6 +12,8 @@ User = get_user_model()
 
 
 class FridgeUnlockAPIView(ClientProtectedResourceMixin, APIView):
+    """API view for testing whether a Fridge is allowed to be unlocked."""
+
     def post(self, request, *args, **kwargs):
         """
         Process a request to unlock.

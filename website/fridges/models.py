@@ -29,6 +29,7 @@ class Fridge(models.Model):
     )
 
     def __str__(self):
+        """Convert this object to string."""
         return self.name
 
     @property
@@ -49,6 +50,7 @@ class Fridge(models.Model):
 
     @property
     def current_opening_hours(self):
+        """Get the current opening hours."""
         current_time = timezone.now().astimezone()
         weekday = current_time.weekday()
         opening_hours = self.generalopeninghours_set.filter(
@@ -58,6 +60,7 @@ class Fridge(models.Model):
 
     @property
     def can_be_opened(self):
+        """Whether the Fridge can be opened."""
         return self.current_opening_hours.filter(
             restrict_to_groups__isnull=True,
         ).exists()
@@ -84,6 +87,8 @@ class Fridge(models.Model):
         return None
 
     class Meta:
+        """Meta class."""
+
         verbose_name = "fridge"
         verbose_name_plural = "fridges"
         ordering = ["name"]
@@ -117,9 +122,12 @@ class GeneralOpeningHours(models.Model):
     )
 
     def __str__(self):
+        """Convert this object to string."""
         return f"{self.DAY_CHOICES[self.weekday][1]} {self.start_time} - {self.end_time}"
 
     class Meta:
+        """Meta class."""
+
         verbose_name = "general opening hours"
         verbose_name_plural = "general opening hours"
         ordering = ["weekday", "start_time"]
@@ -133,9 +141,12 @@ class BlacklistEntry(models.Model):
     fridge = models.ForeignKey(Fridge, on_delete=models.CASCADE)
 
     def __str__(self):
+        """Convert this object to string."""
         return f"{self.user} blacklisted from {self.fridge}"
 
     class Meta:
+        """Meta class."""
+
         verbose_name = "blacklist entry"
         verbose_name_plural = "blacklist entries"
 
@@ -148,9 +159,12 @@ class AccessLog(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
+        """Convert this object to string."""
         return f"{self.user} accessed {self.fridge} at {self.timestamp:%Y-%m-%d %H:%M}"
 
     class Meta:
+        """Meta class."""
+
         verbose_name = "access log"
         verbose_name_plural = "access logs"
         ordering = ["-timestamp"]

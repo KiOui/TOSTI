@@ -11,4 +11,5 @@ class IndexView(ListView):
     context_object_name = "fridges"
 
     def get_queryset(self):
+        """Get the queryset."""
         return Fridge.objects.filter(is_active=True).order_by("name")
