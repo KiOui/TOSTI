@@ -15,9 +15,7 @@ class FridgeUnlockAPIView(ClientProtectedResourceMixin, APIView):
     """API view for testing whether a Fridge is allowed to be unlocked."""
 
     def post(self, request, *args, **kwargs):
-        """
-        Process a request to unlock.
-        """
+        """Process a request to unlock."""
         fridge_candidates = request.auth.application.fridges.all()
 
         if fridge_candidates.count() == 0:
