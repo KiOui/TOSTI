@@ -1,11 +1,11 @@
 <div class="container-sm mb-2 mt-5 text-center" id="shift-header-container-{{ shift.id }}">
     <h1>{{ shift.venue.venue.name }}</h1>
     <p class="my-4 mx-auto" style="font-size: 1rem; max-width: 400px;">
-        shift #{{ shift.pk }} - <% shift.amount_of_orders %>/<% shift.max_orders_total %> - <% start_end_time %><br>
+        shift #{{ shift.pk }} - ${ shift.amount_of_orders }$/${ shift.max_orders_total }$ - ${ start_end_time }$<br>
         <template v-if="shift.assignees && shift.assignees.length > 0">
             At your service:
             <template v-for="(assignee, index) in shift.assignees">
-                <% assignee.display_name %><template v-if="index !== shift.assignees.length-1">, </template>
+                ${ assignee.display_name }$<template v-if="index !== shift.assignees.length-1">, </template>
             </template>
         </template>
         <template v-else>
@@ -17,12 +17,14 @@
     <p v-else-if="!shift.is_active" class="alert alert-danger"><i class="fa-solid fa-hand"></i> This shift is not active.</p>
 </div>
 
-<script>
-    let shift_header_{{ shift.id }}_vue = new Vue({
-        el: '#shift-header-container-{{ shift.id }}',
-        delimiters: ['<%', '%>'],
-        data: {
-            shift: {}
+<script type="module">
+    import { createApp } from 'vue';
+    let shift_header_{{ shift.id }}_vue = createApp({
+        delimiters: ['${', '}$'],
+        data() {
+            return {
+                shift: {}
+            }
         },
         computed: {
             start_end_time: function() {
@@ -61,7 +63,7 @@
                 }
             }
         },
-    });
+    }).mount('#shift-header-container-{{ shift.id }}');
 
     function refresh_shift_header_data(data) {
         shift_header_{{ shift.id }}_vue.shift = data;

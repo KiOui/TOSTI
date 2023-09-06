@@ -14,14 +14,14 @@
             <tbody>
             <template v-for="item in requests">
                 <tr>
-                    <th scope="row"><% item.track.track_name %></th>
+                    <th scope="row">${ item.track.track_name }$</th>
                     <td>
                         <template v-for="(artist, index) in item.track.track_artists">
-                            <% artist %><template v-if="index !== item.track.track_artists.length - 1">, </template>
+                            ${ artist }$<template v-if="index !== item.track.track_artists.length - 1">, </template>
                         </template>
                     </td>
                     {% if show_requestor %}
-                        <td><% item.requested_by.display_name %></td>
+                        <td>${ item.requested_by.display_name }$</td>
                     {% endif %}
                 </tr>
             </template>
@@ -33,14 +33,16 @@
     </template>
 </div>
 
-<script>
-    let player_{{ player.id }}_requests_vue = new Vue({
-        el: '#requests-container-{{ player.id }}',
-        delimiters: ['<%', '%>'],
-        data: {
-            requests: [],
-            refreshTimer: null,
-            lastRefresh: null,
+<script type="module">
+    import { createApp } from 'vue';
+    let player_{{ player.id }}_requests_vue = createApp({
+        delimiters: ['${', '}$'],
+        data() {
+            return {
+                requests: [],
+                refreshTimer: null,
+                lastRefresh: null,
+            }
         },
         created() {
             this.refresh_player_requests();
@@ -78,5 +80,5 @@
                 }
             },
         }
-    });
+    }).mount('#requests-container-{{ player.id }}');
 </script>

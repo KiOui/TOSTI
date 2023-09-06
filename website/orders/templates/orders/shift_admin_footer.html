@@ -93,13 +93,15 @@
     </footer>
 </div>
 
-<script>
-    let admin_footer_vue_{{ shift.id }} = new Vue({
-        el: '#admin-footer-wrapper-{{ shift.id }}',
-        delimiters: ['<%', '%>'],
-        data: {
-            orders: [],
-            shift: {},
+<script type="module">
+    import { createApp } from 'vue';
+    let admin_footer_vue_{{ shift.id }} = createApp({
+        delimiters: ['${', '}$'],
+        data() {
+            return {
+                orders: [],
+                shift: {},
+            }
         },
         created() {
             fetch('{% url "v1:orders_listcreate" shift=shift %}')
@@ -242,7 +244,7 @@
                 }
             }
         }
-    });
+    }).mount('#admin-footer-wrapper-{{ shift.id }}');
 
     function process_refresh_order_footer_data(data) {
         admin_footer_vue_{{ shift.id }}.orders = data;

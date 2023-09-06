@@ -20,11 +20,11 @@
                                     </div>
                                     <div class="flex-equal-width d-flex flex-column">
                                         <div>
-                                            <% track.name %>
+                                            ${ track.name }$
                                         </div>
                                         <div style="font-style: italic;">
                                             <template v-for="(artist, art_index) in track.artists">
-                                                <% artist %><template v-if="art_index !== track.artists.length - 1">, </template>
+                                                ${ artist }$<template v-if="art_index !== track.artists.length - 1">, </template>
                                             </template>
                                         </div>
                                     </div>
@@ -45,10 +45,10 @@
                                         </div>
                                         <div class="flex-equal-width d-flex flex-column">
                                             <div>
-                                                <% playlist.name %>
+                                                ${ playlist.name }$
                                             </div>
                                             <div style="font-style: italic;">
-                                                <% playlist.owner.display_name %>
+                                                ${ playlist.owner.display_name }$
                                             </div>
                                         </div>
                                         <button class="btn btn-success" style="height: 40px" v-on:click="ask_start_with_context(playlist.uri)"><i class="fa-solid fa-play"></i></button>
@@ -67,11 +67,11 @@
                                         </div>
                                             <div class="flex-equal-width d-flex flex-column">
                                             <div>
-                                                <% album.name %>
+                                                ${ album.name }$
                                             </div>
                                             <div style="font-style: italic;">
                                                 <template v-for="(artist, art_index) in album.artists">
-                                                    <% artist %><template v-if="art_index !== album.artists.length - 1">, </template>
+                                                    ${ artist }$<template v-if="art_index !== album.artists.length - 1">, </template>
                                                 </template>
                                             </div>
                                         </div>
@@ -94,16 +94,18 @@
 </div>
 
 
-<script>
-    let player_{{ player.id }}_search_vue = new Vue({
-        el: '#player-search-container-{{ player.id }}',
-        delimiters: ['<%', '%>'],
-        data: {
-            query: "",
-            tracks: [],
-            albums: [],
-            playlists: [],
-            current_search_index: 0,
+<script type="module">
+    import { createApp } from 'vue';
+    let player_{{ player.id }}_search_vue = createApp({
+        delimiters: ['${', '}$'],
+        data() {
+            return {
+                query: "",
+                tracks: [],
+                albums: [],
+                playlists: [],
+                current_search_index: 0,
+            }
         },
         created() {
             fetch('{% url "v1:player_search" player=player %}')
@@ -252,5 +254,5 @@
                 }
             }),
         }
-    });
+    }).mount('#player-search-container-{{ player.id }}');
 </script>

@@ -37,9 +37,9 @@
                 <transition-group name="orders-scanned-list" tag="ul" class="item-orders">
                     <li v-for="(order, index) in orders_scanned" :key="`order_scanned_${order.id}`" class="pt-2 pb-2 item-list">
                         <div class="information-row">
-                            <p class="item-counter"><% index + 1 %>.</p>
-                            <p class="item-name"><% order.product.name %> (€<% (Math.round(order.order_price * 100) /
-                                100).toFixed(2) %>)</p>
+                            <p class="item-counter">${ index + 1 }$.</p>
+                            <p class="item-name">${ order.product.name }$ (€${ (Math.round(order.order_price * 100) /
+                                100).toFixed(2) }$)</p>
                             <i v-if="order.product.icon !== null" :class="`fa-solid fa-${order.product.icon} item-icon`"></i>
                             <div class="flex-divider"></div>
                             <i class="item-username fa-solid fa-desktop"></i>
@@ -64,7 +64,7 @@
                         {% include 'orders/order_admin_order.html' %}
                     </li>
                 </transition-group>
-                <div v-else id="outer" class="container d-flex align-items-center justify-content-center text-center"
+                <div v-if="orders_finished.length === 0" id="outer" class="container d-flex align-items-center justify-content-center text-center"
                      style="height:200px;">
                     <div id="inner">
                         No finished orders yet...
@@ -76,8 +76,8 @@
                     <h3>Orders to make</h3>
                     <template v-if="Object.keys(orders_to_make_grouped).length > 0">
                         <p v-for="(product_dict, product_name) in orders_to_make_grouped" class="mb-2" style="font-size: 1em;">
-                            <% product_dict.product.name %> <i :class="`fa-solid fa-${product_dict.product.icon}`"></i>
-                            &times; <% product_dict.amount %></p>
+                            ${ product_dict.product.name }$ <i :class="`fa-solid fa-${product_dict.product.icon}`"></i>
+                            &times; ${ product_dict.amount }$</p>
                     </template>
                     <template v-else>
                         <p class="mb-2" style="font-size: 1em;">No open products.</p>
@@ -85,9 +85,9 @@
                     <hr>
                     <h3 class="mt-3">Orders ready</h3>
                     <template v-if="Object.keys(orders_ready_grouped).length > 0">
-                        <p v-for="(product_dict, product_name) in orders_ready_grouped" class="mb-2" style="font-size: 1em;"><%
-                            product_dict.product.name %> <i :class="`fa-solid fa-${product_dict.product.icon}`"></i> &times;
-                            <% product_dict.amount %></p>
+                        <p v-for="(product_dict, product_name) in orders_ready_grouped" class="mb-2" style="font-size: 1em;">${
+                            product_dict.product.name }$ <i :class="`fa-solid fa-${product_dict.product.icon}`"></i> &times;
+                            ${ product_dict.amount }$</p>
                     </template>
                     <template v-else>
                         <p class="mb-2" style="font-size: 1em;">No ready products.</p>
@@ -95,9 +95,9 @@
                     <hr>
                     <h3 class="mt-3">Orders total</h3>
                     <template v-if="Object.keys(orders_grouped).length > 0">
-                        <p v-for="(product_dict, product_name) in orders_grouped" class="mb-2" style="font-size: 1em;"><%
-                            product_dict.product.name %> <i :class="`fa-solid fa-${product_dict.product.icon}`"></i> &times;
-                            <% product_dict.amount %></p>
+                        <p v-for="(product_dict, product_name) in orders_grouped" class="mb-2" style="font-size: 1em;">${
+                            product_dict.product.name }$ <i :class="`fa-solid fa-${product_dict.product.icon}`"></i> &times;
+                            ${ product_dict.amount }$</p>
                     </template>
                     <template v-else>
                         <p class="mb-2" style="font-size: 1em;">No products.</p>
@@ -128,16 +128,18 @@
     }
 </style>
 
-<script>
-    let orders_vue_{{ shift.id }} = new Vue({
-        el: '#item-orders-{{ shift.id }}',
-        delimiters: ['<%', '%>'],
-        data: {
-            orders: [],
-            shift: {},
-            products: [],
-            user: null,
-            addingOrder: false,
+<script type="module">
+    import { createApp } from 'vue';
+    let orders_vue_{{ shift.id }} = createApp({
+        delimiters: ['${', '}$'],
+        data() {
+            return {
+                orders: [],
+                shift: {},
+                products: [],
+                user: null,
+                addingOrder: false,
+            }
         },
         created() {
              fetch('{% url "v1:me" %}')
@@ -174,27 +176,27 @@
             }
         },
         computed: {
-            user_orders: function() {
+            user_orders() {
                 let userCopy = this.user;
                 return this.orders.filter(function(order) {
                     return userCopy === null || (order.user !== null && order.user.id === userCopy.id);
                 });
             },
-            user_orders_with_shift_restrictions: function() {
+            user_orders_with_shift_restrictions() {
                 let userCopy = this.user;
                 return this.orders.filter(function(order) {
                     return userCopy === null || (order.user !== null && order.user.id === userCopy.id && !order.product.ignore_shift_restrictions);
                 });
             },
-            orders_with_shift_restrictions: function() {
+            orders_with_shift_restrictions() {
                 return this.orders.filter(function(order) {
                     return !order.product.ignore_shift_restrictions;
                 });
             },
-            orders_to_make: function() {
+            orders_to_make() {
                 return this.orders.filter(order => !order.ready);
             },
-            orders_to_make_grouped: function () {
+            orders_to_make_grouped() {
                 let orders_to_make = {};
                 this.orders_to_make.forEach(order => {
                     if (order.product.name in orders_to_make) {
@@ -205,10 +207,10 @@
                 });
                 return orders_to_make;
             },
-            orders_ready: function() {
+            orders_ready() {
                 return this.orders.filter(order => order.ready);
             },
-            orders_ready_grouped: function () {
+            orders_ready_grouped() {
                 let orders_ready = {};
                 this.orders_ready.forEach(order => {
                     if (order.product.name in orders_ready) {
@@ -219,7 +221,7 @@
                 });
                 return orders_ready;
             },
-            orders_grouped: function () {
+            orders_grouped() {
                 let orders_total = {};
                 this.orders.forEach(order => {
                     if (order.product.name in orders_total) {
@@ -230,13 +232,13 @@
                 });
                 return orders_total;
             },
-            orders_finished: function() {
+            orders_finished() {
                 return this.orders.filter(order => order.ready && order.paid && order.type !== 1);
             },
-            orders_to_process: function() {
+            orders_to_process() {
                 return this.orders.filter(order => !order.ready || !order.paid && order.type !== 1);
             },
-            orders_scanned: function() {
+            orders_scanned() {
                 return this.orders.filter(order => order.type === 1);
             }
         },
@@ -373,7 +375,7 @@
                 }
             }
         }
-    });
+    }).mount('#item-orders-{{ shift.id }}');
 
     function process_refreshed_order_data(data) {
         orders_vue_{{ shift.id }}.orders = data;
