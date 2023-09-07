@@ -1,8 +1,8 @@
 <ul class="row w-100">
     <div class="col-auto d-inline-flex">
-        <p class="item-counter"><% index + 1 %>.</p>
-        <p class="item-name"><% order.product.name %> (€<% (Math.round(order.order_price * 100) /
-        100).toFixed(2) %>)</p>
+        <p class="item-counter">${ index + 1 }$.</p>
+        <p class="item-name">${ order.product.name }$ (€${ (Math.round(order.order_price * 100) /
+        100).toFixed(2) }$)</p>
         <i v-if="order.product.icon !== null" :class="`fa-solid fa-${order.product.icon} item-icon`"></i>
     </div>
     <div class="col d-inline-flex" style="min-width: 0">
@@ -10,7 +10,7 @@
         <p v-if="order.user !== null" class="text-truncate" style="min-width: 0">
               <i v-if="order.user !== null && {{ user.id }} === order.user.id"
                class="fa-solid fa-user fa-xs"></i>
-              <% order.user.first_name %> <% order.user.last_name %>
+              ${ order.user.first_name }$ ${ order.user.last_name }$
        </p>
        <p><a target="_blank" :href="`{% url 'admin:orders_order_changelist' %}${order.id}/change/`"><i class="fa-solid fa-pen-to-square fa-xs text-white"></i></a></p>
     </div>

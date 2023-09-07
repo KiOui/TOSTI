@@ -7,15 +7,15 @@
     <div v-if="!shift.finalized && shift.can_order && shift.is_active">
         <h5>Place your order:</h5>
         <div class="row row-cols-2 row-cols-md-4 justify-content-center align-items-stretch">
-            <div class="col mb-3 d-flex justify-content-center align-items-stretch" v-for="product in products">
+            <div v-for="product in products" class="col mb-3 d-flex justify-content-center align-items-stretch">
                 <div class="flex-grow-1">
                     <button class="btn btn-lg btn-ml m-auto cursor-pointer btn-on d-flex flex-column align-items-center" style="border-radius: 0; max-width: unset;"
                         :class="{ disabled: addingOrder || orders.length >= shift.max_orders_total || user_orders_with_shift_restrictions.length >= shift.max_orders_per_user && !product.ignore_shift_restrictions || product.max_allowed_per_shift !== null && user_orders_with_product_id(product.id).length >= product.max_allowed_per_shift }"
                         v-on:click="add_order(product)"
                     >
                         <span :class="{ invisible: addingOrder }"><i v-if="product.icon !== null" :class="`fa-solid fa-${product.icon} me-2`"></i></span>
-                        <span :class="{ invisible: addingOrder }">Order <% product.name %></span>
-                        <span class="small" :class="{ invisible: addingOrder }"><% format_price(product.current_price) %></span>
+                        <span :class="{ invisible: addingOrder }">Order ${ product.name }$</span>
+                        <span class="small" :class="{ invisible: addingOrder }">${ format_price(product.current_price) }$</span>
                     </button>
                     <div class="card-footer rounded-bottom text-center"
                          v-if="orders.length >= shift.max_orders_total || user_orders_with_shift_restrictions.length >= shift.max_orders_per_user && !product.ignore_shift_restrictions || product.max_allowed_per_shift !== null && user_orders_with_product_id(product.id).length >= product.max_allowed_per_shift"
@@ -47,8 +47,8 @@
         <transition-group name="orderlist" tag="ul" class="item-orders">
             <li v-for="(order, index) of orders" :key="`orderlist_order_${order.id}`" class="pt-2 pb-2 item-list" :class="{ 'user-order-background': (order.user !== null && {{ user.id }} === order.user.id)}">
                 <div class="information-row">
-                    <p class="item-counter"><% index + 1 %>.</p>
-                    <p class="item-name"><% order.product.name %> (<% format_price(order.order_price) %>)</p>
+                    <p class="item-counter">${ index + 1 }$.</p>
+                    <p class="item-name">${ order.product.name }$ (${ format_price(order.order_price) }$)</p>
                     <i v-if="order.product.icon !== null" :class="`fa-solid fa-${order.product.icon} item-icon`"></i>
                     <div>
                         <span v-if="!order.paid && order.user !== null && {{ user.id }} === order.user.id" class="badge rounded-pill bg-danger" style="max-height: fit-content;">Not paid</span>
@@ -58,7 +58,7 @@
                         <i v-if="order.user !== null && {{ user.id }} === order.user.id && order.deprioritize === false"
                             class="fa-solid fa-arrow-down-short-wide" style="font-size: 1.5em; cursor: pointer;" v-on:click="order_to_bottom_of_list(order)"></i>
                         <p v-if="order.type === 0" class="item-username">
-                            <template v-if="order.user !== null"><% order.user.first_name %></template>
+                            <template v-if="order.user !== null">${ order.user.first_name }$</template>
                         </p>
                         <i v-else class="item-username fa-solid fa-desktop"></i>
                     </div>
@@ -95,16 +95,18 @@
     }
 </style>
 
-<script>
-    let orders_vue_{{ shift.id }} = new Vue({
-        el: '#item-orders-{{ shift.id }}',
-        delimiters: ['<%', '%>'],
-        data: {
-            orders: [],
-            shift: {},
-            products: [],
-            user: null,
-            addingOrder: false,
+<script type="module">
+    import { createApp } from 'vue';
+    let orders_vue_{{ shift.id }} = createApp({
+        delimiters: ['${', '}$'],
+        data() {
+            return {
+                orders: [],
+                shift: {},
+                products: [],
+                user: null,
+                addingOrder: false,
+            }
         },
         watch: {
             shift: {
@@ -127,19 +129,19 @@
             add_refresh_url("{% url "v1:shift_retrieveupdate" pk=shift.id %}", process_shift_data);
         },
         computed: {
-             user_orders: function() {
+             user_orders() {
                  let userCopy = this.user;
                  return this.orders.filter(function(order) {
                      return userCopy === null || (order.user !== null && order.user.id === userCopy.id);
                  });
              },
-             user_orders_with_shift_restrictions: function() {
+             user_orders_with_shift_restrictions() {
                  let userCopy = this.user;
                  return this.orders.filter(function(order) {
                      return userCopy === null || (order.user !== null && order.user.id === userCopy.id && !order.product.ignore_shift_restrictions);
                  });
              },
-             orders_with_shift_restrictions: function() {
+             orders_with_shift_restrictions() {
                  return this.orders.filter(function(order) {
                      return !order.product.ignore_shift_restrictions;
                  });
@@ -238,7 +240,7 @@
                 }
             },
         }
-    });
+    }).mount('#item-orders-{{ shift.id }}');
 
     function process_refreshed_order_data(data) {
         data = data.filter(order => order.type === 0);
