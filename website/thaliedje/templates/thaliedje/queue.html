@@ -12,13 +12,13 @@
           <tbody>
             <template v-for="item in queue">
                 <tr>
-                  <th scope="row"><% item.track_name %></th>
+                  <th scope="row">${ item.track_name }$</th>
                   <td>
                       <template v-for="(artist, index) in item.track_artists">
-                          <% artist %><template v-if="index !== item.track_artists.length - 1">, </template>
+                          ${ artist }$<template v-if="index !== item.track_artists.length - 1">, </template>
                       </template>
                   </td>
-                  <td><% Math.floor(item.duration_ms / 1000 / 60) %>:<% String(Math.floor(item.duration_ms / 1000 % 60)).padStart(2, '0') %></td>
+                  <td>${ Math.floor(item.duration_ms / 1000 / 60) }$:${ String(Math.floor(item.duration_ms / 1000 % 60)).padStart(2, '0') }$</td>
                 </tr>
             </template>
           </tbody>
@@ -31,14 +31,16 @@
     </template>
 </div>
 
-<script>
-    let player_{{ player.id }}_queue_vue = new Vue({
-        el: '#queue-container-{{ player.id }}',
-        delimiters: ['<%', '%>'],
-        data: {
-            queue: [],
-            refreshTimer: null,
-            lastRefresh: null,
+<script type="module">
+    import { createApp } from 'vue';
+    window.player_{{ player.id }}_queue_vue = createApp({
+        delimiters: ['${', '}$'],
+        data() {
+            return {
+                queue: [],
+                refreshTimer: null,
+                lastRefresh: null,
+            }
         },
         created() {
             this.refresh_player_queue();
@@ -72,5 +74,5 @@
                 }
             },
         }
-    });
+    }).mount('#queue-container-{{ player.id }}');
 </script>

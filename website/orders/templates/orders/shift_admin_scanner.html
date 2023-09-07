@@ -50,14 +50,18 @@
 
 <script>
     const POPUP_MODAL_ID = "scanner-popup";
-    let scanner_vue = new Vue({
-        el: '#scanner-wrapper-{{ shift.id }}',
-        delimiters: ['<%', '%>'],
-        data: {
-            shift: {},
-            search_results: [],
-            search_input: "",
-            typing_timer: null,
+</script>
+<script type="module">
+    import { createApp } from 'vue';
+    window.scanner_vue = createApp({
+        delimiters: ['${', '}$'],
+        data() {
+            return {
+                shift: {},
+                search_results: [],
+                search_input: "",
+                typing_timer: null,
+            }
         },
         watch: {
             search_input: {
@@ -152,7 +156,7 @@
                 }).catch(error => show_error_from_api(error));
             }
         }
-    });
+    }).mount('#scanner-wrapper-{{ shift.id }}');
 
     function process_refresh_scanner_data(data) {
         scanner_vue.shift = data;
