@@ -97,7 +97,7 @@
 
 <script type="module">
     import { createApp } from 'vue';
-    let orders_vue_{{ shift.id }} = createApp({
+    window.orders_vue_{{ shift.id }} = createApp({
         delimiters: ['${', '}$'],
         data() {
             return {
@@ -148,6 +148,9 @@
              },
          },
         methods: {
+            formatPrice(price) {
+                return formatPrice(price);
+            },
             refresh() {
                 return Promise.all([
                     fetch('{% url "v1:product_list" shift=shift %}?orderable=true&available=true')

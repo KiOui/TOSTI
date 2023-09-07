@@ -11,20 +11,20 @@
                 </div>
                 <div class="modal-body">
                     <template v-if="account !== null">
-                        <p class="mb-0">User: <% account.user.display_name %><br>
-                            Current balance: <span :class="{'updated-text': textUpdated}"><% formatPrice(account.balance) %></span>
+                        <p class="mb-0">User: ${ account.user.display_name }$<br>
+                            Current balance: <span :class="{'updated-text': textUpdated}">${ formatPrice(account.balance) }$</span>
                         </p>
                         <template v-if="!transactionAdded">
                             <hr>
                             <h3>Add a transaction</h3>
                             <div class="mb-2">
                                 <div class="d-flex justify-content-center align-items-center w-100">
-                                    <button v-on:click="addTransactionAmount(-0.15)" class="btn btn-danger flex-grow-1 m-1">- <% formatPrice(0.15) %></button>
-                                    <button v-on:click="addTransactionAmount(0.15)" class="btn btn-success flex-grow-1 m-1">+ <% formatPrice(0.15) %></button>
+                                    <button v-on:click="addTransactionAmount(-0.15)" class="btn btn-danger flex-grow-1 m-1">- ${ formatPrice(0.15) }$</button>
+                                    <button v-on:click="addTransactionAmount(0.15)" class="btn btn-success flex-grow-1 m-1">+ ${ formatPrice(0.15) }$</button>
                                 </div>
                                 <div class="d-flex justify-content-center align-items-center w-100">
-                                    <button v-on:click="addTransactionAmount(-1)" class="btn btn-danger flex-grow-1 m-1">- <% formatPrice(1) %></button>
-                                    <button v-on:click="addTransactionAmount(1)" class="btn btn-success flex-grow-1 m-1">+ <% formatPrice(1) %></button>
+                                    <button v-on:click="addTransactionAmount(-1)" class="btn btn-danger flex-grow-1 m-1">- ${ formatPrice(1) }$</button>
+                                    <button v-on:click="addTransactionAmount(1)" class="btn btn-success flex-grow-1 m-1">+ ${ formatPrice(1) }$</button>
                                 </div>
                             </div>
                             <label for="transaction-amount">
@@ -56,15 +56,21 @@
 
 <script>
     const TRANSACTION_POPUP_MODAL_ID = "transaction-popup";
-    let transaction_vue = new Vue({
-        el: '#transaction-wrapper-{{ shift.id }}',
-        delimiters: ['<%', '%>'],
-        data: {
-            account: null,
-            transactionAmount: 0,
-            loading: false,
-            transactionAdded: false,
-            textUpdated: false,
+</script>
+
+<script type="module">
+    import { createApp } from 'vue';
+
+    window.transaction_vue = createApp({
+        delimiters: ['${', '}$'],
+        data() {
+            return {
+                account: null,
+                transactionAmount: 0,
+                loading: false,
+                transactionAdded: false,
+                textUpdated: false,
+            }
         },
         mounted() {
             //call function on hiding modal
@@ -77,6 +83,9 @@
             });
         },
         methods: {
+            formatPrice(price) {
+                return formatPrice(price);
+            },
             goBack() {
                 const transactionModal = bootstrap.Modal.getInstance(document.getElementById(TRANSACTION_POPUP_MODAL_ID));
                 transactionModal.hide();
@@ -144,5 +153,5 @@
                 this.textUpdated = false;
             }
         }
-    });
+    }).mount('#transaction-wrapper-{{ shift.id }}');
 </script>
