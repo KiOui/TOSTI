@@ -1,3 +1,4 @@
+from oauth2_provider.contrib.rest_framework import IsAuthenticatedOrTokenHasScope
 from rest_framework import status
 from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
@@ -22,6 +23,9 @@ class AccountRetrieveAPIView(CreateAPIView):
         request_schema={"type": "object", "properties": {"token": {"type": "string", "example": "string"}}}
     )
 
+    permission_classes = [IsAuthenticatedOrTokenHasScope]
+    required_scopes = ["transactions:write"]
+
     serializer_class = AccountSerializer
     queryset = Account.objects.all()
 
@@ -31,11 +35,11 @@ class AccountRetrieveAPIView(CreateAPIView):
         if token is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        valid, signed_material = verify_identification_token(token)
-        if not valid:
+        token_valid, username = verify_identification_token(token)
+        if not token_valid:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         try:
-            account = self.queryset.get(user__username=signed_material)
+            account = self.queryset.get(user__username=username)
             return Response(status=status.HTTP_200_OK, data=self.serializer_class(account).data)
         except Account.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -51,6 +55,8 @@ class TransactionCreateAPIView(CreateAPIView):
     """
 
     serializer_class = TransactionSerializer
+    permission_classes = [IsAuthenticatedOrTokenHasScope]
+    required_scopes = ["transactions:write"]
 
     def perform_create(self, serializer):
         """Add request user to validated data."""

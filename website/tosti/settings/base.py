@@ -27,9 +27,9 @@ INSTALLED_APPS = [
     "autocompletefilter",
     "import_export",
     "guardian",
-    'rest_framework',
-    'django_filters',
-    'rangefilter',
+    "rest_framework",
+    "django_filters",
+    "rangefilter",
     "announcements",
     "users",
     "venues",
@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     "corsheaders",
 ]
 
-AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = "users.User"
 
 ANONYMOUS_USER_NAME = None
 
@@ -137,7 +137,7 @@ REST_FRAMEWORK = {
     ),
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.URLPathVersioning",
-    'DEFAULT_SCHEMA_CLASS': 'tosti.api.openapi.CustomAutoSchema',
+    "DEFAULT_SCHEMA_CLASS": "tosti.api.openapi.CustomAutoSchema",
 }
 
 # CORS
@@ -156,51 +156,95 @@ OAUTH2_PROVIDER = {
         "orders:manage": "Manage orders on your behalf",
         "thaliedje:request": "Request songs on your behalf",
         "thaliedje:manage": "Manage music players on your behalf",
+        "transactions:write": "Create transactions",
     },
 }
 
-LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = "/login/"
+LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
 # Messages
 MESSAGE_TAGS = {
-    messages.DEBUG: 'alert-info info',
-    messages.INFO: 'alert-info info',
-    messages.SUCCESS: 'alert-success success',
-    messages.WARNING: 'alert-warning warning',
-    messages.ERROR: 'alert-danger danger',
+    messages.DEBUG: "alert-info info",
+    messages.INFO: "alert-info info",
+    messages.SUCCESS: "alert-success success",
+    messages.WARNING: "alert-warning warning",
+    messages.ERROR: "alert-danger danger",
 }
 
-CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
+CONSTANCE_BACKEND = "constance.backends.database.DatabaseBackend"
 
 CONSTANCE_CONFIG = {
-    'FOOTER_CREDITS_TEXT': ('TOSTI - Tartarus Order System for Take-away Items',
-                            'Text to display in the footer credits', str),
-    'CLEANING_SCHEME_URL': ('', 'URL to the cleaning scheme to be accepted when submitting a borrel form', str),
-    'SILVASOFT_API_URL': ('https://rest-api.silvasoft.nl/rest/', 'Endpoint for Silvasoft API', str),
-    'SILVASOFT_USERNAME': ('', 'Username for Silvasoft integration', str),
-    'SILVASOFT_API_KEY': ('', 'API key for Silvasoft integration', str),
-    'MAXIMUM_SYNC_PER_RUN': (15, 'Maximum amount of synchronizations to run per hour', int),
-    'BORREL_SEND_BORREL_RESERVATION_REQUEST_EMAILS_TO': (
-        'noreply@example.com', 'Where to send borrel reservation request notifications to (e-mail address)', str),
-    'VENUES_SEND_RESERVATION_REQUEST_EMAILS_TO': (
-        'noreply@example.com, noreply@example.com', 'Where to send venue reservation request notifications to (e-mail address), enter multiple addresses by using a comma (,)', str),
-    'SHIFTS_DEFAULT_MAX_ORDERS_TOTAL': (70, 'Default maximum number of orders per shift', int),
-    'THALIEDJE_STOP_PLAYERS_AT': ("21:00", 'Time to stop the players. Should be aligned on 5 minutes', str),
-    'THALIEDJE_START_PLAYERS_AT': ("08:00", 'Time to start the players (only on weekdays). Should be aligned on 5 minutes', str),
-    'THALIEDJE_HOLIDAY_ACTIVE': (False, 'If enabled, the player will not start playing automatically at the start of the day', bool),
-    'THALIEDJE_START_PLAYER_URI': ('', 'URI to start playing when the player starts automatically.', str),
-    'THALIEDJE_MAX_SONG_REQUESTS_PER_HOUR': (10, 'Maximum number of song requests per hour before a user is blacklisted', int),
-    'STATISTICS_BORREL_CATEGORY': (0, 'The object ID of the Category of Borrel products to show on the statistics screen.', int),
+    "FOOTER_CREDITS_TEXT": (
+        "TOSTI - Tartarus Order System for Take-away Items",
+        "Text to display in the footer credits",
+        str,
+    ),
+    "CLEANING_SCHEME_URL": ("", "URL to the cleaning scheme to be accepted when submitting a borrel form", str),
+    "SILVASOFT_API_URL": ("https://rest-api.silvasoft.nl/rest/", "Endpoint for Silvasoft API", str),
+    "SILVASOFT_USERNAME": ("", "Username for Silvasoft integration", str),
+    "SILVASOFT_API_KEY": ("", "API key for Silvasoft integration", str),
+    "MAXIMUM_SYNC_PER_RUN": (15, "Maximum amount of synchronizations to run per hour", int),
+    "BORREL_SEND_BORREL_RESERVATION_REQUEST_EMAILS_TO": (
+        "noreply@example.com",
+        "Where to send borrel reservation request notifications to (e-mail address)",
+        str,
+    ),
+    "VENUES_SEND_RESERVATION_REQUEST_EMAILS_TO": (
+        "noreply@example.com, noreply@example.com",
+        "Where to send venue reservation request notifications to (e-mail address), enter multiple addresses by using a comma (,)",
+        str,
+    ),
+    "SHIFTS_DEFAULT_MAX_ORDERS_TOTAL": (70, "Default maximum number of orders per shift", int),
+    "THALIEDJE_STOP_PLAYERS_AT": ("21:00", "Time to stop the players. Should be aligned on 5 minutes", str),
+    "THALIEDJE_START_PLAYERS_AT": (
+        "08:00",
+        "Time to start the players (only on weekdays). Should be aligned on 5 minutes",
+        str,
+    ),
+    "THALIEDJE_HOLIDAY_ACTIVE": (
+        False,
+        "If enabled, the player will not start playing automatically at the start of the day",
+        bool,
+    ),
+    "THALIEDJE_START_PLAYER_URI": ("", "URI to start playing when the player starts automatically.", str),
+    "THALIEDJE_MAX_SONG_REQUESTS_PER_HOUR": (
+        10,
+        "Maximum number of song requests per hour before a user is blacklisted",
+        int,
+    ),
+    "STATISTICS_BORREL_CATEGORY": (
+        0,
+        "The object ID of the Category of Borrel products to show on the statistics screen.",
+        int,
+    ),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = {
-    'General settings': ('FOOTER_CREDITS_TEXT', 'CLEANING_SCHEME_URL', 'STATISTICS_BORREL_CATEGORY',),
-    'Silvasoft settings': ('SILVASOFT_API_URL', 'SILVASOFT_USERNAME', 'SILVASOFT_API_KEY', 'MAXIMUM_SYNC_PER_RUN',),
-    'E-mail settings': ('BORREL_SEND_BORREL_RESERVATION_REQUEST_EMAILS_TO', 'VENUES_SEND_RESERVATION_REQUEST_EMAILS_TO',),
-    'Shifts settings': ('SHIFTS_DEFAULT_MAX_ORDERS_TOTAL',),
-    'Thaliedje settings': ('THALIEDJE_STOP_PLAYERS_AT', 'THALIEDJE_START_PLAYERS_AT', 'THALIEDJE_HOLIDAY_ACTIVE', 'THALIEDJE_START_PLAYER_URI', 'THALIEDJE_MAX_SONG_REQUESTS_PER_HOUR',),
+    "General settings": (
+        "FOOTER_CREDITS_TEXT",
+        "CLEANING_SCHEME_URL",
+        "STATISTICS_BORREL_CATEGORY",
+    ),
+    "Silvasoft settings": (
+        "SILVASOFT_API_URL",
+        "SILVASOFT_USERNAME",
+        "SILVASOFT_API_KEY",
+        "MAXIMUM_SYNC_PER_RUN",
+    ),
+    "E-mail settings": (
+        "BORREL_SEND_BORREL_RESERVATION_REQUEST_EMAILS_TO",
+        "VENUES_SEND_RESERVATION_REQUEST_EMAILS_TO",
+    ),
+    "Shifts settings": ("SHIFTS_DEFAULT_MAX_ORDERS_TOTAL",),
+    "Thaliedje settings": (
+        "THALIEDJE_STOP_PLAYERS_AT",
+        "THALIEDJE_START_PLAYERS_AT",
+        "THALIEDJE_HOLIDAY_ACTIVE",
+        "THALIEDJE_START_PLAYER_URI",
+        "THALIEDJE_MAX_SONG_REQUESTS_PER_HOUR",
+    ),
 }
 
 # Sites app
