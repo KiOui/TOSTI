@@ -64,9 +64,6 @@ class TransactionCreateAPIView(CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         """Create a Transaction."""
-        if not request.user.is_authenticated:
-            return Response(status=status.HTTP_403_FORBIDDEN)
-
         if not request.user.has_perm("transactions.add_transaction"):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
