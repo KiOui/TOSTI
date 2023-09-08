@@ -59,10 +59,19 @@
                     <a class="navbar-brand drop-out-header-mobile" href="/"><img
                             src="{% static 'tosti/svg/TOSTI-logo.svg' %}" height="80"/></a>
                 </div>
-                <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="offcanvas"
-                        data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+                <div class="ms-auto d-lg-none d-flex justify-content-end">
+                    <button class="btn btn-primary hamburger-menu-button" type="button" data-bs-toggle="offcanvas"
+                            data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+                        <i class="fa-solid fa-bars fa-xl"></i>
+                    </button>
+                    {% if user.is_authenticated %}
+                        <div class="align-items-center qr-button ms-2">
+                            <button class="btn" data-bs-toggle="modal" data-bs-target="#qr-popup">
+                                <i class="fa-solid fa-qrcode fa-xl"></i>
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
                 <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar"
                      aria-labelledby="offcanvasNavbarLabel">
                     <div class="offcanvas-header" style="background-color: var(--nav-background-color);">
@@ -83,8 +92,9 @@
                             </li>
                         </ul>
                         <div class="mx-auto order-0 position-relative d-lg-block d-none">
-                            <a class="navbar-brand drop-out-header" href="/"><img src="{% static 'tosti/svg/TOSTI-logo.svg' %}"
-                                                                                  height="120"/></a>
+                            <a class="navbar-brand drop-out-header" href="/"><img
+                                    src="{% static 'tosti/svg/TOSTI-logo.svg' %}"
+                                    height="120"/></a>
                         </div>
                         <ul class="navbar-nav w-100 order-3 d-flex justify-content-end">
                             <li class="nav-item">
@@ -143,29 +153,135 @@
                                         </a>
                                     </div>
                                 </li>
+                                <li class="nav-item d-none d-lg-flex align-items-center qr-button">
+                                    <button class="btn" data-bs-toggle="modal" data-bs-target="#qr-popup">
+                                        <i class="fa-solid fa-qrcode fa-xl"></i>
+                                    </button>
+                                </li>
                             {% endif %}
                         </ul>
                     </div>
                 </div>
             </div>
         </nav>
+        <div class="modal" id="qr-popup">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header fs-2">
+                        <h2>Identify yourself</h2><br>
+                    </div>
+                    <div class="modal-body">
+                        <div id="qrcode" class="d-flex justify-content-center align-items-center">
+                            <qrcode-vue v-if="!loading" class="rounded" :value="value" level="H" :margin="margin" :size="250"
+                                        render-as="canvas"></qrcode-vue>
+                            <div v-else style="height: 250px; width: 250px;" class="position-relative">
+                                <qrcode-vue v-if="oldValue" class="rounded" :value="oldValue" level="H" :margin="margin"
+                                            :size="250" render-as="canvas"></qrcode-vue>
+                                <qrcode-vue v-else class="rounded" value="example-value" level="H" :margin="margin"
+                                            :size="250" render-as="canvas"></qrcode-vue>
+                                <div class="rounded position-absolute d-flex w-100 justify-content-center align-items-center top-0 bottom-0 left-0 right-0"
+                                     style="background-color: rgba(0,0,0,0.8);">
+                                    <span class="loader"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     {% endblock %}
     <div class="page">
         {% block page %}{% endblock %}
     </div>
 </div>
 {% block footer %}
-    <footer class="mt-auto footer">
-        <div class="container text-center">
-            <p class="text-muted mb-3" style="font-size: 1em;">
-                {% autoescape off %}
-                    {{ FOOTER_CREDITS_TEXT }}
-                {% endautoescape %}
-            </p>
-        </div>
-    </footer>
+<footer class="mt-auto footer">
+    <div class="container text-center">
+        <p class="text-muted mb-3" style="font-size: 1em;">
+            {% autoescape off %}
+            {{ FOOTER_CREDITS_TEXT }}
+            {% endautoescape %}
+        </p>
+    </div>
+</footer>
 {% endblock %}
 {% bootstrap_javascript %}
 {% block js %}{% endblock %}
+<script type="module">
+    const QR_POPUP_MODAL_ID = "qr-popup";
+    import {createApp} from 'vue';
+    import QrcodeVue from 'qrcode';
+
+    const headerQrCodeApp = createApp({
+        components: {QrcodeVue},
+        data() {
+            return {
+                margin: 2,
+                size: 250,
+                value: null,
+                oldValue: null,
+                loading: true,
+                timer: null,
+                running: false,
+            }
+        },
+        mounted() {
+            //call function on modal shown
+            document.getElementById(QR_POPUP_MODAL_ID).addEventListener('shown.bs.modal', () => {
+                this.startTimer();
+            });
+
+            //call function on hiding modal
+            document.getElementById(QR_POPUP_MODAL_ID).addEventListener('hidden.bs.modal', () => {
+                this.stopTimer();
+            });
+        },
+        methods: {
+            startTimer() {
+                this.running = true;
+                this.fetchUserToken();
+            },
+            stopTimer() {
+                this.running = false;
+                clearTimeout(this.timer);
+            },
+            fetchUserToken() {
+                if (this.value !== null) {
+                    this.oldValue = this.value;
+                }
+
+                this.loading = true;
+                fetch(
+                    '{% url 'v1:id-token' %}',
+                    {
+                        headers: {
+                            "X-CSRFToken": get_csrf_token(),
+                            "Content-Type": 'application/json',
+                            "Accept": 'application/json',
+                        }
+                    }
+                ).then(response => {
+                    if (response.status === 200) {
+                        return response.json();
+                    } else {
+                        throw response;
+                    }
+                }).then(data => {
+                    this.value = data.token;
+                }).catch(error => {
+                    show_error_from_api(error);
+                }).finally(() => {
+                    this.loading = false;
+                    if (this.running) {
+                        this.timer = setTimeout(this.fetchUserToken, 20000);
+                    }
+                });
+            }
+        }
+    }).mount('#qrcode')
+</script>
 </body>
 </html>

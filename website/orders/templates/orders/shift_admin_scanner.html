@@ -16,7 +16,7 @@
                             <div v-if="search_results.length > 0" class="py-3" id="search-results">
                                 <div v-for="product in search_results" class="search-item pb-2">
                                     <p class="search-item-name">${ product.name }$</p>
-                                    <p class="search-item-price">${ format_price(product.current_price) }$</p>
+                                    <p class="search-item-price">${ formatPrice(product.current_price) }$</p>
                                     <input type="button" class="btn btn-success" v-on:click="add_order(product)" value="Add"/>
                                 </div>
                             </div>
@@ -29,7 +29,7 @@
                     </div>
                 </div>
                 <div class="modal-body d-flex justify-content-center p-0">
-                    <div id="scanner" style="margin-bottom: -25px"></div>
+                    <div id="scanner"></div>
                 </div>
                 <div class="modal-footer" style="border-top: 0">
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
@@ -41,8 +41,10 @@
 
 <script>
     const SCANNER_DATA_URL = "{% url 'v1:shifts_scanner' shift=shift %}";
+    const TRANSACTION_USER_DATA_URL = "{% url 'v1:account_retrieve' %}";
 </script>
 <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+<script src="{% static "orders/js/jsQR.min.js" %}"></script>
 <script src="{% static "orders/js/quagga.min.js" %}"></script>
 <script src="{% static "orders/js/admin-scanner.js" %}"></script>
 
@@ -98,12 +100,8 @@
             });
         },
         methods: {
-            format_price(priceToFormat) {
-                return new Intl.NumberFormat('nl-NL', {
-                    style: 'currency',
-                    currency: 'EUR',
-                    currencyDisplay: "symbol"
-                }).format(priceToFormat).trim();
+            formatPrice(price) {
+                return formatPrice(price);
             },
             add_order(product) {
                 fetch(

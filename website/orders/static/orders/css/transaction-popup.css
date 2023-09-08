@@ -1,0 +1,26 @@
+.add-another-transaction-button {
+    color: rgba(200, 131, 30, 1);
+}
+
+.add-another-transaction-button:hover {
+    color: rgba(200, 131, 30, 0.5);
+}
+
+.updated-text {
+    animation: blinking 0.5s step-end infinite;
+}
+
+@keyframes blinking {
+    0% {
+        background-color: var(--card-background-contrast);
+        color: var(--card-background);
+    }
+    50% {
+        background-color: unset;
+        color: unset;
+    }
+    100% {
+        background-color: var(--card-background-contrast);
+        color: var(--card-background);
+    }
+}
