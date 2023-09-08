@@ -31,7 +31,7 @@ const COLORS = [
 
 
 document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll("canvas").forEach((canvas) => {
+    document.querySelectorAll("canvas.statistics-canvas").forEach((canvas) => {
 
             const data = JSON.parse(canvas.dataset.data);
             const datasets = data["datasets"];
