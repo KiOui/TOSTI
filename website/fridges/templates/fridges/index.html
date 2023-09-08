@@ -1,0 +1,45 @@
+{% extends 'tosti/base.html' %}
+{% load %}
+
+{% block page %}
+    <div class="container-sm mt-5">
+        <div class="mb-5 text-center">
+            <h1><i class="fa-solid fa-beer-mug-empty me-4"></i></i>F.r.i.d.g.e.s.</h1>
+            <h6>Framework Restricting Inventory of Drinks for Guaranteed Enjoyment to Students</h6>
+        </div>
+        <p class="mt-1 mb-2">Fancy a beer? Perhaps, the beer fridge is open!</p>
+        {% if user.is_authenticated %}
+        <p class="mt-1 mb-4">
+            Use your personal QR code at the top to identify yourself and open the fridge (only during opening hours).
+        </p>
+        {% else %}
+        <p class="mt-1 mb-4">
+            Login and use your personal QR code to identify yourself and open the fridge (only during opening hours).
+        </p>
+        {% endif %}
+        <div class="row-cols-1 row-cols-lg-3 justify-content-center d-flex flex-wrap">
+            {% for fridge in fridges %}
+                <div class="col mb-3">
+                    <div class="card mx-auto mx-lg-2" style="max-width: 500px;">
+                        <div class="card-header">
+                            <h3>{{ fridge.name }}</h3>
+                        </div>
+                        <div class="card-body">
+                            {% if fridge.can_be_opened %}
+                                <p class="card-text"><i class="fa-solid fa-lock-open fa-xl success"></i><br>The fridge is open!</p>
+                            {% else %}
+                                <p class="card-text">
+                                    <i class="fa-solid fa-lock fa-xl"></i><br>
+                                    The fridge is closed.<br>
+                                    {% if fridge.opens_today_at %}
+                                        <small class="card-text text-center">Opens today at {{ fridge.opens_today_at }}</small>
+                                    {% endif %}
+                                </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
