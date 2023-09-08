@@ -73,6 +73,9 @@ SERVER_EMAIL = "www-tosti@science.ru.nl"
 
 STATIC_ROOT = BASE_DIR.parent / "static"
 STATIC_URL = "/static/"
+
+STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
+
 MEDIA_ROOT = BASE_DIR.parent.parent / "writable" / "media"
 MEDIA_URL = "/media/"
 
