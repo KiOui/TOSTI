@@ -4,6 +4,7 @@ from django.dispatch import receiver
 
 from users.models import GroupSettings
 from users.services import update_staff_status
+from django.contrib.auth.models import Group
 
 User = get_user_model()
 
@@ -20,4 +21,9 @@ def after_user_groups_changed(sender, instance, **kwargs):
     """Update the is_staff value of the users when they are added to groups."""
     action = kwargs.get("action")
     if action == "post_add" or action == "post_remove":
-        update_staff_status(instance)
+        # This receiver gets triggered by both User and Group objects.
+        if isinstance(instance, User):
+            update_staff_status(instance)
+        elif isinstance(instance, Group):
+            for user in instance.user_set.all():
+                update_staff_status(user)
