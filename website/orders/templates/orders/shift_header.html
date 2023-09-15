@@ -17,8 +17,7 @@
     <p v-else-if="!shift.is_active" class="alert alert-danger"><i class="fa-solid fa-hand"></i> This shift is not active.</p>
 </div>
 
-<script type="module">
-    import { createApp } from 'vue';
+<script>
     window.shift_header_{{ shift.id }}_vue = createApp({
         delimiters: ['${', '}$'],
         data() {
