@@ -32,20 +32,21 @@
     <meta name="msapplication-TileColor" content="#e8b365">
     <meta name="theme-color" content="#e8b365">
 
+    <!-- Vue JS -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <script>
+        const { createApp } = Vue;
+    </script>
+
+    <!-- QR Code Vue JS -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode.vue@3.4.0/dist/qrcode.vue.browser.min.js"></script>
+
     <!-- TaTa.js notifications -->
     <script src="{% static 'tosti/js/tata.js' %}"></script>
 
     <!-- Announcements static files -->
     <link rel="stylesheet" href="{% static 'announcements/css/announcements.css' %}" type="text/css">
     <script src="{% static 'announcements/js/announcements.js' %}"></script>
-    <script type="importmap">
-       {
-         "imports": {
-           "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.prod.js",
-           "qrcode": "https://cdn.jsdelivr.net/npm/qrcode.vue@3.4.0/dist/qrcode.vue.esm.js"
-         }
-       }
-     </script>
 </head>
 <body class="d-flex flex-column h-100">
 <div id="page-container">
@@ -215,13 +216,11 @@
 {% endblock %}
 {% bootstrap_javascript %}
 {% block js %}{% endblock %}
-<script type="module">
+<script>
     const QR_POPUP_MODAL_ID = "qr-popup";
-    import {createApp} from 'vue';
-    import QrcodeVue from 'qrcode';
 
     const headerQrCodeApp = createApp({
-        components: {QrcodeVue},
+        components: { QrcodeVue },
         data() {
             return {
                 margin: 2,
