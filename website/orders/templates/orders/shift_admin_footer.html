@@ -18,12 +18,12 @@
                                 <div v-if="shift.can_order" :id="`shift-status-${shift.id}`"
                                      class="h-100 btn btn-success btn-ml m-auto"
                                      v-on:click="adjust_can_order(false)">
-                                    <p class="font-footer flex-fixed footer-button-icon"><i class="fa-solid fa-hand"></i></p>
+                                    <p class="font-footer flex-fixed footer-button-icon"><i class="fa-solid fa-circle-play"></i></p>
                                     <p class="font-footer footer-button-text">Allow/disallow</p>
                                 </div>
                                 <div v-else :id="`shift-status-${shift.id}`" class="h-100 btn btn-ml m-auto btn-danger"
                                      v-on:click="adjust_can_order(true)">
-                                    <p class="font-footer flex-fixed footer-button-icon"><i class="fa-solid fa-hand"></i></p>
+                                    <p class="font-footer flex-fixed footer-button-icon"><i class="fa-solid fa-circle-pause"></i></p>
                                     <p class="font-footer footer-button-text">Allow/disallow</p>
                                 </div>
                             </div>
@@ -76,7 +76,7 @@
                         <div v-if="!shift.finalized" class="col expand-mobile">
                             <div class="h-100 btn btn-ml m-auto btn-danger" style="cursor: pointer"
                                  v-on:click="finalize_shift()">
-                                <p class="font-footer flex-fixed footer-button-icon"><i class="fa-solid fa-times-circle"></i></p>
+                                <p class="font-footer flex-fixed footer-button-icon"><i class="fa-solid fa-circle-stop"></i></p>
                                 <p class="font-footer footer-button-text">Finalize shift</p>
                             </div>
                         </div>

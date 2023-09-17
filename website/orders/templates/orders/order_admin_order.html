@@ -1,11 +1,11 @@
 <ul class="row w-100">
-    <div class="col-auto d-inline-flex">
+    <div class="col-auto col-lg-4 d-inline-flex">
         <p class="item-counter">${ index + 1 }$.</p>
         <p class="item-name">${ order.product.name }$ (€${ (Math.round(order.order_price * 100) /
         100).toFixed(2) }$)</p>
         <i v-if="order.product.icon !== null" :class="`fa-solid fa-${order.product.icon} item-icon`"></i>
     </div>
-    <div class="col d-inline-flex" style="min-width: 0">
+    <div class="col col-lg-5 d-inline-flex" style="min-width: 0">
         <div class="ms-auto"></div>
         <p v-if="order.user !== null" class="text-truncate" style="min-width: 0">
               <i v-if="order.user !== null && {{ user.id }} === order.user.id"
@@ -14,18 +14,14 @@
        </p>
        <p><a target="_blank" :href="`{% url 'admin:orders_order_changelist' %}${order.id}/change/`"><i class="fa-solid fa-pen-to-square fa-xs text-white"></i></a></p>
     </div>
-    <div v-if="!shift.finalized" class="col-xs-12 col-md-auto d-inline-flex gap-2">
-           <input v-if="order.paid" type="button" class="checkbox-paid btn col btn-success"
-                  v-on:click="toggle_paid(order)"
-                  value="Paid"/>
-           <input v-else type="button" class="checkbox-paid btn col btn-danger"
-                  v-on:click="toggle_paid(order)"
-                  value="Paid"/>
-           <input v-if="order.ready" type="button" class="checkbox-ready btn col btn-success"
-                  v-on:click="toggle_ready(order)"
-                  value="Ready"/>
-           <input v-else type="button" class="checkbox-ready btn col btn-danger"
-                  v-on:click="toggle_ready(order)"
-                  value="Ready"/>
+    <div v-if="!shift.finalized" class="col-12 col-lg-3 d-inline-flex gap-2">
+           <button v-if="order.paid" type="button" class="checkbox-paid btn col btn-success"
+                   v-on:click="toggle_paid(order)">Paid <i class="fa-regular fa-circle-check"></i></button>
+           <button v-else type="button" class="checkbox-paid btn col btn-danger"
+                   v-on:click="toggle_paid(order)">Paid <i class="fa-regular fa-circle-xmark"></i></button>
+           <button v-if="order.ready" type="button" class="checkbox-ready btn col btn-success"
+                  v-on:click="toggle_ready(order)">Ready <i class="fa-regular fa-circle-check"></i></button>
+           <button v-else type="button" class="checkbox-ready btn col btn-danger"
+                  v-on:click="toggle_ready(order)">Ready <i class="fa-regular fa-circle-xmark"></i></button>
        </div>
 </ul>
