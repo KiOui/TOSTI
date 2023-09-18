@@ -46,7 +46,11 @@ SPOTIFY_CACHE_PATH = os.path.join(BASE_DIR, "cache/spotify")  # noqa
 MARIETJE_CACHE_PATH = os.path.join(BASE_DIR, "cache/marietje")  # noqa
 
 CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
     }
 }
+
+# Yivi settings
+YIVI_SERVER = "https://yivi.larsvanrhijn.nl"
+YIVI_TOKEN = "test-token-tosti"

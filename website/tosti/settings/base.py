@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "silvasoft",
     "oauth2_provider",
     "corsheaders",
+    "age",
     "fridges",
 ]
 
@@ -160,7 +161,7 @@ OAUTH2_PROVIDER = {
         "transactions:write": "Create transactions",
     },
 }
-OAUTH2_PROVIDER_APPLICATION_MODEL = 'oauth2_provider.Application'
+OAUTH2_PROVIDER_APPLICATION_MODEL = "oauth2_provider.Application"
 
 LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/"

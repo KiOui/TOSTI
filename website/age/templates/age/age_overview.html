@@ -1,0 +1,28 @@
+{% load static %}
+
+<h2>Age check</h2>
+{% if is_over_18 %}
+    <div class="alert alert-success">
+        You have been verified to be over 18 years old.
+    </div>
+{% else %}
+    <div class="alert alert-danger">
+        You have not been verified to be over 18 years old yet, please verify down below.
+    </div>
+    <button class="btn btn-primary mx-auto" data-bs-toggle="modal" data-bs-target="#verify-age-modal">Verify your age</button>
+
+    <div class="modal" id="verify-age-modal" tabindex="-1" role="dialog" aria-labelledby="verify-age-modal-label" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Verify your age</h3>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body"></div>
+                <div class="modal-footer"></div>
+            </div>
+        </div>
+    </div>
+{% endif %}
