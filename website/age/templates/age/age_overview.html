@@ -22,14 +22,14 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body d-flex justify-content-center">
                     <section class="yivi-web-form" id="yivi-web-form"></section>
                 </div>
                 <div class="modal-footer"></div>
             </div>
         </div>
     </div>
-    <script src="{% static "age/js/yivi.js" %}" type="text/javascript"></script>
+    <script src="{% static "yivi/js/yivi.js" %}" type="text/javascript"></script>
     <script>
         const yiviWeb = yivi.newWeb({
             debugging: true,
@@ -40,10 +40,13 @@
                     method: 'POST',
                     headers: {
                         "X-CSRFToken": get_csrf_token(),
+                        "Accept": 'application/json',
+                        "Content-Type": 'application/json',
                     },
+                    body: '{{ disclose }}',
                 },
                 result: {
-                    url: (o, {sessionPtr, sessionToken}) => `/api/v1/age/session/${sessionToken}/result/`,
+                    url: (o, {sessionPtr, sessionToken}) => `/api/v1/yivi/session/${sessionToken}/result/`,
                     method: 'GET',
                     headers: {
                         "X-CSRFToken": get_csrf_token(),
@@ -53,7 +56,14 @@
         });
 
         yiviWeb.start()
-            .then(result => console.log("Successful disclosure! 🎉", result))
-            .catch(error => console.error("Couldn't do what you asked 😢", error));
+            .then(result => {
+                tata.success("", "Your age has been verified. You will be redirected in a couple of seconds.");
+                setTimeout(() => {
+                    window.location.reload();
+                }, 3000)
+            })
+            .catch(error => {
+                tata.error("", `Failed to verify your age, the following error occurred: ${error}`);
+            });
     </script>
 {% endif %}

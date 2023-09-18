@@ -2,9 +2,10 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from age.models import SessionMapping
-from age.services import get_yivi_client
-from age.yivi import YiviException
+from yivi import signals
+from yivi.models import Session
+from yivi.services import get_yivi_client
+from yivi.yivi import YiviException
 from tosti.api.permissions import IsAuthenticatedOrTokenHasScopeForMethod
 
 
@@ -23,19 +24,23 @@ class YiviStartAPIView(APIView):
     def post(self, request, **kwargs):
         """Start a Yivi request."""
         yivi_client = get_yivi_client()
+        disclose = request.data.get("disclose", None)
+        if disclose is None:
+            return Response(status=400, data="Parameter 'disclose' must be specified.")
+
         try:
             response = yivi_client.start_session(
                 {
                     "@context": "https://irma.app/ld/request/disclosure/v2",
-                    "disclose": [[["irma-demo.MijnOverheid.ageLower.over18"]]],
+                    "disclose": disclose,
                 }
             )
         except YiviException as e:
             return Response(status=e.http_status, data=e.msg)
 
         token = response["token"]
-        session_mapping = SessionMapping.objects.create(session_token=token)
-        response["token"] = session_mapping.id
+        session = Session.objects.create(session_token=token, user=request.user)
+        response["token"] = session.id
         return Response(data=response)
 
 
@@ -55,8 +60,15 @@ class YiviResultAPIView(APIView):
         """Get the result of a Yivi session."""
         yivi_client = get_yivi_client()
         session_uuid = kwargs.get("pk")
-        session = get_object_or_404(SessionMapping, pk=session_uuid)
+        session = get_object_or_404(Session, pk=session_uuid, user=request.user)
         try:
-            return Response(data=yivi_client.session_result(session.session_token))
+            response = yivi_client.session_result(session.session_token)
         except YiviException as e:
             return Response(status=e.http_status, data=e.msg)
+
+        response["token"] = session.id
+
+        if response.get("proofStatus") == "VALID":
+            signals.attributes_verified.send_robust(self.__class__, session=session, attributes=response["disclosed"])
+
+        return Response(data=response)

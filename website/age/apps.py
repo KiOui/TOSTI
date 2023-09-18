@@ -18,6 +18,8 @@ class AgeConfig(AppConfig):
             AgeOverviewView,
         )
 
+        from age import signals  # noqa
+
         def filter_user_page(user_page_list: list):
             """Add age overview tab on accounts page."""
             user_page_list.append(

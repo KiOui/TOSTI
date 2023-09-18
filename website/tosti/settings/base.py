@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "silvasoft",
     "oauth2_provider",
     "corsheaders",
+    "yivi",
     "age",
     "fridges",
 ]
@@ -260,3 +261,5 @@ CRON_CLASSES = [
 ]
 
 DJANGO_CRON_DELETE_LOGS_OLDER_THAN = 14
+
+AGE_VERIFICATION_DISCLOSE_ATTRIBUTE = "irma-demo.MijnOverheid.ageLower.over18"

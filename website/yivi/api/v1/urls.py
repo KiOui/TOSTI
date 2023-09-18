@@ -1,5 +1,5 @@
 from django.urls import path
-from age.api.v1.views import YiviStartAPIView, YiviResultAPIView
+from yivi.api.v1.views import YiviStartAPIView, YiviResultAPIView
 
 
 urlpatterns = [

@@ -1,6 +1,10 @@
+import json
+
+from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from django.template.loader import render_to_string
+from django.utils.safestring import mark_safe
 from django.views.generic import TemplateView
 
 from age import models
@@ -15,10 +19,20 @@ class AgeOverviewView(LoginRequiredMixin, TemplateView):
         """Get Age Overview View."""
 
         is_18_years_old = models.Is18YearsOld.objects.filter(user=request.user).exists()
-        rendered_tab = render_to_string("age/age_overview.html", context={"is_over_18": is_18_years_old})
+        rendered_tab = render_to_string(
+            "age/age_overview.html",
+            context={
+                "is_over_18": is_18_years_old,
+                "disclose": mark_safe(json.dumps({"disclose": [[[settings.AGE_VERIFICATION_DISCLOSE_ATTRIBUTE]]]})),
+            },
+        )
 
         return render(
             request,
             self.template_name,
-            {"active": kwargs.get("active"), "tabs": kwargs.get("tabs"), "rendered_tab": rendered_tab},
+            {
+                "active": kwargs.get("active"),
+                "tabs": kwargs.get("tabs"),
+                "rendered_tab": rendered_tab,
+            },
         )

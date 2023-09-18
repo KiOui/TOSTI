@@ -1,6 +1,6 @@
 from django.conf import settings
 
-from age.yivi import Yivi
+from yivi.yivi import Yivi
 
 
 def get_yivi_client() -> Yivi:
