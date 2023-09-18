@@ -124,13 +124,12 @@ class Yivi:
 
     def start_session(self, payload):
         """Start a Yivi session."""
-        response = self._post("/session/", payload=payload)
-        # TODO: Save token somewhere.
-        token = response["token"]
-        print(token)
-        del response["token"]
-        return response
+        return self._post("/session/", payload=payload)
 
     def session_status(self, token):
         """Get the session status of a session."""
         return self._get(f"/session/{token}/status")
+
+    def session_result(self, token):
+        """Get the session result."""
+        return self._get(f"/session/{token}/result")
