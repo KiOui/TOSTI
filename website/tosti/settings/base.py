@@ -258,8 +258,10 @@ CRON_CLASSES = [
     "thaliedje.crons.StopMusicCronJob",
     "thaliedje.crons.StartMusicCronJob",
     "silvasoft.crons.SynchronizeSilvasoft",
+    "yivi.crons.CleanupSessionCronJob",
 ]
 
 DJANGO_CRON_DELETE_LOGS_OLDER_THAN = 14
 
+# TODO: We might rather place [[["irma-demo.MijnOverheid.ageLower.over18"]]] here and create a function that can verify the requested attribute combination below with the proven attributes in age/signals.py
 AGE_VERIFICATION_DISCLOSE_ATTRIBUTE = "irma-demo.MijnOverheid.ageLower.over18"

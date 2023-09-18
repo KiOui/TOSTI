@@ -13,6 +13,7 @@ def update_is_over_18(sender, **kwargs):
         return
 
     attributes = kwargs.get("attributes")
+    # TODO: How to verify proven attributes with requested attributes?
     for attribute_conjuction_clause in attributes:
         for attribute_disjunction_clause in attribute_conjuction_clause:
             attribute_id = attribute_disjunction_clause["id"]
