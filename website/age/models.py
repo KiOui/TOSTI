@@ -1,5 +1,3 @@
-import uuid
-
 from django.contrib.auth import get_user_model
 from django.db import models
 
@@ -7,8 +5,14 @@ from django.db import models
 User = get_user_model()
 
 
-class Is18YearsOld(models.Model):
-    """Class to check whether someone has a legal drinking age."""
+class AgeRegistration(models.Model):
+    """Class to save an age registration."""
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="is_18_years_old")
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    minimum_age = models.PositiveIntegerField()
+
+    def __str__(self):
+        """Convert this object to string."""
+        return f"{self.user} ({self.created_at})"
