@@ -16,7 +16,6 @@ class AgeOverviewView(LoginRequiredMixin, TemplateView):
 
     def get(self, request, **kwargs):
         """Get Age Overview View."""
-
         minimum_registered_age = get_minimum_age(request.user)
         rendered_tab = render_to_string(
             "age/age_overview.html",
