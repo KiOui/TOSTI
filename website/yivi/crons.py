@@ -1,4 +1,9 @@
+from datetime import timedelta
+
+from django.utils import timezone
 from django_cron import CronJobBase, Schedule
+
+from yivi import models
 
 
 class CleanupSessionCronJob(CronJobBase):
@@ -6,12 +11,10 @@ class CleanupSessionCronJob(CronJobBase):
 
     RUN_EVERY_MINS = 60 * 24
     RETRY_AFTER_FAILURE_MINS = 30
-    schedule = Schedule(
-        run_every_mins=RUN_EVERY_MINS, retry_after_failure_mins=RETRY_AFTER_FAILURE_MINS, run_on_days=WEEKDAYS
-    )
+    schedule = Schedule(run_every_mins=RUN_EVERY_MINS, retry_after_failure_mins=RETRY_AFTER_FAILURE_MINS)
     code = "yivi.cleanupsessions"
 
     def do(self):
         """Cleanup sessions."""
-        # TODO: write this
-        pass
+        cleanup_before_date = timezone.now() - timedelta(days=1)
+        models.Session.objects.filter(created_at__lt=cleanup_before_date).delete()

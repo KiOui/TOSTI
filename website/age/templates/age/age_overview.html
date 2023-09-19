@@ -1,13 +1,13 @@
 {% load static %}
 
 <h2>Age check</h2>
-{% if is_over_18 %}
+{% if minimum_registered_age %}
     <div class="alert alert-success">
-        You have been verified to be over 18 years old.
+        You have been verified to be over {{ minimum_registered_age }} years old.
     </div>
 {% else %}
     <div class="alert alert-danger">
-        You have not been verified to be over 18 years old yet, please verify down below.
+        Your age has not been verified yet, please verify your age by pressing the button below.
     </div>
     <button class="btn btn-primary mx-auto" data-bs-toggle="modal" data-bs-target="#verify-age-modal">Verify your age
     </button>
@@ -32,7 +32,7 @@
     <script src="{% static "yivi/js/yivi.js" %}" type="text/javascript"></script>
     <script>
         const yiviWeb = yivi.newWeb({
-            debugging: true,
+            debugging: false,
             element: '#yivi-web-form',
             session: {
                 start: {
@@ -55,15 +55,27 @@
             }
         });
 
-        yiviWeb.start()
-            .then(result => {
-                tata.success("", "Your age has been verified. You will be redirected in a couple of seconds.");
-                setTimeout(() => {
-                    window.location.reload();
-                }, 3000)
-            })
-            .catch(error => {
-                tata.error("", `Failed to verify your age, the following error occurred: ${error}`);
-            });
+        let started = false;
+
+        document.getElementById("verify-age-modal").addEventListener('shown.bs.modal', () => {
+            if (started === true) {
+                return;
+            }
+
+            started = true;
+            yiviWeb.start()
+                .then(() => {
+                    tata.success("", "Your age has been verified. You will be redirected in a couple of seconds.");
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 3000)
+                })
+                .catch(error => {
+                    if (error === "Aborted") {
+                        return;
+                    }
+                    tata.error("", `Failed to verify your age, the following error occurred: ${error}`);
+                });
+        });
     </script>
 {% endif %}

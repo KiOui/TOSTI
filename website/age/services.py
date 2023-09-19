@@ -1,5 +1,3 @@
-import json
-
 from django.conf import settings
 from django.contrib.auth import get_user_model
 
@@ -10,12 +8,17 @@ User = get_user_model()
 
 def verify_minimum_age(user: User, minimum_age: int = 18) -> bool:
     """Verify whether someone has a certain minimum age."""
+    minimum_registered_age = get_minimum_age(user)
+    return minimum_registered_age is not None and minimum_registered_age >= minimum_age
+
+
+def get_minimum_age(user: User):
+    """Get the minimum age of a user."""
     try:
         age_registration = models.AgeRegistration.objects.get(user=user)
     except models.AgeRegistration.DoesNotExist:
-        return False
-
-    return age_registration.minimum_age >= minimum_age
+        return None
+    return age_registration.minimum_age
 
 
 def construct_disclose_tree():
@@ -37,17 +40,29 @@ def get_proven_attributes_from_proof_tree(proof_tree):
     for attribute_conjuction_clause in proof_tree:
         for possibly_proven_attribute in attribute_conjuction_clause:
             if possibly_proven_attribute["status"] == "PRESENT":
-                attribute_id = possibly_proven_attribute["id"]
-                proven_attributes.append(attribute_id)
+                proven_attributes.append(possibly_proven_attribute)
     return proven_attributes
 
 
-def get_highest_proven_age_from_proven_attributes(proven_attributes: [str]):
+def get_highest_proven_age_from_proven_attributes(proven_attributes):
     """Get the highest minimum age from the proven attributes."""
     highest_age = None
     for proven_attribute in proven_attributes:
-        if proven_attribute in settings.AGE_VERIFICATION_MINIMUM_AGE_MAPPING.keys():
-            proven_attribute_minimum_age = settings.AGE_VERIFICATION_MINIMUM_AGE_MAPPING[proven_attribute]
+        proven_attribute_id = proven_attribute["id"]
+        if proven_attribute_id in settings.AGE_VERIFICATION_MINIMUM_AGE_MAPPING.keys():
+            proven_attribute_minimum_age = settings.AGE_VERIFICATION_MINIMUM_AGE_MAPPING[proven_attribute_id]
             if highest_age is None or highest_age < proven_attribute_minimum_age:
                 highest_age = proven_attribute_minimum_age
     return highest_age
+
+
+def get_username_from_proven_attributes(proven_attributes):
+    """Get the username attribute value from a proof tree."""
+    if settings.AGE_VERIFICATION_USERNAME_ATTRIBUTE is None:
+        return None
+
+    for proven_attribute in proven_attributes:
+        proven_attribute_id = proven_attribute["id"]
+        if proven_attribute_id == settings.AGE_VERIFICATION_USERNAME_ATTRIBUTE:
+            return proven_attribute["rawvalue"]
+    return None

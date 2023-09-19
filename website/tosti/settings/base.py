@@ -271,5 +271,6 @@ AGE_VERIFICATION_MINIMUM_AGE_MAPPING = {
     "pbdf.pilot-amsterdam.idcard.over18": 18,
     "pbdf.nijmegen.ageLimits.over18": 18,
 }
-# TODO: Add verification username attribute
+
+# AGE_VERIFICATION_USERNAME_ATTRIBUTE = "pbdf.pbdf.surfnet-2.id"
 AGE_VERIFICATION_USERNAME_ATTRIBUTE = None

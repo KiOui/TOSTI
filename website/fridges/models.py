@@ -28,6 +28,14 @@ class Fridge(models.Model):
         related_name="fridges",
     )
 
+    minimum_age = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        default=18,
+        help_text="Minimum age required for a user to open the fridge. People with 'open always' permissions can "
+        "always open the fridge, regardless of what their age is.",
+    )
+
     def __str__(self):
         """Convert this object to string."""
         return self.name

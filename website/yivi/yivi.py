@@ -65,13 +65,11 @@ class Yivi:
             response = http_error.response
             try:
                 json_response = response.json()
-                # TODO: Verify this
-                error = json_response.get("error", {})
-                msg = error.get("message")
-                reason = error.get("reason")
+                reason = json_response.get("error", None)
+                msg = json_response.get("description")
             except ValueError:
-                msg = response.text or None
                 reason = None
+                msg = response.text or None
             raise YiviException(
                 response.status_code,
                 -1,

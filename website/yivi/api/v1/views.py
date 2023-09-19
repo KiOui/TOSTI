@@ -2,6 +2,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from tosti.api.openapi import CustomAutoSchema
 from yivi import signals
 from yivi.models import Session
 from yivi.services import get_yivi_client
@@ -20,6 +21,38 @@ class YiviStartAPIView(APIView):
     required_scopes_for_method = {
         "POST": ["write"],
     }
+    schema = CustomAutoSchema(
+        request_schema={
+            "type": "object",
+            "properties": {
+                "disclose": {
+                    "type": "array",
+                    "items": {"type": "array", "items": {"type": "array", "items": {"type": "string"}}},
+                },
+            },
+        },
+        response_schema={
+            "type": "object",
+            "properties": {
+                "sessionPtr": {
+                    "type": "object",
+                    "properties": {
+                        "u": {"type": "string", "format": "url"},
+                        "irmaqr": {"type": "string"},
+                    },
+                },
+                "token": {"type": "string"},
+                "frontendRequest": {
+                    "type": "object",
+                    "properties": {
+                        "authorization": {"type": "string"},
+                        "minProtocolVersion": {"type": "string"},
+                        "maxProtocolVersion": {"type": "string"},
+                    },
+                },
+            },
+        },
+    )
 
     def post(self, request, **kwargs):
         """Start a Yivi request."""
@@ -55,6 +88,33 @@ class YiviResultAPIView(APIView):
     required_scopes_for_method = {
         "GET": ["write"],
     }
+    schema = CustomAutoSchema(
+        response_schema={
+            "type": "object",
+            "properties": {
+                "token": {"type": "string"},
+                "status": {"type": "string"},
+                "type": {"type": "string"},
+                "proofStatus": {"type": "string"},
+                "disclosed": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "rawvalue": {"type": "string"},
+                                "value": {"type": "object", "properties": {"": {"type": "string"}}},
+                                "id": {"type": "string"},
+                                "status": {"type": "string"},
+                                "issuancetime": {"type": "integer"},
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    )
 
     def get(self, request, **kwargs):
         """Get the result of a Yivi session."""
