@@ -1,0 +1,48 @@
+{% load static %}
+
+<div class="container mt-5 mb-5 text-center">
+    <h2>How to verify your age with Yivi?</h2>
+    <h6>After verification you will be able to open the beer fridge!</h6>
+</div>
+<p>
+    T.O.S.T.I. uses <a href="https://www.yivi.app/en">Yivi</a> for verifying your age online. Yivi was created on the
+    Radboud University and is a system that allows you to only share the data that is absolutely necessary for
+    a third party. In this case, T.O.S.T.I. will not get to know your birthdate but rather only whether you are
+    over 18 years old or not. More information about Yivi can be found on their website.
+</p>
+<hr>
+<h3><i class="fa-solid fa-mobile-screen-button"></i><br>1. Install the Yivi app</h3>
+<p>
+    If you want to verify your age with Yivi, you need to download the Yivi app on the App Store or Google Play
+    Store. After that, you can set up an account in the app.
+</p>
+<hr>
+<h3><i class="fa-solid fa-qrcode"></i><br>2. Scan the QR code</h3>
+<p>
+    After your account is set up, you can click the <button class="btn btn-primary">Verify your age</button> button on
+    the <a href="{% url 'users:account' %}?active=age">age verification page</a>. A popup will come up and show the
+    Yivi QR code. Open the QR code scanner in the Yivi app and scan the QR code.
+</p>
+<hr>
+<h3><i class="fa-solid fa-user-tag"></i><br>3. Load the required attributes</h3>
+<p>
+    The Yivi app will now show the information that T.O.S.T.I. needs to verify. You can load this information by
+    following the steps in the app. Currently, T.O.S.T.I. requires two pieces of information:
+</p>
+<ol>
+    <li>Whether you are older than 18 years: This attribute can be loaded using multiple methods such as via DigID or
+    your municipality.</li>
+    <li>Your student number: This attribute can be loaded using the SURF login and is used to verify that your
+        T.O.S.T.I. account corresponds to the account in Yivi.</li>
+</ol>
+<p>
+    Make sure to log in with the same student number as the one with which you are logged in to T.O.S.T.I. If you use
+    a different student number the age verification will not work.
+</p>
+<hr>
+<h3><i class="fa-solid fa-arrow-up-from-bracket"></i><br>4. Share the attributes with T.O.S.T.I.</h3>
+<p>
+    Once you loaded the required attributes, you can share them with T.O.S.T.I. by following the steps in the Yivi app.
+    T.O.S.T.I. will give you a success message and the page will reload, after the page reload your age will be
+    verified.
+</p>

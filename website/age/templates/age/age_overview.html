@@ -1,81 +1,100 @@
 {% load static %}
 
 <h2>Age check</h2>
-{% if minimum_registered_age %}
-    <div class="alert alert-success">
-        You have been verified to be over {{ minimum_registered_age }} years old.
-    </div>
-{% else %}
-    <div class="alert alert-danger">
-        Your age has not been verified yet, please verify your age by pressing the button below.
-    </div>
-    <button class="btn btn-primary mx-auto" data-bs-toggle="modal" data-bs-target="#verify-age-modal">Verify your age
-    </button>
-
-    <div class="modal" id="verify-age-modal" tabindex="-1" role="dialog" aria-labelledby="verify-age-modal-label"
-         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title">Verify your age</h3>
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body d-flex justify-content-center">
-                    <section class="yivi-web-form" id="yivi-web-form"></section>
-                </div>
-                <div class="modal-footer"></div>
+<div class="row justify-content-center">
+    <div class="col-8 col-sm-offset-2">
+        <p>
+            Some actions (such as opening the beer fridge) require you to proof that you are 18 years or older. To
+            proof that you are of a certain age, you can do two things:
+        </p>
+        <ol>
+            <li>Ask a <a href="{% url 'users:staff' %}">staff member</a> to verify your birthdate by using a passport
+                or identity card.</li>
+            <li>Use the online verification method below to proof that you have a certain age.</li>
+        </ol>
+        <p>
+            The first method does not require much explanation but the second method requires some more setup. If you
+            want more information about using the online verification, please read the explainer on the
+            <a href="{% url 'explainers' %}">Explainers page</a>.
+        </p>
+        {% if minimum_registered_age %}
+            <div class="alert alert-success">
+                You have been verified to be over {{ minimum_registered_age }} years old.
             </div>
-        </div>
-    </div>
-    <script src="{% static "yivi/js/yivi.js" %}" type="text/javascript"></script>
-    <script>
-        const yiviWeb = yivi.newWeb({
-            debugging: false,
-            element: '#yivi-web-form',
-            session: {
-                start: {
-                    url: () => '{% url "v1:yivi_start" %}',
-                    method: 'POST',
-                    headers: {
-                        "X-CSRFToken": get_csrf_token(),
-                        "Accept": 'application/json',
-                        "Content-Type": 'application/json',
-                    },
-                    body: '{{ disclose }}',
-                },
-                result: {
-                    url: (o, {sessionPtr, sessionToken}) => `/api/v1/yivi/session/${sessionToken}/result/`,
-                    method: 'GET',
-                    headers: {
-                        "X-CSRFToken": get_csrf_token(),
-                    },
-                }
-            }
-        });
+        {% else %}
+            <div class="alert alert-danger">
+                Your age has not been verified yet, please verify your age by pressing the button below.
+            </div>
+            <div class="d-flex justify-content-center">
+                <button class="btn btn-primary mx-auto" data-bs-toggle="modal" data-bs-target="#verify-age-modal">Verify your age
+                </button>
+            </div>
 
-        let started = false;
+            <div class="modal" id="verify-age-modal" tabindex="-1" role="dialog" aria-labelledby="verify-age-modal-label"
+                 aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title">Verify your age</h3>
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body d-flex justify-content-center flex-column align-items-center">
+                            <section class="yivi-web-form w-100" style="max-width: unset" id="yivi-web-form"></section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script src="{% static "yivi/js/yivi.js" %}" type="text/javascript"></script>
+            <script>
+                const yiviWeb = yivi.newWeb({
+                    debugging: false,
+                    element: '#yivi-web-form',
+                    session: {
+                        start: {
+                            url: () => '{% url "v1:yivi_start" %}',
+                            method: 'POST',
+                            headers: {
+                                "X-CSRFToken": get_csrf_token(),
+                                "Accept": 'application/json',
+                                "Content-Type": 'application/json',
+                            },
+                            body: '{{ disclose }}',
+                        },
+                        result: {
+                            url: (o, {sessionPtr, sessionToken}) => `/api/v1/yivi/session/${sessionToken}/result/`,
+                            method: 'GET',
+                            headers: {
+                                "X-CSRFToken": get_csrf_token(),
+                            },
+                        }
+                    }
+                });
 
-        document.getElementById("verify-age-modal").addEventListener('shown.bs.modal', () => {
-            if (started === true) {
-                return;
-            }
+                let started = false;
 
-            started = true;
-            yiviWeb.start()
-                .then(() => {
-                    tata.success("", "Your age has been verified. You will be redirected in a couple of seconds.");
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 3000)
-                })
-                .catch(error => {
-                    if (error === "Aborted") {
+                document.getElementById("verify-age-modal").addEventListener('shown.bs.modal', () => {
+                    if (started === true) {
                         return;
                     }
-                    tata.error("", `Failed to verify your age, the following error occurred: ${error}`);
+
+                    started = true;
+                    yiviWeb.start()
+                        .then(() => {
+                            tata.success("", "Your age has been verified. You will be redirected in a couple of seconds.");
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 3000)
+                        })
+                        .catch(error => {
+                            if (error === "Aborted") {
+                                return;
+                            }
+                            tata.error("", `Failed to verify your age, the following error occurred: ${error}`);
+                        });
                 });
-        });
-    </script>
-{% endif %}
+            </script>
+        {% endif %}
+    </div>
+</div>
