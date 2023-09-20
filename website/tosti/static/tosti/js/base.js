@@ -63,6 +63,12 @@ function set_list_cookie(name, list, days) {
     }
 }
 
+function setQueryParameter(key, value) {
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set(key, value);
+    window.location.search = urlParams.toString();
+}
+
 function replace_container(container, data) {
     container.innerHTML = data;
 }

@@ -21,7 +21,7 @@ def get_minimum_age(user: User):
     return age_registration.minimum_age
 
 
-def construct_disclose_tree():
+def construct_disclose_tree(user: User):
     """Construct the disclose tree."""
     yivi_disclose_tree = []
     yivi_age_disclose_tree = []
@@ -30,7 +30,18 @@ def construct_disclose_tree():
 
     yivi_disclose_tree.append(yivi_age_disclose_tree)
     if settings.AGE_VERIFICATION_USERNAME_ATTRIBUTE is not None:
-        yivi_disclose_tree.append([[settings.AGE_VERIFICATION_USERNAME_ATTRIBUTE]])
+        yivi_disclose_tree.append(
+            [
+                [
+                    {"type": settings.AGE_VERIFICATION_USERNAME_ATTRIBUTE, "value": user.username},
+                    {
+                        "type": settings.AGE_VERIFICATION_INSTITUTE_ATTRIBUTE,
+                        "value": settings.AGE_VERIFICATION_INSTITUTE_VALUE,
+                    },
+                ]
+            ]
+        )
+
     return yivi_disclose_tree
 
 
