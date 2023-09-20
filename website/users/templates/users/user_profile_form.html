@@ -1,11 +1,15 @@
 {% load django_bootstrap5 %}
 
-<h2>Personal details</h2>
 <div class="row justify-content-center">
-    <form method="post" class="col-8 col-sm-offset-2">
-        {% csrf_token %}
-        {% bootstrap_form form %}
-        <input name="active" type="hidden" value="account"/>
-        {% bootstrap_button button_type="submit" content="Save" extra_classes="mt-4 w-100" %}
-    </form>
+    <div class="col-12 col-lg-6">
+        <h2>Personal details</h2>
+        <div class="row justify-content-center">
+            <form method="post">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                <input name="active" type="hidden" value="account"/>
+                {% bootstrap_button button_type="submit" content="Save" extra_classes="mt-4 w-100" %}
+            </form>
+        </div>
+    </div>
 </div>

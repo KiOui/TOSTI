@@ -19,7 +19,7 @@ class OrdersConfig(AppConfig):
             explainer_page_how_to_order_tab,
             explainer_page_how_to_manage_shift_tab,
             explainer_page_how_to_hand_in_deposit,
-            explainer_page_how_to_handle_a_deposit,
+            explainer_page_how_to_process_deposit,
         )
         from tosti.views import ExplainerView
 
@@ -38,30 +38,30 @@ class OrdersConfig(AppConfig):
             """Add explainer pages."""
             explainer_page_list.append(
                 {
-                    "name": "How to order?",
+                    "name": "Order",
                     "slug": "how-to-order",
                     "renderer": explainer_page_how_to_order_tab,
                 }
             )
             explainer_page_list.append(
                 {
-                    "name": "How to manage a shift?",
+                    "name": "Manage a shift",
                     "slug": "how-to-manage-shift",
                     "renderer": explainer_page_how_to_manage_shift_tab,
                 }
             )
             explainer_page_list.append(
                 {
-                    "name": "How to hand in deposit?",
+                    "name": "Hand in deposit",
                     "slug": "how-to-hand-in-deposit",
                     "renderer": explainer_page_how_to_hand_in_deposit,
                 }
             )
             explainer_page_list.append(
                 {
-                    "name": "How to handle a deposit?",
-                    "slug": "how-to-handle-a-deposit",
-                    "renderer": explainer_page_how_to_handle_a_deposit,
+                    "name": "Process deposit",
+                    "slug": "how-to-process-deposit",
+                    "renderer": explainer_page_how_to_process_deposit,
                 }
             )
             return explainer_page_list

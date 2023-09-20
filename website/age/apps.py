@@ -34,8 +34,8 @@ class AgeConfig(AppConfig):
             """Add explainer pages."""
             explainer_page_list.append(
                 {
-                    "name": "How to verify your age with Yivi?",
-                    "slug": "how-to-verify-your-age-with-yivi",
+                    "name": "Verify your age with Yivi",
+                    "slug": "verify-your-age-with-yivi",
                     "renderer": explainer_page_how_to_verify_age_with_yivi,
                 }
             )
