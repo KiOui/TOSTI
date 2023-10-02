@@ -17,4 +17,4 @@ class AgeRegistrationAdminForm(forms.ModelForm):
         labels = {
             "verified_by_user": "Verified by",
         }
-        fields = ["user", "minimum_age"]
+        fields = ["user", "minimum_age", "attributes"]
