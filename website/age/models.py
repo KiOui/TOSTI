@@ -12,6 +12,8 @@ class AgeRegistration(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     minimum_age = models.PositiveIntegerField()
+    verified_by = models.CharField(max_length=100, null=True, blank=True)
+    verified_by_user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         """Convert this object to string."""

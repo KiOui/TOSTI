@@ -26,9 +26,13 @@ def update_minimum_age_when_proven(sender, **kwargs):
     try:
         age_registration = models.AgeRegistration.objects.get(user=session.user)
     except models.AgeRegistration.DoesNotExist:
-        models.AgeRegistration.objects.create(user=session.user, minimum_age=minimum_proven_age)
+        models.AgeRegistration.objects.create(
+            user=session.user, minimum_age=minimum_proven_age, verified_by="Yivi", verified_by_user=None
+        )
         return
 
     if age_registration.minimum_age < minimum_proven_age:
         age_registration.minimum_age = minimum_proven_age
+        age_registration.verified_by = "Yivi"
+        age_registration.verified_by_user = None
         age_registration.save()
