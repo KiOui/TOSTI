@@ -3,38 +3,38 @@
 <link rel="stylesheet" href="{% static 'orders/css/item-list.css' %}"/>
 
 <div class="container mt-5 mb-5 text-center">
-    <h2>How to process deposit (statiegeld)?</h2>
+    <h2>How to process deposit?</h2>
     <h6>Help recycling cans!</h6>
 </div>
 <p>
     Tartarus sells items that sometimes have a deposit on them (for example, the tin cans with soda). These cans can
     be handed in at the counter for recycling. If a user hands in a used can with deposit, they receive a balance in
-    T.O.S.T.I. that can be used for discount on future purchases. This guide will show you how to process a user that
+    TOSTI that can be used for discount on future purchases. This guide will show you how to process a user that
     wants to hand in a deposit.
 </p>
 <hr>
 <h3><i class="fa-solid fa-sign-in-alt"></i><br>1. Go to a running shift</h3>
 <p>
-    Deposit can only be added or used if a shift is open. If you are not sure how to enter a shift, please refer to the
-    "How to manage a shift?" tab above. Make sure you are in the administrator view of a running shift.
+    Deposit can only be processed during a TOSTI-shift. If you are not sure how to start a shift, please refer to the
+    "How to manage a shift?" tab above. Make sure you are in the baker view of the shift.
 </p>
 <hr>
 <h3><i class="fa-solid fa-piggy-bank"></i><br>2. Let the user open an account</h3>
 <p>
-    Before the user can hand in a deposit, they need to open an account in T.O.S.T.I. Users can open an account by
-    going to the <a href="{% url 'users:account' %}?active=transactions">"Transactions" tab under the Account view</a>.
+    Before the user can hand in a deposit, they need to open an account in TOSTI. Users can open an account by
+    going to the <a href="{% url 'users:account' %}?active=transactions">"Transactions" tab</a> for their account.
 </p>
 <hr>
 <h3><i class="fa-solid fa-user"></i><br>3. Let the user open their personal QR code</h3>
 <p>
-    The user should now open their personal QR code by pressing the <i class="fa-solid fa-qrcode fa-xl"></i> button in
-    the header.
+    The user should identify themselves to you with their personal TOSTI-QR code, by pressing the <i class="fa-solid fa-qrcode fa-xl"></i> button in
+    the top-right corner when they are logged in to TOSTI.
 </p>
 <hr>
 <h3><i class="fa-solid fa-qrcode"></i><br>4. Open the QR code scanner</h3>
 <p>
-    Now you can open the scanner on the shift administrator screen by pressing the <i class="fa-solid fa-qrcode"></i>
-    Scanner button on the admin footer.
+    Now you can open the QR-scanner on the shift administrator screen by pressing the <i class="fa-solid fa-qrcode"></i>
+    scanner button on the bottom of the shift page.
 </p>
 <p>
     A screen will popup asking for permission to use the camera of your device. Press accept to start the

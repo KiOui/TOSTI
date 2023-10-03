@@ -12,6 +12,7 @@ urlpatterns = [
     path("associations/", include("associations.api.v1.urls")),
     path("transactions/", include("transactions.api.v1.urls")),
     path("users/", include("users.api.v1.urls")),
+    path("yivi/", include("yivi.api.v1.urls")),
     path("fridges/", include("fridges.api.v1.urls")),
     path(
         "schema",

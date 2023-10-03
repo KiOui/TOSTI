@@ -100,6 +100,10 @@ CACHES = {
     }
 }
 
+# Yivi settings
+YIVI_SERVER = "***********"
+YIVI_TOKEN = "***********"
+
 
 # SAML SP SETTINGS
 SAML_SESSION_COOKIE_NAME = "saml_session"
@@ -188,3 +192,6 @@ SAML_CONFIG = {
         ],
     },
 }
+
+YIVI_SERVER = "https://yivi.tosti.science.ru.nl"
+YIVI_TOKEN = "test-token-tosti"

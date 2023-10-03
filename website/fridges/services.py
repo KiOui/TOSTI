@@ -1,5 +1,6 @@
 from django.db.models import Q
 
+from age.services import verify_minimum_age
 from fridges.models import AccessLog
 
 
@@ -17,6 +18,9 @@ def user_can_open_fridge(user, fridge):
         return False, None
 
     if user_is_blacklisted(user, fridge):
+        return False, None
+
+    if fridge.minimum_age is not None and not verify_minimum_age(user, fridge.minimum_age):
         return False, None
 
     opening_hours = fridge.current_opening_hours

@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     "silvasoft",
     "oauth2_provider",
     "corsheaders",
+    "yivi",
+    "age",
     "fridges",
 ]
 
@@ -160,7 +162,7 @@ OAUTH2_PROVIDER = {
         "transactions:write": "Create transactions",
     },
 }
-OAUTH2_PROVIDER_APPLICATION_MODEL = 'oauth2_provider.Application'
+OAUTH2_PROVIDER_APPLICATION_MODEL = "oauth2_provider.Application"
 
 LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/"
@@ -256,6 +258,20 @@ CRON_CLASSES = [
     "thaliedje.crons.StopMusicCronJob",
     "thaliedje.crons.StartMusicCronJob",
     "silvasoft.crons.SynchronizeSilvasoft",
+    "yivi.crons.CleanupSessionCronJob",
 ]
 
 DJANGO_CRON_DELETE_LOGS_OLDER_THAN = 14
+
+AGE_VERIFICATION_MINIMUM_AGE_MAPPING = {
+    "pbdf.gemeente.personalData.over18": 18,
+    "pbdf.pbdf.ageLimits.over18": 18,
+    "pbdf.pilot-amsterdam.passport.over18": 18,
+    "pbdf.bzkpilot.personalData.over18": 18,
+    "pbdf.pilot-amsterdam.idcard.over18": 18,
+    "pbdf.nijmegen.ageLimits.over18": 18,
+}
+
+AGE_VERIFICATION_USERNAME_ATTRIBUTE = "pbdf.pbdf.surfnet-2.id"
+AGE_VERIFICATION_INSTITUTE_ATTRIBUTE = "pbdf.pbdf.surfnet-2.institute"
+AGE_VERIFICATION_INSTITUTE_VALUE = "ru.nl"

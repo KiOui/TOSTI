@@ -1,0 +1,47 @@
+{% load static %}
+
+<div class="container mt-5 mb-5 text-center">
+    <h2>How to verify your age with Yivi?</h2>
+    <h6>After verification you will be able to open the beer fridge!</h6>
+</div>
+<p>
+    We use <a href="https://www.yivi.app/en" target="_blank">Yivi</a> for verifying your age online in a secure and privacy-friendly manner.
+    Yivi is an <em>attribute-based credential system</em> that is created at the Radboud University.
+    It is a system that allows you to only share the data that is absolutely necessary.
+    In this case, TOSTI will not get to know your exact birthdate, but only whether you are
+    over 18 years old or not. More information about Yivi can be found <a href="https://www.yivi.app/en" target="_blank">on their website</a>.
+</p>
+<hr>
+<h3><i class="fa-solid fa-mobile-screen-button"></i><br>1. Install the Yivi app</h3>
+<p>
+    If you want to verify your age with Yivi, you need to download the Yivi app from the
+    <a href="https://apps.apple.com/nl/app/irma-authenticatie/id1294092994" target="_blank">App Store</a> or
+    <a href="https://play.google.com/store/apps/details?id=org.irmacard.cardemu" target="_blank">Google Play Store</a>
+    (or <a href="https://f-droid.org/en/packages/org.irmacard.cardemu/" target="_blank">F-Droid</a>).
+</p>
+<hr>
+<h3><i class="fa-solid fa-qrcode"></i><br>2. Scan the QR code</h3>
+<p>
+    Go to the <a href="{% url 'users:account' %}?active=age">age verification page</a> for your account and click the
+    <button class="btn btn-primary">Verify your age with Yivi</button> button.
+    Proceed by scanning the QR code with the Yivi app.
+</p>
+<hr>
+<h3><i class="fa-solid fa-user-tag"></i><br>3. Load the required attributes</h3>
+<p class="mb-3">
+    The Yivi app will now show the information that we need to verify your age.
+    You can load this information by following the steps in the app.
+    Currently, we require two pieces of information:
+</p>
+<ol>
+    <li>Whether you are older than 18 years: Currently, we accept a proof via DigID, iDIN or your municipality.</li>
+    <li>Your student number: This attribute is provided via SURF and is used to verify that your TOSTI-account corresponds to the account in Yivi.
+        Your Yivi student number should match the one of your TOSTI-account for age verification to succeed.
+</li>
+</ol>
+<hr>
+<h3><i class="fa-solid fa-arrow-up-from-bracket"></i><br>4. Share the attributes with TOSTI</h3>
+<p>
+    Once you loaded the required attributes, you can disclose them to TOSTI by following the steps in the Yivi app.
+    You will receive a success message and the page will reload when the verification is successful.
+</p>

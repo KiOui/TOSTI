@@ -1,46 +1,50 @@
 {% load static %}
 
-<h2>Request history</h2>
-<div class="d-flex flex-column justify-content-center">
-    {% if page_obj|length > 0 %}
-        <div class="d-flex my-2">
-            <div class="flex-grow-1" style="flex-basis: 0;">Requested at</div>
-            <div class="flex-grow-1" style="flex-basis: 0;">Venue</div>
-            <div class="flex-grow-1" style="flex-basis: 0;">Track</div>
-            <div class="flex-grow-1" style="flex-basis: 0;">Artists</div>
-        </div>
-        <div class="border"></div>
-        {% for track in page_obj %}
-            <div class="d-flex my-2">
-                <div class="flex-grow-1" style="flex-basis: 0;">{{ track.added }}</div>
-                <div class="flex-grow-1" style="flex-basis: 0;">{{ track.player.venue }}</div>
-                <div class="flex-grow-1" style="flex-basis: 0;">{{ track.track }}</div>
-                <div class="flex-grow-1" style="flex-basis: 0;">
-                    {% for artist in track.track.artists %}
-                        {{ artist }}{% if not forloop.last %}, {% endif %}
-                    {% endfor %}
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-8">
+        <h2>Song request history</h2>
+        <div class="d-flex flex-column justify-content-center">
+            {% if page_obj|length > 0 %}
+                <div class="d-flex my-2">
+                    <div class="flex-grow-1" style="flex-basis: 0;">Requested at</div>
+                    <div class="flex-grow-1" style="flex-basis: 0;">Venue</div>
+                    <div class="flex-grow-1" style="flex-basis: 0;">Track</div>
+                    <div class="flex-grow-1" style="flex-basis: 0;">Artists</div>
                 </div>
-            </div>
-            <div class="border"></div>
-        {% endfor %}
-    {% else %}
-        <p class="alert alert-warning">You have not requested any songs yet.</p>
-    {% endif %}
-</div>
-<div class="container-fluid mt-3 text-center">
-    <span class="step-links">
-        {% if page_obj.has_previous %}
-            <a href="{% url 'users:account' %}?page=1&active=requested_songs">&laquo; first</a>
-            <a href="{% url 'users:account' %}?page={{ page_obj.previous_page_number }}&active=requested_songs">previous</a>
-        {% endif %}
+                <div class="border"></div>
+                {% for track in page_obj %}
+                    <div class="d-flex my-2">
+                        <div class="flex-grow-1" style="flex-basis: 0;">{{ track.added }}</div>
+                        <div class="flex-grow-1" style="flex-basis: 0;">{{ track.player.venue }}</div>
+                        <div class="flex-grow-1" style="flex-basis: 0;">{{ track.track }}</div>
+                        <div class="flex-grow-1" style="flex-basis: 0;">
+                            {% for artist in track.track.artists %}
+                                {{ artist }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="border"></div>
+                {% endfor %}
+            {% else %}
+                <p class="alert alert-warning">You have not requested any songs yet.</p>
+            {% endif %}
+        </div>
+        <div class="container-fluid mt-3 text-center">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="{% url 'users:account' %}?page=1&active=requested_songs">&laquo; first</a>
+                    <a href="{% url 'users:account' %}?page={{ page_obj.previous_page_number }}&active=requested_songs">previous</a>
+                {% endif %}
 
-        <span class="current">
-            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-        </span>
+                <span class="current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                </span>
 
-        {% if page_obj.has_next %}
-            <a href="{% url 'users:account' %}?page={{ page_obj.next_page_number }}&active=requested_songs">next</a>
-            <a href="{% url 'users:account' %}?page={{ page_obj.paginator.num_pages }}&active=requested_songs">last &raquo;</a>
-        {% endif %}
-    </span>
+                {% if page_obj.has_next %}
+                    <a href="{% url 'users:account' %}?page={{ page_obj.next_page_number }}&active=requested_songs">next</a>
+                    <a href="{% url 'users:account' %}?page={{ page_obj.paginator.num_pages }}&active=requested_songs">last &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+    </div>
 </div>
