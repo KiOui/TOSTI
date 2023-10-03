@@ -52,5 +52,5 @@ CACHES = {
 }
 
 # Yivi settings
-YIVI_SERVER = "https://yivi.larsvanrhijn.nl"
+YIVI_SERVER = "https://yivi.tosti.science.ru.nl"
 YIVI_TOKEN = "test-token-tosti"
