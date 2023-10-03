@@ -5,6 +5,7 @@ import time
 from datetime import timedelta
 
 from constance import config
+from django.templatetags.static import static
 from django.core.cache import cache
 from django.core.validators import MinLengthValidator
 from django.db import models
@@ -306,7 +307,7 @@ class MarietjePlayer(Player):
     @property
     def current_image(self):
         """Get the image url for the currently playing song."""
-        return None
+        return str(static("thaliedje/img/marietje-placeholder.png"))
 
     @property
     def current_track_name(self):
