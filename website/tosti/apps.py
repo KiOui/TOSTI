@@ -1,4 +1,5 @@
 from django.apps import AppConfig
+from django.urls import reverse
 
 
 class TostiConfig(AppConfig):
@@ -23,3 +24,21 @@ class TostiConfig(AppConfig):
             return user_page_list
 
         AccountFilterView.user_data_tabs.add_filter(filter_user_page, 5)
+
+    def menu_items(self, _):
+        """Render menu items."""
+        return [
+            {
+                "title": "Home",
+                "url": reverse("index"),
+                "location": "start",
+                "order": 0,
+                "extra_classes": "extra-margin-top-mobile",
+            },
+            {
+                "title": "Help",
+                "url": reverse("explainers"),
+                "location": "start",
+                "order": 1,
+            },
+        ]

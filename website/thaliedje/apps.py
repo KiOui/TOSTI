@@ -1,4 +1,5 @@
 from django.apps import AppConfig
+from django.urls import reverse
 
 
 class ThaliedjeConfig(AppConfig):
@@ -36,3 +37,14 @@ class ThaliedjeConfig(AppConfig):
             return ["You are&nbsp;<b>blacklisted</b>&nbsp;from thaliedje!"]
 
         return []
+
+    def menu_items(self, _):
+        """Render menu items."""
+        return [
+            {
+                "title": "Thaliedje",
+                "url": reverse("thaliedje:index"),
+                "location": "end",
+                "order": 1,
+            },
+        ]
