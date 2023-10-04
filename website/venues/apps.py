@@ -9,19 +9,17 @@ class VenuesConfig(AppConfig):
 
     def ready(self):
         """Ready method."""
-        from venues.views import VenueCalendarView
         from venues import signals  # noqa
 
-        def filter_reservation_button(reservation_buttons: list):
-            reservation_buttons.append(
-                {
-                    "name": "Add venue reservation",
-                    "href": reverse("venues:add_reservation"),
-                }  # noqa
-            )
-            return reservation_buttons
-
-        VenueCalendarView.reservation_buttons.add_filter(filter_reservation_button)
+    def new_reservation_buttons(self, _):
+        """Render new reservation buttons."""
+        return [
+            {
+                "name": "Add venue reservation",
+                "href": reverse("venues:add_reservation"),
+                "order": 0,
+            }  # noqa
+        ]
 
     def menu_items(self, request):
         """Render menu items."""

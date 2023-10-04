@@ -1,5 +1,6 @@
 import json
 
+from django.apps import apps
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
@@ -11,7 +12,6 @@ from django.views.generic import TemplateView, RedirectView
 from oauth2_provider.generators import generate_client_secret
 from oauth2_provider.models import Application
 
-from tosti.filter import Filter
 from tosti.forms import OAuthCredentialsForm
 from tosti.services import (
     generate_order_statistics,
@@ -75,16 +75,23 @@ class ExplainerView(TemplateView):
     """Explainer page."""
 
     template_name = "tosti/explainers.html"
-    explainer_tabs = Filter()
 
     def get(self, request, **kwargs):
         """GET request."""
-        tabs = self.explainer_tabs.do_filter([])
+        explainer_tabs = []
+        for app in apps.get_app_configs():
+            if hasattr(app, "explainer_tabs"):
+                app_explainer_tabs = app.explainer_tabs(request)
+                explainer_tabs += app_explainer_tabs
+
+        explainer_tabs = sorted(explainer_tabs, key=lambda tab: tab["order"])
+
         rendered_tabs = []
-        for tab in tabs:
+        for tab in explainer_tabs:
             tab_rendered = tab["renderer"](request, tab)
             if tab_rendered is not None:
                 rendered_tabs.append({"name": tab["name"], "slug": tab["slug"], "content": tab_rendered})
+
         return render(request, self.template_name, {"rendered_tabs": rendered_tabs})
 
 

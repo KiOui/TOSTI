@@ -2,6 +2,16 @@ from django.apps import AppConfig
 from django.urls import reverse
 
 
+def user_has_borrel_brevet_lazy(request):
+    from borrel.models import BasicBorrelBrevet
+
+    try:
+        _ = request.user.basic_borrel_brevet
+    except BasicBorrelBrevet.DoesNotExist:
+        return False
+    return True
+
+
 class BorrelConfig(AppConfig):
     """Borrel Config."""
 
@@ -10,32 +20,24 @@ class BorrelConfig(AppConfig):
 
     def ready(self):
         """Ready method."""
-        from venues.views import VenueCalendarView
         from borrel import signals  # noqa
 
-        def filter_reservation_button(reservation_buttons: list):
-            reservation_buttons.append(
+    def new_reservation_buttons(self, request):
+        """Render new reservation buttons."""
+        if user_has_borrel_brevet_lazy(request):
+            return [
                 {
                     "name": "Add borrel reservation",
                     "href": reverse("borrel:add_reservation"),
-                }
-            )
-            return reservation_buttons
-
-        VenueCalendarView.reservation_buttons.add_filter(filter_reservation_button)
+                    "order": 1,
+                }  # noqa
+            ]
+        return []
 
     def menu_items(self, request):
         """Render menu items."""
-        from borrel.models import BasicBorrelBrevet
 
-        try:
-            _ = request.user.basic_borrel_brevet
-        except BasicBorrelBrevet.DoesNotExist:
-            user_has_borrel_brevet = False
-        else:
-            user_has_borrel_brevet = True
-
-        if not request.user.is_authenticated or not user_has_borrel_brevet:
+        if not request.user.is_authenticated or not user_has_borrel_brevet_lazy(request):
             return []
 
         return [

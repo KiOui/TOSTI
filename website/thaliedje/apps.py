@@ -7,23 +7,18 @@ class ThaliedjeConfig(AppConfig):
 
     name = "thaliedje"
 
-    def ready(self):
-        """Ready method."""
-        from users.views import AccountFilterView
+    def user_account_tabs(self, _):
+        """Render user account tabs."""
         from thaliedje.views import AccountHistoryTabView
 
-        def filter_user_page(user_page_list: list):
-            """Add requested songs as a tab to users page."""
-            user_page_list.append(
-                {
-                    "name": "Requested songs",
-                    "slug": "requested_songs",
-                    "view": AccountHistoryTabView.as_view(),
-                }  # noqa
-            )
-            return user_page_list
-
-        AccountFilterView.user_data_tabs.add_filter(filter_user_page, 4)
+        return [
+            {
+                "name": "Requested songs",
+                "slug": "requested_songs",
+                "view": AccountHistoryTabView.as_view(),
+                "order": 4,
+            }  # noqa
+        ]
 
     def announcements(self, request):
         """Add announcements."""
@@ -44,7 +39,7 @@ class ThaliedjeConfig(AppConfig):
             {
                 "title": "Thaliedje",
                 "url": reverse("thaliedje:index"),
-                "location": "end",
-                "order": 1,
+                "location": "start",
+                "order": 2,
             },
         ]

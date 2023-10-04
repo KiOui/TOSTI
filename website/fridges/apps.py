@@ -14,7 +14,7 @@ class FridgesConfig(AppConfig):
             {
                 "title": "Fridges",
                 "url": reverse("fridges:index"),
-                "location": "end",
-                "order": 0,
+                "location": "start",
+                "order": 4,
             },
         ]

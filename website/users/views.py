@@ -1,3 +1,4 @@
+from django.apps import apps
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -7,7 +8,6 @@ from django.template.loader import render_to_string
 from django.views.generic import TemplateView
 from django.contrib.auth.models import Group
 
-from tosti.filter import Filter
 from .forms import AccountForm
 
 
@@ -63,26 +63,31 @@ class AccountView(TemplateView):
         )
 
 
-class AccountFilterView(LoginRequiredMixin, TemplateView):
-    """Account Filter view."""
+class UserAccountTabsView(LoginRequiredMixin, TemplateView):
+    """User account view."""
 
     template_name = "users/account.html"
-
-    user_data_tabs = Filter()
 
     DEFAULT_ACTIVE_TAB = "account"
 
     def dispatch_to_view(self, active_view, request, *args, **kwargs):
         """Dispatch to the correct view."""
-        tabs = self.user_data_tabs.do_filter([])
+
+        user_account_tabs = []
+        for app in apps.get_app_configs():
+            if hasattr(app, "user_account_tabs"):
+                app_user_account_tabs = app.user_account_tabs(request)
+                user_account_tabs += app_user_account_tabs
+
+        user_account_tabs = sorted(user_account_tabs, key=lambda x: x["order"])
 
         new_kwargs = {
             "active": active_view,
-            "tabs": tabs,
+            "tabs": user_account_tabs,
         }
         new_kwargs.update(kwargs)
 
-        for tab in tabs:
+        for tab in user_account_tabs:
             if active_view == tab["slug"]:
                 return tab["view"](request, *args, **new_kwargs)
         return HttpResponseNotFound()
