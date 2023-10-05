@@ -20,15 +20,11 @@
             </div>
         <div>
             <span class="float-start me-2 small align-left text-nowrap" style="width: 30px">
-                <template>
-                    ${ Math.floor((track_progress_ms / 1000) / 60) }$:${ String(Math.floor((track_progress_ms / 1000) % 60)).padStart(2, '0') }$
-                </template>
+                ${ Math.floor((track_progress_ms / 1000) / 60) }$:${ String(Math.floor((track_progress_ms / 1000) % 60)).padStart(2, '0') }$
             </span>
             <span class="float-end ms-2 small align-right">
-                <template>
-                    ${ Math.floor((player_data.duration_ms / 1000) / 60) }$:${ String(Math.floor((player_data.duration_ms / 1000) % 60)).padStart(2, '0') }$
-    {#                (${ -1 * Math.floor((track_ms_left / 1000) / 60) }$:${ String(Math.floor((track_ms_left / 1000) % 60)).padStart(2, '0') }$)#}
-                </template>
+                ${ Math.floor((player_data.duration_ms / 1000) / 60) }$:${ String(Math.floor((player_data.duration_ms / 1000) % 60)).padStart(2, '0') }$
+                <!--(${ -1 * Math.floor((track_ms_left / 1000) / 60) }$:${ String(Math.floor((track_ms_left / 1000) % 60)).padStart(2, '0') }$) -->
             </span>
         </div>
     </div>
@@ -118,6 +114,7 @@
                 track_progress_percentage: 0,
                 track_ms_left: 0,
                 lastRefresh: null,
+                refreshing: false,
             }
         },
         created() {
@@ -127,6 +124,15 @@
         },
         unmounted() {
             document.removeEventListener("visibilitychange", this.visibilityChange);
+        },
+        watch: {
+            track_progress_percentage: {
+                handler(newValue, oldValue) {
+                    if (newValue.track_progress_percentage === 100 && oldValue.track_progress_percentage !== 100) {
+                        this.refresh();
+                    }
+                }
+            }
         },
         methods: {
             visibilityChange(event) {
@@ -140,7 +146,7 @@
                     if (this.lastRefresh === null || (new Date()).getTime() - this.lastRefresh > 5000) {
                         this.refresh();
                     } else {
-                        this.refresh_timer = setTimeout(this.refresh, 5000);
+                        this.refresh_timer = setTimeout(this.refresh, this.track_progress_percentage === 100 ? 1000 : 5000);
                     }
                 }
             },
@@ -153,15 +159,17 @@
                     return;
                 }
 
-                this.track_progress_ms = this.player_data.progress_ms + (Date.now() - this.player_data.timestamp);
-                this.track_progress_percentage = this.track_progress_ms / this.player_data.duration_ms * 100;
-                this.track_ms_left = this.player_data.duration_ms - this.track_progress_ms;
+                const track_progress_ms = this.player_data.progress_ms + (Date.now() - this.player_data.timestamp);
 
-                if (this.track_progress_ms >= this.player_data.duration_ms) {
+                if (track_progress_ms >= this.player_data.duration_ms) {
+                    // Track finished playing.
                     this.track_progress_ms = this.player_data.duration_ms;
                     this.track_progress_percentage = 100;
                     this.track_ms_left = 0;
-                    this.refresh();
+                } else {
+                    this.track_progress_ms = track_progress_ms;
+                    this.track_progress_percentage = this.track_progress_ms / this.player_data.duration_ms * 100;
+                    this.track_ms_left = this.player_data.duration_ms - this.track_progress_ms;
                 }
             },
             play(event) {
@@ -194,7 +202,7 @@
                     }
                 }).finally(() => {
                     this.doing_call = false;
-                    this.refresh_timer = setTimeout(this.refresh, 5000);
+                    this.refresh_timer = setTimeout(this.refresh, this.track_progress_percentage === 100 ? 1000 : 5000);
                 });
             },
             pause(event) {
@@ -227,7 +235,7 @@
                     }
                 }).finally(() => {
                     this.doing_call = false;
-                    this.refresh_timer = setTimeout(this.refresh, 5000);
+                    this.refresh_timer = setTimeout(this.refresh, this.track_progress_percentage === 100 ? 1000 : 5000);
                 });
             },
             forward(event) {
@@ -260,7 +268,7 @@
                     }
                 }).finally(() => {
                     this.doing_call = false;
-                    this.refresh_timer = setTimeout(this.refresh, 5000);
+                    this.refresh_timer = setTimeout(this.refresh, this.track_progress_percentage === 100 ? 1000 : 5000);
                 });
             },
             backward(event) {
@@ -293,7 +301,7 @@
                     }
                 }).finally(() => {
                     this.doing_call = false;
-                    this.refresh_timer = setTimeout(this.refresh, 5000);
+                    this.refresh_timer = setTimeout(this.refresh, this.track_progress_percentage === 100 ? 1000 : 5000);
                 });
             },
             toggleShuffle(value, event) {
@@ -329,7 +337,7 @@
                     }
                 }).finally(() => {
                     this.doing_call = false;
-                    this.refresh_timer = setTimeout(this.refresh, 5000);
+                    this.refresh_timer = setTimeout(this.refresh, this.track_progress_percentage === 100 ? 1000 : 5000);
                 });
             },
             toggleRepeat(value, event) {
@@ -365,7 +373,7 @@
                     }
                 }).finally(() => {
                     this.doing_call = false;
-                    this.refresh_timer = setTimeout(this.refresh, 5000);
+                    this.refresh_timer = setTimeout(this.refresh, this.track_progress_percentage === 100 ? 1000 : 5000);
                 });
             },
             setVolume: debounce(function(self, value, event) {
@@ -404,11 +412,16 @@
                         show_error_from_api(error);
                     }
                 }).finally(() => {
-                    self.refresh_timer = setTimeout(self.refresh, 5000);
+                    self.refresh_timer = setTimeout(self.refresh, this.track_progress_percentage === 100 ? 1000 : 5000);
                 });
             }),
             refresh() {
+                if (this.refreshing) {
+                    return;
+                }
+
                 clearTimeout(this.refresh_timer);
+                this.refreshing = true;
                 return fetch(
                     "{% url "v1:player_retrieve" pk=player.id %}",
                     {
@@ -433,7 +446,8 @@
                     console.log(`An error occurred while refreshing player {{ player.id }}. Error: ${error}`)
                 }).finally(() => {
                     this.lastRefresh = (new Date()).getTime();
-                    this.refresh_timer = setTimeout(this.refresh, 5000);
+                    this.refreshing = false;
+                    this.refresh_timer = setTimeout(this.refresh, this.track_progress_percentage === 100 ? 1000 : 5000);
                 });
             }
         }

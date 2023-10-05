@@ -13,6 +13,7 @@ from django.conf import settings
 from django.db.models import F
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.datetime_safe import datetime
 from model_utils.managers import InheritanceManager
 from queryable_properties.managers import QueryablePropertiesManager
 from queryable_properties.properties import RangeCheckProperty, AnnotationProperty, queryable_property
@@ -276,13 +277,26 @@ class MarietjePlayer(Player):
             return func(*args, **kwargs)
         except MarietjeException as e:
             logging.warning("Marietje error: %s", e)
+            return None
         except ReadTimeout:
             logging.warning("Marietje request timed out.")
+            return None
 
     @property
     def _current_playback_cache_key(self):
         """Get the cache key for the current playback cache."""
         return f"marietje_player_{self.id}_playback"
+
+    def _get_current_playback(self):
+        """Add a timestamp to the marietje requests."""
+        before_call = time.time() * 1000
+
+        marietje_response = self.do_marietje_request(self.marietje.queue_current)
+
+        after_call = time.time() * 1000
+        if marietje_response is not None:
+            marietje_response["timestamp"] = int((before_call + after_call) / 2)
+        return marietje_response
 
     def _current_playback(self):
         """Get the current playback from the Marietje API."""
@@ -292,13 +306,11 @@ class MarietjePlayer(Player):
                 return None
             return cached_result
 
-        playback = self.do_marietje_request(self.marietje.queue_current)
+        playback = self._get_current_playback()
 
         if playback is None:
             cache.set(self._current_playback_cache_key, "unavailable", 5)
             return None
-
-        playback = playback["current_song"]
 
         cache.set(self._current_playback_cache_key, playback, 5)
 
@@ -317,7 +329,7 @@ class MarietjePlayer(Player):
         if playback is None:
             return playback
 
-        return playback["song"]["title"]
+        return playback["current_song"]["song"]["title"]
 
     @property
     def current_artists(self):
@@ -327,22 +339,43 @@ class MarietjePlayer(Player):
         if playback is None:
             return playback
 
-        return [playback["song"]["artist"]]
+        return [playback["current_song"]["song"]["artist"]]
 
     @property
     def current_timestamp(self):
         """Get the timestamp of the latest update with the player."""
-        return None
+        playback = self._current_playback()
+
+        if playback is None:
+            return playback
+
+        return playback["timestamp"]
 
     @property
     def current_progress_ms(self):
         """Get the current progress of the currently playing song at the current_timestamp."""
-        return None
+        playback = self._current_playback()
+
+        if playback is None:
+            return playback
+
+        if playback["current_song"]["played_at"] is None:
+            return 0
+
+        song_started_at = datetime.fromisoformat(playback["current_song"]["played_at"])
+        progress_timedelta = timezone.now() - song_started_at
+
+        return progress_timedelta.total_seconds() * 1000
 
     @property
     def current_track_duration_ms(self):
         """Get the duration of the currently playing song."""
-        return None
+        playback = self._current_playback()
+
+        if playback is None:
+            return playback
+
+        return playback["current_song"]["song"]["duration"] * 1000
 
     @property
     def _queue_cache_key(self):
