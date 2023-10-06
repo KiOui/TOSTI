@@ -1,0 +1,27 @@
+<div class="row mb-5">
+    <div class="col">
+        <canvas id="borrel-product-category-ordered-per-association-chart" class="statistics-canvas"
+            data-data="{{ borrel_product_category_ordered_per_association }}"
+            data-title="Amount of products ordered in the '{{ borrel_product_category.name }}' category per association"
+            data-chart-type="bar">
+        </canvas>
+    </div>
+</div>
+<div class="row mb-5">
+    <div class="col">
+        <canvas id="borrel-product-category-average-ordered-per-association-per-borrel-chart" class="statistics-canvas"
+            data-data="{{ average_beer_per_association_per_borrel }}"
+            data-title="Average of products ordered in the '{{ borrel_product_category.name }}' category per association per borrel reservation"
+            data-chart-type="bar">
+        </canvas>
+    </div>
+</div>
+<div class="row mb-5">
+    <div class="col">
+        <canvas id="borrel-product-category-ordered-per-month-chart" class="statistics-canvas"
+            data-data="{{ beer_consumption_over_time }}"
+            data-title="Amount of products ordered in the '{{ borrel_product_category.name }}' category per month in total"
+            data-chart-type="line">
+        </canvas>
+    </div>
+</div>

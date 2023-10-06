@@ -43,3 +43,12 @@ class ThaliedjeConfig(AppConfig):
                 "order": 2,
             },
         ]
+
+    def statistics(self, request):
+        """Register the statistics."""
+        from thaliedje.views import statistics
+
+        return {
+            "content": statistics(request),
+            "order": 1,
+        }

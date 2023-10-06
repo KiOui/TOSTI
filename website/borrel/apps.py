@@ -50,3 +50,17 @@ class BorrelConfig(AppConfig):
                 "order": 2,
             },
         ]
+
+    def statistics(self, request):
+        """Register the statistics."""
+        from borrel.views import statistics
+
+        content = statistics(request)
+
+        if content is None:
+            return None
+
+        return {
+            "content": content,
+            "order": 4,
+        }

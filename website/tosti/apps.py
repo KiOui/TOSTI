@@ -15,7 +15,7 @@ class TostiConfig(AppConfig):
                 "url": reverse("index"),
                 "location": "start",
                 "order": 0,
-                "extra_classes": "extra-margin-top-mobile",
+                "extra_classes": ["extra-margin-top-mobile"],
             },
             {
                 "title": "Explainers",

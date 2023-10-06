@@ -13,18 +13,6 @@ from oauth2_provider.generators import generate_client_secret
 from oauth2_provider.models import Application
 
 from tosti.forms import OAuthCredentialsForm
-from tosti.services import (
-    generate_order_statistics,
-    generate_orders_per_venue_statistics,
-    generate_most_requested_songs,
-    generate_users_with_most_song_requests,
-    generate_users_per_association,
-    generate_product_category_ordered_per_association,
-    generate_beer_per_association_per_borrel,
-    generate_beer_consumption_over_time,
-)
-from borrel.models import ProductCategory as BorrelProductCategory
-from constance import config
 
 
 class IndexView(TemplateView):
@@ -102,40 +90,22 @@ class StatisticsView(LoginRequiredMixin, TemplateView):
 
     def get(self, request, **kwargs):
         """GET Statistics View."""
-        ordered_items_distribution = json.dumps(generate_order_statistics())
-        orders_per_venue = json.dumps(generate_orders_per_venue_statistics())
-        most_requested_songs = json.dumps(generate_most_requested_songs())
-        users_with_most_requests = json.dumps(generate_users_with_most_song_requests())
-        users_per_association = json.dumps(generate_users_per_association())
-        try:
-            borrel_product_category = BorrelProductCategory.objects.get(id=config.STATISTICS_BORREL_CATEGORY)
-            borrel_product_category_ordered_per_association = json.dumps(
-                generate_product_category_ordered_per_association(borrel_product_category)
-            )
-            average_beer_per_association_per_borrel = json.dumps(
-                generate_beer_per_association_per_borrel(borrel_product_category)
-            )
-            beer_consumption_over_time = json.dumps(generate_beer_consumption_over_time(borrel_product_category))
-        except BorrelProductCategory.DoesNotExist:
-            borrel_product_category_ordered_per_association = None
-            borrel_product_category = None
-            average_beer_per_association_per_borrel = None
-            beer_consumption_over_time = None
+
+        statistics_blocks = []
+        for app in apps.get_app_configs():
+            if hasattr(app, "statistics"):
+                app_statistics = app.statistics(request)
+                if app_statistics is not None:
+                    statistics_blocks.append(app_statistics)
+
+        statistics_blocks = sorted(statistics_blocks, key=lambda tab: tab["order"])
 
         return render(
             request,
             self.template_name,
             {
-                "ordered_items_distribution": ordered_items_distribution,
-                "orders_per_venue": orders_per_venue,
-                "most_requested_songs": most_requested_songs,
-                "users_with_most_requests": users_with_most_requests,
-                "users_per_association": users_per_association,
-                "borrel_product_category_ordered_per_association": borrel_product_category_ordered_per_association,
-                "borrel_product_category": borrel_product_category,
-                "average_beer_per_association_per_borrel": average_beer_per_association_per_borrel,
-                "beer_consumption_over_time": beer_consumption_over_time,
-            },
+                "statistics_blocks": statistics_blocks,
+            }
         )
 
 
@@ -156,13 +126,13 @@ class OAuthCredentialsRequestView(TemplateView):
         return paginator_page
 
     def render_tab(
-        self,
-        request,
-        paginator_page_with_modify_forms,
-        create_form=None,
-        create_form_open=False,
-        created_application=None,
-        open_modify_form_id=None,
+            self,
+            request,
+            paginator_page_with_modify_forms,
+            create_form=None,
+            create_form_open=False,
+            created_application=None,
+            open_modify_form_id=None,
     ):
         """Render the tab."""
         if create_form is None:

@@ -1,3 +1,5 @@
+import json
+
 from django.apps import apps
 from django.contrib import messages
 from django.contrib.auth import get_user_model
@@ -9,7 +11,7 @@ from django.views.generic import TemplateView
 from django.contrib.auth.models import Group
 
 from .forms import AccountForm
-
+from .services import generate_users_per_association
 
 User = get_user_model()
 
@@ -111,3 +113,16 @@ class StaffView(LoginRequiredMixin, TemplateView):
         """GET request for the staff view."""
         groups = Group.objects.filter(settings__display_on_website=True)
         return render(request, self.template_name, {"groups": groups})
+
+
+def statistics(request):
+    """Render the statistics."""
+    users_per_association = json.dumps(generate_users_per_association())
+
+    return render_to_string(
+        "users/statistics.html",
+        context={
+            "request": request,
+            "users_per_association": users_per_association,
+        },
+    )

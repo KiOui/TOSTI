@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.admin.models import ADDITION, CHANGE
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
@@ -13,7 +15,13 @@ from django.shortcuts import render, redirect
 from tosti.utils import log_action
 from .models import Order, Shift
 from .forms import CreateShiftForm
-from .services import user_is_blacklisted, user_can_manage_shift, user_can_manage_shifts_in_venue
+from .services import (
+    user_is_blacklisted,
+    user_can_manage_shift,
+    user_can_manage_shifts_in_venue,
+    generate_order_statistics,
+    generate_orders_per_venue_statistics,
+)
 
 
 class ShiftView(LoginRequiredMixin, TemplateView):
@@ -190,3 +198,18 @@ def explainer_page_how_to_process_deposit(request, item):
         return render_to_string("orders/explainer_transactions_admin.html", context={"request": request, "item": item})
     else:
         return None
+
+
+def statistics(request):
+    """Render the statistics."""
+    ordered_items_distribution = json.dumps(generate_order_statistics())
+    orders_per_venue = json.dumps(generate_orders_per_venue_statistics())
+
+    return render_to_string(
+        "orders/statistics.html",
+        context={
+            "request": request,
+            "ordered_items_distribution": ordered_items_distribution,
+            "orders_per_venue": orders_per_venue,
+        },
+    )

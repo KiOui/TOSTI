@@ -73,3 +73,12 @@ class OrdersConfig(AppConfig):
             return ["You are&nbsp;<b>blacklisted</b>&nbsp;for placing orders!"]
 
         return []
+
+    def statistics(self, request):
+        """Register the statistics."""
+        from orders.views import statistics
+
+        return {
+            "content": statistics(request),
+            "order": 0,
+        }

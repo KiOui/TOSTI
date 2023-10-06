@@ -2,7 +2,10 @@ from datetime import timedelta
 
 from django.contrib.auth import get_user_model
 from django.core.signing import TimestampSigner, SignatureExpired, BadSignature
+from django.db.models import Count
 from django.utils import timezone
+
+from associations.models import Association
 
 User = get_user_model()
 
@@ -70,3 +73,19 @@ def execute_data_minimisation(dry_run=False):
                 user.delete()
 
     return processed
+
+
+def generate_users_per_association():
+    """Generate statistics about users per association."""
+    data = {
+        "labels": [],
+        "datasets": [
+            {"data": []},
+        ],
+    }
+
+    for association in Association.objects.annotate(user_amount=Count("users")):
+        data["labels"].append(str(association))
+        data["datasets"][0]["data"].append(association.user_amount)
+
+    return data

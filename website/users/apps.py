@@ -22,3 +22,12 @@ class UsersConfig(AppConfig):
                 "order": 0,
             }
         ]
+
+    def statistics(self, request):
+        """Register the statistics."""
+        from users.views import statistics
+
+        return {
+            "content": statistics(request),
+            "order": 2,
+        }
