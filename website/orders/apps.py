@@ -7,70 +7,62 @@ class OrdersConfig(AppConfig):
     name = "orders"
 
     def ready(self):
-        """
-        Ready method.
-
-        :return: None
-        """
+        """Register signals."""
         from orders import signals  # noqa
-        from users.views import AccountFilterView
+
+    def user_account_tabs(self, _):
+        """Register user account tabs."""
         from orders.views import (
             AccountHistoryTabView,
+        )
+
+        return [
+            {
+                "name": "Ordered items",
+                "slug": "ordered_items",
+                "view": AccountHistoryTabView.as_view(),
+                "order": 3,
+            }
+        ]
+
+    def explainer_tabs(self, _):
+        """Register explainer tabs."""
+        from orders.views import (
             explainer_page_how_to_order_tab,
             explainer_page_how_to_manage_shift_tab,
             explainer_page_how_to_hand_in_deposit,
             explainer_page_how_to_process_deposit,
         )
-        from tosti.views import ExplainerView
 
-        def filter_user_page(user_page_list: list):
-            """Add Ordered items tab on accounts page."""
-            user_page_list.append(
-                {
-                    "name": "Ordered items",
-                    "slug": "ordered_items",
-                    "view": AccountHistoryTabView.as_view(),
-                }  # noqa
-            )
-            return user_page_list
-
-        def filter_explainer_page(explainer_page_list: list):
-            """Add explainer pages."""
-            explainer_page_list.append(
-                {
-                    "name": "Order",
-                    "slug": "how-to-order",
-                    "renderer": explainer_page_how_to_order_tab,
-                }
-            )
-            explainer_page_list.append(
-                {
-                    "name": "Manage a shift",
-                    "slug": "how-to-manage-shift",
-                    "renderer": explainer_page_how_to_manage_shift_tab,
-                }
-            )
-            explainer_page_list.append(
-                {
-                    "name": "Hand in deposit",
-                    "slug": "how-to-hand-in-deposit",
-                    "renderer": explainer_page_how_to_hand_in_deposit,
-                }
-            )
-            explainer_page_list.append(
-                {
-                    "name": "Process deposit",
-                    "slug": "how-to-process-deposit",
-                    "renderer": explainer_page_how_to_process_deposit,
-                }
-            )
-            return explainer_page_list
-
-        AccountFilterView.user_data_tabs.add_filter(filter_user_page, 3)
-        ExplainerView.explainer_tabs.add_filter(filter_explainer_page)
+        return [
+            {
+                "name": "Order",
+                "slug": "how-to-order",
+                "renderer": explainer_page_how_to_order_tab,
+                "order": 1,
+            },
+            {
+                "name": "Manage a shift",
+                "slug": "how-to-manage-shift",
+                "renderer": explainer_page_how_to_manage_shift_tab,
+                "order": 2,
+            },
+            {
+                "name": "Hand in deposit",
+                "slug": "how-to-hand-in-deposit",
+                "renderer": explainer_page_how_to_hand_in_deposit,
+                "order": 3,
+            },
+            {
+                "name": "Process deposit",
+                "slug": "how-to-process-deposit",
+                "renderer": explainer_page_how_to_process_deposit,
+                "order": 4,
+            },
+        ]
 
     def announcements(self, request):
-        """Add announcements."""
+        """Register announcements."""
         from orders.models import OrderBlacklistedUser
 
         if (
@@ -81,3 +73,12 @@ class OrdersConfig(AppConfig):
             return ["You are&nbsp;<b>blacklisted</b>&nbsp;for placing orders!"]
 
         return []
+
+    def statistics(self, request):
+        """Register the statistics."""
+        from orders.views import statistics
+
+        return {
+            "content": statistics(request),
+            "order": 0,
+        }

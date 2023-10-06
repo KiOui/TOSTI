@@ -1,11 +1,12 @@
 import datetime
 import logging
 
+from django.db.models import Count, Q
 from django.utils import timezone
 from guardian.shortcuts import get_users_with_perms
 
 from orders.exceptions import OrderException
-from orders.models import Order, Product, Shift, OrderBlacklistedUser
+from orders.models import Order, Product, Shift, OrderBlacklistedUser, OrderVenue
 from users.models import User
 
 
@@ -151,3 +152,41 @@ def add_user_to_assignees_of_shift(user, shift: Shift):
         raise PermissionError("User does not have permissions to manage shifts in this venue.")
     shift.assignees.add(User.objects.get(pk=user.pk))
     shift.save()
+
+
+def generate_order_statistics():
+    """Generate statistics about orders per product."""
+    data = {
+        "labels": [],
+        "datasets": [
+            {"data": []},
+        ],
+    }
+
+    last_year = timezone.now() - datetime.timedelta(days=365)
+
+    for product in Product.objects.annotate(order_count=Count("orders", filter=Q(orders__created__gte=last_year))):
+        data["labels"].append(str(product))
+        data["datasets"][0]["data"].append(product.order_count)
+
+    return data
+
+
+def generate_orders_per_venue_statistics():
+    """Generate statistics about orders per venue."""
+    data = {
+        "labels": [],
+        "datasets": [
+            {"data": []},
+        ],
+    }
+
+    last_year = timezone.now() - datetime.timedelta(days=365)
+
+    for venue in OrderVenue.objects.annotate(
+        order_count=Count("shifts__orders", filter=Q(shifts__orders__created__gte=last_year))
+    ):
+        data["labels"].append(str(venue))
+        data["datasets"][0]["data"].append(venue.order_count)
+
+    return data

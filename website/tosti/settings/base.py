@@ -1,9 +1,6 @@
-import os
 from pathlib import Path
 
-import saml2
 from django.contrib import messages
-from saml2 import saml, xmldsig
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 

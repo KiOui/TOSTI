@@ -1,11 +1,14 @@
+import json
 from datetime import timedelta
 
+from constance import config
 from django.contrib import messages
 from django.contrib.admin.models import ADDITION, CHANGE, DELETION
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.models import Site
 from django.forms import inlineformset_factory
 from django.shortcuts import redirect
+from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.decorators import method_decorator
@@ -24,7 +27,12 @@ from borrel.forms import (
 )
 from borrel.mixins import BasicBorrelBrevetRequiredMixin
 from borrel.models import Product, BorrelReservation, ReservationItem, ProductCategory
-from borrel.services import send_borrel_reservation_request_email
+from borrel.services import (
+    send_borrel_reservation_request_email,
+    generate_product_category_ordered_per_association,
+    generate_beer_per_association_per_borrel,
+    generate_beer_consumption_over_time,
+)
 from tosti.utils import log_action
 from venues.services import send_reservation_request_email
 
@@ -449,3 +457,29 @@ class BorrelReservationFeed(ICalFeed):
             Site.objects.get_current().domain,
             reverse("admin:borrel_borrelreservation_change", kwargs={"object_id": item.id}),
         )
+
+
+def statistics(request):
+    """Render the statistics."""
+    try:
+        borrel_product_category = ProductCategory.objects.get(id=config.STATISTICS_BORREL_CATEGORY)
+        borrel_product_category_ordered_per_association = json.dumps(
+            generate_product_category_ordered_per_association(borrel_product_category)
+        )
+        average_beer_per_association_per_borrel = json.dumps(
+            generate_beer_per_association_per_borrel(borrel_product_category)
+        )
+        beer_consumption_over_time = json.dumps(generate_beer_consumption_over_time(borrel_product_category))
+    except ProductCategory.DoesNotExist:
+        return None
+
+    return render_to_string(
+        "thaliedje/statistics.html",
+        context={
+            "request": request,
+            "borrel_product_category_ordered_per_association": borrel_product_category_ordered_per_association,
+            "borrel_product_category": borrel_product_category,
+            "average_beer_per_association_per_borrel": average_beer_per_association_per_borrel,
+            "beer_consumption_over_time": beer_consumption_over_time,
+        },
+    )

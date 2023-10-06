@@ -1,4 +1,5 @@
 from django.apps import AppConfig
+from django.urls import reverse
 
 
 class TostiConfig(AppConfig):
@@ -6,20 +7,33 @@ class TostiConfig(AppConfig):
 
     name = "tosti"
 
-    def ready(self):
-        """Ready method."""
-        from users.views import AccountFilterView
+    def menu_items(self, _):
+        """Register menu items."""
+        return [
+            {
+                "title": "TOSTI",
+                "url": reverse("index"),
+                "location": "start",
+                "order": 0,
+                "extra_classes": ["extra-margin-top-mobile"],
+            },
+            {
+                "title": "Explainers",
+                "url": reverse("explainers"),
+                "location": "end",
+                "order": 1,
+            },
+        ]
+
+    def user_account_tabs(self, _):
+        """Register user account tabs."""
         from tosti.views import OAuthCredentialsRequestView
 
-        def filter_user_page(user_page_list: list):
-            """Add requested songs as a tab to users page."""
-            user_page_list.append(
-                {
-                    "name": "OAuth Credentials",
-                    "slug": "oauth_credentials",
-                    "view": OAuthCredentialsRequestView.as_view(),
-                }  # noqa
-            )
-            return user_page_list
-
-        AccountFilterView.user_data_tabs.add_filter(filter_user_page, 5)
+        return [
+            {
+                "name": "OAuth Credentials",
+                "slug": "oauth_credentials",
+                "view": OAuthCredentialsRequestView.as_view(),
+                "order": 10,
+            }
+        ]

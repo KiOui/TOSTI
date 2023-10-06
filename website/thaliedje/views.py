@@ -1,3 +1,5 @@
+import json
+
 from django.contrib import messages
 from django.contrib.admin.models import CHANGE, ADDITION
 from django.contrib.auth.decorators import login_required
@@ -15,6 +17,7 @@ from tosti.utils import log_action
 from venues.models import Reservation
 from .forms import ThaliedjeControlEventForm
 from .models import SpotifyQueueItem, ThaliedjeControlEvent
+from .services import generate_most_requested_songs, generate_users_with_most_song_requests
 
 
 class IndexView(TemplateView):
@@ -153,3 +156,18 @@ class ThaliedjeControlEventCreateView(View):
         )
         log_action(self.request.user, event, ADDITION, "Created event via website.")
         return redirect(reverse("thaliedje:event-control", kwargs={"pk": event.pk}))
+
+
+def statistics(request):
+    """Render the statistics."""
+    most_requested_songs = json.dumps(generate_most_requested_songs())
+    users_with_most_requests = json.dumps(generate_users_with_most_song_requests())
+
+    return render_to_string(
+        "thaliedje/statistics.html",
+        context={
+            "request": request,
+            "most_requested_songs": most_requested_songs,
+            "users_with_most_requests": users_with_most_requests,
+        },
+    )

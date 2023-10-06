@@ -7,26 +7,17 @@ class TransactionsConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "transactions"
 
-    def ready(self):
-        """
-        Ready method.
-
-        :return: None
-        """
-        from users.views import AccountFilterView
+    def user_account_tabs(self, _):
+        """Register user account tabs."""
         from transactions.views import (
             TransactionHistoryTabView,
         )
 
-        def filter_user_page(user_page_list: list):
-            """Add transactions tab on accounts page."""
-            user_page_list.append(
-                {
-                    "name": "Transactions",
-                    "slug": "transactions",
-                    "view": TransactionHistoryTabView.as_view(),
-                }  # noqa
-            )
-            return user_page_list
-
-        AccountFilterView.user_data_tabs.add_filter(filter_user_page, 2)
+        return [
+            {
+                "name": "Transactions",
+                "slug": "transactions",
+                "view": TransactionHistoryTabView.as_view(),
+                "order": 2,
+            }
+        ]

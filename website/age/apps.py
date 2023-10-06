@@ -8,38 +8,31 @@ class AgeConfig(AppConfig):
     name = "age"
 
     def ready(self):
-        """
-        Ready method.
-
-        :return: None
-        """
-        from users.views import AccountFilterView
-        from tosti.views import ExplainerView
-        from age.views import AgeOverviewView, explainer_page_how_to_verify_age_with_yivi
-
+        """Register signals."""
         from age import signals  # noqa
 
-        def filter_user_page(user_page_list: list):
-            """Add age overview tab on accounts page."""
-            user_page_list.append(
-                {
-                    "name": "Age",
-                    "slug": "age",
-                    "view": AgeOverviewView.as_view(),
-                }  # noqa
-            )
-            return user_page_list
+    def user_account_tabs(self, _):
+        """Register user account tabs."""
+        from age.views import AgeOverviewView
 
-        def filter_explainer_page(explainer_page_list: list):
-            """Add explainer pages."""
-            explainer_page_list.append(
-                {
-                    "name": "Verify your age with Yivi",
-                    "slug": "verify-your-age-with-yivi",
-                    "renderer": explainer_page_how_to_verify_age_with_yivi,
-                }
-            )
-            return explainer_page_list
+        return [
+            {
+                "name": "Age",
+                "slug": "age",
+                "view": AgeOverviewView.as_view(),
+                "order": 1,
+            }
+        ]
 
-        ExplainerView.explainer_tabs.add_filter(filter_explainer_page)
-        AccountFilterView.user_data_tabs.add_filter(filter_user_page, 2)
+    def explainer_tabs(self, _):
+        """Register explainer tabs."""
+        from age.views import explainer_page_how_to_verify_age_with_yivi
+
+        return [
+            {
+                "name": "Verify your age with Yivi",
+                "slug": "verify-your-age-with-yivi",
+                "renderer": explainer_page_how_to_verify_age_with_yivi,
+                "order": 10,
+            }
+        ]

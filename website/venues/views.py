@@ -1,3 +1,4 @@
+from django.apps import apps
 from django.contrib import messages
 from django.contrib.admin.models import ADDITION, DELETION, CHANGE
 from django.contrib.auth.decorators import login_required
@@ -9,7 +10,6 @@ from django.views import View
 from django.views.generic import TemplateView, FormView, ListView, DeleteView, UpdateView
 from django_ical.views import ICalFeed
 
-from tosti.filter import Filter
 from tosti.utils import log_action
 from venues import services
 from venues.forms import ReservationForm, ReservationUpdateForm, ReservationDisabledForm
@@ -20,12 +20,17 @@ class VenueCalendarView(TemplateView):
     """All venues calendar view."""
 
     template_name = "venues/calendar.html"
-    reservation_buttons = Filter()
 
     def get(self, request, **kwargs):
         """Get the calendar view."""
-        buttons = self.reservation_buttons.do_filter([])
-        return render(request, self.template_name, {"buttons": buttons})
+        new_reservation_buttons = []
+        for app in apps.get_app_configs():
+            if hasattr(app, "new_reservation_buttons"):
+                app_new_reservation_buttons = app.new_reservation_buttons(request)
+                new_reservation_buttons += app_new_reservation_buttons
+
+        new_reservation_buttons = sorted(new_reservation_buttons, key=lambda x: x["order"])
+        return render(request, self.template_name, {"buttons": new_reservation_buttons})
 
 
 @method_decorator(login_required, name="dispatch")

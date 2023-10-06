@@ -1,4 +1,4 @@
-{% load static django_bootstrap5 announcements %}
+{% load static django_bootstrap5 announcements menu %}
 <!DOCTYPE html>
 <html lang="en" class="h-100">
 <head>
@@ -17,6 +17,7 @@
     <link href="{% static "tosti/css/base.css" %}" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css2?family=Neucha&display=swap" rel="stylesheet">
     {% block styles %}{% endblock %}
+    {% block extra_styles %}{% endblock %}
 
     <!-- Fontawesome -->
     <link href="{% static 'fontawesomefree/css/all.min.css' %}" rel="stylesheet" type="text/css">
@@ -81,16 +82,7 @@
                     </div>
                     <div class="offcanvas-body" style="background-color: var(--nav-background-color);">
                         <ul class="navbar-nav w-100 order-1 order-md-0">
-                            <li class="nav-item">
-                                <a class="nav-link extra-margin-top-mobile" href="{% url "index" %}">
-                                    Home
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url "explainers" %}">
-                                    How does this work?
-                                </a>
-                            </li>
+                            {% render_main_menu_start %}
                         </ul>
                         <div class="mx-auto order-0 position-relative d-lg-block d-none">
                             <a class="navbar-brand drop-out-header" href="/"><img
@@ -98,16 +90,7 @@
                                     height="120"/></a>
                         </div>
                         <ul class="navbar-nav w-100 order-3 d-flex justify-content-end">
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url "thaliedje:index" %}">
-                                    Thaliedje
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url "fridges:index" %}">
-                                    Fridges
-                                </a>
-                            </li>
+                            {% render_main_menu_end %}
                             {% if not user.is_authenticated %}
                                 <li class="nav-item">
                                     <a class="nav-link" href="{% url "login" %}">
@@ -121,17 +104,11 @@
                                         {{ user.get_short_name }}
                                     </a>
                                     <div class="dropdown-menu p-2" aria-labelledby="navbarDropdownMenuLink">
-                                        <a class="nav-link text-dark" href="{% url "venues:calendar" %}">
-                                            Calendar
+                                        <a class="nav-link text-dark" href="{% url "users:account" %}">
+                                            My account
                                         </a>
-                                        <a class="nav-link text-dark" href="{% url "venues:list_reservations" %}">
-                                            Venue reservations
-                                        </a>
-                                        {% if request.user.basic_borrel_brevet %}
-                                            <a class="nav-link text-dark" href="{% url "borrel:list_reservations" %}">
-                                                Borrel reservations
-                                            </a>
-                                        {% endif %}
+                                        <hr class="my-1">
+                                        {% render_user_menu %}
                                         <hr class="my-1">
                                         <a class="nav-link text-dark" href="{% url "documentation" %}">
                                             Documentation
@@ -142,18 +119,15 @@
                                         <a class="nav-link text-dark" href="{% url "privacy" %}">
                                             Privacy
                                         </a>
+                                        <a class="nav-link text-dark" href="{% url "users:staff" %}">
+                                            Staff
+                                        </a>
                                         <hr class="my-1">
                                         {% if user.is_staff %}
                                             <a class="nav-link text-dark" href="{% url "admin:index" %}">
                                                 Site admin
                                             </a>
                                         {% endif %}
-                                        <a class="nav-link text-dark" href="{% url "users:staff" %}">
-                                            Staff
-                                        </a>
-                                        <a class="nav-link text-dark" href="{% url "users:account" %}">
-                                            Account
-                                        </a>
                                         <a class="nav-link text-dark" href="{% url "logout" %}">
                                             Logout
                                         </a>

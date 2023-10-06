@@ -1,4 +1,5 @@
 from django.apps import AppConfig
+from django.urls import reverse
 
 
 class ThaliedjeConfig(AppConfig):
@@ -6,26 +7,21 @@ class ThaliedjeConfig(AppConfig):
 
     name = "thaliedje"
 
-    def ready(self):
-        """Ready method."""
-        from users.views import AccountFilterView
+    def user_account_tabs(self, _):
+        """Register user account tabs."""
         from thaliedje.views import AccountHistoryTabView
 
-        def filter_user_page(user_page_list: list):
-            """Add requested songs as a tab to users page."""
-            user_page_list.append(
-                {
-                    "name": "Requested songs",
-                    "slug": "requested_songs",
-                    "view": AccountHistoryTabView.as_view(),
-                }  # noqa
-            )
-            return user_page_list
-
-        AccountFilterView.user_data_tabs.add_filter(filter_user_page, 4)
+        return [
+            {
+                "name": "Requested songs",
+                "slug": "requested_songs",
+                "view": AccountHistoryTabView.as_view(),
+                "order": 4,
+            }
+        ]
 
     def announcements(self, request):
-        """Add announcements."""
+        """Register announcements."""
         from thaliedje.models import ThaliedjeBlacklistedUser
 
         if (
@@ -36,3 +32,23 @@ class ThaliedjeConfig(AppConfig):
             return ["You are&nbsp;<b>blacklisted</b>&nbsp;from thaliedje!"]
 
         return []
+
+    def menu_items(self, _):
+        """Register menu items."""
+        return [
+            {
+                "title": "Thaliedje",
+                "url": reverse("thaliedje:index"),
+                "location": "start",
+                "order": 2,
+            },
+        ]
+
+    def statistics(self, request):
+        """Register the statistics."""
+        from thaliedje.views import statistics
+
+        return {
+            "content": statistics(request),
+            "order": 1,
+        }
