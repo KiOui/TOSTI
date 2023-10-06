@@ -105,7 +105,7 @@ class StatisticsView(LoginRequiredMixin, TemplateView):
             self.template_name,
             {
                 "statistics_blocks": statistics_blocks,
-            }
+            },
         )
 
 
@@ -126,13 +126,13 @@ class OAuthCredentialsRequestView(TemplateView):
         return paginator_page
 
     def render_tab(
-            self,
-            request,
-            paginator_page_with_modify_forms,
-            create_form=None,
-            create_form_open=False,
-            created_application=None,
-            open_modify_form_id=None,
+        self,
+        request,
+        paginator_page_with_modify_forms,
+        create_form=None,
+        create_form_open=False,
+        created_application=None,
+        open_modify_form_id=None,
     ):
         """Render the tab."""
         if create_form is None:
