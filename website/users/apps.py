@@ -8,7 +8,7 @@ class UsersConfig(AppConfig):
 
     def ready(self):
         """Register signals."""
-        import users.signals  # noqa
+        from users import signals  # noqa
 
     def user_account_tabs(self, _):
         """Register user account tabs."""
@@ -20,5 +20,5 @@ class UsersConfig(AppConfig):
                 "slug": "account",
                 "view": AccountView.as_view(),
                 "order": 0,
-            }  # noqa
+            }
         ]

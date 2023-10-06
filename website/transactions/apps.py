@@ -19,5 +19,5 @@ class TransactionsConfig(AppConfig):
                 "slug": "transactions",
                 "view": TransactionHistoryTabView.as_view(),
                 "order": 2,
-            }  # noqa
+            }
         ]

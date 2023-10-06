@@ -18,7 +18,7 @@ class VenuesConfig(AppConfig):
                 "name": "Add venue reservation",
                 "href": reverse("venues:add_reservation"),
                 "order": 0,
-            }  # noqa
+            }
         ]
 
     def menu_items(self, request):

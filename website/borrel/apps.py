@@ -33,7 +33,7 @@ class BorrelConfig(AppConfig):
                     "name": "Add borrel reservation",
                     "href": reverse("borrel:add_reservation"),
                     "order": 1,
-                }  # noqa
+                }
             ]
         return []
 

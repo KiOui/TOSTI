@@ -21,7 +21,7 @@ class AgeConfig(AppConfig):
                 "slug": "age",
                 "view": AgeOverviewView.as_view(),
                 "order": 1,
-            }  # noqa
+            }
         ]
 
     def explainer_tabs(self, _):

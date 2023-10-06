@@ -22,7 +22,7 @@ class OrdersConfig(AppConfig):
                 "slug": "ordered_items",
                 "view": AccountHistoryTabView.as_view(),
                 "order": 3,
-            }  # noqa
+            }
         ]
 
     def explainer_tabs(self, _):

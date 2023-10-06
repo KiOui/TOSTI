@@ -17,7 +17,7 @@ class ThaliedjeConfig(AppConfig):
                 "slug": "requested_songs",
                 "view": AccountHistoryTabView.as_view(),
                 "order": 4,
-            }  # noqa
+            }
         ]
 
     def announcements(self, request):

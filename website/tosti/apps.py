@@ -35,5 +35,5 @@ class TostiConfig(AppConfig):
                 "slug": "oauth_credentials",
                 "view": OAuthCredentialsRequestView.as_view(),
                 "order": 10,
-            }  # noqa
+            }
         ]
