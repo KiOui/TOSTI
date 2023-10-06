@@ -88,7 +88,6 @@ class StatisticsView(LoginRequiredMixin, TemplateView):
 
     def get(self, request, **kwargs):
         """GET Statistics View."""
-
         statistics_blocks = []
         for app in apps.get_app_configs():
             if hasattr(app, "statistics"):
