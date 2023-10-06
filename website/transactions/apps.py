@@ -8,7 +8,7 @@ class TransactionsConfig(AppConfig):
     name = "transactions"
 
     def user_account_tabs(self, _):
-        """Render user account tabs."""
+        """Register user account tabs."""
         from transactions.views import (
             TransactionHistoryTabView,
         )

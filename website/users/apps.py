@@ -11,7 +11,7 @@ class UsersConfig(AppConfig):
         import users.signals  # noqa
 
     def user_account_tabs(self, _):
-        """Render user account tabs."""
+        """Register user account tabs."""
         from users.views import AccountView
 
         return [

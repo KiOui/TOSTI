@@ -8,7 +8,7 @@ class TostiConfig(AppConfig):
     name = "tosti"
 
     def menu_items(self, _):
-        """Render menu items."""
+        """Register menu items."""
         return [
             {
                 "title": "TOSTI",
@@ -26,7 +26,7 @@ class TostiConfig(AppConfig):
         ]
 
     def user_account_tabs(self, _):
-        """Render user account tabs."""
+        """Register user account tabs."""
         from tosti.views import OAuthCredentialsRequestView
 
         return [

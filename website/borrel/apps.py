@@ -3,11 +3,14 @@ from django.urls import reverse
 
 
 def user_has_borrel_brevet_lazy(request):
+    """Check if user has borrel brevet (but only import the model on execution)."""
     from borrel.models import BasicBorrelBrevet
 
     try:
         _ = request.user.basic_borrel_brevet
     except BasicBorrelBrevet.DoesNotExist:
+        return False
+    except AttributeError:  # for AnonymousUser
         return False
     return True
 
@@ -19,11 +22,11 @@ class BorrelConfig(AppConfig):
     name = "borrel"
 
     def ready(self):
-        """Ready method."""
+        """Register signals."""
         from borrel import signals  # noqa
 
     def new_reservation_buttons(self, request):
-        """Render new reservation buttons."""
+        """Register new reservation buttons."""
         if user_has_borrel_brevet_lazy(request):
             return [
                 {
@@ -35,8 +38,7 @@ class BorrelConfig(AppConfig):
         return []
 
     def menu_items(self, request):
-        """Render menu items."""
-
+        """Register menu items."""
         if not request.user.is_authenticated or not user_has_borrel_brevet_lazy(request):
             return []
 

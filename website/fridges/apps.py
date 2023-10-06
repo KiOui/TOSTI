@@ -9,7 +9,7 @@ class FridgesConfig(AppConfig):
     name = "fridges"
 
     def menu_items(self, _):
-        """Render menu items."""
+        """Register menu items."""
         return [
             {
                 "title": "Fridges",

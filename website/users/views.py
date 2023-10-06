@@ -72,7 +72,6 @@ class UserAccountTabsView(LoginRequiredMixin, TemplateView):
 
     def dispatch_to_view(self, active_view, request, *args, **kwargs):
         """Dispatch to the correct view."""
-
         user_account_tabs = []
         for app in apps.get_app_configs():
             if hasattr(app, "user_account_tabs"):

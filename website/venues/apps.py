@@ -8,11 +8,11 @@ class VenuesConfig(AppConfig):
     name = "venues"
 
     def ready(self):
-        """Ready method."""
+        """Import signals."""
         from venues import signals  # noqa
 
     def new_reservation_buttons(self, _):
-        """Render new reservation buttons."""
+        """Register new reservation buttons."""
         return [
             {
                 "name": "Add venue reservation",
@@ -22,7 +22,7 @@ class VenuesConfig(AppConfig):
         ]
 
     def menu_items(self, request):
-        """Render menu items."""
+        """Register menu items."""
         if not request.user.is_authenticated:
             return []
 

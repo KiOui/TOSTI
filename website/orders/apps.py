@@ -7,14 +7,11 @@ class OrdersConfig(AppConfig):
     name = "orders"
 
     def ready(self):
-        """
-        Ready method.
-
-        :return: None
-        """
+        """Register signals."""
         from orders import signals  # noqa
 
     def user_account_tabs(self, _):
+        """Register user account tabs."""
         from orders.views import (
             AccountHistoryTabView,
         )
@@ -29,8 +26,7 @@ class OrdersConfig(AppConfig):
         ]
 
     def explainer_tabs(self, _):
-        """Render explainer tabs."""
-
+        """Register explainer tabs."""
         from orders.views import (
             explainer_page_how_to_order_tab,
             explainer_page_how_to_manage_shift_tab,
@@ -66,7 +62,7 @@ class OrdersConfig(AppConfig):
         ]
 
     def announcements(self, request):
-        """Add announcements."""
+        """Register announcements."""
         from orders.models import OrderBlacklistedUser
 
         if (

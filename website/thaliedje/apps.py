@@ -8,7 +8,7 @@ class ThaliedjeConfig(AppConfig):
     name = "thaliedje"
 
     def user_account_tabs(self, _):
-        """Render user account tabs."""
+        """Register user account tabs."""
         from thaliedje.views import AccountHistoryTabView
 
         return [
@@ -21,7 +21,7 @@ class ThaliedjeConfig(AppConfig):
         ]
 
     def announcements(self, request):
-        """Add announcements."""
+        """Register announcements."""
         from thaliedje.models import ThaliedjeBlacklistedUser
 
         if (
@@ -34,7 +34,7 @@ class ThaliedjeConfig(AppConfig):
         return []
 
     def menu_items(self, _):
-        """Render menu items."""
+        """Register menu items."""
         return [
             {
                 "title": "Thaliedje",

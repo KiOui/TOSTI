@@ -8,15 +8,11 @@ class AgeConfig(AppConfig):
     name = "age"
 
     def ready(self):
-        """
-        Ready method.
-
-        :return: None
-        """
+        """Register signals."""
         from age import signals  # noqa
 
     def user_account_tabs(self, _):
-        """Render user account tabs."""
+        """Register user account tabs."""
         from age.views import AgeOverviewView
 
         return [
@@ -29,6 +25,7 @@ class AgeConfig(AppConfig):
         ]
 
     def explainer_tabs(self, _):
+        """Register explainer tabs."""
         from age.views import explainer_page_how_to_verify_age_with_yivi
 
         return [
