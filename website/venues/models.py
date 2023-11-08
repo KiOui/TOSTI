@@ -85,6 +85,10 @@ class Reservation(models.Model):
     )
     users_access = models.ManyToManyField(User, related_name="reservations_access", blank=True)
 
+    needs_music_keys = models.BooleanField(
+        default=False, help_text="Whether the music keys are needed during this reservation."
+    )
+
     comments = models.TextField(null=True, blank=True)
 
     accepted = models.BooleanField(default=None, null=True, blank=True)

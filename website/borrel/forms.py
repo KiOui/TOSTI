@@ -19,6 +19,9 @@ class BorrelReservationForm(forms.ModelForm):
         help_text="If you directly want to reserve a venue as well, choose it here. "
         "It will have the same start and end time.",
     )
+    needs_music_keys = forms.BooleanField(
+        help_text="Whether you want to reserve the music keys for this borrel reservation as well (only applicable when reserving a canteen)."
+    )
 
     def __init__(self, *args, **kwargs):
         """Init the form."""
@@ -85,6 +88,8 @@ class BorrelReservationForm(forms.ModelForm):
                 end=self.cleaned_data["end"],
                 title=self.cleaned_data["title"],
                 association=self.cleaned_data["association"],
+                comments=self.cleaned_data["comments"],
+                needs_music_keys=self.cleaned_data["needs_music_keys"],
             )
             value.venue_reservation = reservation
             value.save()

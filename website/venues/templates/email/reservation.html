@@ -21,6 +21,7 @@
         <p>{{ reservation.end }}</p>
         {% if reservation.comments %}<strong>Comments:</strong> <br>
         <p>{{ reservation.comments }}</p>{% endif %}
+        {% if reservation.needs_music_keys %}<strong>Music keys were requested for this reservation.</strong>{% endif %}
         <p>
             To accept or reject this reservation, visit <a href="https://{{ domain }}{% url "admin:venues_reservation_change" object_id=reservation.id %}">https://{{ domain }}{% url "admin:venues_reservation_change" object_id=reservation.id %}</a>.
         </p>
