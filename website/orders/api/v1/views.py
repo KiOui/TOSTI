@@ -72,7 +72,7 @@ class OrderListCreateAPIView(ListCreateAPIView):
             # Save the order while ignoring the order_type, user, paid and ready argument as the user does not have
             # permissions to save orders for all users in the shift.
             order = serializer.save(
-                shift=shift, type=Order.TYPE_ORDERED, user=self.request.user, paid=False, ready=False
+                shift=shift, type=Order.TYPE_ORDERED, user=self.request.user, paid=False, ready=False, picked_up=False
             )
             log_action(self.request.user, order, CHANGE, "Created order via API.")
 
@@ -108,6 +108,8 @@ class OrderRetrieveUpdateDestroyAPIView(LoggedRetrieveUpdateDestroyAPIView):
                 "ready": {"type": "boolean"},
                 "paid": {"type": "boolean"},
                 "priority": {"type": "number"},
+                "picked_up": {"type": "boolean"},
+                "deprioritize": {"type": "boolean"},
             },
         }
     )
