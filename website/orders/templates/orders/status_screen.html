@@ -1,0 +1,95 @@
+{% extends 'tosti/base.html' %}
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'tosti/css/status-screen.css' %}"/>
+{% endblock %}
+
+{% block header %}
+    <nav class="navbar navbar-expand-lg site-header sticky-top navbar-dark">
+        <div class="container">
+            <div class="d-block d-lg-none">
+                <a class="navbar-brand drop-out-header-mobile" href="/"><img
+                        src="{% static 'tosti/svg/TOSTI-logo.svg' %}" height="80"/></a>
+            </div>
+                <div class="mx-auto position-relative d-lg-block d-none" style="margin-top: -68px">
+                    <a class="navbar-brand drop-out-header" href="/"><img
+                            src="{% static 'tosti/svg/TOSTI-logo.svg' %}"
+                            height="120"/></a>
+                </div>
+        </div>
+    </nav>
+{% endblock %}
+
+{% block page %}
+    <div class="container-fluid mt-3" id="status-screen-container">
+        <div class="row">
+            <div class="col-md-6 p-2">
+                <h2>In progress</h2>
+            </div>
+            <div class="col-md-6 p-2">
+                <h2>Ready</h2>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block footer %}
+
+{% endblock %}
+
+{% block js %}
+    <script>
+        const STATUS_SCREEN_CONTAINER_ID = "status-screen-container";
+
+        const statusScreenApp = createApp({
+            data() {
+                return {
+                    refreshing: false,
+                    refreshTimer: null,
+                    lastRefresh: null,
+                }
+            },
+            created() {
+                this.refresh();
+                this.recalculate_progress_interval = setInterval(this.updateTrackProgress, 100);
+                document.addEventListener("visibilitychange", this.visibilityChange);
+            },
+            unmounted() {
+                document.removeEventListener("visibilitychange", this.visibilityChange);
+            },
+            methods: {
+                visibilityChange(event) {
+                    if (event.target.hidden) {
+                        clearTimeout(this.refreshTimer);
+                    } else {
+                        clearTimeout(this.refreshTimer);
+                        this.recalculate_progress_interval = setInterval(this.updateTrackProgress, 100);
+                        if (this.lastRefresh === null || (new Date()).getTime() - this.lastRefresh > 5000) {
+                            this.refresh();
+                        } else {
+                            this.refreshTimer = setTimeout(this.refresh, this.track_progress_percentage === 100 ? 1000 : 5000);
+                        }
+                    }
+                },
+                refresh() {
+                    if (this.refreshing) {
+                        return;
+                    }
+
+                    clearTimeout(this.refreshTimer);
+                    this.refreshing = true;
+                    return fetch(
+
+                    }).catch(error => {
+                        console.log(`An error occurred while refreshing player {{ player.id }}. Error: ${error}`)
+                    }).finally(() => {
+                        this.lastRefresh = (new Date()).getTime();
+                        this.refreshing = false;
+                        this.refresh_timer = setTimeout(this.refresh, this.track_progress_percentage === 100 ? 1000 : 5000);
+                    });
+                }
+            }
+        }).mount('#qrcode');
+    </script>
+{% endblock %}

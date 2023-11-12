@@ -185,6 +185,77 @@
                 </div>
             </div>
         </div>
+        <script>
+            const QR_POPUP_MODAL_ID = "qr-popup";
+
+            const headerQrCodeApp = createApp({
+                components: { QrcodeVue },
+                data() {
+                    return {
+                        margin: 2,
+                        size: 250,
+                        value: null,
+                        oldValue: null,
+                        loading: true,
+                        timer: null,
+                        running: false,
+                    }
+                },
+                mounted() {
+                    //call function on modal shown
+                    document.getElementById(QR_POPUP_MODAL_ID).addEventListener('shown.bs.modal', () => {
+                        this.startTimer();
+                    });
+
+                    //call function on hiding modal
+                    document.getElementById(QR_POPUP_MODAL_ID).addEventListener('hidden.bs.modal', () => {
+                        this.stopTimer();
+                    });
+                },
+                methods: {
+                    startTimer() {
+                        this.running = true;
+                        this.fetchUserToken();
+                    },
+                    stopTimer() {
+                        this.running = false;
+                        clearTimeout(this.timer);
+                    },
+                    fetchUserToken() {
+                        if (this.value !== null) {
+                            this.oldValue = this.value;
+                        }
+
+                        this.loading = true;
+                        fetch(
+                            '{% url 'v1:id-token' %}',
+                            {
+                                headers: {
+                                    "X-CSRFToken": get_csrf_token(),
+                                    "Content-Type": 'application/json',
+                                    "Accept": 'application/json',
+                                }
+                            }
+                        ).then(response => {
+                            if (response.status === 200) {
+                                return response.json();
+                            } else {
+                                throw response;
+                            }
+                        }).then(data => {
+                            this.value = data.token;
+                        }).catch(error => {
+                            show_error_from_api(error);
+                        }).finally(() => {
+                            this.loading = false;
+                            if (this.running) {
+                                this.timer = setTimeout(this.fetchUserToken, 20000);
+                            }
+                        });
+                    }
+                }
+            }).mount('#qrcode');
+        </script>
     {% endblock %}
     <div class="page">
         {% block page %}{% endblock %}
@@ -204,76 +275,5 @@
 
 <script src="{% static "tosti/js/bootstrap.bundle.min.js" %}"></script>
 {% block js %}{% endblock %}
-<script>
-    const QR_POPUP_MODAL_ID = "qr-popup";
-
-    const headerQrCodeApp = createApp({
-        components: { QrcodeVue },
-        data() {
-            return {
-                margin: 2,
-                size: 250,
-                value: null,
-                oldValue: null,
-                loading: true,
-                timer: null,
-                running: false,
-            }
-        },
-        mounted() {
-            //call function on modal shown
-            document.getElementById(QR_POPUP_MODAL_ID).addEventListener('shown.bs.modal', () => {
-                this.startTimer();
-            });
-
-            //call function on hiding modal
-            document.getElementById(QR_POPUP_MODAL_ID).addEventListener('hidden.bs.modal', () => {
-                this.stopTimer();
-            });
-        },
-        methods: {
-            startTimer() {
-                this.running = true;
-                this.fetchUserToken();
-            },
-            stopTimer() {
-                this.running = false;
-                clearTimeout(this.timer);
-            },
-            fetchUserToken() {
-                if (this.value !== null) {
-                    this.oldValue = this.value;
-                }
-
-                this.loading = true;
-                fetch(
-                    '{% url 'v1:id-token' %}',
-                    {
-                        headers: {
-                            "X-CSRFToken": get_csrf_token(),
-                            "Content-Type": 'application/json',
-                            "Accept": 'application/json',
-                        }
-                    }
-                ).then(response => {
-                    if (response.status === 200) {
-                        return response.json();
-                    } else {
-                        throw response;
-                    }
-                }).then(data => {
-                    this.value = data.token;
-                }).catch(error => {
-                    show_error_from_api(error);
-                }).finally(() => {
-                    this.loading = false;
-                    if (this.running) {
-                        this.timer = setTimeout(this.fetchUserToken, 20000);
-                    }
-                });
-            }
-        }
-    }).mount('#qrcode');
-</script>
 </body>
 </html>
