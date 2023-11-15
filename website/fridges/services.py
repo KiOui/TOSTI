@@ -26,11 +26,11 @@ def user_can_open_fridge(user, fridge):
         return False, None
 
     opening_hours = fridge.current_opening_hours
-
     if not opening_hours.exists():
         return False, None
 
     already_opened_today = AccessLog.objects.filter(fridge=fridge, timestamp__date=timezone.now().date()).exists()
+    # This requires a daily opening by a user with the open_always permission
     if config.FRIDGE_REQUIRE_DAILY_OPENING and not already_opened_today:
         return False, None
 
