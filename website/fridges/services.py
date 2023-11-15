@@ -1,4 +1,6 @@
+from constance import config
 from django.db.models import Q
+from django.utils import timezone
 
 from age.services import verify_minimum_age
 from fridges.models import AccessLog
@@ -29,6 +31,9 @@ def user_can_open_fridge(user, fridge):
         return False, None
 
     if opening_hours.filter(Q(restrict_to_groups__in=user.groups.all()) | Q(restrict_to_groups__isnull=True)).exists():
+        already_opened_today = AccessLog.objects.filter(fridge=fridge, timestamp__date=timezone.now().date()).exists()
+        if config.FRIDGE_REQUIRE_DAILY_OPENING and not already_opened_today:
+            return False, None
         return True, fridge.unlock_for_how_long
 
     return False, None

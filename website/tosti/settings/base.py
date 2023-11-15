@@ -220,6 +220,12 @@ CONSTANCE_CONFIG = {
         "The object ID of the Category of Borrel products to show on the statistics screen.",
         int,
     ),
+    "FRIDGE_REQUIRE_DAILY_OPENING": (
+        False,
+        "If enabled, every day the fridge needs to be openend at least once by a person with open_always permissions, "
+        "to be able to open it again.",
+        bool,
+    ),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = {
