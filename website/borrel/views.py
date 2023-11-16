@@ -330,7 +330,11 @@ class BorrelReservationSubmitView(BasicBorrelBrevetRequiredMixin, BorrelReservat
     def get_form_kwargs(self):
         """Add accept_terms keyword argument for form."""
         kwargs = super().get_form_kwargs()
-        kwargs.update({"add_accept_terms": self.get_object().venue_reservation is not None})
+        venue_reservation = self.get_object().venue_reservation
+        kwargs.update({"add_accept_terms": venue_reservation is not None})
+        kwargs.update(
+            {"add_re_enabled_music_system": venue_reservation is not None and venue_reservation.needs_music_keys}
+        )
         return kwargs
 
     def get_context_data(self, **kwargs):

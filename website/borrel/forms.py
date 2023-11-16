@@ -20,8 +20,11 @@ class BorrelReservationForm(forms.ModelForm):
         "It will have the same start and end time.",
     )
     needs_music_keys = forms.BooleanField(
-        help_text="Whether you want to reserve the music keys for this borrel reservation as well (only applicable "
-                  "when reserving a canteen)."
+        help_text=(
+            "Whether you want to reserve the music keys for this borrel reservation as well (only applicable "
+            "when reserving a canteen). Note that the music keys are NOT needed to control Thaliedje in the North "
+            "canteen. You only need these if you want to connect your own device to the speakers."
+        )
     )
 
     def __init__(self, *args, **kwargs):
@@ -148,6 +151,7 @@ class BorrelReservationSubmissionForm(forms.ModelForm):
         """Init the form."""
         request = kwargs.pop("request", None)
         add_accept_terms = kwargs.pop("add_accept_terms", False)
+        add_re_enabled_music_system = kwargs.pop("add_re_enabled_music_system", False)
         self.user = request.user
         super().__init__(*args, **kwargs)
         self.fields["title"].disabled = True
@@ -164,6 +168,14 @@ class BorrelReservationSubmissionForm(forms.ModelForm):
                     if config.CLEANING_SCHEME_URL
                     else "cleaning scheme"
                 )
+            )
+
+        if add_re_enabled_music_system:
+            self.fields["re_enabled_thaliedje"] = forms.BooleanField(required=True)
+            self.fields["re_enabled_thaliedje"].label = mark_safe(
+                "The music cabinet is closed and everything is connected the way it was before the event. Marietje or"
+                " Thaliedje has been enabled and works. The master volume has been put back to what it was before "
+                "the event."
             )
 
     class Meta:
