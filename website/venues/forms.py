@@ -68,7 +68,7 @@ class ReservationForm(forms.ModelForm):
         """Meta class."""
 
         model = Reservation
-        fields = ["venue", "association", "start", "end", "title", "comments"]
+        fields = ["venue", "association", "start", "end", "title", "comments", "needs_music_keys"]
         widgets = {
             "start": DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
             "end": DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),

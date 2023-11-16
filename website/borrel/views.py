@@ -330,7 +330,11 @@ class BorrelReservationSubmitView(BasicBorrelBrevetRequiredMixin, BorrelReservat
     def get_form_kwargs(self):
         """Add accept_terms keyword argument for form."""
         kwargs = super().get_form_kwargs()
-        kwargs.update({"add_accept_terms": self.get_object().venue_reservation is not None})
+        venue_reservation = self.get_object().venue_reservation
+        kwargs.update({"add_accept_terms": venue_reservation is not None})
+        kwargs.update(
+            {"add_re_enabled_music_system": venue_reservation is not None and venue_reservation.needs_music_keys}
+        )
         return kwargs
 
     def get_context_data(self, **kwargs):
@@ -433,12 +437,21 @@ class BorrelReservationFeed(ICalFeed):
                 for reserved_item in item.items.all()
             ]
         )
-        return (
-            f"Title: {item.title}<br>"
-            f"Comments: {item.comments}<br>"
-            f"{reserved_item_list_str}"
-            f'<a href="{self.item_link(item)}">View on T.O.S.T.I.</a>'
-        )
+        if item.venue_reservation is not None and item.venue_reservation.needs_music_keys:
+            return (
+                f"Title: {item.title}<br>"
+                f"Comments: {item.comments}<br>"
+                f"{reserved_item_list_str}"
+                f"<strong>Music keys were requested for this reservation</strong><br>"
+                f'<a href="{self.item_link(item)}">View on T.O.S.T.I.</a>'
+            )
+        else:
+            return (
+                f"Title: {item.title}<br>"
+                f"Comments: {item.comments}<br>"
+                f"{reserved_item_list_str}"
+                f'<a href="{self.item_link(item)}">View on T.O.S.T.I.</a>'
+            )
 
     def item_start_datetime(self, item):
         """Get start datetime."""
