@@ -6,7 +6,7 @@ authors = ["Job Doesburg <job.doesburg@gmail.com>", "Lars van Rhijn <larsvanrhij
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.8.10"
+python = "^3.11"
 django = "^4.2.7"
 Pillow = "^10.0.1"
 django-admin-autocomplete-filter = "^0.7.1"
