@@ -133,7 +133,8 @@ class OrderRetrieveUpdateDestroyAPIView(LoggedRetrieveUpdateDestroyAPIView):
                 if instance.deprioritize and not deprioritize:
                     self.permission_denied(request, message="Deprioritize can not be unset.", code=400)
                 else:
-                    serializer = self.get_serializer(instance, data={"deprioritize": deprioritize}, partial=True)
+                    data = {"deprioritize": True, "prioritize": False} if deprioritize else {"deprioritize": False}
+                    serializer = self.get_serializer(instance, data=data, partial=True)
                     serializer.is_valid(raise_exception=True)
                     self.perform_update(serializer)
                     return Response(serializer.data)
