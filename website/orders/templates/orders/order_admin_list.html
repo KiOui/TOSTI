@@ -321,6 +321,7 @@
                     }).then(() => {
                         if (typeof (update_refresh_list) !== 'undefined') {
                             update_refresh_list();
+                            tata.success('', 'deprioritized successfully`);
                         }
                     }).catch(error => show_error_from_api(error));
                 }
