@@ -23,6 +23,7 @@ from orders.services import (
     user_can_manage_shifts_in_venue,
     user_can_manage_shift,
     add_scanned_order,
+    user_gets_prioritized_orders,
 )
 from tosti import settings
 from tosti.api.openapi import CustomAutoSchema
@@ -79,7 +80,7 @@ class OrderListCreateAPIView(ListCreateAPIView):
         """Catch the OrderException that might be thrown by creating a new Order."""
         shift = kwargs.get("shift")
         priority = request.data.get("priority")
-        if not user_can_manage_shift(self.request.user, shift) and priority is Order.PRIORITY_PRIORITIZED:
+        if not user_gets_prioritized_orders(self.request.user, shift) and priority is Order.PRIORITY_PRIORITIZED:
             # Users that can't manage the shift should not be able to create a prioritized order.
             raise PermissionDenied(detail="You are not allowed to create prioritized orders!")
 
