@@ -84,7 +84,13 @@ def add_scanned_order(product: Product, shift: Shift, ready=True, paid=True) -> 
 
 
 def add_user_order(
-    product: Product, shift: Shift, user: User, deprioritize=False, paid=False, ready=False, **kwargs
+    product: Product,
+    shift: Shift,
+    user: User,
+    priority: int = Order.PRIORITY_NORMAL,
+    paid: bool = False,
+    ready: bool = False,
+    **kwargs,
 ) -> Order:
     """
     Add a single Order (of type TYPE_ORDERED).
@@ -92,7 +98,7 @@ def add_user_order(
     :param product: A Product for which an Order has to be created
     :param shift: The shift for which the Orders have to be created
     :param user: The User for which the Orders have to be created
-    :param deprioritize: Whether to deprioritize the order
+    :param priority: Which priority the Order should have
     :param paid: Whether the order should be set as paid
     :param ready: Whether the order should be set as ready
     :return: The created Order
@@ -131,6 +137,7 @@ def add_user_order(
     # Check per-Product order maximum
     if not product.user_can_order_amount(user, shift, amount=1):
         raise OrderException("User can not order {} {} for this shift".format(product, 1))
+
     return Order.objects.create(
         product=product,
         shift=shift,
@@ -139,8 +146,7 @@ def add_user_order(
         user_association=user.association,
         paid=paid,
         ready=ready,
-        prioritize=user_gets_prioritized_orders(user, shift),
-        deprioritize=deprioritize,
+        priority=priority,
     )
 
 

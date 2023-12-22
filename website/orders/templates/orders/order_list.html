@@ -55,7 +55,7 @@
                     </div>
                     <div class="flex-divider"></div>
                     <div class="d-flex justify-center align-items-center">
-                        <i v-if="order.user !== null && {{ user.id }} === order.user.id && order.deprioritize === false"
+                        <i v-if="order.user !== null && {{ user.id }} === order.user.id && order.priority !== 0"
                             class="fa-solid fa-arrow-down-short-wide" style="font-size: 1.5em; cursor: pointer;" v-on:click="order_to_bottom_of_list(order)"></i>
                         <p v-if="order.type === 0" class="item-username">
                             <template v-if="order.user !== null">${ order.user.first_name }$</template>
@@ -183,6 +183,7 @@
                         'csrfmiddlewaretoken': get_csrf_token(),
                         'product': product.id,
                         'type': 0,
+                        'priority': {% if priority %}ORDERS_ORDER_PRIORITY_PRIORITIZED{% else %}ORDERS_ORDER_PRIORITY_NORMAL{% endif %},
                     }),
                     headers: {
                         "X-CSRFToken": get_csrf_token(),
@@ -217,8 +218,7 @@
                                 "Accept": 'application/json',
                             },
                             body: JSON.stringify({
-                                'deprioritize': true,
-                                'prioritize': false
+                                'priority': ORDERS_ORDER_PRIORITY_DEPRIORITIZED
                             })
                         }
                     ).then(response => {

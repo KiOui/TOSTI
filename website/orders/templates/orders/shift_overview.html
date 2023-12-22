@@ -3,7 +3,7 @@
 
 {% block page %}
     {% include 'orders/shift_header.html' with shift=shift %}
-    {% include 'orders/order_list.html' with shift=shift admin=False user=user show_order_buttons=True %}
+    {% include 'orders/order_list.html' with shift=shift admin=False user=user show_order_buttons=True priority=user_gets_priority %}
     <div class="container pt-5 pb-5"></div>
 {% endblock %}
 
