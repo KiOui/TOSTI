@@ -248,7 +248,7 @@ class OrderAdmin(AutocompleteFilterMixin, ImportExportModelAdmin):
     ]
     autocomplete_fields = ["user"]
 
-    actions = ["set_ready", "set_paid"]
+    actions = ["set_ready", "set_paid", "set_prioritized", "set_normal", "set_deprioritized"]
 
     def has_change_permission(self, request, obj=None):
         """Make order read-only if the shift is finalized."""
@@ -287,6 +287,61 @@ class OrderAdmin(AutocompleteFilterMixin, ImportExportModelAdmin):
         return request
 
     set_paid.short_description = "Mark selected orders as paid"
+
+    def set_prioritized(self, request, queryset):
+        """
+        Set orders in a QuerySet as prioritized.
+
+        :param request: the request
+        :param queryset: a queryset of orders
+        :return: the request
+        """
+        updated_orders = queryset.filter(~Q(priority=Order.PRIORITY_PRIORITIZED)).update(
+            priority=Order.PRIORITY_PRIORITIZED
+        )
+        messages.success(
+            request,
+            f"{updated_orders} orders were marked as prioritized",
+        )
+        return request
+
+    set_prioritized.short_description = "Mark selected orders as priority prioritize"
+
+    def set_normal(self, request, queryset):
+        """
+        Set orders in a QuerySet as normal priority.
+
+        :param request: the request
+        :param queryset: a queryset of orders
+        :return: the request
+        """
+        updated_orders = queryset.filter(~Q(priority=Order.PRIORITY_NORMAL)).update(priority=Order.PRIORITY_NORMAL)
+        messages.success(
+            request,
+            f"{updated_orders} orders were marked as normal priority",
+        )
+        return request
+
+    set_normal.short_description = "Mark selected orders as priority normal"
+
+    def set_deprioritized(self, request, queryset):
+        """
+        Set orders in a QuerySet as deprioritized.
+
+        :param request: the request
+        :param queryset: a queryset of orders
+        :return: the request
+        """
+        updated_orders = queryset.filter(~Q(priority=Order.PRIORITY_DEPRIORITIZED)).update(
+            priority=Order.PRIORITY_DEPRIORITIZED
+        )
+        messages.success(
+            request,
+            f"{updated_orders} orders were marked as deprioritized",
+        )
+        return request
+
+    set_deprioritized.short_description = "Mark selected orders as priority deprioritized"
 
     def get_venue(self, obj):
         """Venue of the order."""

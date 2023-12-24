@@ -516,6 +516,16 @@ class Order(models.Model):
     TYPE_SCANNED = 1
     TYPES = ((TYPE_ORDERED, "Ordered"), (TYPE_SCANNED, "Scanned"))
 
+    PRIORITY_DEPRIORITIZED = 0
+    PRIORITY_NORMAL = 1
+    PRIORITY_PRIORITIZED = 2
+
+    PRIORITIES = (
+        (PRIORITY_DEPRIORITIZED, "Deprioritized"),
+        (PRIORITY_NORMAL, "Normal"),
+        (PRIORITY_PRIORITIZED, "Prioritized"),
+    )
+
     created = models.DateTimeField(auto_now_add=True)
 
     user = models.ForeignKey(User, related_name="orders", blank=True, null=True, on_delete=models.PROTECT)
@@ -535,11 +545,9 @@ class Order(models.Model):
     paid = models.BooleanField(default=False)
     paid_at = models.DateTimeField(null=True, blank=True)
 
-    type = models.PositiveIntegerField(choices=TYPES, default=0)
+    type = models.PositiveIntegerField(choices=TYPES, default=TYPE_ORDERED)
 
-    prioritize = models.BooleanField(default=False)
-
-    deprioritize = models.BooleanField(default=False)
+    priority = models.PositiveIntegerField(choices=PRIORITIES, default=PRIORITY_NORMAL)
 
     class Meta:
         """Meta class."""
@@ -588,6 +596,26 @@ class Order(models.Model):
         :rtype: boolean
         """
         return self.paid and self.ready
+
+    @property
+    def prioritized(self) -> bool:
+        """
+        Check if an Order is prioritized.
+
+        :return True if the priority of this order is PRIORITY_PRIORITIZED.
+        :rtype boolean
+        """
+        return self.priority == self.PRIORITY_PRIORITIZED
+
+    @property
+    def deprioritized(self) -> bool:
+        """
+        Check if an Order is deprioritized.
+
+        :return True if the priority of this order is PRIORITY_DEPRIORITIZED.
+        :rtype boolean
+        """
+        return self.priority == self.PRIORITY_DEPRIORITIZED
 
 
 class OrderBlacklistedUser(models.Model):

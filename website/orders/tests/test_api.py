@@ -127,28 +127,23 @@ class OrderAPITests(APITestCase):
         self.client.login(username=self.normal_user.username, password="password")
         response = self.client.post(
             reverse("v1:orders_listcreate", kwargs={"shift": self.shift}),
-            {"product": self.product.id, "ready": True, "paid": True, "prioritize": True},
+            {"product": self.product.id, "ready": True, "paid": True, "priority": Order.PRIORITY_PRIORITIZED},
             format="json",
         )
-        self.assertEqual(response.status_code, 201)
-        created_order = Order.objects.latest("id")
-        self.assertEqual(created_order.product, self.product)
-        self.assertEqual(created_order.ready, False)
-        self.assertEqual(created_order.paid, False)
-        self.assertEqual(created_order.prioritize, False)
+        self.assertEqual(response.status_code, 403)
 
     def test_create_order_normal_user_deprioritize(self):
         """Orders can be deprioritized on creation."""
         self.client.login(username=self.normal_user.username, password="password")
         response = self.client.post(
             reverse("v1:orders_listcreate", kwargs={"shift": self.shift}),
-            {"product": self.product.id, "deprioritize": True},
+            {"product": self.product.id, "priority": Order.PRIORITY_DEPRIORITIZED},
             format="json",
         )
         self.assertEqual(response.status_code, 201)
         created_order = Order.objects.latest("id")
         self.assertEqual(created_order.product, self.product)
-        self.assertEqual(created_order.deprioritize, True)
+        self.assertEqual(created_order.priority, Order.PRIORITY_DEPRIORITIZED)
 
     def test_create_order_normal_user_type_scanned(self):
         """When a user has no privilege, the type attribute should be ignored."""
@@ -390,7 +385,7 @@ class OrderAPITests(APITestCase):
             {
                 "paid": True,
                 "ready": True,
-                "deprioritize": True,
+                "priority": Order.PRIORITY_DEPRIORITIZED,
             },
             format="json",
         )
@@ -398,14 +393,14 @@ class OrderAPITests(APITestCase):
         order = Order.objects.get(pk=order.pk)
         self.assertTrue(order.paid)
         self.assertTrue(order.ready)
-        self.assertTrue(order.deprioritize)
+        self.assertEqual(order.priority, Order.PRIORITY_DEPRIORITIZED)
 
     def test_partial_update_order_not_logged_in(self):
         order = Order.objects.create(user=None, product=self.product, shift=self.shift)
         response = self.client.patch(
             reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk}),
             {
-                "deprioritize": True,
+                "priority": Order.PRIORITY_DEPRIORITIZED,
             },
             format="json",
         )
@@ -418,7 +413,7 @@ class OrderAPITests(APITestCase):
             response = self.client.patch(
                 reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk}),
                 {
-                    "deprioritize": True,
+                    "priority": Order.PRIORITY_DEPRIORITIZED,
                 },
                 format="json",
             )
@@ -430,7 +425,7 @@ class OrderAPITests(APITestCase):
             response = self.client.patch(
                 reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk}),
                 {
-                    "deprioritize": True,
+                    "priority": Order.PRIORITY_DEPRIORITIZED,
                 },
                 format="json",
             )
@@ -443,13 +438,13 @@ class OrderAPITests(APITestCase):
             response = self.client.patch(
                 reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk}),
                 {
-                    "deprioritize": True,
+                    "priority": Order.PRIORITY_DEPRIORITIZED,
                 },
                 format="json",
             )
             self.assertEqual(response.status_code, 200)
             order = Order.objects.get(pk=order.pk)
-            self.assertTrue(order.deprioritize)
+            self.assertEqual(order.priority, Order.PRIORITY_DEPRIORITIZED)
 
         with self.subTest("Paid"):
             order = Order.objects.create(user=self.normal_user, product=self.product, shift=self.shift)
@@ -481,26 +476,30 @@ class OrderAPITests(APITestCase):
 
     def test_partial_update_order_disable_deprioritize(self):
         """For a normal user, disabling deprioritize should not be possible."""
-        order = Order.objects.create(user=self.normal_user, product=self.product, shift=self.shift, deprioritize=True)
+        order = Order.objects.create(
+            user=self.normal_user, product=self.product, shift=self.shift, priority=Order.PRIORITY_DEPRIORITIZED
+        )
         self.client.login(username=self.normal_user.username, password="password")
         response = self.client.patch(
             reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk}),
             {
-                "deprioritize": False,
+                "priority": Order.PRIORITY_NORMAL,
             },
             format="json",
         )
         self.assertEqual(response.status_code, 403)
         order = Order.objects.get(pk=order.pk)
-        self.assertTrue(order.deprioritize)
+        self.assertEqual(order.priority, Order.PRIORITY_DEPRIORITIZED)
 
     def test_partial_update_order_privileged_user(self):
-        order = Order.objects.create(user=self.normal_user, product=self.product, shift=self.shift, deprioritize=True)
+        order = Order.objects.create(
+            user=self.normal_user, product=self.product, shift=self.shift, priority=Order.PRIORITY_DEPRIORITIZED
+        )
         self.client.login(username=self.user_with_permissions.username, password="password")
         response = self.client.patch(
             reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk}),
             {
-                "deprioritize": False,
+                "priority": Order.PRIORITY_NORMAL,
                 "paid": True,
                 "ready": True,
             },
@@ -508,19 +507,23 @@ class OrderAPITests(APITestCase):
         )
         self.assertEqual(response.status_code, 200)
         order = Order.objects.get(pk=order.pk)
-        self.assertFalse(order.deprioritize)
+        self.assertEqual(order.priority, Order.PRIORITY_NORMAL)
         self.assertTrue(order.paid)
         self.assertTrue(order.ready)
 
     def test_delete_order_not_logged_in(self):
-        order = Order.objects.create(user=None, product=self.product, shift=self.shift, deprioritize=True)
+        order = Order.objects.create(
+            user=None, product=self.product, shift=self.shift, priority=Order.PRIORITY_DEPRIORITIZED
+        )
         response = self.client.delete(
             reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk})
         )
         self.assertEqual(response.status_code, 403)
 
     def test_delete_order_not_privileged(self):
-        order = Order.objects.create(user=self.normal_user, product=self.product, shift=self.shift, deprioritize=True)
+        order = Order.objects.create(
+            user=self.normal_user, product=self.product, shift=self.shift, priority=Order.PRIORITY_DEPRIORITIZED
+        )
         self.client.login(username=self.normal_user.username, password="password")
         response = self.client.delete(
             reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk})
@@ -530,7 +533,10 @@ class OrderAPITests(APITestCase):
     def test_delete_order(self):
         with self.subTest("Own order"):
             order = Order.objects.create(
-                user=self.user_with_permissions, product=self.product, shift=self.shift, deprioritize=True
+                user=self.user_with_permissions,
+                product=self.product,
+                shift=self.shift,
+                priority=Order.PRIORITY_DEPRIORITIZED,
             )
             self.client.login(username=self.user_with_permissions.username, password="password")
             response = self.client.delete(
@@ -539,7 +545,9 @@ class OrderAPITests(APITestCase):
             self.assertEqual(response.status_code, 204)
 
         with self.subTest("Terminal order"):
-            order = Order.objects.create(user=None, product=self.product, shift=self.shift, deprioritize=True)
+            order = Order.objects.create(
+                user=None, product=self.product, shift=self.shift, priority=Order.PRIORITY_DEPRIORITIZED
+            )
             self.client.login(username=self.user_with_permissions.username, password="password")
             response = self.client.delete(
                 reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk})
@@ -548,7 +556,7 @@ class OrderAPITests(APITestCase):
 
         with self.subTest("Other users order"):
             order = Order.objects.create(
-                user=self.normal_user, product=self.product, shift=self.shift, deprioritize=True
+                user=self.normal_user, product=self.product, shift=self.shift, priority=Order.PRIORITY_DEPRIORITIZED
             )
             self.client.login(username=self.user_with_permissions.username, password="password")
             response = self.client.delete(

@@ -45,6 +45,18 @@
     <!-- TaTa.js notifications -->
     <script src="{% static 'tosti/js/tata.js' %}"></script>
 
+    <!-- JavaScript constants -->
+    <script>
+        // orders.models.Order.TYPES
+        const ORDERS_ORDER_TYPE_ORDERED = 0;
+        const ORDERS_ORDER_TYPE_SCANNED = 1;
+
+        // orders.models.Order.PRIORITIES
+        const ORDERS_ORDER_PRIORITY_DEPRIORITIZED = 0;
+        const ORDERS_ORDER_PRIORITY_NORMAL = 1;
+        const ORDERS_ORDER_PRIORITY_PRIORITIZED = 2;
+    </script>
+
     <!-- Announcements static files -->
     <link rel="stylesheet" href="{% static 'announcements/css/announcements.css' %}" type="text/css">
     <script src="{% static 'announcements/js/announcements.js' %}"></script>

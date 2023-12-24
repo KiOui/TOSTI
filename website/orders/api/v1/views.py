@@ -23,6 +23,7 @@ from orders.services import (
     user_can_manage_shifts_in_venue,
     user_can_manage_shift,
     add_scanned_order,
+    user_gets_prioritized_orders,
 )
 from tosti import settings
 from tosti.api.openapi import CustomAutoSchema
@@ -52,7 +53,7 @@ class OrderListCreateAPIView(ListCreateAPIView):
         return (
             self.queryset.filter(shift=self.kwargs.get("shift"))
             .prefetch_related("user_association", "user__association")
-            .order_by("-prioritize", "deprioritize", "created")
+            .order_by("-priority", "created")
         )
 
     def get_serializer_context(self):
@@ -64,19 +65,25 @@ class OrderListCreateAPIView(ListCreateAPIView):
         shift = self.kwargs.get("shift")
         if user_can_manage_shift(self.request.user, shift):
             # Save the order as it was passed to the API as the user has permission to save orders for all users in
-            # the shift
+            # the shift.
             order = serializer.save(shift=shift, user=self.request.user)
             log_action(self.request.user, order, CHANGE, "Created order as manager via API.")
         else:
             # Save the order while ignoring the order_type, user, paid and ready argument as the user does not have
-            # permissions to save orders for all users in the shift
+            # permissions to save orders for all users in the shift.
             order = serializer.save(
-                shift=shift, type=Order.TYPE_ORDERED, user=self.request.user, paid=False, ready=False, made=False
+                shift=shift, type=Order.TYPE_ORDERED, user=self.request.user, paid=False, ready=False
             )
             log_action(self.request.user, order, CHANGE, "Created order via API.")
 
     def create(self, request, *args, **kwargs):
         """Catch the OrderException that might be thrown by creating a new Order."""
+        shift = kwargs.get("shift")
+        priority = request.data.get("priority")
+        if not user_gets_prioritized_orders(self.request.user, shift) and priority is Order.PRIORITY_PRIORITIZED:
+            # Users that can't manage the shift should not be able to create a prioritized order.
+            raise PermissionDenied(detail="You are not allowed to create prioritized orders!")
+
         try:
             return super(OrderListCreateAPIView, self).create(request, *args, **kwargs)
         except OrderException as e:
@@ -100,7 +107,7 @@ class OrderRetrieveUpdateDestroyAPIView(LoggedRetrieveUpdateDestroyAPIView):
             "properties": {
                 "ready": {"type": "boolean"},
                 "paid": {"type": "boolean"},
-                "deprioritize": {"type": "boolean"},
+                "priority": {"type": "number"},
             },
         }
     )
@@ -123,22 +130,27 @@ class OrderRetrieveUpdateDestroyAPIView(LoggedRetrieveUpdateDestroyAPIView):
             # All changeable order fields can be changed by the user.
             return super().update(request, *args, **kwargs)
         else:
-            # Only deprioritize can be changed by the user.
+            # Users can only change their own orders.
             if instance.user != request.user:
                 self.permission_denied(
                     request, message="You don't have permission to alter other people's orders.", code=403
                 )
-            if request.data.get("deprioritize", None) is not None:
-                deprioritize = request.data.get("deprioritize")
-                if instance.deprioritize and not deprioritize:
-                    self.permission_denied(request, message="Deprioritize can not be unset.", code=400)
-                else:
-                    serializer = self.get_serializer(instance, data={"deprioritize": deprioritize}, partial=True)
-                    serializer.is_valid(raise_exception=True)
-                    self.perform_update(serializer)
-                    return Response(serializer.data)
+
+            # Only priority can be changed by the user.
+            priority = request.data.get("priority", None)
+
+            if priority is not None and priority == Order.PRIORITY_DEPRIORITIZED:
+                # User wants to set their order to deprioritized.
+                serializer = self.get_serializer(
+                    instance, data={"priority": Order.PRIORITY_DEPRIORITIZED}, partial=True
+                )
+                serializer.is_valid(raise_exception=True)
+                self.perform_update(serializer)
+                return Response(serializer.data)
             else:
-                self.permission_denied(request, message="Only the deprioritize option can be changed.", code=400)
+                self.permission_denied(
+                    request, message="Only the priority option can be changed to deprioritized.", code=400
+                )
 
     def destroy(self, request, *args, **kwargs):
         """Destroy an order."""

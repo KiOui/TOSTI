@@ -21,6 +21,7 @@ from .services import (
     user_can_manage_shifts_in_venue,
     generate_order_statistics,
     generate_orders_per_venue_statistics,
+    user_gets_prioritized_orders,
 )
 
 
@@ -40,6 +41,7 @@ class ShiftView(LoginRequiredMixin, TemplateView):
                 and user_can_manage_shift(self.request.user, shift),
                 "has_order_permissions": self.request.user.is_authenticated
                 and not user_is_blacklisted(self.request.user),
+                "user_gets_priority": user_gets_prioritized_orders(self.request.user, shift),
             },
         )
         return context
