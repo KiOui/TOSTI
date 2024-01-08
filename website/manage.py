@@ -6,21 +6,7 @@ import sys
 
 def main():
     """Django management command."""
-    try:
-        import tosti.settings.production  # noqa
-    except ModuleNotFoundError:
-        # Use the development settings if the production settings are not available (so we're on a dev machine)
-        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tosti.settings.development")
-    else:
-        import socket  # noqa
-
-        hostname = socket.gethostname()
-        if hostname.startswith("lilo"):
-            # Use management settings if we're on lilo
-            os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tosti.settings.management")
-        else:
-            # Use the production settings if we're on a production machine
-            os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tosti.settings.production")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tosti.settings.development")
 
     try:
         from django.core.management import execute_from_command_line

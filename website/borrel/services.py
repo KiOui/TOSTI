@@ -126,7 +126,6 @@ def generate_beer_consumption_over_time(category):
     current_month = last_year.month
 
     for i in range(0, 13):
-
         next_month = current_month + 1
         if next_month > 12:
             next_month = 1

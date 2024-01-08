@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 from django.contrib import messages
@@ -278,3 +279,7 @@ AGE_VERIFICATION_MINIMUM_AGE_MAPPING = {
 AGE_VERIFICATION_USERNAME_ATTRIBUTE = "pbdf.pbdf.surfnet-2.id"
 AGE_VERIFICATION_INSTITUTE_ATTRIBUTE = "pbdf.pbdf.surfnet-2.institute"
 AGE_VERIFICATION_INSTITUTE_VALUE = "ru.nl"
+
+YIVI_SERVER_URL = os.environ.get("YIVI_SERVER_URL")
+YIVI_SERVER_TOKEN = os.environ.get("YIVI_SERVER_TOKEN")
+
