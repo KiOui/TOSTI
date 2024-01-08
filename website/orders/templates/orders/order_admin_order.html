@@ -11,17 +11,20 @@
               <i v-if="order.user !== null && {{ user.id }} === order.user.id"
                class="fa-solid fa-user fa-xs"></i>
               ${ order.user.first_name }$ ${ order.user.last_name }$
-       </p>
-       <p><a target="_blank" :href="`{% url 'admin:orders_order_changelist' %}${order.id}/change/`"><i class="fa-solid fa-pen-to-square fa-xs text-white"></i></a></p>
+        </p>
+        <i v-if="order.user !== null && {{ user.id }} === order.user.id && order.deprioritize === false"
+           class="fa-solid fa-arrow-down-short-wide" style="font-size: 1.2em; cursor: pointer;" v-on:click="order_to_bottom_of_list(order)"></i>
+        <p><a target="_blank" :href="`{% url 'admin:orders_order_changelist' %}${order.id}/change/`"><i class="fa-solid fa-pen-to-square fa-xs text-white"></i></a></p>
     </div>
     <div v-if="!shift.finalized" class="col-12 col-lg-3 d-inline-flex gap-2">
-           <button v-if="order.paid" type="button" class="checkbox-paid btn col btn-success"
-                   v-on:click="toggle_paid(order)">Paid <i class="fa-regular fa-circle-check"></i></button>
-           <button v-else type="button" class="checkbox-paid btn col btn-danger"
-                   v-on:click="toggle_paid(order)">Paid <i class="fa-regular fa-circle-xmark"></i></button>
-           <button v-if="order.ready" type="button" class="checkbox-ready btn col btn-success"
-                  v-on:click="toggle_ready(order)">Ready <i class="fa-regular fa-circle-check"></i></button>
-           <button v-else type="button" class="checkbox-ready btn col btn-danger"
-                  v-on:click="toggle_ready(order)">Ready <i class="fa-regular fa-circle-xmark"></i></button>
-       </div>
+        <button v-if="order.paid" type="button" class="checkbox-paid btn col btn-success"
+            v-on:click="toggle_paid(order)">Paid <i class="fa-regular fa-circle-check"></i></button>
+        <button v-else type="button" class="checkbox-paid btn col btn-danger"
+            v-on:click="toggle_paid(order)">Paid <i class="fa-regular fa-circle-xmark"></i></button>
+
+        <button v-if="order.ready" type="button" class="checkbox-ready btn col btn-success"
+            v-on:click="toggle_ready(order)">Ready <i class="fa-regular fa-circle-check"></i></button>
+        <button v-else type="button" class="checkbox-ready btn col btn-danger"
+            v-on:click="toggle_ready(order)">Ready <i class="fa-regular fa-circle-xmark"></i></button>
+    </div>
 </ul>

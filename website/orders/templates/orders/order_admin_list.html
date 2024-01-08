@@ -296,6 +296,36 @@
                     })
                 });
             },
+            order_to_bottom_of_list(order) {
+                if (confirm("Are you sure you want to put this order on the bottom of the list? This can not be undone!")) {
+                    fetch(
+                        `/api/v1/shifts/{{ shift.id }}/orders/${order.id}/`,
+                        {
+                            method: 'PATCH',
+                            headers: {
+                                "X-CSRFToken": get_csrf_token(),
+                                'Content-Type': 'application/json',
+                                "Accept": 'application/json',
+                            },
+                            body: JSON.stringify({
+                                'deprioritize': true,
+                                'prioritize': false
+                            })
+                        }
+                    ).then(response => {
+                        if (response.status === 200) {
+                            return response.json();
+                        } else {
+                            throw response;
+                        }
+                    }).then(() => {
+                        tata.success('', 'Deprioritized order successfully');
+                        if (typeof (update_refresh_list) !== 'undefined') {
+                            update_refresh_list();
+                        }
+                    }).catch(error => show_error_from_api(error));
+                }
+            },
             toggle_paid(order) {
                 fetch(
                     `/api/v1/shifts/{{ shift.id }}/orders/${order.id}/`,
