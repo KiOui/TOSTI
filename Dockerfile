@@ -45,7 +45,7 @@ RUN chown -R nobody:nogroup $DJANGO_MEDIA_ROOT
 RUN chown -R nobody:nogroup /var/log/django.log
 RUN chown -R nobody:nogroup /app/cache
 
-# Expose port 8000 to the outside world
+# Expose port 80 to the outside world
 EXPOSE 80
 
 # Command to run uWSGI
