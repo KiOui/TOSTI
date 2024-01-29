@@ -1,0 +1,92 @@
+version: "3.6"
+
+services:
+  yivi:
+    container_name: yivi
+    image: ghcr.io/privacybydesign/irma:edge
+    command: >
+      server -v --requestors '{"tosti": {"auth_method": "token", "key": "${YIVI_SERVER_TOKEN}"}}' --production --no-email --url https://yivi.tosti.science.ru.nl --port 80
+    restart: unless-stopped
+    networks:
+      - web
+    environment:
+      YIVI_SERVER_TOKEN: ${YIVI_SERVER_TOKEN}
+
+  database:
+    image: postgres:13.3-alpine
+    container_name: postgres
+    restart: unless-stopped
+    networks:
+      - db
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    container_name: web
+    restart: unless-stopped
+    networks:
+      - web
+      - db
+    ports:
+      - "80:80"
+    depends_on:
+      - database
+      - yivi
+    volumes:
+      - media:/media
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_HOST: database
+      POSTGRES_PORT: 5432
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      DJANGO_ALLOWED_HOSTS: yivi.tosti.science.ru.nl,localhost
+      YIVI_SERVER_URL: https://yivi.tosti.science.ru.nl
+      YIVI_SERVER_TOKEN: ${YIVI_SERVER_TOKEN}
+    healthcheck:
+      test: ["CMD", "python", "manage.py", "check"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  cron:
+    build: .
+    container_name: cron
+    entrypoint: ["/bin/sh", "/entrypoint_cron.sh"]
+    restart: unless-stopped
+    networks:
+      - web
+      - db
+    depends_on:
+      - database
+      - yivi
+    volumes:
+      - media:/media
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_HOST: database
+      POSTGRES_PORT: 5432
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+
+networks:
+  web:
+    external: true
+    name: caddy_reverseproxy
+  db:
+
+volumes:
+  postgres-data:
+  media:
