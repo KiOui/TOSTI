@@ -6,7 +6,7 @@ ENV PYTHONUNBUFFERED 1
 
 # Install system dependencies
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends gcc libpq-dev python3-dev cron libxmlsec1-dev libxmlsec1 \
+    && apt-get install -y --no-install-recommends gcc libpq-dev python3-dev cron python3-pip xmlsec1 python3-dev libssl-dev libsasl2-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Set the working directory in the container

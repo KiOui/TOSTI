@@ -5,11 +5,12 @@ services:
     container_name: yivi
     image: ghcr.io/privacybydesign/irma:edge
     command: >
-      server -v --requestors '{"tosti": {"auth_method": "token", "key": "${YIVI_SERVER_TOKEN}"}}' --production --no-email --url https://yivi.tosti.science.ru.nl --port 80
+      server -v --requestors '{"tosti": {"auth_method": "token", "key": "${YIVI_SERVER_TOKEN}"}}' --production --no-email --url ${YIVI_SERVER_URL} --port 80
     restart: unless-stopped
     networks:
       - web
     environment:
+      YIVI_SERVER_URL: ${YIVI_SERVER_URL}
       YIVI_SERVER_TOKEN: ${YIVI_SERVER_TOKEN}
 
   database:
@@ -31,7 +32,7 @@ services:
       retries: 5
 
   web:
-    build: .
+    image: kioui/tosti:latest
     container_name: web
     restart: unless-stopped
     networks:
@@ -51,9 +52,22 @@ services:
       POSTGRES_HOST: database
       POSTGRES_PORT: 5432
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
-      DJANGO_ALLOWED_HOSTS: yivi.tosti.science.ru.nl,localhost
-      YIVI_SERVER_URL: https://yivi.tosti.science.ru.nl
+      DJANGO_ALLOWED_HOSTS: ${SERVER_URL}
+      SENTRY_DSN: ${SENTRY_DSN}
+      YIVI_SERVER_URL: ${YIVI_SERVER_URL}
       YIVI_SERVER_TOKEN: ${YIVI_SERVER_TOKEN}
+      SAML_ENTITY_ID: ${SAML_ENTITY_ID}
+      SAML_BASE_URL: ${SAML_BASE_URL}
+      SAML_METADATA_FILE: ${SAML_METADATA_FILE}
+      SAML_PUBLIC_KEY_FILE: ${SAML_PUBLIC_KEY_FILE}
+      SAML_PRIVATE_KEY_FILE: ${SAML_PRIVATE_KEY_FILE}
+      EMAIL_HOST: smtp.science.ru.nl
+      EMAIL_PORT: 25
+      EMAIL_DEFAULT_SENDER: "www-tosti@science.ru.nl"
+      EMAIL_HOST_USER: "www-tosti@science.ru.nl"
+      DEFAULT_FROM_EMAIL: "TOSTI <www-tosti@science.ru.nl>"
+      SERVER_EMAIL: "www-tosti@science.ru.nl"
+
     healthcheck:
       test: ["CMD", "python", "manage.py", "check"]
       interval: 10s
@@ -61,7 +75,7 @@ services:
       retries: 5
 
   cron:
-    build: .
+    image: kioui/tosti:latest
     container_name: cron
     entrypoint: ["/bin/sh", "/entrypoint_cron.sh"]
     restart: unless-stopped
