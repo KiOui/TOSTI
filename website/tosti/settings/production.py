@@ -1,5 +1,3 @@
-import os
-
 from .base import *
 
 import saml2
@@ -11,7 +9,7 @@ from sentry_sdk.integrations.django import DjangoIntegration
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(",")
 
@@ -156,27 +154,27 @@ SAML_CONFIG = {
     },
     "metadata": {
         "local": [
-            os.path.join(BASE_DIR, "tosti", "settings", "saml", "metadata.xml"),
+            os.path.join(BASE_DIR, "tosti", "saml", "metadata.xml"),
         ],
     },
     "debug": 1,
-    "key_file": os.path.join(BASE_DIR, "tosti", "settings", "saml", "private.key"),
-    "cert_file": os.path.join(BASE_DIR, "tosti", "settings", "saml", "public.cert"),
+    "key_file": os.path.join(BASE_DIR, "tosti", "saml", "private.key"),
+    "cert_file": os.path.join(BASE_DIR, "tosti", "saml", "public.cert"),
     "encryption_keypairs": [
         {
-            "key_file": os.path.join(BASE_DIR, "tosti", "settings", "saml", "private.key"),
-            "cert_file": os.path.join(BASE_DIR, "tosti", "settings", "saml", "public.cert"),
+            "key_file": os.path.join(BASE_DIR, "tosti", "saml", "private.key"),
+            "cert_file": os.path.join(BASE_DIR, "tosti", "saml", "public.cert"),
         }
     ],
     "contact_person": [
         {
             "given_name": "Olympus",
-            "email_address": "www-tosti@science.ru.nl",
+            "email_address": os.environ.get("SERVER_EMAIL"),
             "contact_type": "technical",
         },
         {
             "given_name": "Olympus",
-            "email_address": "www-tosti@science.ru.nl",
+            "email_address": os.environ.get("SERVER_EMAIL"),
             "contact_type": "administrative",
         },
     ],
@@ -187,8 +185,8 @@ SAML_CONFIG = {
             ("Olympus", "en"),
         ],
         "url": [
-            ("https://tosti.science.ru.nl", "nl"),
-            ("https://tosti.science.ru.nl", "en"),
+            (os.environ.get('SAML_BASE_URL'), "nl"),
+            (os.environ.get('SAML_BASE_URL'), "en"),
         ],
     },
 }
