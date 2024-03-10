@@ -54,6 +54,7 @@ class OrderFilter(FilterSet):
             ),
             "ready": ("exact",),
             "paid": ("exact",),
+            "picked_up": ("exact",),
             "type": ("exact",),
             "product": ("exact",),
         }

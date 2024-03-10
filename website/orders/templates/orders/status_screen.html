@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block styles %}
-    <link rel="stylesheet" href="{% static 'tosti/css/status-screen.css' %}"/>
+    <link rel="stylesheet" href="{% static 'orders/css/status-screen.css' %}"/>
 {% endblock %}
 
 {% block header %}
@@ -26,12 +26,39 @@
         <div class="row">
             <div class="col-md-6 p-2">
                 <h2>In progress</h2>
+                <transition-group name="orders_in_progress" tag="ul" class="order-list orders-in-progress px-5">
+                    <li v-for="order in orders_in_progress" :key="`orders_in_progress_order_${order.id}`">
+                        #${ order.id }$ - ${ order.product.name }$
+                    </li>
+                </transition-group>
             </div>
             <div class="col-md-6 p-2">
                 <h2>Ready</h2>
+                <transition-group name="orders_ready" tag="ul" class="order-list orders-ready px-5">
+                    <li v-for="order in orders_ready" :key="`orders_ready_${order.id}`">
+                        #${ order.id }$ - ${ order.product.name }$
+                    </li>
+                </transition-group>
             </div>
         </div>
     </div>
+    <style>
+        .orders_in_progress-move,
+        .orders_in_progress-enter-active,
+        .orders_in_progress-leave-active,
+        .orders_ready-move,
+        .orders_ready-enter-active,
+        .orders_ready-leave-active {
+          transition: all 0.5s ease;
+        }
+        .orders_in_progress-enter-from,
+        .orders_in_progress-leave-to,
+        .orders_ready-enter-from,
+        .orders_ready-leave-to {
+          opacity: 0;
+          transform: translateX(30px);
+        }
+    </style>
 {% endblock %}
 
 {% block footer %}
@@ -43,8 +70,10 @@
         const STATUS_SCREEN_CONTAINER_ID = "status-screen-container";
 
         const statusScreenApp = createApp({
+            delimiters: ['${', '}$'],
             data() {
                 return {
+                    orders: [],
                     refreshing: false,
                     refreshTimer: null,
                     lastRefresh: null,
@@ -58,17 +87,28 @@
             unmounted() {
                 document.removeEventListener("visibilitychange", this.visibilityChange);
             },
+            computed: {
+                orders_in_progress() {
+                    return this.orders.filter(order => {
+                        return order.ready === false;
+                    });
+                },
+                orders_ready() {
+                    return this.orders.filter(order => {
+                        return order.ready === true;
+                    });
+                },
+            },
             methods: {
                 visibilityChange(event) {
                     if (event.target.hidden) {
                         clearTimeout(this.refreshTimer);
                     } else {
                         clearTimeout(this.refreshTimer);
-                        this.recalculate_progress_interval = setInterval(this.updateTrackProgress, 100);
                         if (this.lastRefresh === null || (new Date()).getTime() - this.lastRefresh > 5000) {
                             this.refresh();
                         } else {
-                            this.refreshTimer = setTimeout(this.refresh, this.track_progress_percentage === 100 ? 1000 : 5000);
+                            this.refreshTimer = setTimeout(this.refresh, 5000);
                         }
                     }
                 },
@@ -80,16 +120,31 @@
                     clearTimeout(this.refreshTimer);
                     this.refreshing = true;
                     return fetch(
-
+                        `/api/v1/shifts/{{ shift.id }}/orders/?type=0&picked_up=false&ordering=ready_at`,
+                        {
+                            method: 'GET',
+                            headers: {
+                                "X-CSRFToken": get_csrf_token(),
+                                "Accept": 'application/json',
+                            }
+                        }
+                    ).then(response => {
+                        if (response.status === 200) {
+                            return response.json();
+                        } else {
+                            throw response;
+                        }
+                    }).then(data => {
+                        this.orders = data;
                     }).catch(error => {
-                        console.log(`An error occurred while refreshing player {{ player.id }}. Error: ${error}`)
+                        console.log(`An error occurred while refreshing orders for shift {{ shift.id }}. Error: ${error}`)
                     }).finally(() => {
                         this.lastRefresh = (new Date()).getTime();
                         this.refreshing = false;
-                        this.refresh_timer = setTimeout(this.refresh, this.track_progress_percentage === 100 ? 1000 : 5000);
+                        this.refresh_timer = setTimeout(this.refresh, 5000);
                     });
                 }
             }
-        }).mount('#qrcode');
+        }).mount(`#${STATUS_SCREEN_CONTAINER_ID}`);
     </script>
 {% endblock %}
