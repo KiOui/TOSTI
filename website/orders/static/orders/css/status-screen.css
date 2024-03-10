@@ -2,6 +2,13 @@
     height: 84px;
 }
 
+.order-list {
+    font-size: 30pt;
+    list-style-type: none;
+    padding-inline-start: unset;
+    padding: unset;
+}
+
 @media screen and (max-width: 992px) {
     .site-header {
         height: 59px;

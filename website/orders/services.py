@@ -156,7 +156,6 @@ def add_user_order(
         user_association=user.association,
         paid=paid,
         ready=ready,
-        priority=priority,
         picked_up=picked_up,
         priority=priority,
     )

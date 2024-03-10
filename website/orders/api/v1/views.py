@@ -42,10 +42,9 @@ class OrderListCreateAPIView(ListCreateAPIView):
         "GET": ["orders:order"],
         "POST": ["orders:manage"],
     }
-    filter_backends = [
-        django_filters.rest_framework.DjangoFilterBackend,
-    ]
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend, filters.OrderingFilter]
     filterset_class = OrderFilter
+    ordering_fields = ["paid_at", "ready_at", "picked_up_at"]
     queryset = Order.objects.select_related("user", "product")
 
     def get_queryset(self):
@@ -107,9 +106,8 @@ class OrderRetrieveUpdateDestroyAPIView(LoggedRetrieveUpdateDestroyAPIView):
             "properties": {
                 "ready": {"type": "boolean"},
                 "paid": {"type": "boolean"},
-                "priority": {"type": "number"},
                 "picked_up": {"type": "boolean"},
-                "deprioritize": {"type": "boolean"},
+                "priority": {"type": "number"},
             },
         }
     )

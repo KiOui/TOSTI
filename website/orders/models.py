@@ -550,7 +550,7 @@ class Order(models.Model):
     picked_up = models.BooleanField(default=False)
     picked_up_at = models.DateTimeField(null=True, blank=True)
 
-    type = models.PositiveIntegerField(choices=TYPES, default=0)
+    type = models.PositiveIntegerField(choices=TYPES, default=TYPE_ORDERED)
 
     priority = models.PositiveIntegerField(choices=PRIORITIES, default=PRIORITY_NORMAL)
 
