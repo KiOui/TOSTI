@@ -10,7 +10,7 @@ services:
     networks:
       - web
     environment:
-      YIVI_SERVER_URL: ${YIVI_SERVER_URL}
+      YIVI_SERVER_URL: https://yivi.tosti.science.ru.nl
       YIVI_SERVER_TOKEN: ${YIVI_SERVER_TOKEN}
 
   database:
@@ -46,18 +46,18 @@ services:
     volumes:
       - media:/media
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_USER: tosti
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_DB: tosti
       POSTGRES_HOST: database
       POSTGRES_PORT: 5432
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
-      DJANGO_ALLOWED_HOSTS: ${SERVER_URL}
+      DJANGO_ALLOWED_HOSTS: tosti.science.ru.nl,new.tosti.science.ru.nl
       SENTRY_DSN: ${SENTRY_DSN}
-      YIVI_SERVER_URL: ${YIVI_SERVER_URL}
+      YIVI_SERVER_URL: https://yivi.tosti.science.ru.nl
       YIVI_SERVER_TOKEN: ${YIVI_SERVER_TOKEN}
-      SAML_ENTITY_ID: ${SAML_ENTITY_ID}
-      SAML_BASE_URL: ${SAML_BASE_URL}
+      SAML_ENTITY_ID: tosti.science.ru.nl
+      SAML_BASE_URL: https://tosti.science.ru.nl
       SAML_METADATA_FILE: ${SAML_METADATA_FILE}
       SAML_PUBLIC_KEY_FILE: ${SAML_PUBLIC_KEY_FILE}
       SAML_PRIVATE_KEY_FILE: ${SAML_PRIVATE_KEY_FILE}
@@ -88,9 +88,9 @@ services:
     volumes:
       - media:/media
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_USER: tosti
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_DB: tosti
       POSTGRES_HOST: database
       POSTGRES_PORT: 5432
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
