@@ -2,7 +2,7 @@ import logging
 import os
 import secrets
 import time
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from constance import config
 from django.templatetags.static import static
@@ -13,7 +13,6 @@ from django.conf import settings
 from django.db.models import F
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.datetime_safe import datetime
 from model_utils.managers import InheritanceManager
 from queryable_properties.managers import QueryablePropertiesManager
 from queryable_properties.properties import RangeCheckProperty, AnnotationProperty, queryable_property
