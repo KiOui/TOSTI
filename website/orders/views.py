@@ -145,6 +145,17 @@ class JoinShiftView(LoginRequiredMixin, TemplateView):
             return render(request, self.template_name, {"shift": shift})
 
 
+class StatusScreen(TemplateView):
+    """Status screen for a Shift."""
+
+    template_name = "orders/status_screen.html"
+
+    def get(self, request, **kwargs):
+        """GET request for status screen view."""
+        shift = kwargs.get("shift")
+        return render(request, self.template_name, {"shift": shift})
+
+
 class AccountHistoryTabView(LoginRequiredMixin, TemplateView):
     """Account order history view."""
 

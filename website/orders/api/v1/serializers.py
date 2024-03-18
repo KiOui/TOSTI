@@ -108,10 +108,22 @@ class OrderSerializer(WritableModelSerializer):
             "ready_at",
             "paid",
             "paid_at",
+            "picked_up",
+            "picked_up_at",
             "type",
             "priority",
         ]
-        read_only_fields = ["id", "created", "user", "product", "order_price", "ready_at", "paid_at"]
+        read_only_fields = [
+            "id",
+            "created",
+            "user",
+            "product",
+            "order_price",
+            "ready_at",
+            "paid_at",
+            "picked_up_at",
+            "prioritize",
+        ]
 
 
 class ShiftSerializer(WritableModelSerializer):
