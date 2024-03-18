@@ -26,17 +26,29 @@
         <div class="row">
             <div class="col-md-6 p-2">
                 <h2>In progress</h2>
-                <transition-group name="orders_in_progress" tag="ul" class="order-list orders-in-progress px-5">
-                    <li v-for="order in orders_in_progress" :key="`orders_in_progress_order_${order.id}`">
-                        #${ order.id }$ - ${ order.product.name }$
+                <transition-group name="user_objects_with_orders_in_progress" tag="ul" class="user-order-list orders-in-progress px-5">
+                    <li v-for="(user_orders_object, user_id) in orders_in_progress_grouped_user" :key="`orders_in_progress_user_${user_id}`" class="user-order-item">
+                        <div class="order-user-name">${user_orders_object.user.first_name}$</div>
+                        <ul class="order-list">
+                            <li v-for="order in user_orders_object['orders']" :key="`user_${user_id}_order_${order.id}`" class="order-item">
+                                <i v-if="order.product.icon !== null" :class="`fa-solid fa-${order.product.icon} me-2`"></i>
+                                <i v-else class="fa-solid fa-question"></i>
+                            </li>
+                        </ul>
                     </li>
                 </transition-group>
             </div>
             <div class="col-md-6 p-2">
                 <h2>Ready</h2>
-                <transition-group name="orders_ready" tag="ul" class="order-list orders-ready px-5">
-                    <li v-for="order in orders_ready" :key="`orders_ready_${order.id}`">
-                        #${ order.id }$ - ${ order.product.name }$
+                <transition-group name="orders_ready" tag="ul" class="user-order-list orders-ready px-5">
+                    <li v-for="(user_orders_object, user_id) in orders_ready_grouped_user" :key="`orders_ready_user_${user_id}`" class="user-order-item">
+                        <div class="order-user-name">${user_orders_object.user.first_name}$</div>
+                        <ul class="order-list">
+                            <li v-for="order in user_orders_object['orders']" :key="`user_${user_id}_order_${order.id}`" class="order-item">
+                                <i v-if="order.product.icon !== null" :class="`fa-solid fa-${order.product.icon} me-2`"></i>
+                                <i v-else class="fa-solid fa-question"></i>
+                            </li>
+                        </ul>
                     </li>
                 </transition-group>
             </div>
@@ -88,6 +100,12 @@
                 document.removeEventListener("visibilitychange", this.visibilityChange);
             },
             computed: {
+                orders_in_progress_grouped_user() {
+                    return this.map_orders_by_user(this.orders_in_progress);
+                },
+                orders_ready_grouped_user() {
+                    return this.map_orders_by_user(this.orders_ready);
+                },
                 orders_in_progress() {
                     return this.orders.filter(order => {
                         return order.ready === false;
@@ -100,6 +118,23 @@
                 },
             },
             methods: {
+                map_orders_by_user(orders) {
+                    let orders_mapped_user = {};
+                    for (let i = 0; i < orders.length; i++) {
+                        let order = orders[i];
+                        let user_id = order['user']['id'];
+                        let user = order['user'];
+                        if (user_id in orders_mapped_user) {
+                            orders_mapped_user[user_id]['orders'].push(order);
+                        } else {
+                            orders_mapped_user[user_id] = {
+                                'orders': [order],
+                                'user': user,
+                            }
+                        }
+                    }
+                    return orders_mapped_user;
+                },
                 visibilityChange(event) {
                     if (event.target.hidden) {
                         clearTimeout(this.refreshTimer);

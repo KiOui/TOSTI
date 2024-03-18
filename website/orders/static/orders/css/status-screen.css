@@ -2,11 +2,38 @@
     height: 84px;
 }
 
-.order-list {
+.user-order-list {
     font-size: 30pt;
     list-style-type: none;
     padding-inline-start: unset;
     padding: unset;
+    display: flex;
+    justify-content: center;
+    align-content: flex-start;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.user-order-list li.user-order-item {
+    display: inline-flex;
+    background-color: var(--primary);
+    border-radius: 15px;
+    padding: 10px 15px;
+    justify-content: center;
+}
+
+.user-order-list li .order-user-name {
+    margin-right: 20px;
+}
+
+.order-list {
+    list-style-type: none;
+    padding-inline-start: unset;
+    padding: unset;
+}
+
+.order-list li.order-item {
+    display: inline;
 }
 
 @media screen and (max-width: 992px) {
