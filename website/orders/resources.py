@@ -7,9 +7,9 @@ from orders import models
 class ShiftResource(resources.ModelResource):
     """Shift Resource."""
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         """Initialize by creating a field for each product."""
-        super(ShiftResource, self).__init__()
+        super(ShiftResource, self).__init__(**kwargs)
         self.added_product_fields = dict()
 
     def before_export(self, queryset, *args, **kwargs):

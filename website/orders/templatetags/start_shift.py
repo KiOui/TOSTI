@@ -1,7 +1,7 @@
 import pytz
 from django import template
 from django.conf import settings
-from django.utils.datetime_safe import datetime
+from datetime import datetime
 
 from orders.models import OrderVenue
 from orders.services import user_can_manage_shifts_in_venue

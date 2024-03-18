@@ -81,9 +81,9 @@ class BorrelReservationResource(resources.ModelResource):
     venue_reservation__venue__name = Field(attribute="venue_reservation__venue__name", column_name="venue")
     association__name = Field(attribute="association__name", column_name="association")
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         """Initialize by creating a field for each product."""
-        super(BorrelReservationResource, self).__init__()
+        super(BorrelReservationResource, self).__init__(**kwargs)
         self.added_product_fields = dict()
 
     def before_export(self, queryset, *args, **kwargs):
