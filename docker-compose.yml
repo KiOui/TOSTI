@@ -16,8 +16,8 @@ services:
     restart: unless-stopped
     networks:
       - db
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
+#    volumes:
+#      - postgres-data:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: tosti
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
