@@ -2,7 +2,6 @@ version: "3.6"
 
 services:
   yivi:
-    container_name: yivi
     image: ghcr.io/privacybydesign/irma:edge
     command: >
       server -v --requestors '{"tosti": {"auth_method": "token", "key": "${YIVI_SERVER_TOKEN}"}}' --production --no-email --url ${YIVI_SERVER_URL} --port 80
@@ -15,7 +14,6 @@ services:
 
   database:
     image: postgres:13.3-alpine
-    container_name: postgres
     restart: unless-stopped
     networks:
       - db
@@ -33,13 +31,11 @@ services:
 
   web:
     image: ghcr.io/kioui/tosti:latest
-    container_name: web
     restart: unless-stopped
     networks:
       - web
       - db
-    ports:
-      - "80:80"
+    expose: 80
     depends_on:
       - database
       - yivi
@@ -76,7 +72,6 @@ services:
 
   cron:
     image: ghcr.io/kioui/tosti:latest
-    container_name: cron
     entrypoint: ["/bin/sh", "/entrypoint_cron.sh"]
     restart: unless-stopped
     networks:
