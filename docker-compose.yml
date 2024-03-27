@@ -4,12 +4,12 @@ services:
   yivi:
     image: ghcr.io/privacybydesign/irma:edge
     command: >
-      server -v --requestors '{"tosti": {"auth_method": "token", "key": "${YIVI_SERVER_TOKEN}"}}' --production --no-email --url https://yivi.tosti.science.ru.nl --port 80
+      server -v --requestors '{"tosti": {"auth_method": "token", "key": "${YIVI_TOKEN}"}}' --production --no-email --url https://yivi.tosti.science.ru.nl --port 80
     restart: unless-stopped
     networks:
       - web
     environment:
-      YIVI_SERVER_TOKEN: ${YIVI_TOKEN}
+      YIVI_TOKEN: ${YIVI_TOKEN}
 
   database:
     image: postgres:13.3-alpine
