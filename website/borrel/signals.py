@@ -11,6 +11,10 @@ def send_borrel_reservation_status_change_email_receiver(sender, instance, **kwa
     if instance.pk is None or instance.user_created is None:
         return
 
-    old_instance = BorrelReservation.objects.get(pk=instance.pk)
+    try:
+        old_instance = BorrelReservation.objects.get(pk=instance.pk)
+    except BorrelReservation.DoesNotExist:
+        return
+
     if old_instance.accepted != instance.accepted:
         send_borrel_reservation_status_change_email(instance)
