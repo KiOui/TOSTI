@@ -12,7 +12,11 @@ def send_reservation_status_change_email_receiver(sender, instance, **kwargs):
     if instance.pk is None or instance.user_created is None:
         return
 
-    old_instance = Reservation.objects.get(pk=instance.pk)
+    try:
+        old_instance = Reservation.objects.get(pk=instance.pk)
+    except Reservation.DoesNotExist:
+        return
+
     if old_instance.accepted != instance.accepted:
         send_reservation_status_change_email(instance)
 
