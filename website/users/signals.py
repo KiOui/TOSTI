@@ -12,7 +12,12 @@ User = get_user_model()
 @receiver(post_save, sender=GroupSettings)
 def after_group_change(sender, instance, **kwargs):
     """Update the is_staff value of all users when possibly the gets_staff_permission field has changed."""
-    for user in instance.group.user_set.all():
+    try:
+        users = instance.group.user_set.all()
+    except Group.DoesNotExist:
+        return
+
+    for user in users:
         update_staff_status(user)
 
 
