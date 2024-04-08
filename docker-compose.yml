@@ -17,7 +17,7 @@ services:
     networks:
       - db
     volumes:
-      - pg-data:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: tosti
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -97,5 +97,5 @@ networks:
   db:
 
 volumes:
-  pg-data:
+  db-data:
   media:
