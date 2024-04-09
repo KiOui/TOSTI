@@ -36,7 +36,7 @@ django-model-utils = "^4.4.0"
 inflection = "^0.5.1"
 
 [tool.poetry.group.dev.dependencies]
-black = "^23.12.1"
+black = "^24.3.0"
 pydocstyle = "^6.1.1"
 flake8 = "^6.0.0"
 freezegun = "^1.2.1"
