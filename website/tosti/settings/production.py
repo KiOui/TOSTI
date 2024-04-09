@@ -83,8 +83,8 @@ SERVER_EMAIL = os.environ.get("SERVER_EMAIL")
 
 
 # SPOTIFY
-SPOTIFY_CACHE_PATH =  "/app/cache/spotipycache"
-MARIETJE_CACHE_PATH = "app/cache/marietjecache"
+SPOTIFY_CACHE_PATH = "/app/cache/spotipycache"
+MARIETJE_CACHE_PATH = "/app/cache/marietjecache"
 
 # SENTRY
 if os.environ.get("SENTRY_DSN"):
