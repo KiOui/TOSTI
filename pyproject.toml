@@ -6,33 +6,34 @@ authors = ["Job Doesburg <job.doesburg@gmail.com>", "Lars van Rhijn <larsvanrhij
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.8.10"
-django = "^4.2.10"
+python = "^3.10"
+django = "^5.0.3"
 Pillow = "^10.2.0"
 django-admin-autocomplete-filter = "^0.7.1"
-django-import-export = "^3.0.2"
+django-import-export = "^3.3.7"
 requests = "^2.31.0"
 spotipy = "^2.22.1"
 coverage = "^6.5.0"
-django-guardian = "^2.3.0"
-djangorestframework = "^3.12.2"
-django-oauth-toolkit = "^2.2.0"
-django-cors-headers = "^3.6.0"
+django-guardian = "^2.3.0" # Does not support Django >= 4.0.
+djangorestframework = "^3.15.0"
+django-oauth-toolkit = "^2.3.0" # Does not have official support for Django 5.0 yet.
+django-cors-headers = "^4.3.1"
 uritemplate = "^4.1.1"
-django-autocompletefilter = "^0.0.8"
-django-bootstrap5 = "^23.3"
-django-filter = "21.1"
-django-constance = {extras = ["database"], version = "^2.9.0"}
+django-autocompletefilter = "^0.0.8" # No official support for Django >= 4.0.
+django-bootstrap5 = "^23.4"
+django-filter = "^24.1"
+django-constance = {extras = ["database"], version = "^2.9.0"} # No official support for Django 5.0.
 html2text = "^2020.1.16"
-django-ical = "^1.8.3"
+django-ical = "^1.9.2" # No official support for Django 5.0.
 fontawesomefree = "^6.1.1"
-django-tinymce = "^3.5.0"
+django-tinymce = "^3.7.1"
 bleach = { extras = ["css"], version = "^5.0.1" }
-django-admin-rangefilter = "^0.9.0"
-django-queryable-properties = "^1.8.3"
-django-cron = "^0.6.0"
-djangosaml2 = "^1.5.5"
-django-model-utils = "^4.3.1"
+django-admin-rangefilter = "^0.12.1"
+django-queryable-properties = "^1.9.2"
+django-cron = "^0.6.0" # No official support for Django 5.0.
+djangosaml2 = "^1.9.2" # No official support for Django 5.0.
+django-model-utils = "^4.4.0"
+inflection = "^0.5.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.12.1"
