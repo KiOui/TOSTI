@@ -1,4 +1,5 @@
 #!/bin/sh
+chown -R nobody:nogroup /app/cache
 python manage.py migrate --noinput
 echo "${SAML_PUBLIC_KEY_FILE}" > /app/tosti/saml/public.cert
 echo "${SAML_PRIVATE_KEY_FILE}" > /app/tosti/saml/private.key

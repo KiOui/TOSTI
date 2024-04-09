@@ -99,7 +99,7 @@ if os.environ.get("SENTRY_DSN"):
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
-        "LOCATION": "/app/cache/cache",
+        "LOCATION": "/app/cache",
     }
 }
 
