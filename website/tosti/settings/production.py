@@ -83,8 +83,8 @@ SERVER_EMAIL = os.environ.get("SERVER_EMAIL")
 
 
 # SPOTIFY
-SPOTIFY_CACHE_PATH = BASE_DIR.parent.parent / "cache" / "spotipycache"
-MARIETJE_CACHE_PATH = BASE_DIR.parent.parent / "cache" / "marietjecache"
+SPOTIFY_CACHE_PATH = BASE_DIR.parent / "cache" / "spotipycache"
+MARIETJE_CACHE_PATH = BASE_DIR.parent / "cache" / "marietjecache"
 
 # SENTRY
 if os.environ.get("SENTRY_DSN"):
@@ -99,7 +99,7 @@ if os.environ.get("SENTRY_DSN"):
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
-        "LOCATION": BASE_DIR.parent.parent / "cache" / "cache",
+        "LOCATION": BASE_DIR.parent / "cache" / "cache",
     }
 }
 
