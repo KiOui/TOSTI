@@ -59,7 +59,7 @@ class User(AbstractUser):
     REQUIRED_FIELDS = ["email"]
 
     username = models.CharField(max_length=30, unique=True)
-    email = models.EmailField(unique=True)
+    email = models.EmailField(unique=False)
     full_name = models.CharField(max_length=100)
 
     override_display_name = models.CharField(max_length=100, blank=True, null=True)
@@ -85,6 +85,8 @@ class User(AbstractUser):
     def save(self, *args, **kwargs):
         """Override save method."""
         self.extract_first_and_last_name_from_username()
+        self.username = self.username.lower()
+        self.email = self.email.lower()
         return super(User, self).save(*args, **kwargs)
 
     def __str__(self):
