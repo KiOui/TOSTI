@@ -20,11 +20,12 @@ class BorrelReservationForm(forms.ModelForm):
         "It will have the same start and end time.",
     )
     needs_music_keys = forms.BooleanField(
+        required=False,
         help_text=(
             "Whether you want to reserve the music keys for this borrel reservation as well (only applicable "
             "when reserving a canteen). Note that the music keys are NOT needed to control Thaliedje in the North "
             "canteen. You only need these if you want to connect your own device to the speakers."
-        )
+        ),
     )
 
     def __init__(self, *args, **kwargs):
