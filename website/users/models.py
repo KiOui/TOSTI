@@ -90,7 +90,7 @@ class User(AbstractUser):
 
         if self.pk is None:
             try:
-                self.pk = self.objects.get(username=self.username).pk
+                self.pk = User.objects.get(username=self.username).pk
             except self.DoesNotExist:
                 pass
 
