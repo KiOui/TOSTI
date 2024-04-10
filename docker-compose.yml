@@ -41,6 +41,7 @@ services:
       - yivi
     volumes:
       - media:/media
+      - cache:/app/cache
     environment:
       POSTGRES_USER: tosti
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -82,6 +83,7 @@ services:
       - yivi
     volumes:
       - media:/media
+      - cache:/app/cache
     environment:
       POSTGRES_USER: tosti
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -99,3 +101,4 @@ networks:
 volumes:
   db-data:
   media:
+  cache:
