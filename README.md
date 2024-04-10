@@ -1,20 +1,24 @@
 # TOSTI
 
 Welcome to the repository of **Tartarus Order System for Take-away Items**, TOSTI for short. This application is designed to provide [Tartarus](https://tartarus.science.ru.nl) with an online tool to order items.
-
-The current system features the following:
+There are also a lot of other integrated features:
 
 - SAML user authentication (for usage with the Radboud University SSO service).
-- A really nice model structure where new venues, products and staff users can be easily added.
-- A beautiful minimal interface to order your products online.
-- A system for managing Spotify clients.
+- A music controller for Spotify and the custom Marietje music system (read-only)
+- A QR-code token based identification system
+- Transactions / balance tracking for users
+- Room reservations
+- Borrel reservations (ordering items for an event, and submitting how much were used)
+- Synchronization towards a bookkeeping system.
+- Age verification using [Yivi](https://www.yivi.app).
+- A digital lock system for fridges
 
 ## Getting started
 This project is built using the [Django](https://github.com/django/django) framework. [Poetry](https://python-poetry.org) is used for dependency management.
 
 ### Development setup
 
-0. Get at least [Python](https://www.python.org) 3.8.10 installed on your system.
+0. Get at least [Python](https://www.python.org) 3.8.10 installed on your system (production is running on 3.11).
 1. Clone this repository.
 2. If ```pip3``` is not installed on your system yet, execute ```apt install python3-pip``` on your system.
 3. Also make sure ```python3-dev``` is installed on your system, execute ```apt install python3-dev```. On some systems `xmlsec` or `libxmlsec1-dev` should also be installed at the OS level.
@@ -30,9 +34,6 @@ This project is built using the [Django](https://github.com/django/django) frame
 Now your server is setup and running on ```localhost:8000```. The administrator interface can be accessed by going to ```localhost:8000/admin```.
 
 SAML login will not be used by default on development systems.
-
-For deployment situations, use `poetry export -f requirements.txt --output requirements.txt` to export the requirements to a `requirements.txt` file.
-
 
 ## Module features
 ### Venues
@@ -86,15 +87,20 @@ The `tantalus` module is used to synchronize Orders to a [Tantalus](https://gith
 Order registration will happen once a `Shift` is made finalized for all `Product` objects with a registered `TantalusProduct` object and if the `OrderVenue` of the `Shift` has a registered `TantalusOrderVenue`  (and thus Tantalus endpoint).
 
 ## Deploying
-0. Clone this repo in `/www/tosti/live/repo` (on the science filesystem)
-1. Create python 3.8 venv with `/www/tosti/live/repo/env`
-2. Install the dependencies. Use `poetry export -f requirements.txt --output requirements.txt` to export the requirements to a `requirements.txt` file.
-3. Create `/www/tosti/live/repo/website/tosti/settings/production.py` and `/www/tosti/live/repo/website/tosti/settings/management.py` based on the `.example` files (set secret key and passwords).
-4. Run the `deploy.sh` script. This script can be run to update, too.
+TOSTI is deployed using Docker and Docker Compose. The `docker-compose.yml` file is used to define the services that are used in the deployment. The `Dockerfile` is used to define the image that is used for the Django application.
+
+Specifically, TOSTI is running in the [PGO environment](https://github.com/miekg/pgo) of [CNCZ](https://cncz.science.ru.nl/nl/) (the IT department of the Radboud University Faculty of Science). 
+This automatically deploys the `docker-compose.yml` file.
+To interact with the environment, you should use the [`pgoctl`](https://github.com/miekg/pgo/blob/main/cmd/pgoctl/) client.
+This client connects with the PGO API to manage the environment via SSH.
+Therefore, your SSH public key must be in the `ssh` directory of this project.
+
+Run (for example) `pgoctl -i ~/.ssh/id_ed25519 -- dockervm02.science.ru.nl:tosti//up` to deploy the application, and `pgoctl -i ~/.ssh/id_ed25519 -- dockervm02.science.ru.nl:tosti//down` to stop the application.
+Or run `pgoctl -i ~/.ssh/id_ed25519 -- dockervm02.science.ru.nl:tosti//logs` to see the logs.
+Or run `pgoctl -i ~/.ssh/id_ed25519 -- dockervm02.science.ru.nl:tosti//exec web python manage.py sendtestemail` to send a test email.
+Notice that `pgoctl` does not (yet) support interactive commands, so you cannot run `manage.py shell` for example.
+Also any non-successful commands (with a non-zero exit code) will not be shown and will not show their output.
+Finally, you must be connected with the CNCZ VPN to use `pgoctl`.
 
 Important notices:
-- The science filesystem (accessed via lilo) is mounted in a different way then on lilo. Make sure to use relative paths.
-- The database credentials for differ for lilo or the webserver. Therefore, management commands from lilo must be run with `tosti.settings.management` (which is done automatically by `manage.py`).
-- To run management commands on production, first activate the python env with `source env/bin/activate`.
-- Note that the webserver does not have write permissions, except for the `writable/` folder. `manage.py collectstatic` must therefore be run explicitly.
 - Via `/admin-login`, it is possible to bypass SAML login (for example for first installation when SAML has not yet been set up).
