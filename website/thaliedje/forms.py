@@ -35,9 +35,9 @@ class PlayerAdminForm(forms.ModelForm):
                             "{} (currently offline)".format(instance.playback_device_name),
                         )
                     )
-                    self.fields["playback_device_id"].help_text = (
-                        "The currently selected device appears to be offline."
-                    )
+                    self.fields[
+                        "playback_device_id"
+                    ].help_text = "The currently selected device appears to be offline."
                 if len(choices) == 0 and instance.playback_device_id == "":
                     self.fields["playback_device_id"].help_text = "No online Spotify clients were found."
                 choices = [("", "----------")] + choices

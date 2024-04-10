@@ -84,9 +84,17 @@ class User(AbstractUser):
 
     def save(self, *args, **kwargs):
         """Override save method."""
-        self.extract_first_and_last_name_from_username()
+        # Ugly hack to fix capitalization of username
         self.username = self.username.lower()
         self.email = self.email.lower()
+
+        if self.pk is None:
+            try:
+                self.pk = self.objects.get(username=self.username).pk
+            except self.DoesNotExist:
+                pass
+
+        self.extract_first_and_last_name_from_username()
         return super(User, self).save(*args, **kwargs)
 
     def __str__(self):
