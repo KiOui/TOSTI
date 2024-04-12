@@ -13,7 +13,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Base CSS -->
-    {% bootstrap_css %}
+    <link href="{% static "tosti/css/bootstrap.min.css" %}" rel="stylesheet" type="text/css">
     <link href="{% static "tosti/css/base.css" %}" rel="stylesheet" type="text/css">
     <link href="{% static 'tosti/fonts/fonts.css' %}" rel="stylesheet">
     {% block styles %}{% endblock %}
@@ -201,7 +201,8 @@
     </div>
 </footer>
 {% endblock %}
-{% bootstrap_javascript %}
+
+<script href="{% static "tosti/js/bootstrap.bundle.min.js" %}"></script>
 {% block js %}{% endblock %}
 <script>
     const QR_POPUP_MODAL_ID = "qr-popup";
