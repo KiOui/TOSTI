@@ -13,9 +13,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Base CSS -->
-    {% bootstrap_css %}
+    <link href="{% static "tosti/css/bootstrap.min.css" %}" rel="stylesheet" type="text/css">
     <link href="{% static "tosti/css/base.css" %}" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/css2?family=Neucha&display=swap" rel="stylesheet">
+    <link href="{% static 'tosti/fonts/fonts.css' %}" rel="stylesheet">
     {% block styles %}{% endblock %}
     {% block extra_styles %}{% endblock %}
 
@@ -34,15 +34,16 @@
     <meta name="theme-color" content="#e8b365">
 
     <!-- Vue JS -->
-    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <script src="{% static 'tosti/js/vue.global.prod.js' %}"></script>
     <script>
         const { createApp } = Vue;
     </script>
 
     <!-- QR Code Vue JS -->
-    <script src="https://cdn.jsdelivr.net/npm/qrcode.vue@3.4.0/dist/qrcode.vue.browser.min.js"></script>
+    <script src="{% static 'tosti/js/qrcode.vue.browser.min.js' %}"></script>
 
     <!-- TaTa.js notifications -->
+    <link href="{% static "tosti/css/tata.css" %}" rel="stylesheet" type="text/css">    
     <script src="{% static 'tosti/js/tata.js' %}"></script>
 
     <!-- JavaScript constants -->
@@ -200,7 +201,8 @@
     </div>
 </footer>
 {% endblock %}
-{% bootstrap_javascript %}
+
+<script href="{% static "tosti/js/bootstrap.bundle.min.js" %}"></script>
 {% block js %}{% endblock %}
 <script>
     const QR_POPUP_MODAL_ID = "qr-popup";
