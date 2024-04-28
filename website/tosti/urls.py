@@ -50,6 +50,10 @@ urlpatterns = [
         "fridges/",
         include(("fridges.urls", "fridges"), namespace="fridges"),
     ),
+    path(
+        "status/",
+        include(("status_screen.urls", "status_screen"), namespace="status_screen"),
+    ),
     path("api/", include("tosti.api.urls")),
     path("saml/", include("djangosaml2.urls")),
     path(
