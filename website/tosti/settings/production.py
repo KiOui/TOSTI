@@ -185,8 +185,8 @@ SAML_CONFIG = {
             ("Olympus", "en"),
         ],
         "url": [
-            (os.environ.get('SAML_BASE_URL'), "nl"),
-            (os.environ.get('SAML_BASE_URL'), "en"),
+            (os.environ.get("SAML_BASE_URL"), "nl"),
+            (os.environ.get("SAML_BASE_URL"), "en"),
         ],
     },
 }

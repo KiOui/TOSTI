@@ -50,7 +50,3 @@ CACHES = {
         "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
     }
 }
-
-# Yivi settings
-YIVI_SERVER = "https://yivi.tosti.science.ru.nl"
-YIVI_TOKEN = "test-token-tosti"
