@@ -155,7 +155,7 @@
                     clearTimeout(this.refreshTimer);
                     this.refreshing = true;
                     return fetch(
-                        `/api/v1/shifts/{{ shift.id }}/orders/?type=0&picked_up=false&ordering=ready_at`,
+                        "{% url 'v1:orders_listcreate' shift=shift %}?type=0&picked_up=false&ordering=ready_at",
                         {
                             method: 'GET',
                             headers: {
