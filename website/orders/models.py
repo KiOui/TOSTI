@@ -438,7 +438,9 @@ class Shift(models.Model):
         elif old_instance is not None and not old_instance.finalized and self.finalized:
             # Shift was not finalized yet but will be made finalized now
             if not self.shift_done:
-                raise ValidationError({"finalized": "Shift can't be finalized if not all Orders are paid and ready"})
+                raise ValidationError(
+                    {"finalized": "Shift can't be finalized if not all Orders are paid, ready and picked up."}
+                )
 
         if self.end <= self.start:
             raise ValidationError({"end": "End date cannot be before start date."})
@@ -545,6 +547,9 @@ class Order(models.Model):
     paid = models.BooleanField(default=False)
     paid_at = models.DateTimeField(null=True, blank=True)
 
+    picked_up = models.BooleanField(default=False)
+    picked_up_at = models.DateTimeField(null=True, blank=True)
+
     type = models.PositiveIntegerField(choices=TYPES, default=TYPE_ORDERED)
 
     priority = models.PositiveIntegerField(choices=PRIORITIES, default=PRIORITY_NORMAL)
@@ -588,11 +593,21 @@ class Order(models.Model):
         return self.shift.venue
 
     @property
+    def completed(self) -> bool:
+        """
+        Check if an Order is completed.
+
+        :return: True if this Order is paid, ready and picked up, False otherwise.
+        :rtype: boolean
+        """
+        return self.paid and self.ready and self.picked_up
+
+    @property
     def done(self):
         """
         Check if an Order is done.
 
-        :return: True if this Order is paid and ready, False otherwise
+        :return: True if this Order is paid, ready and picked up, False otherwise
         :rtype: boolean
         """
         return self.paid and self.ready

@@ -220,6 +220,20 @@
                 });
                 return orders_ready;
             },
+            orders_picked_up() {
+                return this.orders.filter(order => order.picked_up);
+            },
+            orders_picked_up_grouped() {
+                let orders_picked_up = {};
+                this.orders_picked_up.forEach(order => {
+                    if (order.product.name in orders_picked_up) {
+                        orders_picked_up[order.product.name].amount += 1;
+                    } else {
+                        orders_picked_up[order.product.name] = {"product": order.product, "amount": 1};
+                    }
+                });
+                return orders_picked_up;
+            },
             orders_grouped() {
                 let orders_total = {};
                 this.orders.forEach(order => {
@@ -232,10 +246,10 @@
                 return orders_total;
             },
             orders_finished() {
-                return this.orders.filter(order => order.ready && order.paid && order.type !== 1);
+                return this.orders.filter(order => order.ready && order.paid && order.picked_up && order.type !== 1);
             },
             orders_to_process() {
-                return this.orders.filter(order => !order.ready || !order.paid && order.type !== 1);
+                return this.orders.filter(order => !order.ready || !order.picked_up || !order.paid && order.type !== 1);
             },
             orders_scanned() {
                 return this.orders.filter(order => order.type === 1);
@@ -364,6 +378,32 @@
                         },
                         body: JSON.stringify({
                             ready: !order.ready
+                        })
+                    }
+                ).then(response => {
+                    if (response.status === 200) {
+                        return response;
+                    } else {
+                        throw response;
+                    }
+                }).then(() => {
+                    if (typeof (update_refresh_list) !== 'undefined') {
+                        update_refresh_list();
+                    }
+                }).catch(error => show_error_from_api(error));
+            },
+            toggle_picked_up(order) {
+                fetch(
+                    `/api/v1/shifts/{{ shift.id }}/orders/${order.id}/`,
+                    {
+                        method: 'PATCH',
+                        headers: {
+                            "X-CSRFToken": get_csrf_token(),
+                            "Accept": 'application/json',
+                            "Content-Type": 'application/json',
+                        },
+                        body: JSON.stringify({
+                            picked_up: !order.picked_up
                         })
                     }
                 ).then(response => {

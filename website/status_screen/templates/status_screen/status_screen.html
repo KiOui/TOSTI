@@ -1,0 +1,185 @@
+{% extends 'tosti/base.html' %}
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'status_screen/css/status-screen.css' %}"/>
+{% endblock %}
+
+{% block header %}
+    <nav class="navbar navbar-expand-lg site-header sticky-top navbar-dark">
+        <div class="container">
+            <div class="d-block d-lg-none">
+                <a class="navbar-brand drop-out-header-mobile" href="/"><img
+                        src="{% static 'tosti/svg/TOSTI-logo.svg' %}" height="80"/></a>
+            </div>
+                <div class="mx-auto position-relative d-lg-block d-none" style="margin-top: -68px">
+                    <a class="navbar-brand drop-out-header" href="/"><img
+                            src="{% static 'tosti/svg/TOSTI-logo.svg' %}"
+                            height="120"/></a>
+                </div>
+        </div>
+    </nav>
+{% endblock %}
+
+{% block page %}
+    <div class="container-fluid mt-3" id="status-screen-container">
+        <div class="row">
+            <div class="col-md-6 p-2">
+                <h2>In progress</h2>
+                <transition-group name="user_objects_with_orders_in_progress" tag="ul" class="user-order-list orders-in-progress px-5">
+                    <li v-for="(user_orders_object, user_id) in orders_in_progress_grouped_user" :key="`orders_in_progress_user_${user_id}`" class="user-order-item">
+                        <div class="order-user-name">${user_orders_object.user.first_name}$</div>
+                        <ul class="order-list">
+                            <li v-for="order in user_orders_object['orders']" :key="`user_${user_id}_order_${order.id}`" class="order-item">
+                                <i v-if="order.product.icon !== null" :class="`fa-solid fa-${order.product.icon} me-2`"></i>
+                                <i v-else class="fa-solid fa-question"></i>
+                            </li>
+                        </ul>
+                    </li>
+                </transition-group>
+            </div>
+            <div class="col-md-6 p-2">
+                <h2>Ready</h2>
+                <transition-group name="orders_ready" tag="ul" class="user-order-list orders-ready px-5">
+                    <li v-for="(user_orders_object, user_id) in orders_ready_grouped_user" :key="`orders_ready_user_${user_id}`" class="user-order-item">
+                        <div class="order-user-name">${user_orders_object.user.first_name}$</div>
+                        <ul class="order-list">
+                            <li v-for="order in user_orders_object['orders']" :key="`user_${user_id}_order_${order.id}`" class="order-item">
+                                <i v-if="order.product.icon !== null" :class="`fa-solid fa-${order.product.icon} me-2`"></i>
+                                <i v-else class="fa-solid fa-question"></i>
+                            </li>
+                        </ul>
+                    </li>
+                </transition-group>
+            </div>
+        </div>
+    </div>
+    <style>
+        .orders_in_progress-move,
+        .orders_in_progress-enter-active,
+        .orders_in_progress-leave-active,
+        .orders_ready-move,
+        .orders_ready-enter-active,
+        .orders_ready-leave-active {
+          transition: all 0.5s ease;
+        }
+        .orders_in_progress-enter-from,
+        .orders_in_progress-leave-to,
+        .orders_ready-enter-from,
+        .orders_ready-leave-to {
+          opacity: 0;
+          transform: translateX(30px);
+        }
+    </style>
+{% endblock %}
+
+{% block footer %}
+
+{% endblock %}
+
+{% block js %}
+    <script>
+        const STATUS_SCREEN_CONTAINER_ID = "status-screen-container";
+
+        const statusScreenApp = createApp({
+            delimiters: ['${', '}$'],
+            data() {
+                return {
+                    orders: [],
+                    refreshing: false,
+                    refreshTimer: null,
+                    lastRefresh: null,
+                }
+            },
+            created() {
+                this.refresh();
+                this.recalculate_progress_interval = setInterval(this.updateTrackProgress, 100);
+                document.addEventListener("visibilitychange", this.visibilityChange);
+            },
+            unmounted() {
+                document.removeEventListener("visibilitychange", this.visibilityChange);
+            },
+            computed: {
+                orders_in_progress_grouped_user() {
+                    return this.map_orders_by_user(this.orders_in_progress);
+                },
+                orders_ready_grouped_user() {
+                    return this.map_orders_by_user(this.orders_ready);
+                },
+                orders_in_progress() {
+                    return this.orders.filter(order => {
+                        return order.ready === false;
+                    });
+                },
+                orders_ready() {
+                    return this.orders.filter(order => {
+                        return order.ready === true;
+                    });
+                },
+            },
+            methods: {
+                map_orders_by_user(orders) {
+                    let orders_mapped_user = {};
+                    for (let i = 0; i < orders.length; i++) {
+                        let order = orders[i];
+                        let user_id = order['user']['id'];
+                        let user = order['user'];
+                        if (user_id in orders_mapped_user) {
+                            orders_mapped_user[user_id]['orders'].push(order);
+                        } else {
+                            orders_mapped_user[user_id] = {
+                                'orders': [order],
+                                'user': user,
+                            }
+                        }
+                    }
+                    return orders_mapped_user;
+                },
+                visibilityChange(event) {
+                    if (event.target.hidden) {
+                        clearTimeout(this.refreshTimer);
+                    } else {
+                        clearTimeout(this.refreshTimer);
+                        if (this.lastRefresh === null || (new Date()).getTime() - this.lastRefresh > 5000) {
+                            this.refresh();
+                        } else {
+                            this.refreshTimer = setTimeout(this.refresh, 5000);
+                        }
+                    }
+                },
+                refresh() {
+                    if (this.refreshing) {
+                        return;
+                    }
+
+                    clearTimeout(this.refreshTimer);
+                    this.refreshing = true;
+                    return fetch(
+                        "{% url 'v1:orders_listcreate' shift=shift %}?type=0&picked_up=false&ordering=ready_at",
+                        {
+                            method: 'GET',
+                            headers: {
+                                "X-CSRFToken": get_csrf_token(),
+                                "Accept": 'application/json',
+                            }
+                        }
+                    ).then(response => {
+                        if (response.status === 200) {
+                            return response.json();
+                        } else {
+                            throw response;
+                        }
+                    }).then(data => {
+                        this.orders = data;
+                    }).catch(error => {
+                        console.log(`An error occurred while refreshing orders for shift {{ shift.id }}. Error: ${error}`)
+                    }).finally(() => {
+                        this.lastRefresh = (new Date()).getTime();
+                        this.refreshing = false;
+                        this.refresh_timer = setTimeout(this.refresh, 5000);
+                    });
+                }
+            }
+        }).mount(`#${STATUS_SCREEN_CONTAINER_ID}`);
+    </script>
+{% endblock %}

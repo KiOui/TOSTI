@@ -56,7 +56,7 @@ def execute_data_minimisation(dry_run=False):
     return users
 
 
-def add_scanned_order(product: Product, shift: Shift, ready=True, paid=True) -> Order:
+def add_scanned_order(product: Product, shift: Shift, ready=True, paid=True, picked_up=True) -> Order:
     """
     Add a single Scanned Order (of type TYPE_SCANNED).
 
@@ -64,6 +64,7 @@ def add_scanned_order(product: Product, shift: Shift, ready=True, paid=True) -> 
     :param shift: The shift for which the Orders have to be created
     :param ready: Whether the Order should be directly made ready
     :param paid: Whether the Order should be directly made paid
+    :param picked_up: Whether the Order should be directly made picked up
     :return: The created Order
     """
     # Check if Shift is not finalized
@@ -79,7 +80,14 @@ def add_scanned_order(product: Product, shift: Shift, ready=True, paid=True) -> 
         raise OrderException("This Product is not available in this Shift")
 
     return Order.objects.create(
-        product=product, shift=shift, type=Order.TYPE_SCANNED, user=None, user_association=None, ready=ready, paid=paid
+        product=product,
+        shift=shift,
+        type=Order.TYPE_SCANNED,
+        user=None,
+        user_association=None,
+        ready=ready,
+        paid=paid,
+        picked_up=picked_up,
     )
 
 
@@ -90,6 +98,7 @@ def add_user_order(
     priority: int = Order.PRIORITY_NORMAL,
     paid: bool = False,
     ready: bool = False,
+    picked_up: bool = False,
     **kwargs,
 ) -> Order:
     """
@@ -101,6 +110,7 @@ def add_user_order(
     :param priority: Which priority the Order should have
     :param paid: Whether the order should be set as paid
     :param ready: Whether the order should be set as ready
+    :param picked_up: Whether the order should be set as picked up
     :return: The created Order
     """
     # Check order permissions
@@ -146,6 +156,7 @@ def add_user_order(
         user_association=user.association,
         paid=paid,
         ready=ready,
+        picked_up=picked_up,
         priority=priority,
     )
 

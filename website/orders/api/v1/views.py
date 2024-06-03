@@ -42,10 +42,9 @@ class OrderListCreateAPIView(ListCreateAPIView):
         "GET": ["orders:order"],
         "POST": ["orders:manage"],
     }
-    filter_backends = [
-        django_filters.rest_framework.DjangoFilterBackend,
-    ]
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend, filters.OrderingFilter]
     filterset_class = OrderFilter
+    ordering_fields = ["paid_at", "ready_at", "picked_up_at"]
     queryset = Order.objects.select_related("user", "product")
 
     def get_queryset(self):
@@ -72,7 +71,7 @@ class OrderListCreateAPIView(ListCreateAPIView):
             # Save the order while ignoring the order_type, user, paid and ready argument as the user does not have
             # permissions to save orders for all users in the shift.
             order = serializer.save(
-                shift=shift, type=Order.TYPE_ORDERED, user=self.request.user, paid=False, ready=False
+                shift=shift, type=Order.TYPE_ORDERED, user=self.request.user, paid=False, ready=False, picked_up=False
             )
             log_action(self.request.user, order, CHANGE, "Created order via API.")
 
@@ -107,6 +106,7 @@ class OrderRetrieveUpdateDestroyAPIView(LoggedRetrieveUpdateDestroyAPIView):
             "properties": {
                 "ready": {"type": "boolean"},
                 "paid": {"type": "boolean"},
+                "picked_up": {"type": "boolean"},
                 "priority": {"type": "number"},
             },
         }

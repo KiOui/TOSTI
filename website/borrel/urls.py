@@ -1,9 +1,6 @@
-from django.urls import path, register_converter
+from django.urls import path
 
 from borrel import views
-from venues.converters import VenueConverter
-
-register_converter(VenueConverter, "venue")
 
 
 urlpatterns = [

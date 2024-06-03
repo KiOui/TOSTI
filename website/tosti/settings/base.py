@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "transactions",
     "orders",
     "silvasoft",
+    "status_screen",
     "oauth2_provider",
     "corsheaders",
     "yivi",
@@ -195,7 +196,8 @@ CONSTANCE_CONFIG = {
     ),
     "VENUES_SEND_RESERVATION_REQUEST_EMAILS_TO": (
         "noreply@example.com, noreply@example.com",
-        "Where to send venue reservation request notifications to (e-mail address), enter multiple addresses by using a comma (,)",
+        "Where to send venue reservation request notifications to (e-mail address), enter multiple addresses by using "
+        "a comma (,)",
         str,
     ),
     "SHIFTS_DEFAULT_MAX_ORDERS_TOTAL": (70, "Default maximum number of orders per shift", int),
