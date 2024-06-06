@@ -100,10 +100,5 @@ networks:
 
 volumes:
   pg-data:
-    driver: local
-    driver_opts:
-      type: none
-      device: /var/lib/docker/volumes/tosti_pg-data
-      o: bind
   media:
   cache:
