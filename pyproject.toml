@@ -19,7 +19,7 @@ requests = "^2.31.0"
 spotipy = "^2.22.1"
 coverage = "^6.5.0"
 django-guardian = "^2.3.0" # Does not support Django >= 4.0.
-djangorestframework = "^3.15.0"
+djangorestframework = "^3.15.2"
 django-oauth-toolkit = "^2.3.0" # Does not have official support for Django 5.0 yet.
 django-cors-headers = "^4.3.1"
 uritemplate = "^4.1.1"
