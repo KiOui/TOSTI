@@ -30,7 +30,7 @@ django-constance = {extras = ["database"], version = "^2.9.0"} # No official sup
 html2text = "^2020.1.16"
 django-ical = "^1.9.2" # No official support for Django 5.0.
 fontawesomefree = "^6.1.1"
-django-tinymce = "^3.7.1"
+django-tinymce = "^4.1.0"
 bleach = { extras = ["css"], version = "^5.0.1" }
 django-admin-rangefilter = "^0.12.1"
 django-queryable-properties = "^1.9.2"
