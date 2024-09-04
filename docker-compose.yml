@@ -66,7 +66,7 @@ services:
       SERVER_EMAIL: "www-tosti@science.ru.nl"
 
     extra_hosts:
-      - yivi.tosti.science.ru.nl:caddy
+      - "yivi.tosti.science.ru.nl:172.23.0.4"
 
     healthcheck:
       test: ["CMD", "python", "manage.py", "check"]
@@ -96,7 +96,7 @@ services:
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
 
     extra_hosts:
-      - yivi.tosti.science.ru.nl:caddy
+      - "yivi.tosti.science.ru.nl:172.23.0.4"
 
 networks:
   web:
