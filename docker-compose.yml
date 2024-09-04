@@ -32,10 +32,8 @@ services:
     image: ghcr.io/kioui/tosti:latest
     restart: unless-stopped
     networks:
-      web:
-        aliases:
-          - yivi.tosti.science.ru.nl
-      db:
+      - web
+      - db
     expose:
       - "80"
     depends_on:
@@ -67,6 +65,9 @@ services:
       DEFAULT_FROM_EMAIL: "TOSTI <www-tosti@science.ru.nl>"
       SERVER_EMAIL: "www-tosti@science.ru.nl"
 
+    extra_hosts:
+      - "yivi.tosti.science.ru.nl:172.23.0.4"
+
     healthcheck:
       test: ["CMD", "python", "manage.py", "check"]
       interval: 10s
@@ -78,10 +79,8 @@ services:
     entrypoint: ["/bin/sh", "/entrypoint_cron.sh"]
     restart: unless-stopped
     networks:
-      web:
-        aliases:
-          - yivi.tosti.science.ru.nl
-      db:
+      - web
+      - db
     depends_on:
       - database
       - yivi
@@ -95,6 +94,9 @@ services:
       POSTGRES_HOST: database
       POSTGRES_PORT: 5432
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+
+    extra_hosts:
+      - "yivi.tosti.science.ru.nl:172.23.0.4"
 
 networks:
   web:
