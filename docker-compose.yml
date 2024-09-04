@@ -33,12 +33,10 @@ services:
     restart: unless-stopped
     networks:
       web:
-        - aliases:
-            - yivi.tosti.science.ru.nl
+        aliases:
+          - yivi.tosti.science.ru.nl
       db:
-        - aliases:
-            - database
-    expose: 
+    expose:
       - "80"
     depends_on:
       - database
@@ -81,11 +79,9 @@ services:
     restart: unless-stopped
     networks:
       web:
-        - aliases:
-            - yivi.tosti.science.ru.nl
+        aliases:
+          - yivi.tosti.science.ru.nl
       db:
-        - aliases:
-            - database
     depends_on:
       - database
       - yivi
