@@ -65,6 +65,9 @@ services:
       DEFAULT_FROM_EMAIL: "TOSTI <www-tosti@science.ru.nl>"
       SERVER_EMAIL: "www-tosti@science.ru.nl"
 
+    extra_hosts:
+      - "yivi.tosti.science.ru.nl:caddy_reverseproxy"
+
     healthcheck:
       test: ["CMD", "python", "manage.py", "check"]
       interval: 10s
@@ -91,6 +94,9 @@ services:
       POSTGRES_HOST: database
       POSTGRES_PORT: 5432
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+
+    extra_hosts:
+      - "yivi.tosti.science.ru.nl:caddy_reverseproxy"
 
 networks:
   web:
