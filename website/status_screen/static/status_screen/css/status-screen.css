@@ -22,6 +22,10 @@
     justify-content: center;
 }
 
+.orders-ready li.user-order-item {
+    background-color: var(--success);
+}
+
 .user-order-list li .order-user-name {
     margin-right: 20px;
 }

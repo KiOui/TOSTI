@@ -1,5 +1,5 @@
 {% extends 'tosti/base.html' %}
-{% load static %}
+{% load static %}#page-container 
 
 {% block styles %}
     <link rel="stylesheet" href="{% static 'status_screen/css/status-screen.css' %}"/>
@@ -151,29 +151,58 @@
                     if (this.refreshing) {
                         return;
                     }
-
+                    
                     clearTimeout(this.refreshTimer);
                     this.refreshing = true;
-                    return fetch(
-                        "{% url 'v1:orders_listcreate' shift=shift %}?type=0&picked_up=false&ordering=ready_at",
-                        {
-                            method: 'GET',
-                            headers: {
-                                "X-CSRFToken": get_csrf_token(),
-                                "Accept": 'application/json',
+
+                    return new Promise((resolve, reject) => {
+                        fetch(
+                            "{% url 'v1:orders_listcreate' shift=shift %}?type=0&picked_up=false&ordering=ready_at",
+                            {
+                                method: 'GET',
+                                headers: {
+                                    "X-CSRFToken": get_csrf_token(),
+                                    "Accept": 'application/json',
+                                }
                             }
-                        }
-                    ).then(response => {
-                        if (response.status === 200) {
-                            return response.json();
-                        } else {
-                            throw response;
-                        }
-                    }).then(data => {
-                        this.orders = data;
-                    }).catch(error => {
-                        console.log(`An error occurred while refreshing orders for shift {{ shift.id }}. Error: ${error}`)
-                    }).finally(() => {
+                        ).then(response => {
+                            if (response.status === 200) {
+                                return response.json();
+                            } else {
+                                reject(response);
+                            }
+                        }).then(data => {
+                            this.orders = data;
+                        }).catch(error => {
+                            reject(`An error occurred while refreshing orders for shift {{ shift.id }}. Error: ${error}`)
+                        })
+
+                        fetch(
+                            "{% url 'v1:ordervenues_activeshift' order_venue=order_venue %}",
+                            {
+                                method: 'GET',
+                                headers: {
+                                    "X-CSRFToken": get_csrf_token(),
+                                    "Accept": 'application/json',
+                                }
+                            }
+                        ).then(response => {
+                            /* We want to change the page to the music page again when the shift becomes inactive
+                               So if the response on the active shift api call is not 200 we reload the page
+                            */
+                            if (response.status !== 200) {  
+                                location.reload();
+                            }
+
+                            resolve();
+                        }).catch(error => {
+                            reject(`An error occurred while refreshing orders for venue {{ order_venue.name }}. Error: ${error}`)
+                        })
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    })
+                    .finally(() => {
                         this.lastRefresh = (new Date()).getTime();
                         this.refreshing = false;
                         this.refresh_timer = setTimeout(this.refresh, 5000);

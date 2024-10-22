@@ -4,6 +4,8 @@ from django.urls import reverse
 from django.views import View
 from django.views.generic import TemplateView
 
+from thaliedje.models import Player
+
 from orders.templatetags.start_shift import currently_active_shift_for_venue
 
 
@@ -29,3 +31,21 @@ class VenueRedirectView(View):
             raise Http404()
         else:
             return redirect(reverse("status_screen:status", kwargs={"shift": shift}))
+        
+class VenueStatusScreen(View):
+    """Show music and active shift status of a venue."""
+
+    orders_template_name = "status_screen/venue_status_screen.html"
+    music_template_name = "status_screen/venue_music_screen.html"
+
+    def get(self, request, **kwargs):
+        """GET request for the status screen of a venue."""
+        order_venue = kwargs.get("order_venue")
+        active_shift = currently_active_shift_for_venue(order_venue)
+
+        player = Player.objects.get(venue=order_venue.venue)
+
+        if active_shift:
+            return render(request, self.orders_template_name, {"shift": active_shift, "order_venue": order_venue})
+        else:
+            return render(request, self.music_template_name, {"player": player, "order_venue": order_venue})

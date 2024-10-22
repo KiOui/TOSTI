@@ -32,6 +32,8 @@ from tosti.api.v1.pagination import StandardResultsSetPagination
 from tosti.api.views import LoggedRetrieveUpdateAPIView, LoggedListCreateAPIView, LoggedRetrieveUpdateDestroyAPIView
 from tosti.utils import log_action
 
+from orders.templatetags.start_shift import currently_active_shift_for_venue
+
 
 class OrderListCreateAPIView(ListCreateAPIView):
     """API View to list and create orders."""
@@ -298,3 +300,16 @@ class OrderVenueListAPIView(ListAPIView):
 
     serializer_class = OrderVenueSerializer
     queryset = OrderVenue.objects.all()
+
+class OrderVenueActiveShiftAPIView(APIView):
+    """API View to retrieve the active shift"""
+
+    serializer_class = ShiftSerializer
+
+    def get(self, request, **kwargs):
+        shift = currently_active_shift_for_venue(kwargs.get("order_venue"))
+
+        if shift:
+            return Response(status=status.HTTP_200_OK, data=self.serializer_class(shift).data)
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)
