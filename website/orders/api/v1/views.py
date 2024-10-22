@@ -303,11 +303,12 @@ class OrderVenueListAPIView(ListAPIView):
 
 
 class OrderVenueActiveShiftAPIView(APIView):
-    """API View to retrieve the active shift"""
+    """API View to retrieve the active shift."""
 
     serializer_class = ShiftSerializer
 
     def get(self, request, **kwargs):
+        """Get the active shift of an order venue if there is one, otherwise return 404."""
         shift = currently_active_shift_for_venue(kwargs.get("order_venue"))
 
         if shift:
