@@ -31,7 +31,8 @@ class VenueRedirectView(View):
             raise Http404()
         else:
             return redirect(reverse("status_screen:status", kwargs={"shift": shift}))
-        
+
+
 class VenueStatusScreen(View):
     """Show music and active shift status of a venue."""
 

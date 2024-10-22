@@ -301,6 +301,7 @@ class OrderVenueListAPIView(ListAPIView):
     serializer_class = OrderVenueSerializer
     queryset = OrderVenue.objects.all()
 
+
 class OrderVenueActiveShiftAPIView(APIView):
     """API View to retrieve the active shift"""
 
