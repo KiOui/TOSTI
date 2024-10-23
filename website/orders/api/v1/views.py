@@ -306,6 +306,10 @@ class OrderVenueActiveShiftAPIView(APIView):
     """API View to retrieve the active shift."""
 
     serializer_class = ShiftSerializer
+    permission_classes = [IsAuthenticatedOrTokenHasScopeForMethod]
+    required_scopes_for_method = {
+        "GET": ["orders:order"]
+    }
 
     def get(self, request, **kwargs):
         """Get the active shift of an order venue if there is one, otherwise return 404."""
