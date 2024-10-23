@@ -28,7 +28,7 @@
                 <h2>In progress</h2>
                 <transition-group name="user_objects_with_orders_in_progress" tag="ul" class="user-order-list orders-in-progress px-5">
                     <li v-for="(user_orders_object, user_id) in orders_in_progress_grouped_user" :key="`orders_in_progress_user_${user_id}`" class="user-order-item">
-                        <div class="order-user-name">${user_orders_object.user.first_name}$ ${user_orders_object.user.last_name}$</div>
+                        <div class="order-user-name">${user_orders_object.user.first_name}$</div>
                         <ul class="order-list">
                             <li v-for="order in user_orders_object['orders']" :key="`user_${user_id}_order_${order.id}`" class="order-item">
                                 <i v-if="order.product.icon !== null" :class="`fa-solid fa-${order.product.icon} me-2`"></i>
@@ -42,7 +42,7 @@
                 <h2>Ready</h2>
                 <transition-group name="orders_ready" tag="ul" class="user-order-list orders-ready px-5">
                     <li v-for="(user_orders_object, user_id) in orders_ready_grouped_user" :key="`orders_ready_user_${user_id}`" class="user-order-item">
-                        <div class="order-user-name">${user_orders_object.user.first_name}$ ${user_orders_object.user.last_name}$</div>
+                        <div class="order-user-name">${user_orders_object.user.first_name}$</div>
                         <ul class="order-list">
                             <li v-for="order in user_orders_object['orders']" :key="`user_${user_id}_order_${order.id}`" class="order-item">
                                 <i v-if="order.product.icon !== null" :class="`fa-solid fa-${order.product.icon} me-2`"></i>
