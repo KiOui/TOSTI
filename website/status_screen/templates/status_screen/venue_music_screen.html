@@ -2,7 +2,7 @@
 {% load static players %}
 
 {% block styles %}
-    <link rel="stylesheet" href="{% static 'status_screen/css/status-screen.css' %}"/>
+    <link rel="stylesheet" href="{% static 'status_screen/css/music-screen.css' %}"/>
     <link rel="stylesheet" href="{% static 'thaliedje/css/player.css' %}"/>
 {% endblock %}
 
@@ -24,53 +24,11 @@
 {% endblock %}
 
 {% block page %}
-    <div class="d-flex flex-column justify-content-center align-items-center mt-5" id="music-screen-container">
+    <div id="music-screen-container"></div>
+
+    <div class="player-container w-75 mt-5 m-auto display-5">
         <h1 class="mt-5">Currently playing:</h1>
-        <div class="player" id="player-container" style="width: 65%">
-        <template v-if="player_data.track.name !== null">
-        <div class="w-50 mx-auto mb-2" v-if="player_data.track.image !== null">
-            <a href="{% url "thaliedje:now_playing" player=player %}">
-                <img class="w-100" :src="player_data.track.image" :alt="player_data.track.name"/>
-            </a>
-        </div>
-        <div class="w-50 mx-auto mb-3" v-if="this.track_progress_ms !== null && this.track_progress_percentage !== null && this.player_data !== null && this.player_data.duration_ms !== null">
-            <div class="progress" style="height: 10px">
-                <div
-                    class="progress-bar"
-                    role="progressbar"
-                    :style="'width: ' + this.track_progress_percentage+'%;'"
-                    :aria-valuenow="this.track_progress_ms"
-                    aria-valuemin="0"
-                    :aria-valuemax="this.player_data.duration_ms">
-                </div>
-                </div>
-            <div>
-                <h4 class="float-start me-2 align-left text-nowrap" style="width: 30px">
-                    ${ Math.floor((track_progress_ms / 1000) / 60) }$:${ String(Math.floor((track_progress_ms / 1000) % 60)).padStart(2, '0') }$
-                </h4>
-                <h4 class="float-end ms-2 align-right">
-                    ${ Math.floor((player_data.duration_ms / 1000) / 60) }$:${ String(Math.floor((player_data.duration_ms / 1000) % 60)).padStart(2, '0') }$
-                    <!--(${ -1 * Math.floor((track_ms_left / 1000) / 60) }$:${ String(Math.floor((track_ms_left / 1000) % 60)).padStart(2, '0') }$) -->
-                </h4>
-            </div>
-        </div>
-        <h2 class="text-center m-auto mt-5">${ player_data.track.name }$</h2>
-        <div class="text-center w-100">
-            <h3>
-                <template v-for="(artist, index) in player_data.track.artists">
-                    <template v-if="index === player_data.track.artists.length - 1">
-                        ${ artist }$
-                    </template>
-                    <template v-else>
-                        ${ artist }$ -
-                    </template>
-                </template>
-            </h3>
-        </div>
-        </template>
-        <template v-else>
-            <h1 class="text-center m-auto">No currently playing track</h1>
-        </template>
+        {% render_player player %}
     </div>
 {% endblock %}
 
@@ -82,87 +40,33 @@
     <script>
         const MUSIC_SCREEN_CONTAINER_ID = "music-screen-container";
 
-        window.player_vue = createApp({
+        const musicScreenApp = createApp({
             delimiters: ['${', '}$'],
             data() {
                 return {
-                    player_data: {
-                        is_playing: false,
-                        shuffle: null,
-                        track: {
-                            image: null,
-                            name: null,
-                            artists: [],
-                        },
-                        current_volume: null,
-                        timestamp: null,
-                        progress_ms: null,
-                        duration_ms: null,
-                    },
-                    doing_call: false,
-                    set_volume_index: 0,
                     refresh_timer: null,
-                    recalculate_progress_interval: null,
-                    track_progress_ms: 0,
-                    track_progress_percentage: 0,
-                    track_ms_left: 0,
                     lastRefresh: null,
                     refreshing: false,
                 }
             },
             created() {
                 this.refresh();
-                this.recalculate_progress_interval = setInterval(this.updateTrackProgress, 100);
                 document.addEventListener("visibilitychange", this.visibilityChange);
             },
             unmounted() {
                 document.removeEventListener("visibilitychange", this.visibilityChange);
             },
-            watch: {
-                track_progress_percentage: {
-                    handler(newValue, oldValue) {
-                        if (newValue.track_progress_percentage === 100 && oldValue.track_progress_percentage !== 100) {
-                            this.refresh();
-                        }
-                    }
-                }
-            },
             methods: {
                 visibilityChange(event) {
                     if (event.target.hidden) {
                         clearTimeout(this.refresh_timer);
-                        clearInterval(this.recalculate_progress_interval);
                     } else {
                         clearTimeout(this.refresh_timer);
-                        clearInterval(this.recalculate_progress_interval);
-                        this.recalculate_progress_interval = setInterval(this.updateTrackProgress, 100);
                         if (this.lastRefresh === null || (new Date()).getTime() - this.lastRefresh > 5000) {
                             this.refresh();
                         } else {
-                            this.refresh_timer = setTimeout(this.refresh, this.track_progress_percentage === 100 ? 1000 : 5000);
+                            this.refresh_timer = setTimeout(this.refresh, 5000);
                         }
-                    }
-                },
-                updateTrackProgress() {
-                    if (this.player_data.is_playing === false) {
-                        return;
-                    }
-    
-                    if (this.player_data.progress_ms === null || this.player_data.timestamp === null) {
-                        return;
-                    }
-    
-                    const track_progress_ms = this.player_data.progress_ms + (Date.now() - this.player_data.timestamp);
-    
-                    if (track_progress_ms >= this.player_data.duration_ms) {
-                        // Track finished playing.
-                        this.track_progress_ms = this.player_data.duration_ms;
-                        this.track_progress_percentage = 100;
-                        this.track_ms_left = 0;
-                    } else {
-                        this.track_progress_ms = track_progress_ms;
-                        this.track_progress_percentage = this.track_progress_ms / this.player_data.duration_ms * 100;
-                        this.track_ms_left = this.player_data.duration_ms - this.track_progress_ms;
                     }
                 },
                 refresh() {
@@ -172,52 +76,22 @@
     
                     clearTimeout(this.refresh_timer);
                     this.refreshing = true;
-                    return new Promise((resolve, reject) => {
-                        fetch(
-                            '{% url "v1:player_retrieve" pk=player.id %}',
-                            {
-                                headers: {
-                                    "X-CSRFToken": get_csrf_token(),
-                                    "Content-Type": 'application/json',
-                                    "Accept": 'application/json',
-                                }
+                    return fetch(
+                        "{% url 'v1:ordervenues_activeshift' order_venue=order_venue %}",
+                        {
+                            method: 'GET',
+                            headers: {
+                                "X-CSRFToken": get_csrf_token(),
+                                "Accept": 'application/json',
                             }
-                        ).then(response => {
-                            if (response.status === 200) {
-                                return response.json();
-                            } else {
-                                reject(response)
-                            }
-                        }).then(data => {
-                            if (data.current_volume === null) {
-                                data.current_volume = 50;
-                            }
-                            this.player_data = data;
-                        }).catch(error => {
-                            reject(`An error occurred while refreshing player {{ player.id }}. Error: ${error}`)
-                        })
-
-                        fetch(
-                            "{% url 'v1:ordervenues_activeshift' order_venue=order_venue %}",
-                            {
-                                method: 'GET',
-                                headers: {
-                                    "X-CSRFToken": get_csrf_token(),
-                                    "Accept": 'application/json',
-                                }
-                            }
-                        ).then(response => {
-                            /* We want to change the page to the shift page again when the shift becomes active
-                               So if the response on the active shift api call is 200 we reload the page
-                            */
-                            if (response.status === 200) {  
-                                location.reload();
-                            }
-
-                            resolve();
-                        }).catch(error => {
-                            reject(`An error occurred while refreshing orders for venue {{ order_venue.name }}. Error: ${error}`)
-                        })
+                        }
+                    ).then(response => {
+                        /* We want to change the page to the shift page again when the shift becomes active
+                           So if the response on the active shift api call is 200 we reload the page
+                        */
+                        if (response.status === 200) {  
+                            location.reload();
+                        }
                     })
                     .catch(error => {
                         console.log(error);
@@ -225,7 +99,7 @@
                     .finally(() => {
                         this.lastRefresh = (new Date()).getTime();
                         this.refreshing = false;
-                        this.refresh_timer = setTimeout(this.refresh, this.track_progress_percentage === 100 ? 1000 : 5000);
+                        this.refresh_timer = setTimeout(this.refresh, 5000);
                     });
                 }
             }
