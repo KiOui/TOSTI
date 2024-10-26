@@ -59,16 +59,16 @@
     </div>
 
 
-        <div id="player-container" style="display: none">
-            {% if player is not None %}
-                <div class="player w-75 mt-5 m-auto display-5">
-                    <h1 class="mt-5">Currently playing:</h1>
-                    {% render_player player %}
-                </div>
-            {% else %}
-                <h1 class="mt-5">No player for this venue</h1>
-            {% endif %}
-        </div>
+    <div id="player-container" style="display: none">
+        {% if player is not None %}
+            <div class="player w-75 mt-5 m-auto display-5">
+                <h1 class="mt-5">Currently playing:</h1>
+                {% render_player player %}
+            </div>
+        {% else %}
+            <h1 class="mt-5">No player for this venue</h1>
+        {% endif %}
+    </div>
 {% endblock %}
 
 {% block footer %}

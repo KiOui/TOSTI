@@ -2,6 +2,11 @@
     height: 84px;
 }
 
+/* For the music screen */
+.progress {
+    height: 10px !important;
+}
+
 .user-order-list {
     font-size: 30pt;
     list-style-type: none;
