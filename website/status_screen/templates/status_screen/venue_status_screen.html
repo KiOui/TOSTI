@@ -137,7 +137,7 @@
                             }
                         }
 
-                        get_oauth_token_with_client_credentials(this.client_id, this.client_secret)
+                        get_oauth_token_with_client_credentials("{% url "oauth2_provider:token" %}", this.client_id, this.client_secret)
                             .then(data => {
                                 this.oauth_token = data;
                                 resolve(this.oauth_token.access_token);

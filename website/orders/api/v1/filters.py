@@ -2,7 +2,7 @@ from django_filters import IsoDateTimeFilter
 from django_filters.rest_framework import FilterSet, ModelChoiceFilter
 from django.db import models
 
-from orders.models import Shift, Order, Product, OrderVenue
+from orders.models import Shift, Order, Product
 from venues.models import Venue
 
 

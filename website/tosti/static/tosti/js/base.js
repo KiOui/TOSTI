@@ -162,12 +162,12 @@ function formatPrice(priceToFormat) {
     }).format(priceToFormat).trim();
 }
 
-function get_oauth_token_with_client_credentials(client_id, client_secret) {
+function get_oauth_token_with_client_credentials(token_endpoint, client_id, client_secret) {
     let credentials = client_id + ":" + client_secret;
     let credentials_utf8 = strToUTF8Arr(credentials);
     let credentials_base64 = base64EncArr(credentials_utf8);
     return fetch(
-        "/oauth/token/",
+        token_endpoint,
         {
             method: 'POST',
             headers: {
