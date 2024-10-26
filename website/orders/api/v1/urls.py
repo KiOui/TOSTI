@@ -8,7 +8,6 @@ from orders.api.v1.views import (
     ProductListAPIView,
     ShiftRetrieveUpdateAPIView,
     OrderVenueListAPIView,
-    OrderVenueActiveShiftAPIView,
 )
 from orders.converters import ShiftConverter, OrderConverter
 
@@ -27,9 +26,4 @@ urlpatterns = [
     path("shifts/<shift:shift>/scanner/", ShiftScannerAPIView.as_view(), name="shifts_scanner"),
     path("shifts/<shift:shift>/products/", ProductListAPIView.as_view(), name="product_list"),
     path("order-venues/", OrderVenueListAPIView.as_view(), name="ordervenues_list"),
-    path(
-        "order-venues/<order_venue:order_venue>/active-shift",
-        OrderVenueActiveShiftAPIView.as_view(),
-        name="ordervenues_activeshift",
-    ),
 ]

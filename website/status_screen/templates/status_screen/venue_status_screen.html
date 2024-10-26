@@ -78,6 +78,7 @@
 {% block js %}
     <script src="{% static 'tosti/js/base64.js' %}"></script>
     <script>
+        const ORDER_VENUE_SLUG = "{{ order_venue.venue.slug }}";
         const STATUS_SCREEN_CONTAINER_ID = "status-screen-container";
 
         const statusScreenApp = createApp({
@@ -205,8 +206,11 @@
                         if (header === null) {
                             header = {};
                         }
+
+                        let now = new Date();
+
                         fetch(
-                            "{% url 'v1:ordervenues_activeshift' order_venue=order_venue %}",
+                            `{% url 'v1:shifts_listcreate' %}?venue=${ORDER_VENUE_SLUG}&finalized=false&start__lte=${now.toISOString()}&end__gte=${now.toISOString()}`,
                             {
                                 method: 'GET',
                                 headers: Object.assign({}, header, {
@@ -215,13 +219,22 @@
                                 }),
                             }
                         ).then(response => {
-                            if(response.status === 200) {
+                            if (response.status === 200) {
                                 return response.json();
+                            } else {
+                                throw response;
                             }
                         }).then(data => {
-                            this.active_shift = data;
+                            if (data.count > 0) {
+                                // We pick the first shift.
+                                return data.results[0];
+                            } else {
+                                return null;
+                            }
+                        }).then(active_shift => {
+                            this.active_shift = active_shift;
                             
-                            if(this.active_shift) {
+                            if (this.active_shift !== 0) {
                                 document.getElementById('player-container').style.display = 'none';
 
                                 fetch(
