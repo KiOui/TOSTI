@@ -162,5 +162,37 @@ function formatPrice(priceToFormat) {
     }).format(priceToFormat).trim();
 }
 
+function get_oauth_token_with_client_credentials(client_id, client_secret) {
+    let credentials = client_id + ":" + client_secret;
+    let credentials_utf8 = strToUTF8Arr(credentials);
+    let credentials_base64 = base64EncArr(credentials_utf8);
+    return fetch(
+        "/oauth/token/",
+        {
+            method: 'POST',
+            headers: {
+                "Authorization": "Basic " + credentials_base64,
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Accept": 'application/json',
+            },
+            body: "grant_type=client_credentials"
+        }
+    ).then(response => {
+        if (response.status === 200) {
+            return response.json();
+        } else {
+            reject(response);
+        }
+    }).then(data => {
+        let expires_in = data.expires_in;
+        let current_time = new Date().getTime();
+        data.expires_at = current_time + (expires_in * 1000);
+        return data;
+    }).catch(error => {
+        console.log(`An error occurred while retrieving an access token. Error: ${error}`);
+        return null;
+    });
+}
+
 update_refresh_list();
 document.addEventListener("visibilitychange", visibilityChange);
