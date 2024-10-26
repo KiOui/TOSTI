@@ -44,9 +44,15 @@ class VenueStatusScreen(View):
         order_venue = kwargs.get("order_venue")
         active_shift = currently_active_shift_for_venue(order_venue)
 
-        player = Player.objects.get(venue=order_venue.venue)
+        try:
+            player = Player.objects.get(venue=order_venue.venue)
+        except Player.DoesNotExist:
+            # No player configured for the venue.
+            player = None
 
-        if active_shift:
+        if active_shift is not None:
             return render(request, self.orders_template_name, {"shift": active_shift, "order_venue": order_venue})
-        else:
+        elif player is not None:
             return render(request, self.music_template_name, {"player": player, "order_venue": order_venue})
+        else:
+            raise Http404()

@@ -78,6 +78,7 @@
 {% endblock %}
 
 {% block js %}
+    <script src="{% static 'tosti/js/base64.js' %}"></script>
     <script>
         const STATUS_SCREEN_CONTAINER_ID = "status-screen-container";
 
@@ -89,9 +90,17 @@
                     refreshing: false,
                     refreshTimer: null,
                     lastRefresh: null,
+                    // Set when OAuth2 access control should be used.
+                    client_id: null,
+                    client_secret: null,
+                    oauth_token: null,
                 }
             },
             created() {
+                // These will be set in the client if OAuth needs to be used.
+                this.client_id = get_cookie("TOSTI_CLIENT_ID");
+                this.client_secret = get_cookie("TOSTI_CLIENT_SECRET");
+                
                 this.refresh();
                 this.recalculate_progress_interval = setInterval(this.updateTrackProgress, 100);
                 document.addEventListener("visibilitychange", this.visibilityChange);
@@ -118,6 +127,44 @@
                 },
             },
             methods: {
+                get_oauth_token() {
+                    return new Promise((resolve, reject) => {
+                        if (this.oauth_token !== null) {
+                            let current_time = new Date().getTime();
+                            if (current_time < this.oauth_token.expires_at) {
+                                resolve(this.oauth_token.access_token);
+                                return;
+                            }
+                        }
+
+                        get_oauth_token_with_client_credentials(this.client_id, this.client_secret)
+                            .then(data => {
+                                this.oauth_token = data;
+                                resolve(this.oauth_token.access_token);
+                            });
+                    });
+                },
+                get_oauth_header() {
+                    return new Promise((resolve, reject) => {
+                        if (this.should_use_token()) {
+                            return this.get_oauth_token()
+                                .then(token => {
+                                    if (token === null) {
+                                        resolve(null);
+                                    } else {
+                                        resolve({
+                                            "Authorization": "Bearer " + token
+                                        });
+                                    }
+                                });
+                        } else {
+                            resolve(null);
+                        }
+                    });
+                },
+                should_use_token() {
+                    return this.client_id !== null && this.client_secret !== null;
+                },
                 map_orders_by_user(orders) {
                     let orders_mapped_user = {};
                     for (let i = 0; i < orders.length; i++) {
@@ -151,52 +198,58 @@
                     if (this.refreshing) {
                         return;
                     }
-                    
+
                     clearTimeout(this.refreshTimer);
                     this.refreshing = true;
 
                     return new Promise((resolve, reject) => {
-                        fetch(
-                            "{% url 'v1:orders_listcreate' shift=shift %}?type=0&picked_up=false&ordering=ready_at",
-                            {
-                                method: 'GET',
-                                headers: {
-                                    "X-CSRFToken": get_csrf_token(),
-                                    "Accept": 'application/json',
-                                }
-                            }
-                        ).then(response => {
-                            if (response.status === 200) {
-                                return response.json();
-                            } else {
-                                reject(response);
-                            }
-                        }).then(data => {
-                            this.orders = data;
-                        }).catch(error => {
-                            reject(`An error occurred while refreshing orders for shift {{ shift.id }}. Error: ${error}`)
-                        })
-
-                        fetch(
-                            "{% url 'v1:ordervenues_activeshift' order_venue=order_venue %}",
-                            {
-                                method: 'GET',
-                                headers: {
-                                    "X-CSRFToken": get_csrf_token(),
-                                    "Accept": 'application/json',
-                                }
-                            }
-                        ).then(response => {
-                            /* We want to change the page to the music page again when the shift becomes inactive
-                               So if the response on the active shift api call is not 200 we reload the page
-                            */
-                            if (response.status !== 200) {  
-                                location.reload();
+                        this.get_oauth_header().then(header => {
+                            if (header === null) {
+                                header = {};
                             }
 
-                            resolve();
-                        }).catch(error => {
-                            reject(`An error occurred while refreshing orders for venue {{ order_venue.name }}. Error: ${error}`)
+                            fetch(
+                                "{% url 'v1:orders_listcreate' shift=shift %}?type=0&picked_up=false&ordering=ready_at",
+                                {
+                                    method: 'GET',
+                                    headers: Object.assign({}, header, {
+                                        "X-CSRFToken": get_csrf_token(),
+                                        "Accept": 'application/json',
+                                    }),
+                                }
+                            ).then(response => {
+                                if (response.status === 200) {
+                                    return response.json();
+                                } else {
+                                    reject(response);
+                                }
+                            }).then(data => {
+                                this.orders = data;
+                            }).catch(error => {
+                                reject(`An error occurred while refreshing orders for shift {{ shift.id }}. Error: ${error}`)
+                            })
+
+                            fetch(
+                                "{% url 'v1:ordervenues_activeshift' order_venue=order_venue %}",
+                                {
+                                    method: 'GET',
+                                    headers: Object.assign({}, header, {
+                                        "X-CSRFToken": get_csrf_token(),
+                                        "Accept": 'application/json',
+                                    }),
+                                }
+                            ).then(response => {
+                                /* We want to change the page to the music page again when the shift becomes inactive
+                                   So if the response on the active shift api call is not 200 we reload the page
+                                */
+                                if (response.status === 404) {
+                                    location.reload();
+                                }
+
+                                resolve();
+                            }).catch(error => {
+                                reject(`An error occurred while refreshing orders for venue {{ order_venue.name }}. Error: ${error}`)
+                            })
                         })
                     })
                     .catch(error => {
