@@ -1,8 +1,9 @@
 from django_filters import IsoDateTimeFilter
-from django_filters.rest_framework import FilterSet
+from django_filters.rest_framework import FilterSet, ModelChoiceFilter
 from django.db import models
 
 from orders.models import Shift, Order, Product
+from venues.models import Venue
 
 
 class ProductFilter(FilterSet):
@@ -22,6 +23,8 @@ class ProductFilter(FilterSet):
 class ShiftFilter(FilterSet):
     """Shift FilterSet."""
 
+    venue = ModelChoiceFilter(field_name="venue__venue", to_field_name="slug", queryset=Venue.objects.all())
+
     class Meta:
         """Meta class."""
 
@@ -29,7 +32,6 @@ class ShiftFilter(FilterSet):
         fields = {
             "start": ("lte", "gte"),
             "end": ("lte", "gte"),
-            "venue": ("exact",),
             "can_order": ("exact",),
             "finalized": ("exact",),
             "assignees": ("exact",),

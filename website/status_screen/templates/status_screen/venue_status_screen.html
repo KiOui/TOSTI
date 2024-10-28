@@ -1,0 +1,275 @@
+{% extends 'tosti/base.html' %}
+{% load static players %}
+{% load static %}#page-container 
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'status_screen/css/status-screen.css' %}"/>
+{% endblock %}
+
+{% block header %}
+    <nav class="navbar navbar-expand-lg site-header sticky-top navbar-dark">
+        <div class="container">
+            <div class="d-block d-lg-none">
+                <a class="navbar-brand drop-out-header-mobile" href="/"><img
+                        src="{% static 'tosti/svg/TOSTI-logo.svg' %}" height="80"/></a>
+            </div>
+                <div class="mx-auto position-relative d-lg-block d-none" style="margin-top: -68px">
+                    <a class="navbar-brand drop-out-header" href="/"><img
+                            src="{% static 'tosti/svg/TOSTI-logo.svg' %}"
+                            height="120"/></a>
+                </div>
+        </div>
+    </nav>
+{% endblock %}
+
+{% block page %}
+    <div class="container-fluid mt-3" id="status-screen-container">
+        <template v-if="active_shift">
+            <div class="row">
+                <div class="col-md-6 p-2">
+                    <h2>In progress</h2>
+                    <transition-group name="user_objects_with_orders_in_progress" tag="ul" class="user-order-list orders-in-progress px-5">
+                        <li v-for="(user_orders_object, user_id) in orders_in_progress_grouped_user" :key="`orders_in_progress_user_${user_id}`" class="user-order-item">
+                            <div class="order-user-name">${user_orders_object.user.first_name}$</div>
+                            <ul class="order-list">
+                                <li v-for="order in user_orders_object['orders']" :key="`user_${user_id}_order_${order.id}`" class="order-item">
+                                    <i v-if="order.product.icon !== null" :class="`fa-solid fa-${order.product.icon} me-2`"></i>
+                                    <i v-else class="fa-solid fa-question"></i>
+                                </li>
+                            </ul>
+                        </li>
+                    </transition-group>
+                </div>
+                <div class="col-md-6 p-2">
+                    <h2>Ready</h2>
+                    <transition-group name="orders_ready" tag="ul" class="user-order-list orders-ready px-5">
+                        <li v-for="(user_orders_object, user_id) in orders_ready_grouped_user" :key="`orders_ready_user_${user_id}`" class="user-order-item">
+                            <div class="order-user-name">${user_orders_object.user.first_name}$</div>
+                            <ul class="order-list">
+                                <li v-for="order in user_orders_object['orders']" :key="`user_${user_id}_order_${order.id}`" class="order-item">
+                                    <i v-if="order.product.icon !== null" :class="`fa-solid fa-${order.product.icon} me-2`"></i>
+                                    <i v-else class="fa-solid fa-question"></i>
+                                </li>
+                            </ul>
+                        </li>
+                    </transition-group>
+                </div>
+            </div>
+        </template>
+    </div>
+
+
+    <div id="player-container" style="display: none">
+        {% if player is not None %}
+            <div class="player w-75 mt-5 m-auto display-5">
+                <h1 class="mt-5">Currently playing:</h1>
+                {% render_player player %}
+            </div>
+        {% else %}
+            <h1 class="mt-5">No player for this venue</h1>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block footer %}
+
+{% endblock %}
+
+{% block js %}
+    <script src="{% static 'tosti/js/base64.js' %}"></script>
+    <script>
+        const ORDER_VENUE_SLUG = "{{ order_venue.venue.slug }}";
+        const STATUS_SCREEN_CONTAINER_ID = "status-screen-container";
+
+        const statusScreenApp = createApp({
+            delimiters: ['${', '}$'],
+            data() {
+                return {
+                    orders: [],
+                    active_shift: null,
+                    refreshing: false,
+                    refreshTimer: null,
+                    lastRefresh: null,
+                    // Set when OAuth2 access control should be used.
+                    client_id: null,
+                    client_secret: null,
+                    oauth_token: null,
+                }
+            },
+            created() {
+                // These will be set in the client if OAuth needs to be used.
+                this.client_id = get_cookie("TOSTI_CLIENT_ID");
+                this.client_secret = get_cookie("TOSTI_CLIENT_SECRET");
+                
+                this.refresh();
+                this.recalculate_progress_interval = setInterval(this.updateTrackProgress, 100);
+                document.addEventListener("visibilitychange", this.visibilityChange);
+            },
+            unmounted() {
+                document.removeEventListener("visibilitychange", this.visibilityChange);
+            },
+            computed: {
+                orders_in_progress_grouped_user() {
+                    return this.map_orders_by_user(this.orders_in_progress);
+                },
+                orders_ready_grouped_user() {
+                    return this.map_orders_by_user(this.orders_ready);
+                },
+                orders_in_progress() {
+                    return this.orders.filter(order => {
+                        return order.ready === false;
+                    });
+                },
+                orders_ready() {
+                    return this.orders.filter(order => {
+                        return order.ready === true;
+                    });
+                },
+            },
+            methods: {
+                get_oauth_token() {
+                    return new Promise((resolve, reject) => {
+                        if (this.oauth_token !== null) {
+                            let current_time = new Date().getTime();
+                            if (current_time < this.oauth_token.expires_at) {
+                                resolve(this.oauth_token.access_token);
+                                return;
+                            }
+                        }
+
+                        get_oauth_token_with_client_credentials("{% url "oauth2_provider:token" %}", this.client_id, this.client_secret)
+                            .then(data => {
+                                this.oauth_token = data;
+                                resolve(this.oauth_token.access_token);
+                            });
+                    });
+                },
+                get_oauth_header() {
+                    return new Promise((resolve, reject) => {
+                        if (this.should_use_token()) {
+                            return this.get_oauth_token()
+                                .then(token => {
+                                    if (token === null) {
+                                        resolve(null);
+                                    } else {
+                                        resolve({
+                                            "Authorization": "Bearer " + token
+                                        });
+                                    }
+                                });
+                        } else {
+                            resolve(null);
+                        }
+                    });
+                },
+                should_use_token() {
+                    return this.client_id !== null && this.client_secret !== null;
+                },
+                map_orders_by_user(orders) {
+                    let orders_mapped_user = {};
+                    for (let i = 0; i < orders.length; i++) {
+                        let order = orders[i];
+                        let user_id = order['user']['id'];
+                        let user = order['user'];
+                        if (user_id in orders_mapped_user) {
+                            orders_mapped_user[user_id]['orders'].push(order);
+                        } else {
+                            orders_mapped_user[user_id] = {
+                                'orders': [order],
+                                'user': user,
+                            }
+                        }
+                    }
+                    return orders_mapped_user;
+                },
+                visibilityChange(event) {
+                    if (event.target.hidden) {
+                        clearTimeout(this.refreshTimer);
+                    } else {
+                        clearTimeout(this.refreshTimer);
+                        if (this.lastRefresh === null || (new Date()).getTime() - this.lastRefresh > 5000) {
+                            this.refresh();
+                        } else {
+                            this.refreshTimer = setTimeout(this.refresh, 5000);
+                        }
+                    }
+                },
+                refresh() {
+                    if (this.refreshing) {
+                        return;
+                    }
+
+                    clearTimeout(this.refreshTimer);
+                    this.refreshing = true;
+
+                    this.get_oauth_header().then(header => {
+                        if (header === null) {
+                            header = {};
+                        }
+
+                        let now = new Date();
+
+                        fetch(
+                            `{% url 'v1:shifts_listcreate' %}?venue=${ORDER_VENUE_SLUG}&finalized=false&start__lte=${now.toISOString()}&end__gte=${now.toISOString()}`,
+                            {
+                                method: 'GET',
+                                headers: Object.assign({}, header, {
+                                    "X-CSRFToken": get_csrf_token(),
+                                    "Accept": 'application/json',
+                                }),
+                            }
+                        ).then(response => {
+                            if (response.status === 200) {
+                                return response.json();
+                            } else {
+                                throw response;
+                            }
+                        }).then(data => {
+                            if (data.count > 0) {
+                                // We pick the first shift.
+                                return data.results[0];
+                            } else {
+                                return null;
+                            }
+                        }).then(active_shift => {
+                            this.active_shift = active_shift;
+                            
+                            if (this.active_shift !== 0) {
+                                document.getElementById('player-container').style.display = 'none';
+
+                                fetch(
+                                    `/api/v1/shifts/${this.active_shift.id}/orders?type=0&picked_up=false&ordering=ready_at`,
+                                    {
+                                        method: 'GET',
+                                        headers: Object.assign({}, header, {
+                                            "X-CSRFToken": get_csrf_token(),
+                                            "Accept": 'application/json',
+                                        }),
+                                    }
+                                ).then(response => {
+                                    if (response.status === 200) {
+                                        return response.json();
+                                    }
+                                }).then(data => {
+                                    this.orders = data;
+                                }).catch(error => {
+                                    console.log(`An error occurred while refreshing orders for shift ${this.active_shift.id}. Error: ${error}`)
+                                })
+                            } else {
+                                document.getElementById('player-container').style.display = 'block';
+                            }
+                        })
+                        .catch(error => {
+                            console.log(error);
+                        })
+                        .finally(() => {
+                            this.lastRefresh = (new Date()).getTime();
+                            this.refreshing = false;
+                            this.refresh_timer = setTimeout(this.refresh, 5000);
+                        });
+                    })
+                }
+            }
+        }).mount(`#${STATUS_SCREEN_CONTAINER_ID}`);
+    </script>
+{% endblock %}
