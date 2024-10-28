@@ -234,7 +234,7 @@
                         }).then(active_shift => {
                             this.active_shift = active_shift;
                             
-                            if (this.active_shift !== 0) {
+                            if (this.active_shift !== null) {
                                 document.getElementById('player-container').style.display = 'none';
 
                                 fetch(
