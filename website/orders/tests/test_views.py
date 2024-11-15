@@ -136,8 +136,13 @@ class OrderViewTests(TestCase):
         self.assertTrue(self.normal_user.has_perm("orders.can_manage_shift_in_venue", self.order_venue_1))
         self.assertFalse(self.normal_user in self.shift.assignees.all())
         response = self.client.post(reverse("orders:shift_join", kwargs={"shift": self.shift}), data={"confirm": "No"})
-        self.assertRedirects(response, reverse("index"))
+        self.assertRedirects(response, reverse("orders:shift_admin", kwargs={"shift": self.shift}))
         self.assertFalse(self.normal_user in self.shift.assignees.all())
+        self.assertTrue(
+            str(response.cookies.get(f"TOSTI_ASKED_JOIN_SHIFT_{self.shift.id}", None)).startswith(
+                f"Set-Cookie: TOSTI_ASKED_JOIN_SHIFT_{self.shift.id}=true;"
+            )
+        )
 
     def test_join_shift_view_post_no_data(self):
         self.assertTrue(self.client.login(username=self.normal_user.username, password="temporary"))
@@ -167,4 +172,4 @@ class OrderViewTests(TestCase):
         self.assertTrue(self.client.login(username=self.normal_user.username, password="temporary"))
         self.assertFalse(self.normal_user.has_perm("orders.can_manage_shift_in_venue", self.order_venue_1))
         response = self.client.get(reverse("orders:shift_admin", kwargs={"shift": self.shift}))
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 403)

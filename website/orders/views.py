@@ -17,7 +17,6 @@ from .models import Order, Shift
 from .forms import CreateShiftForm
 from .services import (
     user_is_blacklisted,
-    user_can_manage_shift,
     user_can_manage_shifts_in_venue,
     generate_order_statistics,
     generate_orders_per_venue_statistics,
@@ -38,7 +37,7 @@ class ShiftView(LoginRequiredMixin, TemplateView):
             {
                 "shift": shift,
                 "can_manage_shift": self.request.user.is_authenticated
-                and user_can_manage_shift(self.request.user, shift),
+                and user_can_manage_shifts_in_venue(self.request.user, shift.venue),
                 "has_order_permissions": self.request.user.is_authenticated
                 and not user_is_blacklisted(self.request.user),
                 "user_gets_priority": user_gets_prioritized_orders(self.request.user, shift),
@@ -55,16 +54,28 @@ class ShiftManagementView(LoginRequiredMixin, TemplateView):
     def dispatch(self, request, *args, **kwargs):
         """Redirect users that haven't joined the shift to the join page."""
         shift = kwargs.get("shift")
-        if not user_can_manage_shift(request.user, shift):
+
+        if not user_can_manage_shifts_in_venue(request.user, shift.venue):
+            raise PermissionDenied
+
+        if request.user in shift.assignees.all():
+            return super(ShiftManagementView, self).dispatch(request, *args, **kwargs)
+
+        asked_join_shift = request.COOKIES.get(f"TOSTI_ASKED_JOIN_SHIFT_{shift.id}", None)
+
+        if asked_join_shift is not None:
+            # We have already asked the user whether they wanted to join the shift, and they denied.
+            return super(ShiftManagementView, self).dispatch(request, *args, **kwargs)
+        else:
+            # We will ask the user whether they want to join the shift.
             return redirect("orders:shift_join", shift=shift)
-        return super(ShiftManagementView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         """Get context data."""
         context = super(ShiftManagementView, self).get_context_data(**kwargs)
         shift = kwargs.get("shift")
         context.update(
-            {"shift": shift, "has_change_order_permissions": user_can_manage_shift(self.request.user, shift)},
+            {"shift": shift},
         )
         return context
 
@@ -140,7 +151,10 @@ class JoinShiftView(LoginRequiredMixin, TemplateView):
             log_action(request.user, shift, CHANGE, "Joined shift via website.")
             return redirect("orders:shift_admin", shift=shift)
         elif confirm == "No":
-            return redirect("index")
+            response = redirect("orders:shift_admin", shift=shift)
+            # Set a cookie that will prevent this page from displaying for 10 minutes.
+            response.set_cookie(f"TOSTI_ASKED_JOIN_SHIFT_{shift.id}", "true", max_age=600)
+            return response
         else:
             return render(request, self.template_name, {"shift": shift})
 
