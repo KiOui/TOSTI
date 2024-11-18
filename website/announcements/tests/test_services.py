@@ -6,22 +6,22 @@ from announcements.services import sanitize_closed_announcements, validate_close
 
 class OrderServicesTests(TestCase):
     def test_sanitize_closed_announcements_none(self):
-        self.assertEquals([], sanitize_closed_announcements(None))
+        self.assertEqual([], sanitize_closed_announcements(None))
 
     def test_sanitize_closed_announcements_non_string(self):
-        self.assertEquals([], sanitize_closed_announcements(5))
+        self.assertEqual([], sanitize_closed_announcements(5))
 
     def test_sanitize_closed_announcements_non_json(self):
-        self.assertEquals([], sanitize_closed_announcements("this,is,not,json"))
+        self.assertEqual([], sanitize_closed_announcements("this,is,not,json"))
 
     def test_sanitize_closed_announcements_non_list(self):
-        self.assertEquals([], sanitize_closed_announcements("{}"))
+        self.assertEqual([], sanitize_closed_announcements("{}"))
 
     def test_sanitize_closed_announcements_list_of_ints(self):
-        self.assertEquals([1, 8, 4], sanitize_closed_announcements("[1, 8, 4]"))
+        self.assertEqual([1, 8, 4], sanitize_closed_announcements("[1, 8, 4]"))
 
     def test_sanitize_closed_announcements_list_of_different_types(self):
-        self.assertEquals(
+        self.assertEqual(
             [1, 8, 4], sanitize_closed_announcements('[1, "bla", 8, 4, 123.4, {"a": "b"}, ["This is also a list"]]')
         )
 

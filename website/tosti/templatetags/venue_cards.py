@@ -1,7 +1,7 @@
 from django import template
 from django.utils import timezone
 
-from orders.services import user_can_manage_shifts_in_venue, user_can_manage_shift
+from orders.services import user_can_manage_shifts_in_venue
 from thaliedje.models import Player
 from orders.models import OrderVenue
 
@@ -23,7 +23,7 @@ def render_venue_card(context, shift=None, venue=None, show_player=True, show_ve
         or None,
         "request": context.get("request"),
         "admin": (venue and user_can_manage_shifts_in_venue(context["request"].user, venue))
-        or (shift and user_can_manage_shift(context["request"].user, shift)),
+        or (shift and user_can_manage_shifts_in_venue(context["request"].user, shift.venue)),
         "show_player": show_player and Player.get_player(venue.venue) is not None,
     }
 

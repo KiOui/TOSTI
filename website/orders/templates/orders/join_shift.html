@@ -9,12 +9,12 @@
     <div class="container my-5">
         <div class="row justify-content-center">
             <form method="post" class="col-8 col-sm-offset-2">
-                <h1>Join {{ shift.venue.venue.name }} shift #{{ shift.pk }}</h1>
+                <h1>Join/Manage {{ shift.venue.venue.name }} shift #{{ shift.pk }}</h1>
                 {% bootstrap_messages %}
                 <p>Do you want to join this shift as a baker (add yourself to the baker list)?</p>
                 {% csrf_token %}
-                {% bootstrap_button button_type="submit" name="confirm" value="Yes" content="Yes" button_class="btn-success" extra_classes="mt-4 w-100" %}
-                {% bootstrap_button button_type="submit" name="confirm" value="No" content="No" button_class="btn-danger" extra_classes="mt-4 w-100" %}
+                {% bootstrap_button button_type="submit" name="confirm" value="Yes" content="Yes, add me to the baker list" button_class="btn-success" extra_classes="mt-4 w-100" %}
+                {% bootstrap_button button_type="submit" name="confirm" value="No" content="No, I only want to manage" button_class="btn-danger" extra_classes="mt-4 w-100" %}
             </form>
         </div>
     </div>

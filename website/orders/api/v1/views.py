@@ -21,7 +21,6 @@ from orders.exceptions import OrderException
 from orders.models import Order, Shift, Product, OrderVenue
 from orders.services import (
     user_can_manage_shifts_in_venue,
-    user_can_manage_shift,
     add_scanned_order,
     user_gets_prioritized_orders,
 )
@@ -62,7 +61,7 @@ class OrderListCreateAPIView(ListCreateAPIView):
     def perform_create(self, serializer):
         """Create an order, either as ordering users or as managers."""
         shift = self.kwargs.get("shift")
-        if user_can_manage_shift(self.request.user, shift):
+        if user_can_manage_shifts_in_venue(self.request.user, shift.venue):
             # Save the order as it was passed to the API as the user has permission to save orders for all users in
             # the shift.
             order = serializer.save(shift=shift, user=self.request.user)
@@ -117,7 +116,7 @@ class OrderRetrieveUpdateDestroyAPIView(LoggedRetrieveUpdateDestroyAPIView):
     def put(self, request, *args, **kwargs):
         """PUT is only available for shift managers."""
         shift = self.kwargs.get("shift")
-        if user_can_manage_shift(request.user, shift):
+        if user_can_manage_shifts_in_venue(request.user, shift.venue):
             return super().put(request, *args, **kwargs)
         else:
             self.permission_denied(request)
@@ -126,7 +125,7 @@ class OrderRetrieveUpdateDestroyAPIView(LoggedRetrieveUpdateDestroyAPIView):
         """Update an order."""
         instance = self.get_object()
         shift = self.kwargs.get("shift")
-        if user_can_manage_shift(self.request.user, shift):
+        if user_can_manage_shifts_in_venue(request.user, shift.venue):
             # All changeable order fields can be changed by the user.
             return super().update(request, *args, **kwargs)
         else:
@@ -155,7 +154,7 @@ class OrderRetrieveUpdateDestroyAPIView(LoggedRetrieveUpdateDestroyAPIView):
     def destroy(self, request, *args, **kwargs):
         """Destroy an order."""
         shift = kwargs.get("shift")
-        if not user_can_manage_shift(request.user, shift):
+        if not user_can_manage_shifts_in_venue(request.user, shift.venue):
             self.permission_denied(request)
         return super().destroy(request, *args, **kwargs)
 
@@ -230,7 +229,7 @@ class ShiftRetrieveUpdateAPIView(LoggedRetrieveUpdateAPIView):
     def update(self, request, *args, **kwargs):
         """Update a shift."""
         shift = get_object_or_404(Shift, pk=kwargs.get("pk"))
-        if not user_can_manage_shift(request.user, shift):
+        if not user_can_manage_shifts_in_venue(request.user, shift.venue):
             self.permission_denied(request)
         return super().update(request, *args, **kwargs)
 
@@ -282,7 +281,7 @@ class ShiftScannerAPIView(APIView):
         except Product.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        if not user_can_manage_shift(request.user, shift):
+        if not user_can_manage_shifts_in_venue(request.user, shift.venue):
             raise PermissionDenied
 
         order = add_scanned_order(product, shift)

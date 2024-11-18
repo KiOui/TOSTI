@@ -13,11 +13,6 @@ from users.models import User
 logger = logging.getLogger(__name__)
 
 
-def user_can_manage_shift(user, shift):
-    """Return if the user can manage this shift."""
-    return user_can_manage_shifts_in_venue(user, shift.venue) and user in shift.assignees.all()
-
-
 def user_can_manage_shifts_in_venue(user, venue):
     """Return if the user can manage this shift."""
     return user.has_perm("orders.can_manage_shift_in_venue", venue)
