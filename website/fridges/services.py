@@ -8,6 +8,8 @@ from fridges.models import AccessLog
 
 def user_is_blacklisted(user, fridge):
     """Return whether a user is blacklisted from opening a fridge."""
+    if not hasattr(fridge, "blacklist"):
+        return False
     return fridge.blacklist.filter(user=user).exists()
 
 
