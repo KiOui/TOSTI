@@ -293,5 +293,6 @@ def refresh_cached_products():
     client = get_silvasoft_client()
     products = SilvasoftClient.get_all(client.list_products)
     CachedProduct.objects.all().delete()
-    for products in products:
-        CachedProduct.objects.create(name=products["Name"], product_number=products["ArticleNumber"])
+    for product in products:
+        if product["ArticleNumber"] is not None:
+            CachedProduct.objects.create(name=product["Name"], product_number=product["ArticleNumber"])

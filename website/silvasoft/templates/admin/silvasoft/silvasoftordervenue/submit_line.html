@@ -1,0 +1,25 @@
+{% extends 'admin/submit_line.html' %}
+{% load i18n admin_urls %}
+<div class="submit-row">
+{% block submit-row %}
+{% if show_save %}<input type="submit" value="Save" class="default" name="_save">{% endif %}
+{% if show_delete_link and original %}
+    {% url opts|admin_urlname:'delete' original.pk|admin_urlquote as delete_url %}
+    <p class="deletelink-box"><a href="{% add_preserved_filters delete_url %}" class="deletelink">Delete</a></p>
+{% endif %}
+<input type="submit" value="Refresh relations" name="_refreshrelations" id="refresh-relations">
+<script>
+    const refresh_button = document.getElementById('refresh-relations');
+    refresh_button.onclick = function(event) {
+        if (!confirm("Are you sure you want to refresh cached Silvasoft relations? All information entered will " +
+            "be lost.")) {
+            event.preventDefault();
+        }
+    }
+</script>
+{% if show_save_as_new %}<input type="submit" value="Save as new" name="_saveasnew">{% endif %}
+{% if show_save_and_add_another %}<input type="submit" value="Save and add another" name="_addanother">{% endif %}
+{% if show_save_and_continue %}<input type="submit" value="{% if can_change %}Save and continue editing{% else %}Save and view{% endif %}" name="_continue">{% endif %}
+{% if show_close %}<a href="{% url opts|admin_urlname:'changelist' %}" class="closelink">Close</a>{% endif %}
+{% endblock %}
+</div>
