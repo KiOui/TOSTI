@@ -50,7 +50,6 @@ class RequestReservationView(FormView):
 
     def form_valid(self, form):
         """Save the form and add User data."""
-
         instance = form.save(commit=False)
         instance.user_created = self.request.user
 
