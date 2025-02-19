@@ -9,11 +9,13 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic import TemplateView, FormView, ListView, DeleteView, UpdateView
 from django_ical.views import ICalFeed
+from django.core.exceptions import PermissionDenied
 
 from tosti.utils import log_action
 from venues import services
 from venues.forms import ReservationForm, ReservationUpdateForm, ReservationDisabledForm
 from venues.models import Reservation
+from qualifications.models import BasicBorrelBrevet
 
 
 class VenueCalendarView(TemplateView):
@@ -48,8 +50,16 @@ class RequestReservationView(FormView):
 
     def form_valid(self, form):
         """Save the form and add User data."""
+
         instance = form.save(commit=False)
         instance.user_created = self.request.user
+
+        if (
+            not BasicBorrelBrevet.objects.filter(user=self.request.user).exists()
+            and instance.venue.requires_basic_borrel_brevet
+        ):
+            raise PermissionDenied
+
         instance.save()
         log_action(self.request.user, instance, ADDITION, "Created reservation via website.")
         messages.success(self.request, "Venue reservation request added successfully.")
