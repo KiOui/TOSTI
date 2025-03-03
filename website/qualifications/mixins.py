@@ -1,6 +1,6 @@
 from django.contrib.auth.mixins import AccessMixin
 
-from borrel.models import BasicBorrelBrevet
+from qualifications.models import BasicBorrelBrevet
 
 
 class BasicBorrelBrevetRequiredMixin(AccessMixin):

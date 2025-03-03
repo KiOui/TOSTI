@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     "rangefilter",
     "announcements",
     "users",
+    "qualifications",
     "venues",
     "associations",
     "borrel",

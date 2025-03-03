@@ -2,19 +2,6 @@ from django.apps import AppConfig
 from django.urls import reverse
 
 
-def user_has_borrel_brevet_lazy(request):
-    """Check if user has borrel brevet (but only import the model on execution)."""
-    from borrel.models import BasicBorrelBrevet
-
-    try:
-        _ = request.user.basic_borrel_brevet
-    except BasicBorrelBrevet.DoesNotExist:
-        return False
-    except AttributeError:  # for AnonymousUser
-        return False
-    return True
-
-
 class BorrelConfig(AppConfig):
     """Borrel Config."""
 
@@ -27,6 +14,8 @@ class BorrelConfig(AppConfig):
 
     def new_reservation_buttons(self, request):
         """Register new reservation buttons."""
+        from qualifications.apps import user_has_borrel_brevet_lazy
+
         if user_has_borrel_brevet_lazy(request):
             return [
                 {
@@ -39,6 +28,8 @@ class BorrelConfig(AppConfig):
 
     def menu_items(self, request):
         """Register menu items."""
+        from qualifications.apps import user_has_borrel_brevet_lazy
+
         if not request.user.is_authenticated or not user_has_borrel_brevet_lazy(request):
             return []
 

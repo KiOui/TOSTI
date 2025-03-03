@@ -25,7 +25,7 @@ from borrel.forms import (
     ReservationItemDisabledForm,
     BorrelReservationDisabledForm,
 )
-from borrel.mixins import BasicBorrelBrevetRequiredMixin
+from qualifications.mixins import BasicBorrelBrevetRequiredMixin
 from borrel.models import Product, BorrelReservation, ReservationItem, ProductCategory
 from borrel.services import (
     send_borrel_reservation_request_email,
