@@ -4,6 +4,7 @@ from cron.core import CronJobBase
 class DjangoCronJobLock:
     """
     The lock class to use in runcrons management command.
+
     Intended usage is
     with CacheLock(cron_class, silent):
         do work
@@ -16,20 +17,12 @@ class DjangoCronJobLock:
     """
 
     class LockFailedException(Exception):
+        """Exception thrown when the lock failed to acquire."""
+
         pass
 
     def __init__(self, cron_class: type(CronJobBase), silent: bool, *args, **kwargs):
-        """
-        This method inits the class.
-        You should take care of getting all
-        necessary thing from input parameters here
-        Base class processes
-            * self.job_name
-            * self.job_code
-            * self.parallel
-            * self.silent
-        for you. The rest is backend-specific.
-        """
+        """Initialize the lock."""
         self.job_name: str = ".".join([cron_class.__module__, cron_class.__name__])
         self.job_code: str = cron_class.code
         self.parallel: bool = getattr(cron_class, "ALLOW_PARALLEL_RUNS", False)
@@ -37,19 +30,20 @@ class DjangoCronJobLock:
 
     def lock(self):
         """
-        This method called to acquire lock. Typically. it will
-        be called from __enter__ method.
-        Return True is success,
-        False if fail.
+        Acquire the lock.
+
+        This method is typically called from the __enter__ method. Return True on success, False if the lock could not
+        be acquired.
+
         Here you can optionally call self.notice_lock_failed().
         """
         raise NotImplementedError("You have to implement lock(self) method for your class")
 
     def release(self):
         """
-        This method called to release lock.
-        Typically called from __exit__ method.
-        No need to return anything currently.
+        Release the lock.
+
+        Typically called from __exit__ method. There is no need to return anything.
         """
         raise NotImplementedError("You have to implement release(self) method for your class")
 

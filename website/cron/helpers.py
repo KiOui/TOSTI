@@ -8,7 +8,7 @@ from django.template.defaultfilters import pluralize
 
 def humanize_duration(duration: timedelta) -> str:
     """
-    Returns a humanized string representing time difference.
+    Get a humanized string representing time difference.
 
     For example: 2 days 1 hour 25 minutes 10 seconds.
     """
@@ -34,7 +34,7 @@ def humanize_duration(duration: timedelta) -> str:
 
 
 def get_class(kls):
-    """Converts a string to a class."""
+    """Convert a string to a class."""
     parts = kls.split(".")
 
     if len(parts) == 1:

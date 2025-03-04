@@ -25,7 +25,7 @@ class CacheLock(DjangoCronJobLock):
         self.timeout = self.get_cache_timeout(cron_class)
 
     def lock(self) -> bool:
-        """This method sets a cache variable to mark current job as "already running"."""
+        """Set a cache variable to mark current job as "already running"."""
         if self.cache.get(self.lock_name):
             return False
         else:
@@ -46,7 +46,7 @@ class CacheLock(DjangoCronJobLock):
 
     @staticmethod
     def get_cache_by_name():
-        """Gets a specified cache (or the `default` cache if CRON_CACHE is not set)."""
+        """Get a specified cache (or the `default` cache if CRON_CACHE is not set)."""
         default_cache = "default"
         cache_name = getattr(settings, "DJANGO_CRON_CACHE", default_cache)
 
@@ -63,6 +63,7 @@ class CacheLock(DjangoCronJobLock):
         return getattr(cron_class, "DJANGO_CRON_LOCK_TIME", self.DEFAULT_LOCK_TIME)
 
     def get_running_lock_date(self) -> datetime:
+        """Retrieve the running lock date."""
         date = self.cache.get(self.lock_name)
         if date and not timezone.is_aware(date):
             tz = timezone.get_current_timezone()

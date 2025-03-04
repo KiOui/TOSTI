@@ -39,11 +39,13 @@ class Schedule:
 
 class CronJobBase(abc.ABC):
     """
+    Base class of a cron job.
+
     Sub-classes should have the following properties:
     + code - This should be a code specific to the cron being run. Eg. 'general.stats' etc.
     + schedule
 
-    Following functions:
+    And the following functions:
     + do - This is the actual business logic to be run at the given schedule
     """
 
@@ -76,10 +78,12 @@ class CronJobBase(abc.ABC):
 
 class CronJobManager:
     """
+    Manager to run cron jobs.
+
     A manager instance should be created per cron job to be run.
-    Does all the logger tracking etc. for it.
-    Used as a context manager via 'with' statement to ensure
-    proper logger in cases of job failure.
+
+    Does all the logger tracking etc. for it. Used as a context manager via 'with' statement to ensure proper logger in
+    cases of job failure.
     """
 
     def __init__(
@@ -220,6 +224,7 @@ class CronJobManager:
         return self
 
     def __exit__(self, ex_type, ex_value, ex_traceback):
+        """Log if exit with exception."""
         if ex_type is None:
             return True
 

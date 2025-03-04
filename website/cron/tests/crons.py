@@ -48,6 +48,8 @@ class Test5minsWithToleranceCronJob(CronJobBase):
 
 
 class TestRunAtTimesCronJob(CronJobBase):
+    """Cron job that runs at 0:00 and 0:05."""
+
     code = "test_run_at_times"
     schedule = Schedule(run_at_times=["0:00", "0:05"])
 
@@ -57,6 +59,8 @@ class TestRunAtTimesCronJob(CronJobBase):
 
 
 class Wait3secCronJob(CronJobBase):
+    """Cron job that sleeps 3 seconds."""
+
     code = "test_wait_3_seconds"
     schedule = Schedule(run_every_mins=5)
 
@@ -66,6 +70,8 @@ class Wait3secCronJob(CronJobBase):
 
 
 class RunOnWeekendCronJob(CronJobBase):
+    """Cron job that only runs on the weekend."""
+
     code = "run_on_weekend"
     schedule = Schedule(
         run_weekly_on_days=[5, 6],
@@ -88,6 +94,8 @@ class NoCodeCronJob(CronJobBase):
 
 
 class RunOnMonthDaysCronJob(CronJobBase):
+    """Cron job that runs on some days in the month."""
+
     code = "run_on_month_days"
     schedule = Schedule(
         run_monthly_on_days=[1, 10, 20],
@@ -97,13 +105,17 @@ class RunOnMonthDaysCronJob(CronJobBase):
     )
 
     def do(self):
+        """Do nothing."""
         pass
 
 
 class RunEveryMinuteAndRemoveOldLogs(CronJobBase):
+    """Cron job that runs every minute and removes old logs."""
+
     code = "run_and_remove_old_logs"
     schedule = Schedule(run_every_mins=1)
     remove_successful_cron_logs = True
 
     def do(self):
+        """Do nothing."""
         pass

@@ -40,7 +40,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        """Iterates over all the CRON_CLASSES (or if passed in as a commandline argument) and runs them."""
+        """Iterate over all the CRON_CLASSES (or if passed in as a commandline argument) and run them."""
         if not options["silent"]:
             self.stdout.write("Running Crons\n")
             self.stdout.write("{0}\n".format("=" * 40))
@@ -75,7 +75,7 @@ class Command(BaseCommand):
 
 def run_cron_with_cache_check(cron_class, force=False, silent=False, dry_run=False, stdout=None):
     """
-    Checks the cache and runs the cron or not.
+    Check the cache and run the cron or not.
 
     :param cron_class: cron class to run.
     :param force: run jobs even if not scheduled.
@@ -96,7 +96,7 @@ def run_cron_with_cache_check(cron_class, force=False, silent=False, dry_run=Fal
 
 
 def clear_old_log_entries():
-    """Removes older log entries, if the appropriate setting has been set."""
+    """Remove older log entries, if the appropriate setting has been set."""
     if hasattr(settings, "DJANGO_CRON_DELETE_LOGS_OLDER_THAN"):
         delta = timedelta(days=settings.DJANGO_CRON_DELETE_LOGS_OLDER_THAN)
         CronJobLog.objects.filter(end_time__lt=timezone.now() - delta).delete()

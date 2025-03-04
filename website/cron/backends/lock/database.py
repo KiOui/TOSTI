@@ -4,10 +4,7 @@ from django.db import transaction
 
 
 class DatabaseLock(DjangoCronJobLock):
-    """
-    Locking cron jobs with database. Its good when you have not parallel run and want to make sure 2 jobs won't be
-    fired at the same time - which may happened when job execution is longer that job interval.
-    """
+    """Lock that uses the database."""
 
     @transaction.atomic
     def lock(self):
