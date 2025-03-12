@@ -1,7 +1,7 @@
 from datetime import timedelta
 
 from django.utils import timezone
-from django_cron import CronJobBase, Schedule
+from cron.core import CronJobBase, Schedule
 
 from yivi import models
 
