@@ -1,5 +1,5 @@
 from constance import config
-from django_cron import CronJobBase, Schedule
+from cron.core import CronJobBase, Schedule
 
 from thaliedje.models import SpotifyPlayer
 
@@ -28,7 +28,7 @@ class StartMusicCronJob(CronJobBase):
     RUN_AT_TIMES = [config.THALIEDJE_START_PLAYERS_AT]
     RETRY_AFTER_FAILURE_MINS = 1
     schedule = Schedule(
-        run_at_times=RUN_AT_TIMES, retry_after_failure_mins=RETRY_AFTER_FAILURE_MINS, run_on_days=WEEKDAYS
+        run_at_times=RUN_AT_TIMES, retry_after_failure_mins=RETRY_AFTER_FAILURE_MINS, run_weekly_on_days=WEEKDAYS
     )
     code = "thaliedje.startmusic"
 
