@@ -8,31 +8,12 @@ from import_export.admin import ExportMixin, ImportExportModelAdmin
 from rangefilter.filters import DateRangeFilter
 
 from .models import (
-    BasicBorrelBrevet,
     BorrelReservation,
     Product,
     ProductCategory,
     ReservationItem,
 )
-from .resources import BasicBorrelBrevetResource, ProductResource, BorrelReservationResource
-
-
-@admin.register(BasicBorrelBrevet)
-class BasicBorrelBrevetAdmin(ExportMixin, admin.ModelAdmin):
-    """Custom admin for basic borrel brevet."""
-
-    resource_class = BasicBorrelBrevetResource
-    list_display = ["user", "registered_on"]
-    search_fields = [
-        "user__username",
-        "user__first_name",
-        "user__last_name",
-        "user__full_name",
-        "user__override_display_name",
-        "user__override_short_name",
-    ]
-    readonly_fields = ["registered_on"]
-    autocomplete_fields = ["user"]
+from .resources import ProductResource, BorrelReservationResource
 
 
 @admin.register(Product)
