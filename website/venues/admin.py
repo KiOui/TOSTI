@@ -11,7 +11,7 @@ from venues.models import Venue, Reservation
 class VenueAdmin(admin.ModelAdmin):
     """Custom admin for venues."""
 
-    list_display = ["name", "slug", "active", "can_be_reserved"]
+    list_display = ["name", "slug", "active", "can_be_reserved", "requires_basic_borrel_brevet"]
     search_fields = ["name"]
     prepopulated_fields = {"slug": ("name",)}
 
