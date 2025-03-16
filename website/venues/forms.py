@@ -4,6 +4,8 @@ from django.db.models import Q
 from django.forms import DateTimeInput
 from django.utils import timezone
 
+from qualifications.models import BasicBorrelBrevet
+
 from .models import Reservation
 from .models import Venue
 
@@ -16,7 +18,13 @@ class ReservationForm(forms.ModelForm):
         request = kwargs.pop("request", None)
         super(ReservationForm, self).__init__(*args, **kwargs)
 
-        self.fields["venue"].queryset = Venue.objects.filter(can_be_reserved=True)
+        if BasicBorrelBrevet.objects.filter(user=request.user).exists():
+            self.fields["venue"].queryset = Venue.objects.filter(can_be_reserved=True)
+        else:
+            self.fields["venue"].queryset = Venue.objects.filter(
+                can_be_reserved=True, requires_basic_borrel_brevet=False
+            )
+
         if request is not None and request.user.is_authenticated and request.user.association is not None:
             self.fields["association"].initial = request.user.association
 
@@ -40,7 +48,7 @@ class ReservationForm(forms.ModelForm):
         """
         Clean data.
 
-        Check whether there is no overlapping Reservation.
+        Check whether there is no overlapping Reservation and that user has BBB if required.
         """
         super(ReservationForm, self).clean()
         venue = self.cleaned_data.get("venue", None)

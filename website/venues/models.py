@@ -44,6 +44,7 @@ class Venue(models.Model):
         max_length=50, help_text="Color of reservations shown in calendar.", null=True, blank=True
     )
     can_be_reserved = models.BooleanField(default=True)
+    requires_basic_borrel_brevet = models.BooleanField(default=True)
     automatically_accept_first_reservation = models.BooleanField(
         default=False,
         help_text="If enabled, a reservation placed on this venue will be automatically accepted if it does not "
