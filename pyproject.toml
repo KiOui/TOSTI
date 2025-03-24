@@ -11,7 +11,7 @@ package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.11"
-django = "^5.0.8"
+django = "^5.1"
 Pillow = "^10.4.0"
 django-admin-autocomplete-filter = "^0.7.1"
 django-import-export = "^3.3.7"
@@ -34,7 +34,6 @@ django-tinymce = "^4.1.0"
 bleach = { extras = ["css"], version = "^5.0.1" }
 django-admin-rangefilter = "^0.12.1"
 django-queryable-properties = "^1.9.2"
-django-cron = "^0.6.0" # No official support for Django 5.0.
 djangosaml2 = "^1.9.3" # No official support for Django 5.0.
 django-model-utils = "^4.4.0"
 inflection = "^0.5.1"
