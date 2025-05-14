@@ -124,22 +124,10 @@ SAML_CONFIG = {
             "endpoints": {
                 "assertion_consumer_service": [
                     (f"{os.environ.get('SAML_BASE_URL')}/saml/acs/", saml2.BINDING_HTTP_POST),
-                    (
-                        f"{os.environ.get('SAML_BASE_URL')}/sso/science/acs/",
-                        saml2.BINDING_HTTP_POST,
-                    ),  # Legacy, remove when possible
                 ],
                 "single_logout_service": [
                     (f"{os.environ.get('SAML_BASE_URL')}/saml/ls/", saml2.BINDING_HTTP_REDIRECT),
                     (f"{os.environ.get('SAML_BASE_URL')}/saml/ls/post", saml2.BINDING_HTTP_POST),
-                    (
-                        f"{os.environ.get('SAML_BASE_URL')}/sso/science/slo/",
-                        saml2.BINDING_HTTP_REDIRECT,
-                    ),  # Legacy, remove when possible
-                    (
-                        f"{os.environ.get('SAML_BASE_URL')}/sso/science/slo/post",
-                        saml2.BINDING_HTTP_POST,
-                    ),  # Legacy, remove when possible
                 ],
             },
             "signing_algorithm": xmldsig.SIG_RSA_SHA256,
