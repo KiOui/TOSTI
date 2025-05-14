@@ -51,7 +51,7 @@ services:
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
       DJANGO_ALLOWED_HOSTS: tosti.science.ru.nl,new.tosti.science.ru.nl
       SENTRY_DSN: ${SENTRY_DSN}
-      YIVI_SERVER_URL: https://yivi.tosti.science.ru.nl
+      YIVI_SERVER_URL: http://yivi:80
       YIVI_SERVER_TOKEN: ${YIVI_TOKEN}
       SAML_ENTITY_ID: tosti.science.ru.nl
       SAML_BASE_URL: https://tosti.science.ru.nl
