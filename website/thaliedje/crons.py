@@ -19,7 +19,11 @@ class StopMusicCronJob(CronJobBase):
     def do(self):
         """Stop the music."""
         for player in SpotifyPlayer.objects.all():
-            player.pause()
+            try:
+                player.pause()
+            except Exception:
+                # Ignore errors when stopping the music
+                pass
 
 
 class StartMusicCronJob(CronJobBase):
@@ -38,10 +42,14 @@ class StartMusicCronJob(CronJobBase):
             return
 
         for player in SpotifyPlayer.objects.all():
-            player.repeat = "context"
-            player.shuffle = True
+            try:
+                player.repeat = "context"
+                player.shuffle = True
 
-            if config.THALIEDJE_START_PLAYER_URI is not None and config.THALIEDJE_START_PLAYER_URI != "":
-                player.start_playing(config.THALIEDJE_START_PLAYER_URI)
-            else:
-                player.start()
+                if config.THALIEDJE_START_PLAYER_URI is not None and config.THALIEDJE_START_PLAYER_URI != "":
+                    player.start_playing(config.THALIEDJE_START_PLAYER_URI)
+                else:
+                    player.start()
+            except Exception:
+                # Ignore errors when starting the music
+                pass
