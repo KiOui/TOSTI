@@ -77,13 +77,13 @@ class User(AbstractUser):
         """Update the user's first and last name based on their display name."""
         if self.full_name and not self.first_name and not self.last_name:
             first_name = self.full_name[
-                self.full_name.find("(") + 1 : self.full_name.find(")")
-            ]  # noqa: E203
+                (self.full_name.find("(") + 1) : self.full_name.find(")")  # noqa: E203
+            ]
             last_name = self.full_name.split(",")[0]
 
             insert = self.full_name[
-                self.full_name.rfind(".") + 1 : self.full_name.find("(")
-            ].strip()  # noqa: E203
+                (self.full_name.rfind(".") + 1) : self.full_name.find("(")  # noqa: E203
+            ].strip()
             if len(insert) > 0:
                 last_name = insert + " " + last_name
 

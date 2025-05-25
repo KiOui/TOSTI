@@ -66,7 +66,7 @@ website/
 ## 🛠️ Development Setup
 
 ### Prerequisites
-- Python 3.11+ (recommended to use [pyenv](https://github.com/pyenv/pyenv))
+- Python 3.13+ (recommended to use [pyenv](https://github.com/pyenv/pyenv))
 - [Poetry](https://python-poetry.org) for dependency management
 - Git
 
@@ -85,7 +85,7 @@ website/
 
 3. **Set up Python environment**
    ```bash
-   poetry env use python3.11
+   poetry env use python3.13
    poetry install
    ```
 

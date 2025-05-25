@@ -10,7 +10,7 @@ license = "MIT"
 package-mode = false
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.13"
 django = "^5.1"
 Pillow = "^10.4.0"
 django-admin-autocomplete-filter = "^0.7.1"
