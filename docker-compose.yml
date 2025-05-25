@@ -29,6 +29,20 @@ services:
       timeout: 5s
       retries: 5
 
+  db-migrator:
+    image: ghcr.io/jobdoesburg/pg-migrator:latest
+    restart: no
+    networks:
+      - db
+    depends_on:
+      - database
+    volumes:
+      - pg-data:/var/lib/postgresql/old:ro
+      - pg-data-16:/var/lib/postgresql/new:rw
+    environment:
+      OLD_PG_VERSION: 13
+      NEW_PG_VERSION: 16
+
   web:
     image: ghcr.io/kioui/tosti:latest
     restart: unless-stopped
