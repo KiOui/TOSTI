@@ -36,13 +36,13 @@ services:
       - db
     depends_on:
       - database
-    user: "70:70"
     volumes:
       - pg-data:/var/lib/postgresql/old:ro
       - pg-data-16:/var/lib/postgresql/new:rw
     environment:
       OLD_PG_VERSION: 13
       NEW_PG_VERSION: 16
+      MIGRATION_UID: 70
 
   web:
     image: ghcr.io/kioui/tosti:latest
