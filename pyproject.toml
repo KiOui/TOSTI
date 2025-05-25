@@ -37,6 +37,8 @@ django-queryable-properties = "^1.9.2"
 djangosaml2 = "^1.9.3" # No official support for Django 5.0.
 django-model-utils = "^4.4.0"
 inflection = "^0.5.1"
+pyopenssl = ">=22.0.0"
+cryptography = ">=38.0.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.3.0"
