@@ -19,9 +19,9 @@ def render_order_now_button(context, shift=None, venue=None):
 def render_order_now_buttons_active_shifts(context, shifts=None):
     """Render order now buttons for all active shifts."""
     if shifts is None:
-        shifts = Shift.objects.filter(start__lte=timezone.now(), end__gte=timezone.now(), finalized=False).order_by(
-            "start", "venue__venue__name"
-        )
+        shifts = Shift.objects.filter(
+            start__lte=timezone.now(), end__gte=timezone.now(), finalized=False
+        ).order_by("start", "venue__venue__name")
 
     buttons = [{"shift": x} for x in shifts]
 
@@ -31,9 +31,9 @@ def render_order_now_buttons_active_shifts(context, shifts=None):
 @register.inclusion_tag("orders/order_now_buttons_shifts.html", takes_context=True)
 def render_order_now_buttons_can_order(context):
     """Render order now buttons for all shifts accepting orders."""
-    shifts = Shift.objects.filter(start__lte=timezone.now(), end__gte=timezone.now(), can_order=True).order_by(
-        "start", "venue__venue__name"
-    )
+    shifts = Shift.objects.filter(
+        start__lte=timezone.now(), end__gte=timezone.now(), can_order=True
+    ).order_by("start", "venue__venue__name")
 
     buttons = [{"shift": x} for x in shifts]
 

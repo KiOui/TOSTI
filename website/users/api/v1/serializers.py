@@ -23,4 +23,12 @@ class UserSerializer(serializers.ModelSerializer):
             "short_name",
             "association",
         ]
-        read_only_fields = ["id", "first_name", "last_name", "full_name", "display_name", "short_name", "association"]
+        read_only_fields = [
+            "id",
+            "first_name",
+            "last_name",
+            "full_name",
+            "display_name",
+            "short_name",
+            "association",
+        ]

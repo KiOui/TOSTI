@@ -17,7 +17,10 @@ from tosti.utils import log_action
 from venues.models import Reservation
 from .forms import ThaliedjeControlEventForm
 from .models import SpotifyQueueItem, ThaliedjeControlEvent
-from .services import generate_most_requested_songs, generate_users_with_most_song_requests
+from .services import (
+    generate_most_requested_songs,
+    generate_users_with_most_song_requests,
+)
 
 
 class IndexView(TemplateView):
@@ -41,7 +44,10 @@ class NowPlayingView(TemplateView):
         venue_reservation = player.venue.reservations.filter(
             accepted=True, start__lte=timezone.now(), end__gte=timezone.now()
         ).first()
-        if venue_reservation and self.request.user in venue_reservation.users_access.all():
+        if (
+            venue_reservation
+            and self.request.user in venue_reservation.users_access.all()
+        ):
             context["current_venue_reservation"] = venue_reservation
 
         control_event = player.active_control_event
@@ -50,7 +56,9 @@ class NowPlayingView(TemplateView):
 
         if self.request.user.is_authenticated:
             context["can_request_song"] = player.can_request_song(self.request.user)
-            context["can_request_playlist"] = player.can_request_playlist(self.request.user)
+            context["can_request_playlist"] = player.can_request_playlist(
+                self.request.user
+            )
             context["can_control"] = player.can_control(self.request.user)
         else:
             context["can_request_song"] = False
@@ -66,7 +74,9 @@ class AccountHistoryTabView(LoginRequiredMixin, TemplateView):
 
     def get(self, request, **kwargs):
         """GET request for history tab."""
-        song_requests = SpotifyQueueItem.objects.filter(requested_by=request.user).order_by("-added")
+        song_requests = SpotifyQueueItem.objects.filter(
+            requested_by=request.user
+        ).order_by("-added")
         page = request.GET.get("page", 1)
         paginator = Paginator(song_requests, per_page=50)
         rendered_tab = render_to_string(
@@ -98,7 +108,10 @@ class ThaliedjeControlEventView(UpdateView):
 
     def dispatch(self, request, *args, **kwargs):
         """Dispatch the request to the view."""
-        if not request.user.is_authenticated or not self.get_object().admins.filter(pk=request.user.pk).exists():
+        if (
+            not request.user.is_authenticated
+            or not self.get_object().admins.filter(pk=request.user.pk).exists()
+        ):
             messages.error(request, "You don't have access to this page.")
             return redirect(reverse("index"))
         return super().dispatch(request, *args, **kwargs)
@@ -117,7 +130,9 @@ class ThaliedjeControlEventJoinView(View):
             return redirect(reverse("index"))
 
         if not event.active:
-            messages.add_message(self.request, messages.INFO, "This event is not active.")
+            messages.add_message(
+                self.request, messages.INFO, "This event is not active."
+            )
             return redirect(reverse("index"))
 
         if self.request.user not in event.selected_users.all():
@@ -125,10 +140,14 @@ class ThaliedjeControlEventJoinView(View):
             event.save()
             log_action(self.request.user, event, CHANGE, "Joined event via website.")
             messages.add_message(
-                self.request, messages.INFO, f"You now have access to {event.player} during {event.event.title}."
+                self.request,
+                messages.INFO,
+                f"You now have access to {event.player} during {event.event.title}.",
             )
 
-        return redirect(reverse("thaliedje:now_playing", kwargs={"player": event.player}))
+        return redirect(
+            reverse("thaliedje:now_playing", kwargs={"player": event.player})
+        )
 
 
 @method_decorator(login_required, name="dispatch")
@@ -141,14 +160,22 @@ class ThaliedjeControlEventCreateView(View):
 
         try:
             reservation = Reservation.objects.filter(
-                accepted=True, start__lte=timezone.now(), end__gte=timezone.now(), venue__player__isnull=False
+                accepted=True,
+                start__lte=timezone.now(),
+                end__gte=timezone.now(),
+                venue__player__isnull=False,
             ).get(pk=reservation_id)
         except Reservation.DoesNotExist:
             messages.add_message(self.request, messages.INFO, "Invalid event.")
             return redirect(reverse("index"))
 
-        if not self.request.user.is_authenticated or self.request.user not in reservation.users_access.all():
-            messages.add_message(self.request, messages.INFO, "You don't have access to this event.")
+        if (
+            not self.request.user.is_authenticated
+            or self.request.user not in reservation.users_access.all()
+        ):
+            messages.add_message(
+                self.request, messages.INFO, "You don't have access to this event."
+            )
             return redirect(reverse("index"))
 
         event = ThaliedjeControlEvent.objects.create(

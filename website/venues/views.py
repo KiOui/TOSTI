@@ -7,7 +7,13 @@ from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views import View
-from django.views.generic import TemplateView, FormView, ListView, DeleteView, UpdateView
+from django.views.generic import (
+    TemplateView,
+    FormView,
+    ListView,
+    DeleteView,
+    UpdateView,
+)
 from django_ical.views import ICalFeed
 
 from tosti.utils import log_action
@@ -29,7 +35,9 @@ class VenueCalendarView(TemplateView):
                 app_new_reservation_buttons = app.new_reservation_buttons(request)
                 new_reservation_buttons += app_new_reservation_buttons
 
-        new_reservation_buttons = sorted(new_reservation_buttons, key=lambda x: x["order"])
+        new_reservation_buttons = sorted(
+            new_reservation_buttons, key=lambda x: x["order"]
+        )
         return render(request, self.template_name, {"buttons": new_reservation_buttons})
 
 
@@ -51,7 +59,9 @@ class RequestReservationView(FormView):
         instance = form.save(commit=False)
         instance.user_created = self.request.user
         instance.save()
-        log_action(self.request.user, instance, ADDITION, "Created reservation via website.")
+        log_action(
+            self.request.user, instance, ADDITION, "Created reservation via website."
+        )
         messages.success(self.request, "Venue reservation request added successfully.")
         services.send_reservation_request_email(instance)
         return redirect(reverse("venues:list_reservations"))
@@ -69,7 +79,11 @@ class ListReservationsView(ListView):
         """Only list reservations you have access to."""
         if not self.request.user.is_authenticated:
             return super().get_queryset().none()
-        return super().get_queryset().filter(pk__in=self.request.user.reservations_access.values("pk"))
+        return (
+            super()
+            .get_queryset()
+            .filter(pk__in=self.request.user.reservations_access.values("pk"))
+        )
 
 
 class ReservationUpdateView(UpdateView):
@@ -82,7 +96,11 @@ class ReservationUpdateView(UpdateView):
         """Only allow reservations you have access to."""
         if not self.request.user.is_authenticated:
             return super().get_queryset().none()
-        return super().get_queryset().filter(pk__in=self.request.user.reservations_access.values("pk"))
+        return (
+            super()
+            .get_queryset()
+            .filter(pk__in=self.request.user.reservations_access.values("pk"))
+        )
 
     def get_form_class(self):
         """Determine which form class to use for the main form."""
@@ -98,7 +116,11 @@ class ReservationUpdateView(UpdateView):
     def post(self, request, *args, **kwargs):
         """Check if this reservation can be changed."""
         if not self.get_object().can_be_changed:
-            messages.add_message(self.request, messages.ERROR, "You cannot change this reservation anymore.")
+            messages.add_message(
+                self.request,
+                messages.ERROR,
+                "You cannot change this reservation anymore.",
+            )
             return redirect(self.get_success_url())
         return super().post(request, *args, **kwargs)
 
@@ -108,7 +130,9 @@ class ReservationUpdateView(UpdateView):
         obj.user_updated = self.request.user
         obj.save()
         log_action(self.request.user, obj, CHANGE, "Updated reservation via website.")
-        messages.add_message(self.request, messages.SUCCESS, "Your borrel reservation has been updated.")
+        messages.add_message(
+            self.request, messages.SUCCESS, "Your borrel reservation has been updated."
+        )
         return redirect(self.get_success_url())
 
 
@@ -123,20 +147,32 @@ class ReservationCancelView(DeleteView):
         """Only allow reservations you have access to."""
         if not self.request.user.is_authenticated:
             return super().get_queryset().none()
-        return super().get_queryset().filter(pk__in=self.request.user.reservations_access.values("pk"))
+        return (
+            super()
+            .get_queryset()
+            .filter(pk__in=self.request.user.reservations_access.values("pk"))
+        )
 
     def dispatch(self, request, *args, **kwargs):
         """Display a warning if the reservation cannot be cancelled."""
         if not self.get_object().can_be_changed:
-            messages.add_message(self.request, messages.ERROR, "You cannot cancel this reservation anymore.")
+            messages.add_message(
+                self.request,
+                messages.ERROR,
+                "You cannot cancel this reservation anymore.",
+            )
             return redirect(self.get_success_url())
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         """Delete the reservation."""
         obj = self.get_object()
-        log_action(self.request.user, obj, DELETION, "Cancelled reservation via website.")
-        messages.add_message(self.request, messages.SUCCESS, "Your reservation has been cancelled.")
+        log_action(
+            self.request.user, obj, DELETION, "Cancelled reservation via website."
+        )
+        messages.add_message(
+            self.request, messages.SUCCESS, "Your reservation has been cancelled."
+        )
         return super().form_valid(form)
 
 
@@ -155,10 +191,19 @@ class JoinReservationView(View):
         if self.request.user not in reservation.users_access.all():
             reservation.users_access.add(self.request.user)
             reservation.save()
-            log_action(self.request.user, reservation, CHANGE, "Joined reservation via website.")
-            messages.add_message(self.request, messages.INFO, "You now have access to this reservation.")
+            log_action(
+                self.request.user,
+                reservation,
+                CHANGE,
+                "Joined reservation via website.",
+            )
+            messages.add_message(
+                self.request, messages.INFO, "You now have access to this reservation."
+            )
 
-        return redirect(reverse("venues:view_reservation", kwargs={"pk": reservation.pk}))
+        return redirect(
+            reverse("venues:view_reservation", kwargs={"pk": reservation.pk})
+        )
 
 
 class ReservationFeed(ICalFeed):
@@ -216,7 +261,9 @@ class ReservationVenueFeed(ReservationFeed):
 
     def product_id(self, obj):
         """Get product ID."""
-        return f"-//{Site.objects.get_current().domain}//ReservationCalendar//{obj.name}"
+        return (
+            f"-//{Site.objects.get_current().domain}//ReservationCalendar//{obj.name}"
+        )
 
     def get_object(self, request, *args, **kwargs):
         """Get the object."""

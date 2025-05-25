@@ -10,7 +10,9 @@ class Fridge(models.Model):
 
     name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, unique=True)
-    venue = models.ForeignKey("venues.Venue", on_delete=models.PROTECT, null=True, blank=True)
+    venue = models.ForeignKey(
+        "venues.Venue", on_delete=models.PROTECT, null=True, blank=True
+    )
     is_active = models.BooleanField(
         default=True,
         help_text="If the fridge is active, it will be shown on the website and can be opened by users within the set "
@@ -18,7 +20,8 @@ class Fridge(models.Model):
         "whether it is active.",
     )
     unlock_for_how_long = models.DurationField(
-        default=timedelta(minutes=1), help_text="How long to unlock the fridge for by default (HH:MM:SS)."
+        default=timedelta(minutes=1),
+        help_text="How long to unlock the fridge for by default (HH:MM:SS).",
     )
 
     oauth_client = models.ForeignKey(
@@ -62,7 +65,9 @@ class Fridge(models.Model):
         current_time = timezone.now().astimezone()
         weekday = current_time.weekday()
         opening_hours = self.generalopeninghours_set.filter(
-            weekday=weekday, start_time__lte=current_time.time(), end_time__gte=current_time.time()
+            weekday=weekday,
+            start_time__lte=current_time.time(),
+            end_time__gte=current_time.time(),
         )
         return opening_hours
 
@@ -131,7 +136,9 @@ class GeneralOpeningHours(models.Model):
 
     def __str__(self):
         """Convert this object to string."""
-        return f"{self.DAY_CHOICES[self.weekday][1]} {self.start_time} - {self.end_time}"
+        return (
+            f"{self.DAY_CHOICES[self.weekday][1]} {self.start_time} - {self.end_time}"
+        )
 
     class Meta:
         """Meta class."""

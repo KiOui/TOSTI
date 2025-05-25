@@ -8,7 +8,11 @@ class BasicBorrelBrevet(models.Model):
     """Basic Borrel Brevet class."""
 
     user = models.OneToOneField(
-        User, blank=False, null=False, on_delete=models.CASCADE, related_name="basic_borrel_brevet"
+        User,
+        blank=False,
+        null=False,
+        on_delete=models.CASCADE,
+        related_name="basic_borrel_brevet",
     )
     registered_on = models.DateField(auto_now_add=True, blank=False, null=False)
 

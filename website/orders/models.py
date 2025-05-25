@@ -55,7 +55,9 @@ def get_default_start_time_shift():
     :return: the default start time of a shift
     """
     timezone = pytz.timezone(settings.TIME_ZONE)
-    return timezone.localize(datetime.now()).replace(hour=12, minute=15, second=0, microsecond=0)
+    return timezone.localize(datetime.now()).replace(
+        hour=12, minute=15, second=0, microsecond=0
+    )
 
 
 def get_default_end_time_shift():
@@ -65,7 +67,9 @@ def get_default_end_time_shift():
     :return: the default end time of a shift
     """
     timezone = pytz.timezone(settings.TIME_ZONE)
-    return timezone.localize(datetime.now()).replace(hour=13, minute=15, second=0, microsecond=0)
+    return timezone.localize(datetime.now()).replace(
+        hour=13, minute=15, second=0, microsecond=0
+    )
 
 
 def get_default_max_orders_total():
@@ -93,7 +97,10 @@ class OrderVenue(models.Model):
 
         permissions = [
             ("can_manage_shift_in_venue", "Can manage shifts in this venue"),
-            ("gets_prioritized_orders_in_venue", "Gets prioritized orders in this venue"),
+            (
+                "gets_prioritized_orders_in_venue",
+                "Gets prioritized orders in this venue",
+            ),
         ]
 
     def __str__(self):
@@ -109,7 +116,9 @@ class Product(models.Model):
         max_length=20,
         default="",
         blank=True,
-        help_text=("Font-awesome icon name that is used for quick display of the product type."),
+        help_text=(
+            "Font-awesome icon name that is used for quick display of the product type."
+        ),
     )
     available = models.BooleanField(default=True)
     available_at = models.ManyToManyField(OrderVenue)
@@ -124,7 +133,8 @@ class Product(models.Model):
     )
     ignore_shift_restrictions = models.BooleanField(
         default=False,
-        help_text="Whether or not this product should ignore the maximum orders per shift" " restriction.",
+        help_text="Whether or not this product should ignore the maximum orders per shift"
+        " restriction.",
     )
 
     max_allowed_per_shift = models.PositiveSmallIntegerField(
@@ -170,7 +180,9 @@ class Product(models.Model):
         is lower than the max_allowed_per_shift variable, False otherwise
         """
         if self.max_allowed_per_shift is not None:
-            user_order_amount_product = Order.objects.filter(user=user, shift=shift, product=self).count()
+            user_order_amount_product = Order.objects.filter(
+                user=user, shift=shift, product=self
+            ).count()
             return user_order_amount_product + amount <= self.max_allowed_per_shift
         return True
 
@@ -183,7 +195,9 @@ class Product(models.Model):
         :return: None if the user can order unlimited of the product, the maximum allowed to still order otherwise
         """
         if self.max_allowed_per_shift is not None:
-            user_order_amount_product = Order.objects.filter(user=user, shift=shift, product=self).count()
+            user_order_amount_product = Order.objects.filter(
+                user=user, shift=shift, product=self
+            ).count()
             return max(0, self.max_allowed_per_shift - user_order_amount_product)
         else:
             return None
@@ -205,7 +219,10 @@ class Shift(models.Model):
     HUMAN_DATE_FORMAT = "%a. %-d %b. %Y"
 
     venue = models.ForeignKey(
-        OrderVenue, related_name="shifts", on_delete=models.PROTECT, validators=[active_venue_validator]
+        OrderVenue,
+        related_name="shifts",
+        on_delete=models.PROTECT,
+        validators=[active_venue_validator],
     )
 
     start = models.DateTimeField(default=get_default_start_time_shift)
@@ -283,7 +300,9 @@ class Shift(models.Model):
 
         :return: the total number of orders in this shift
         """
-        return Order.objects.filter(shift=self, product__ignore_shift_restrictions=False).count()
+        return Order.objects.filter(
+            shift=self, product__ignore_shift_restrictions=False
+        ).count()
 
     @property
     def number_of_orders(self):
@@ -413,7 +432,11 @@ class Shift(models.Model):
         :return: True if all Orders (with the Order type) of this Shift are ready and paid, False otherwise
         :rtype: boolean
         """
-        return not self.orders.exclude(type=Order.TYPE_SCANNED).exclude(Q(ready=True) & Q(paid=True)).exists()
+        return (
+            not self.orders.exclude(type=Order.TYPE_SCANNED)
+            .exclude(Q(ready=True) & Q(paid=True))
+            .exists()
+        )
 
     def _clean(self):
         """
@@ -431,7 +454,9 @@ class Shift(models.Model):
 
         if old_instance is not None and old_instance.finalized and not self.finalized:
             # Shift was already finalized so can't be un-finalized
-            raise ValidationError({"finalized": "A finalized shift can not be un-finalized."})
+            raise ValidationError(
+                {"finalized": "A finalized shift can not be un-finalized."}
+            )
         elif old_instance is not None and old_instance.finalized and self.finalized:
             # Shift was already finalized and is still finalized but something else changed
             raise ValidationError("A finalized shift can not be changed")
@@ -439,7 +464,9 @@ class Shift(models.Model):
             # Shift was not finalized yet but will be made finalized now
             if not self.shift_done:
                 raise ValidationError(
-                    {"finalized": "Shift can't be finalized if not all Orders are paid, ready and picked up."}
+                    {
+                        "finalized": "Shift can't be finalized if not all Orders are paid, ready and picked up."
+                    }
                 )
 
         if self.end <= self.start:
@@ -456,7 +483,9 @@ class Shift(models.Model):
             .exists()
         )
         if overlapping_shifts:
-            raise ValidationError("Overlapping shifts for the same venue are not allowed.")
+            raise ValidationError(
+                "Overlapping shifts for the same venue are not allowed."
+            )
 
     def clean(self):
         """Clean a Shift."""
@@ -530,13 +559,22 @@ class Order(models.Model):
 
     created = models.DateTimeField(auto_now_add=True)
 
-    user = models.ForeignKey(User, related_name="orders", blank=True, null=True, on_delete=models.PROTECT)
+    user = models.ForeignKey(
+        User, related_name="orders", blank=True, null=True, on_delete=models.PROTECT
+    )
     user_association = models.ForeignKey(
-        Association, related_name="orders", blank=True, null=True, on_delete=models.SET_NULL
+        Association,
+        related_name="orders",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
     )
     shift = models.ForeignKey(Shift, related_name="orders", on_delete=models.PROTECT)
     product = models.ForeignKey(
-        Product, related_name="orders", on_delete=models.PROTECT, validators=[available_product_filter]
+        Product,
+        related_name="orders",
+        on_delete=models.PROTECT,
+        validators=[available_product_filter],
     )
 
     order_price = models.DecimalField(max_digits=6, decimal_places=2)
@@ -579,7 +617,9 @@ class Order(models.Model):
             self.order_price = self.product.current_price
 
         if self.shift.finalized:
-            raise ValidationError("Order can't be changed as shift is already finalized")
+            raise ValidationError(
+                "Order can't be changed as shift is already finalized"
+            )
 
         super(Order, self).save(*args, **kwargs)
 

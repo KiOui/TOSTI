@@ -41,7 +41,9 @@ class VenuesAPITests(APITestCase):
 
     def test_get_venue_not_logged_in(self):
         """GET a venue while not logged in."""
-        response = self.client.get(reverse("v1:venue_retrieve", kwargs={"pk": self.venue.pk}))
+        response = self.client.get(
+            reverse("v1:venue_retrieve", kwargs={"pk": self.venue.pk})
+        )
         self.assertEqual(response.status_code, 200)
 
     def test_get_reservations_not_logged_in(self):

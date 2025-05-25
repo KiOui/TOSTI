@@ -94,7 +94,9 @@ class ShiftAdminForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         if "venue" in self.fields:
-            self.fields["venue"].queryset = OrderVenue.objects.filter(venue__active=True)
+            self.fields["venue"].queryset = OrderVenue.objects.filter(
+                venue__active=True
+            )
 
         if "assignees" in self.fields:
             self.fields["assignees"].queryset = User.objects.all()
@@ -104,9 +106,13 @@ class ShiftAdminForm(forms.ModelForm):
                 self.fields["venue"].queryset = OrderVenue.objects.filter(
                     Q(venue__active=True) | Q(shifts=self.instance)
                 ).distinct()
-                self.fields["venue"].initial = OrderVenue.objects.filter(shifts=self.instance)
+                self.fields["venue"].initial = OrderVenue.objects.filter(
+                    shifts=self.instance
+                )
             if "assignees" in self.fields:
-                self.fields["assignees"].initial = User.objects.filter(shift=self.instance)
+                self.fields["assignees"].initial = User.objects.filter(
+                    shift=self.instance
+                )
 
     assignees = forms.ModelMultipleChoiceField(
         queryset=None,
@@ -142,7 +148,11 @@ class ShiftAdmin(ExportMixin, GuardedModelAdmin):
         return (
             super()
             .get_queryset(request)
-            .prefetch_related("orders__user_association", "orders__user__association", "assignees__association")
+            .prefetch_related(
+                "orders__user_association",
+                "orders__user__association",
+                "assignees__association",
+            )
         )
 
     def view_on_site(self, obj):
@@ -248,7 +258,13 @@ class OrderAdmin(AutocompleteFilterMixin, ImportExportModelAdmin):
     ]
     autocomplete_fields = ["user"]
 
-    actions = ["set_ready", "set_paid", "set_prioritized", "set_normal", "set_deprioritized"]
+    actions = [
+        "set_ready",
+        "set_paid",
+        "set_prioritized",
+        "set_normal",
+        "set_deprioritized",
+    ]
 
     def has_change_permission(self, request, obj=None):
         """Make order read-only if the shift is finalized."""
@@ -296,9 +312,9 @@ class OrderAdmin(AutocompleteFilterMixin, ImportExportModelAdmin):
         :param queryset: a queryset of orders
         :return: the request
         """
-        updated_orders = queryset.filter(~Q(priority=Order.PRIORITY_PRIORITIZED)).update(
-            priority=Order.PRIORITY_PRIORITIZED
-        )
+        updated_orders = queryset.filter(
+            ~Q(priority=Order.PRIORITY_PRIORITIZED)
+        ).update(priority=Order.PRIORITY_PRIORITIZED)
         messages.success(
             request,
             f"{updated_orders} orders were marked as prioritized",
@@ -315,7 +331,9 @@ class OrderAdmin(AutocompleteFilterMixin, ImportExportModelAdmin):
         :param queryset: a queryset of orders
         :return: the request
         """
-        updated_orders = queryset.filter(~Q(priority=Order.PRIORITY_NORMAL)).update(priority=Order.PRIORITY_NORMAL)
+        updated_orders = queryset.filter(~Q(priority=Order.PRIORITY_NORMAL)).update(
+            priority=Order.PRIORITY_NORMAL
+        )
         messages.success(
             request,
             f"{updated_orders} orders were marked as normal priority",
@@ -332,16 +350,18 @@ class OrderAdmin(AutocompleteFilterMixin, ImportExportModelAdmin):
         :param queryset: a queryset of orders
         :return: the request
         """
-        updated_orders = queryset.filter(~Q(priority=Order.PRIORITY_DEPRIORITIZED)).update(
-            priority=Order.PRIORITY_DEPRIORITIZED
-        )
+        updated_orders = queryset.filter(
+            ~Q(priority=Order.PRIORITY_DEPRIORITIZED)
+        ).update(priority=Order.PRIORITY_DEPRIORITIZED)
         messages.success(
             request,
             f"{updated_orders} orders were marked as deprioritized",
         )
         return request
 
-    set_deprioritized.short_description = "Mark selected orders as priority deprioritized"
+    set_deprioritized.short_description = (
+        "Mark selected orders as priority deprioritized"
+    )
 
     def get_venue(self, obj):
         """Venue of the order."""
@@ -352,7 +372,11 @@ class OrderAdmin(AutocompleteFilterMixin, ImportExportModelAdmin):
 
     def get_queryset(self, request):
         """Return queryset."""
-        return super().get_queryset(request).prefetch_related("user_association", "user__association")
+        return (
+            super()
+            .get_queryset(request)
+            .prefetch_related("user_association", "user__association")
+        )
 
     class Media:
         """Necessary to use AutocompleteFilter."""

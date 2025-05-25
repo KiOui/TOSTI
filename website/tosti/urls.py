@@ -66,16 +66,30 @@ urlpatterns = [
     ),  # Legacy for as long as CNCZ IDP isn't updated to use the new URL
     path(
         "login/",
-        RedirectView.as_view(url="/saml/login/" if not settings.DEBUG else "/admin-login", query_string=True),
+        RedirectView.as_view(
+            url="/saml/login/" if not settings.DEBUG else "/admin-login",
+            query_string=True,
+        ),
         name="login",
     ),
     path(
         "logout/",
-        RedirectView.as_view(url="/saml/logout/" if not settings.DEBUG else "/admin-logout", query_string=True),
+        RedirectView.as_view(
+            url="/saml/logout/" if not settings.DEBUG else "/admin-logout",
+            query_string=True,
+        ),
         name="logout",
     ),
-    path("admin/login/", RedirectView.as_view(url="/login", query_string=True), name="login-redirect"),
-    path("admin/logout/", RedirectView.as_view(url="/logout", query_string=True), name="logout-redirect"),
+    path(
+        "admin/login/",
+        RedirectView.as_view(url="/login", query_string=True),
+        name="login-redirect",
+    ),
+    path(
+        "admin/logout/",
+        RedirectView.as_view(url="/logout", query_string=True),
+        name="logout-redirect",
+    ),
     path("admin-login/", admin.site.login, name="admin-login"),
     path("admin-logout/", admin.site.logout, name="admin-logout"),
     path("after-login/", AfterLoginRedirectView.as_view(), name="after-login"),

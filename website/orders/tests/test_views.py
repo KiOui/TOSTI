@@ -28,7 +28,9 @@ class OrderViewTests(TestCase):
         venue_pk_2 = Venue.objects.get(pk=2)
         cls.order_venue_2 = OrderVenue.objects.create(venue=venue_pk_2)
         cls.shift = Shift.objects.create(
-            venue=order_venue_1, start=timezone.now(), end=timezone.now() + timedelta(hours=4)
+            venue=order_venue_1,
+            start=timezone.now(),
+            end=timezone.now() + timedelta(hours=4),
         )
         cls.normal_user = User.objects.get(pk=2)
 
@@ -37,26 +39,57 @@ class OrderViewTests(TestCase):
         self.normal_user.save()
 
     def test_create_shift_view(self):
-        self.assertTrue(self.client.login(username=self.normal_user.username, password="temporary"))
-        assign_perm("orders.can_manage_shift_in_venue", self.normal_user, self.order_venue_1)
-        self.assertTrue(self.normal_user.has_perm("orders.can_manage_shift_in_venue", self.order_venue_1))
-        response = self.client.get(reverse("orders:shift_create", kwargs={"venue": self.order_venue_1}), follow=True)
+        self.assertTrue(
+            self.client.login(username=self.normal_user.username, password="temporary")
+        )
+        assign_perm(
+            "orders.can_manage_shift_in_venue", self.normal_user, self.order_venue_1
+        )
+        self.assertTrue(
+            self.normal_user.has_perm(
+                "orders.can_manage_shift_in_venue", self.order_venue_1
+            )
+        )
+        response = self.client.get(
+            reverse("orders:shift_create", kwargs={"venue": self.order_venue_1}),
+            follow=True,
+        )
         self.assertEqual(response.status_code, 200)
 
     def test_create_shift_view_not_logged_in(self):
-        response = self.client.get(reverse("orders:shift_create", kwargs={"venue": self.order_venue_1}), follow=False)
+        response = self.client.get(
+            reverse("orders:shift_create", kwargs={"venue": self.order_venue_1}),
+            follow=False,
+        )
         self.assertEqual(response.status_code, 302)
 
     def test_create_shift_view_no_permissions(self):
-        self.assertTrue(self.client.login(username=self.normal_user.username, password="temporary"))
-        self.assertFalse(self.normal_user.has_perm("orders.can_manage_shift_in_venue", self.order_venue_1))
-        response = self.client.get(reverse("orders:shift_create", kwargs={"venue": self.order_venue_1}), follow=True)
+        self.assertTrue(
+            self.client.login(username=self.normal_user.username, password="temporary")
+        )
+        self.assertFalse(
+            self.normal_user.has_perm(
+                "orders.can_manage_shift_in_venue", self.order_venue_1
+            )
+        )
+        response = self.client.get(
+            reverse("orders:shift_create", kwargs={"venue": self.order_venue_1}),
+            follow=True,
+        )
         self.assertEqual(response.status_code, 403)
 
     def test_create_shift_view_post(self):
-        self.assertTrue(self.client.login(username=self.normal_user.username, password="temporary"))
-        assign_perm("orders.can_manage_shift_in_venue", self.normal_user, self.order_venue_2)
-        self.assertTrue(self.normal_user.has_perm("orders.can_manage_shift_in_venue", self.order_venue_2))
+        self.assertTrue(
+            self.client.login(username=self.normal_user.username, password="temporary")
+        )
+        assign_perm(
+            "orders.can_manage_shift_in_venue", self.normal_user, self.order_venue_2
+        )
+        self.assertTrue(
+            self.normal_user.has_perm(
+                "orders.can_manage_shift_in_venue", self.order_venue_2
+            )
+        )
         self.assertFalse(Shift.objects.filter(venue=self.order_venue_2).exists())
         response = self.client.post(
             reverse("orders:shift_create", kwargs={"venue": self.order_venue_2}),
@@ -71,10 +104,22 @@ class OrderViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_create_shift_view_post_no_permissions(self):
-        self.assertTrue(self.client.login(username=self.normal_user.username, password="temporary"))
-        assign_perm("orders.can_manage_shift_in_venue", self.normal_user, self.order_venue_1)
-        self.assertTrue(self.normal_user.has_perm("orders.can_manage_shift_in_venue", self.order_venue_1))
-        self.assertFalse(self.normal_user.has_perm("orders.can_manage_shift_in_venue", self.order_venue_2))
+        self.assertTrue(
+            self.client.login(username=self.normal_user.username, password="temporary")
+        )
+        assign_perm(
+            "orders.can_manage_shift_in_venue", self.normal_user, self.order_venue_1
+        )
+        self.assertTrue(
+            self.normal_user.has_perm(
+                "orders.can_manage_shift_in_venue", self.order_venue_1
+            )
+        )
+        self.assertFalse(
+            self.normal_user.has_perm(
+                "orders.can_manage_shift_in_venue", self.order_venue_2
+            )
+        )
         self.assertFalse(Shift.objects.filter(venue=self.order_venue_2).exists())
         response = self.client.post(
             reverse("orders:shift_create", kwargs={"venue": self.order_venue_1}),
@@ -89,87 +134,187 @@ class OrderViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_shift_view(self):
-        self.assertTrue(self.client.login(username=self.normal_user.username, password="temporary"))
+        self.assertTrue(
+            self.client.login(username=self.normal_user.username, password="temporary")
+        )
         self.assertFalse(user_is_blacklisted(self.normal_user))
-        response = self.client.get(reverse("orders:shift_overview", kwargs={"shift": self.shift}))
+        response = self.client.get(
+            reverse("orders:shift_overview", kwargs={"shift": self.shift})
+        )
         self.assertEqual(response.status_code, 200)
 
     def test_join_shift_view(self):
-        self.assertTrue(self.client.login(username=self.normal_user.username, password="temporary"))
-        assign_perm("orders.can_manage_shift_in_venue", self.normal_user, self.order_venue_1)
-        self.assertTrue(self.normal_user.has_perm("orders.can_manage_shift_in_venue", self.order_venue_1))
-        response = self.client.get(reverse("orders:shift_join", kwargs={"shift": self.shift}))
+        self.assertTrue(
+            self.client.login(username=self.normal_user.username, password="temporary")
+        )
+        assign_perm(
+            "orders.can_manage_shift_in_venue", self.normal_user, self.order_venue_1
+        )
+        self.assertTrue(
+            self.normal_user.has_perm(
+                "orders.can_manage_shift_in_venue", self.order_venue_1
+            )
+        )
+        response = self.client.get(
+            reverse("orders:shift_join", kwargs={"shift": self.shift})
+        )
         self.assertEqual(response.status_code, 200)
 
     def test_join_shift_view_not_logged_in(self):
-        response = self.client.get(reverse("orders:shift_join", kwargs={"shift": self.shift}), follow=False)
+        response = self.client.get(
+            reverse("orders:shift_join", kwargs={"shift": self.shift}), follow=False
+        )
         self.assertEqual(response.status_code, 302)
 
     def test_join_shift_view_no_permissions(self):
-        self.assertTrue(self.client.login(username=self.normal_user.username, password="temporary"))
-        self.assertFalse(self.normal_user.has_perm("orders.can_manage_shift_in_venue", self.order_venue_1))
-        response = self.client.get(reverse("orders:shift_join", kwargs={"shift": self.shift}))
+        self.assertTrue(
+            self.client.login(username=self.normal_user.username, password="temporary")
+        )
+        self.assertFalse(
+            self.normal_user.has_perm(
+                "orders.can_manage_shift_in_venue", self.order_venue_1
+            )
+        )
+        response = self.client.get(
+            reverse("orders:shift_join", kwargs={"shift": self.shift})
+        )
         self.assertEqual(response.status_code, 403)
 
     def test_join_shift_view_already_joined(self):
-        self.assertTrue(self.client.login(username=self.normal_user.username, password="temporary"))
-        assign_perm("orders.can_manage_shift_in_venue", self.normal_user, self.order_venue_1)
-        self.assertTrue(self.normal_user.has_perm("orders.can_manage_shift_in_venue", self.order_venue_1))
+        self.assertTrue(
+            self.client.login(username=self.normal_user.username, password="temporary")
+        )
+        assign_perm(
+            "orders.can_manage_shift_in_venue", self.normal_user, self.order_venue_1
+        )
+        self.assertTrue(
+            self.normal_user.has_perm(
+                "orders.can_manage_shift_in_venue", self.order_venue_1
+            )
+        )
         add_user_to_assignees_of_shift(self.normal_user, self.shift)
-        response = self.client.get(reverse("orders:shift_join", kwargs={"shift": self.shift}))
-        self.assertRedirects(response, reverse("orders:shift_admin", kwargs={"shift": self.shift}))
+        response = self.client.get(
+            reverse("orders:shift_join", kwargs={"shift": self.shift})
+        )
+        self.assertRedirects(
+            response, reverse("orders:shift_admin", kwargs={"shift": self.shift})
+        )
 
     def test_join_shift_view_post(self):
-        self.assertTrue(self.client.login(username=self.normal_user.username, password="temporary"))
-        assign_perm("orders.can_manage_shift_in_venue", self.normal_user, self.order_venue_1)
-        self.assertTrue(self.normal_user.has_perm("orders.can_manage_shift_in_venue", self.order_venue_1))
+        self.assertTrue(
+            self.client.login(username=self.normal_user.username, password="temporary")
+        )
+        assign_perm(
+            "orders.can_manage_shift_in_venue", self.normal_user, self.order_venue_1
+        )
+        self.assertTrue(
+            self.normal_user.has_perm(
+                "orders.can_manage_shift_in_venue", self.order_venue_1
+            )
+        )
         self.assertFalse(self.normal_user in self.shift.assignees.all())
         response = self.client.post(
-            reverse("orders:shift_join", kwargs={"shift": self.shift}), data={"confirm": "Yes"}
+            reverse("orders:shift_join", kwargs={"shift": self.shift}),
+            data={"confirm": "Yes"},
         )
-        self.assertRedirects(response, reverse("orders:shift_admin", kwargs={"shift": self.shift}))
+        self.assertRedirects(
+            response, reverse("orders:shift_admin", kwargs={"shift": self.shift})
+        )
         self.assertTrue(self.normal_user in self.shift.assignees.all())
 
     def test_join_shift_view_post_no(self):
-        self.assertTrue(self.client.login(username=self.normal_user.username, password="temporary"))
-        assign_perm("orders.can_manage_shift_in_venue", self.normal_user, self.order_venue_1)
-        self.assertTrue(self.normal_user.has_perm("orders.can_manage_shift_in_venue", self.order_venue_1))
+        self.assertTrue(
+            self.client.login(username=self.normal_user.username, password="temporary")
+        )
+        assign_perm(
+            "orders.can_manage_shift_in_venue", self.normal_user, self.order_venue_1
+        )
+        self.assertTrue(
+            self.normal_user.has_perm(
+                "orders.can_manage_shift_in_venue", self.order_venue_1
+            )
+        )
         self.assertFalse(self.normal_user in self.shift.assignees.all())
-        response = self.client.post(reverse("orders:shift_join", kwargs={"shift": self.shift}), data={"confirm": "No"})
-        self.assertRedirects(response, reverse("orders:shift_admin", kwargs={"shift": self.shift}))
+        response = self.client.post(
+            reverse("orders:shift_join", kwargs={"shift": self.shift}),
+            data={"confirm": "No"},
+        )
+        self.assertRedirects(
+            response, reverse("orders:shift_admin", kwargs={"shift": self.shift})
+        )
         self.assertFalse(self.normal_user in self.shift.assignees.all())
         self.assertTrue(
-            str(response.cookies.get(f"TOSTI_ASKED_JOIN_SHIFT_{self.shift.id}", None)).startswith(
-                f"Set-Cookie: TOSTI_ASKED_JOIN_SHIFT_{self.shift.id}=true;"
-            )
+            str(
+                response.cookies.get(f"TOSTI_ASKED_JOIN_SHIFT_{self.shift.id}", None)
+            ).startswith(f"Set-Cookie: TOSTI_ASKED_JOIN_SHIFT_{self.shift.id}=true;")
         )
 
     def test_join_shift_view_post_no_data(self):
-        self.assertTrue(self.client.login(username=self.normal_user.username, password="temporary"))
-        assign_perm("orders.can_manage_shift_in_venue", self.normal_user, self.order_venue_1)
-        self.assertTrue(self.normal_user.has_perm("orders.can_manage_shift_in_venue", self.order_venue_1))
+        self.assertTrue(
+            self.client.login(username=self.normal_user.username, password="temporary")
+        )
+        assign_perm(
+            "orders.can_manage_shift_in_venue", self.normal_user, self.order_venue_1
+        )
+        self.assertTrue(
+            self.normal_user.has_perm(
+                "orders.can_manage_shift_in_venue", self.order_venue_1
+            )
+        )
         self.assertFalse(self.normal_user in self.shift.assignees.all())
-        response = self.client.post(reverse("orders:shift_join", kwargs={"shift": self.shift}))
+        response = self.client.post(
+            reverse("orders:shift_join", kwargs={"shift": self.shift})
+        )
         self.assertEqual(response.status_code, 200)
         self.assertFalse(self.normal_user in self.shift.assignees.all())
 
     def test_shift_admin_view(self):
-        self.assertTrue(self.client.login(username=self.normal_user.username, password="temporary"))
-        assign_perm("orders.can_manage_shift_in_venue", self.normal_user, self.order_venue_1)
-        self.assertTrue(self.normal_user.has_perm("orders.can_manage_shift_in_venue", self.order_venue_1))
+        self.assertTrue(
+            self.client.login(username=self.normal_user.username, password="temporary")
+        )
+        assign_perm(
+            "orders.can_manage_shift_in_venue", self.normal_user, self.order_venue_1
+        )
+        self.assertTrue(
+            self.normal_user.has_perm(
+                "orders.can_manage_shift_in_venue", self.order_venue_1
+            )
+        )
         add_user_to_assignees_of_shift(self.normal_user, self.shift)
-        response = self.client.get(reverse("orders:shift_admin", kwargs={"shift": self.shift}))
+        response = self.client.get(
+            reverse("orders:shift_admin", kwargs={"shift": self.shift})
+        )
         self.assertEqual(response.status_code, 200)
 
     def test_shift_admin_view_not_in_assignees(self):
-        self.assertTrue(self.client.login(username=self.normal_user.username, password="temporary"))
-        assign_perm("orders.can_manage_shift_in_venue", self.normal_user, self.order_venue_1)
-        self.assertTrue(self.normal_user.has_perm("orders.can_manage_shift_in_venue", self.order_venue_1))
-        response = self.client.get(reverse("orders:shift_admin", kwargs={"shift": self.shift}))
-        self.assertRedirects(response, reverse("orders:shift_join", kwargs={"shift": self.shift}))
+        self.assertTrue(
+            self.client.login(username=self.normal_user.username, password="temporary")
+        )
+        assign_perm(
+            "orders.can_manage_shift_in_venue", self.normal_user, self.order_venue_1
+        )
+        self.assertTrue(
+            self.normal_user.has_perm(
+                "orders.can_manage_shift_in_venue", self.order_venue_1
+            )
+        )
+        response = self.client.get(
+            reverse("orders:shift_admin", kwargs={"shift": self.shift})
+        )
+        self.assertRedirects(
+            response, reverse("orders:shift_join", kwargs={"shift": self.shift})
+        )
 
     def test_shift_admin_view_no_permissions(self):
-        self.assertTrue(self.client.login(username=self.normal_user.username, password="temporary"))
-        self.assertFalse(self.normal_user.has_perm("orders.can_manage_shift_in_venue", self.order_venue_1))
-        response = self.client.get(reverse("orders:shift_admin", kwargs={"shift": self.shift}))
+        self.assertTrue(
+            self.client.login(username=self.normal_user.username, password="temporary")
+        )
+        self.assertFalse(
+            self.normal_user.has_perm(
+                "orders.can_manage_shift_in_venue", self.order_venue_1
+            )
+        )
+        response = self.client.get(
+            reverse("orders:shift_admin", kwargs={"shift": self.shift})
+        )
         self.assertEqual(response.status_code, 403)

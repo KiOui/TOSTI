@@ -10,7 +10,9 @@ class AnnouncementManager(models.Manager):
 
     def visible(self):
         """Get only visible announcements."""
-        return self.get_queryset().filter((Q(until__gt=timezone.now()) | Q(until=None)) & Q(since__lte=timezone.now()))
+        return self.get_queryset().filter(
+            (Q(until__gt=timezone.now()) | Q(until=None)) & Q(since__lte=timezone.now())
+        )
 
 
 class Announcement(models.Model):
@@ -44,4 +46,6 @@ class Announcement(models.Model):
     @property
     def is_visible(self):
         """Is this announcement currently visible."""
-        return (self.until is None or self.until > timezone.now()) and self.since <= timezone.now()
+        return (
+            self.until is None or self.until > timezone.now()
+        ) and self.since <= timezone.now()

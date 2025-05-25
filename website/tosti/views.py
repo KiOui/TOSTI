@@ -43,7 +43,9 @@ class AfterLoginRedirectView(RedirectView):
         next_url = self.request.GET.get("next")
         if self.request.user.is_authenticated and not self.request.user.association:
             messages.add_message(
-                self.request, messages.INFO, "Welcome to TOSTI! Please complete your account profile below."
+                self.request,
+                messages.INFO,
+                "Welcome to TOSTI! Please complete your account profile below.",
             )
             return reverse("users:account")
         if next_url:
@@ -76,7 +78,9 @@ class ExplainerView(TemplateView):
         for tab in explainer_tabs:
             tab_rendered = tab["renderer"](request, tab)
             if tab_rendered is not None:
-                rendered_tabs.append({"name": tab["name"], "slug": tab["slug"], "content": tab_rendered})
+                rendered_tabs.append(
+                    {"name": tab["name"], "slug": tab["slug"], "content": tab_rendered}
+                )
 
         return render(request, self.template_name, {"rendered_tabs": rendered_tabs})
 
@@ -113,7 +117,9 @@ class OAuthCredentialsRequestView(TemplateView):
 
     def get_paginator_page(self, request, page):
         """Get paginator page."""
-        registered_applications = Application.objects.filter(user=request.user).order_by("-created")
+        registered_applications = Application.objects.filter(
+            user=request.user
+        ).order_by("-created")
         paginator = Paginator(registered_applications, per_page=50)
         paginator_page = paginator.get_page(page)
 
@@ -179,18 +185,9 @@ class OAuthCredentialsRequestView(TemplateView):
                 messages.SUCCESS,
                 "Successfully created a new application, press the details button to show the application details.",
             )
-            paginator_page = self.get_paginator_page(request, request.POST.get("page", 1))
-            return render(
-                request,
-                self.template_name,
-                {
-                    "active": kwargs.get("active"),
-                    "tabs": kwargs.get("tabs"),
-                    "rendered_tab": self.render_tab(request, paginator_page, created_application=application),
-                },
+            paginator_page = self.get_paginator_page(
+                request, request.POST.get("page", 1)
             )
-        else:
-            paginator_page = self.get_paginator_page(request, request.POST.get("page", 1))
             return render(
                 request,
                 self.template_name,
@@ -198,7 +195,25 @@ class OAuthCredentialsRequestView(TemplateView):
                     "active": kwargs.get("active"),
                     "tabs": kwargs.get("tabs"),
                     "rendered_tab": self.render_tab(
-                        request, paginator_page, create_form=create_form, create_form_open=True
+                        request, paginator_page, created_application=application
+                    ),
+                },
+            )
+        else:
+            paginator_page = self.get_paginator_page(
+                request, request.POST.get("page", 1)
+            )
+            return render(
+                request,
+                self.template_name,
+                {
+                    "active": kwargs.get("active"),
+                    "tabs": kwargs.get("tabs"),
+                    "rendered_tab": self.render_tab(
+                        request,
+                        paginator_page,
+                        create_form=create_form,
+                        create_form_open=True,
                     ),
                 },
             )
@@ -207,19 +222,27 @@ class OAuthCredentialsRequestView(TemplateView):
         """Update an OAuth application."""
         id_to_modify = request.POST.get("id", None)
         try:
-            application_to_modify = Application.objects.get(id=id_to_modify, user=request.user)
+            application_to_modify = Application.objects.get(
+                id=id_to_modify, user=request.user
+            )
         except Application.DoesNotExist:
             return HttpResponseNotFound()
 
         modify_form = OAuthCredentialsForm(request.POST, instance=application_to_modify)
 
         if modify_form.is_valid():
-            application_to_modify.redirect_uris = modify_form.cleaned_data.get("redirect_uris")
+            application_to_modify.redirect_uris = modify_form.cleaned_data.get(
+                "redirect_uris"
+            )
             application_to_modify.name = modify_form.cleaned_data.get("name")
             application_to_modify.save()
-            messages.add_message(request, messages.SUCCESS, "Successfully updated the application.")
+            messages.add_message(
+                request, messages.SUCCESS, "Successfully updated the application."
+            )
 
-            paginator_page = self.get_paginator_page(request, request.POST.get("page", 1))
+            paginator_page = self.get_paginator_page(
+                request, request.POST.get("page", 1)
+            )
 
             for application in paginator_page:
                 if application.id == application_to_modify.id:
@@ -235,7 +258,9 @@ class OAuthCredentialsRequestView(TemplateView):
                 },
             )
         else:
-            paginator_page = self.get_paginator_page(request, request.POST.get("page", 1))
+            paginator_page = self.get_paginator_page(
+                request, request.POST.get("page", 1)
+            )
 
             for application in paginator_page:
                 if application.id == application_to_modify.id:
@@ -248,7 +273,9 @@ class OAuthCredentialsRequestView(TemplateView):
                     "active": kwargs.get("active"),
                     "tabs": kwargs.get("tabs"),
                     "rendered_tab": self.render_tab(
-                        request, paginator_page, open_modify_form_id=application_to_modify.id
+                        request,
+                        paginator_page,
+                        open_modify_form_id=application_to_modify.id,
                     ),
                 },
             )
@@ -257,13 +284,17 @@ class OAuthCredentialsRequestView(TemplateView):
         """Destroy an OAuth Application."""
         id_to_destroy = request.POST.get("id", None)
         try:
-            application_to_destroy = Application.objects.get(id=id_to_destroy, user=request.user)
+            application_to_destroy = Application.objects.get(
+                id=id_to_destroy, user=request.user
+            )
         except Application.DoesNotExist:
             return HttpResponseNotFound()
 
         application_to_destroy.delete()
 
-        messages.add_message(request, messages.SUCCESS, "OAuth credentials deleted successfully.")
+        messages.add_message(
+            request, messages.SUCCESS, "OAuth credentials deleted successfully."
+        )
 
         paginator_page = self.get_paginator_page(request, 1)
 

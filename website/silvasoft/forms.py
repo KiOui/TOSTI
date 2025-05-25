@@ -18,7 +18,9 @@ class SilvasoftAssociationAdminForm(forms.ModelForm):
                 " 'Refresh relations' button at the bottom of the screen.",
             )
         else:
-            choices = [(x.customer_number, x.name) for x in CachedRelation.objects.all()]
+            choices = [
+                (x.customer_number, x.name) for x in CachedRelation.objects.all()
+            ]
             self.fields["silvasoft_customer_number"].choices = choices
             self.fields["silvasoft_customer_number"].help_text = (
                 "The relations displayed here are cached in "
@@ -43,7 +45,9 @@ class SilvasoftOrderVenueAdminForm(forms.ModelForm):
                 " 'Refresh relations' button at the bottom of the screen.",
             )
         else:
-            choices = [(x.customer_number, x.name) for x in CachedRelation.objects.all()]
+            choices = [
+                (x.customer_number, x.name) for x in CachedRelation.objects.all()
+            ]
             self.fields["silvasoft_customer_number"].choices = choices
             self.fields["silvasoft_customer_number"].help_text = (
                 "The relations displayed here are cached in "

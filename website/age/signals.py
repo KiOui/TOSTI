@@ -19,13 +19,19 @@ def update_minimum_age_when_proven(sender, **kwargs):
 
     attributes = kwargs.get("attributes")
     proven_attributes = get_proven_attributes_from_proof_tree(attributes)
-    minimum_proven_age = get_highest_proven_age_from_proven_attributes(proven_attributes)
+    minimum_proven_age = get_highest_proven_age_from_proven_attributes(
+        proven_attributes
+    )
 
     if minimum_proven_age is None:
         return
 
     attributes_log = [
-        {"id": attr["id"], "rawvalue": attr["rawvalue"], "issuancetime": attr["issuancetime"]}
+        {
+            "id": attr["id"],
+            "rawvalue": attr["rawvalue"],
+            "issuancetime": attr["issuancetime"],
+        }
         for attr in proven_attributes
     ]
 

@@ -16,7 +16,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from orders.api.v1.filters import ShiftFilter, OrderFilter, ProductFilter
-from orders.api.v1.serializers import OrderSerializer, ShiftSerializer, ProductSerializer, OrderVenueSerializer
+from orders.api.v1.serializers import (
+    OrderSerializer,
+    ShiftSerializer,
+    ProductSerializer,
+    OrderVenueSerializer,
+)
 from orders.exceptions import OrderException
 from orders.models import Order, Shift, Product, OrderVenue
 from orders.services import (
@@ -28,7 +33,11 @@ from tosti import settings
 from tosti.api.openapi import CustomAutoSchema
 from tosti.api.permissions import IsAuthenticatedOrTokenHasScopeForMethod
 from tosti.api.v1.pagination import StandardResultsSetPagination
-from tosti.api.views import LoggedRetrieveUpdateAPIView, LoggedListCreateAPIView, LoggedRetrieveUpdateDestroyAPIView
+from tosti.api.views import (
+    LoggedRetrieveUpdateAPIView,
+    LoggedListCreateAPIView,
+    LoggedRetrieveUpdateDestroyAPIView,
+)
 from tosti.utils import log_action
 
 
@@ -41,7 +50,10 @@ class OrderListCreateAPIView(ListCreateAPIView):
         "GET": ["orders:order"],
         "POST": ["orders:manage"],
     }
-    filter_backends = [django_filters.rest_framework.DjangoFilterBackend, filters.OrderingFilter]
+    filter_backends = [
+        django_filters.rest_framework.DjangoFilterBackend,
+        filters.OrderingFilter,
+    ]
     filterset_class = OrderFilter
     ordering_fields = ["paid_at", "ready_at", "picked_up_at"]
     queryset = Order.objects.select_related("user", "product")
@@ -65,12 +77,19 @@ class OrderListCreateAPIView(ListCreateAPIView):
             # Save the order as it was passed to the API as the user has permission to save orders for all users in
             # the shift.
             order = serializer.save(shift=shift, user=self.request.user)
-            log_action(self.request.user, order, CHANGE, "Created order as manager via API.")
+            log_action(
+                self.request.user, order, CHANGE, "Created order as manager via API."
+            )
         else:
             # Save the order while ignoring the order_type, user, paid and ready argument as the user does not have
             # permissions to save orders for all users in the shift.
             order = serializer.save(
-                shift=shift, type=Order.TYPE_ORDERED, user=self.request.user, paid=False, ready=False, picked_up=False
+                shift=shift,
+                type=Order.TYPE_ORDERED,
+                user=self.request.user,
+                paid=False,
+                ready=False,
+                picked_up=False,
             )
             log_action(self.request.user, order, CHANGE, "Created order via API.")
 
@@ -78,9 +97,14 @@ class OrderListCreateAPIView(ListCreateAPIView):
         """Catch the OrderException that might be thrown by creating a new Order."""
         shift = kwargs.get("shift")
         priority = request.data.get("priority")
-        if not user_gets_prioritized_orders(self.request.user, shift) and priority is Order.PRIORITY_PRIORITIZED:
+        if (
+            not user_gets_prioritized_orders(self.request.user, shift)
+            and priority is Order.PRIORITY_PRIORITIZED
+        ):
             # Users that can't manage the shift should not be able to create a prioritized order.
-            raise PermissionDenied(detail="You are not allowed to create prioritized orders!")
+            raise PermissionDenied(
+                detail="You are not allowed to create prioritized orders!"
+            )
 
         try:
             return super(OrderListCreateAPIView, self).create(request, *args, **kwargs)
@@ -132,7 +156,9 @@ class OrderRetrieveUpdateDestroyAPIView(LoggedRetrieveUpdateDestroyAPIView):
             # Users can only change their own orders.
             if instance.user != request.user:
                 self.permission_denied(
-                    request, message="You don't have permission to alter other people's orders.", code=403
+                    request,
+                    message="You don't have permission to alter other people's orders.",
+                    code=403,
                 )
 
             # Only priority can be changed by the user.
@@ -141,14 +167,18 @@ class OrderRetrieveUpdateDestroyAPIView(LoggedRetrieveUpdateDestroyAPIView):
             if priority is not None and priority == Order.PRIORITY_DEPRIORITIZED:
                 # User wants to set their order to deprioritized.
                 serializer = self.get_serializer(
-                    instance, data={"priority": Order.PRIORITY_DEPRIORITIZED}, partial=True
+                    instance,
+                    data={"priority": Order.PRIORITY_DEPRIORITIZED},
+                    partial=True,
                 )
                 serializer.is_valid(raise_exception=True)
                 self.perform_update(serializer)
                 return Response(serializer.data)
             else:
                 self.permission_denied(
-                    request, message="Only the priority option can be changed to deprioritized.", code=400
+                    request,
+                    message="Only the priority option can be changed to deprioritized.",
+                    code=400,
                 )
 
     def destroy(self, request, *args, **kwargs):
@@ -167,7 +197,9 @@ class ShiftListCreateAPIView(LoggedListCreateAPIView):
     """API View to list and create shifts."""
 
     serializer_class = ShiftSerializer
-    queryset = Shift.objects.select_related("venue__venue").prefetch_related("assignees")
+    queryset = Shift.objects.select_related("venue__venue").prefetch_related(
+        "assignees"
+    )
     permission_classes = [IsAuthenticatedOrTokenHasScopeForMethod]
     required_scopes_for_method = {
         "GET": ["orders:order"],
@@ -185,9 +217,13 @@ class ShiftListCreateAPIView(LoggedListCreateAPIView):
             timezone = pytz.timezone(settings.TIME_ZONE)
             current_time = timezone.localize(datetime.datetime.now())
             if active:
-                return self.queryset.filter(start__lte=current_time, end__gte=current_time)
+                return self.queryset.filter(
+                    start__lte=current_time, end__gte=current_time
+                )
             else:
-                return self.queryset.filter(Q(start__gte=current_time) | Q(end__lte=current_time))
+                return self.queryset.filter(
+                    Q(start__gte=current_time) | Q(end__lte=current_time)
+                )
         else:
             return self.queryset.all()
 
@@ -266,7 +302,10 @@ class ShiftScannerAPIView(APIView):
 
     serializer_class = OrderSerializer
     schema = CustomAutoSchema(
-        request_schema={"type": "object", "properties": {"barcode": {"type": "string", "example": "string"}}},
+        request_schema={
+            "type": "object",
+            "properties": {"barcode": {"type": "string", "example": "string"}},
+        },
         response_schema={"$ref": "#/components/schemas/Order"},
     )
     permission_classes = [IsAuthenticatedOrTokenHasScope]
@@ -277,7 +316,9 @@ class ShiftScannerAPIView(APIView):
         shift = kwargs.get("shift")
         barcode = request.data.get("barcode", None)
         try:
-            product = Product.objects.get(barcode=barcode, available=True, available_at=shift.venue)
+            product = Product.objects.get(
+                barcode=barcode, available=True, available_at=shift.venue
+            )
         except Product.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -288,7 +329,8 @@ class ShiftScannerAPIView(APIView):
         log_action(self.request.user, order, ADDITION, "Created scanned order via API.")
 
         return Response(
-            status=status.HTTP_200_OK, data=self.serializer_class(order, context={"request": request}).data
+            status=status.HTTP_200_OK,
+            data=self.serializer_class(order, context={"request": request}).data,
         )
 
 

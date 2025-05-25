@@ -56,6 +56,9 @@ class AgeOverviewView(LoginRequiredMixin, TemplateView):
 def explainer_page_how_to_verify_age_with_yivi(request, item):
     """Render the explainer how to verify age with Yivi."""
     if request.user.is_authenticated:
-        return render_to_string("age/explainer_age_verification.html", context={"request": request, "item": item})
+        return render_to_string(
+            "age/explainer_age_verification.html",
+            context={"request": request, "item": item},
+        )
     else:
         return None

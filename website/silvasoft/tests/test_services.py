@@ -21,7 +21,9 @@ class SilvasoftServicesTests(TestCase):
     def setUpTestData(cls):
         cls.user = User.objects.get(pk=1)
         association = Association.objects.get(pk=1)
-        cls.silvasoft_association = SilvasoftAssociation.objects.get(association=association)
+        cls.silvasoft_association = SilvasoftAssociation.objects.get(
+            association=association
+        )
         cls.association = association
         product_1 = BorrelProduct.objects.get(pk=1)
         product_2 = BorrelProduct.objects.get(pk=2)
@@ -51,16 +53,24 @@ class SilvasoftServicesTests(TestCase):
             association=self.association,
         )
         self.reservation_item_1 = ReservationItem.objects.create(
-            reservation=self.borrel_reservation, product=self.product_1, amount_reserved=5
+            reservation=self.borrel_reservation,
+            product=self.product_1,
+            amount_reserved=5,
         )
         self.reservation_item_2 = ReservationItem.objects.create(
-            reservation=self.borrel_reservation, product=self.product_2, amount_reserved=18
+            reservation=self.borrel_reservation,
+            product=self.product_2,
+            amount_reserved=18,
         )
         self.reservation_item_3 = ReservationItem.objects.create(
-            reservation=self.borrel_reservation, product=self.product_3, amount_reserved=9
+            reservation=self.borrel_reservation,
+            product=self.product_3,
+            amount_reserved=9,
         )
         self.reservation_item_4 = ReservationItem.objects.create(
-            reservation=self.borrel_reservation, product=self.product_4, amount_reserved=1
+            reservation=self.borrel_reservation,
+            product=self.product_4,
+            amount_reserved=1,
         )
         self.reservation_items = [
             self.reservation_item_1,
@@ -75,12 +85,16 @@ class SilvasoftServicesTests(TestCase):
             reservation_item.save()
 
     @patch("silvasoft.services.get_silvasoft_client")
-    def test_synchronize_borrelreservation_to_silvasoft(self, _get_silvasoft_client_mock: MagicMock):
+    def test_synchronize_borrelreservation_to_silvasoft(
+        self, _get_silvasoft_client_mock: MagicMock
+    ):
         self.set_amounts_used()
         silvasoft_client_mock = MagicMock()
         silvasoft_client_mock.add_sales_invoice.return_value = True
         _get_silvasoft_client_mock.return_value = silvasoft_client_mock
-        services.synchronize_borrelreservation_to_silvasoft(self.borrel_reservation, "test-identifier")
+        services.synchronize_borrelreservation_to_silvasoft(
+            self.borrel_reservation, "test-identifier"
+        )
         silvasoft_client_mock.add_sales_invoice.assert_called_with(
             json={
                 "CustomerNumber": self.silvasoft_association.silvasoft_customer_number,
@@ -117,11 +131,15 @@ class SilvasoftServicesTests(TestCase):
         )
 
     @patch("silvasoft.services.SilvasoftClient.can_create_client")
-    def test_synchronize_borrelreservation_to_silvasoft_no_silvasoft_client(self, _can_create_client_mock: MagicMock):
+    def test_synchronize_borrelreservation_to_silvasoft_no_silvasoft_client(
+        self, _can_create_client_mock: MagicMock
+    ):
         _can_create_client_mock.return_value = False
 
         def throw_exception():
-            services.synchronize_borrelreservation_to_silvasoft(self.borrel_reservation, "test-identifier")
+            services.synchronize_borrelreservation_to_silvasoft(
+                self.borrel_reservation, "test-identifier"
+            )
 
         self.assertRaises(SilvasoftException, throw_exception)
 
@@ -134,7 +152,9 @@ class SilvasoftServicesTests(TestCase):
         self.borrel_reservation.save()
 
         def throw_exception():
-            services.synchronize_borrelreservation_to_silvasoft(self.borrel_reservation, "test-identifier")
+            services.synchronize_borrelreservation_to_silvasoft(
+                self.borrel_reservation, "test-identifier"
+            )
 
         self.assertRaises(SilvasoftException, throw_exception)
 
@@ -143,12 +163,16 @@ class SilvasoftServicesTests(TestCase):
         self, _get_silvasoft_client_mock: MagicMock
     ):
         _get_silvasoft_client_mock.return_value = None
-        association_without_silvasoft = Association.objects.create(name="No silvasoft association set")
+        association_without_silvasoft = Association.objects.create(
+            name="No silvasoft association set"
+        )
         self.borrel_reservation.association = association_without_silvasoft
         self.borrel_reservation.save()
 
         def throw_exception():
-            services.synchronize_borrelreservation_to_silvasoft(self.borrel_reservation, "test-identifier")
+            services.synchronize_borrelreservation_to_silvasoft(
+                self.borrel_reservation, "test-identifier"
+            )
 
         self.assertRaises(SilvasoftException, throw_exception)
 
@@ -162,19 +186,25 @@ class SilvasoftServicesTests(TestCase):
         self.reservation_item_3.save()
 
         def throw_exception():
-            services.synchronize_borrelreservation_to_silvasoft(self.borrel_reservation, "test-identifier")
+            services.synchronize_borrelreservation_to_silvasoft(
+                self.borrel_reservation, "test-identifier"
+            )
 
         self.assertRaises(SilvasoftException, throw_exception)
 
     @patch("silvasoft.services.get_silvasoft_client")
-    def test_synchronize_borrelreservation_to_silvasoft_amount_used_0(self, _get_silvasoft_client_mock: MagicMock):
+    def test_synchronize_borrelreservation_to_silvasoft_amount_used_0(
+        self, _get_silvasoft_client_mock: MagicMock
+    ):
         self.set_amounts_used()
         self.reservation_item_4.amount_used = 0
         self.reservation_item_4.save()
         silvasoft_client_mock = MagicMock()
         silvasoft_client_mock.add_sales_invoice.return_value = True
         _get_silvasoft_client_mock.return_value = silvasoft_client_mock
-        services.synchronize_borrelreservation_to_silvasoft(self.borrel_reservation, "test-identifier")
+        services.synchronize_borrelreservation_to_silvasoft(
+            self.borrel_reservation, "test-identifier"
+        )
         silvasoft_client_mock.add_sales_invoice.assert_called_with(
             json={
                 "CustomerNumber": self.silvasoft_association.silvasoft_customer_number,
@@ -206,7 +236,9 @@ class SilvasoftServicesTests(TestCase):
         )
 
     @patch("silvasoft.services.get_silvasoft_client")
-    def test_synchronize_borrelreservation_to_silvasoft_cost_center_set(self, _get_silvasoft_client_mock: MagicMock):
+    def test_synchronize_borrelreservation_to_silvasoft_cost_center_set(
+        self, _get_silvasoft_client_mock: MagicMock
+    ):
         self.set_amounts_used()
         self.silvasoft_product_1.cost_center = "Test Cost Center"
         self.silvasoft_product_2.cost_center = "Test Cost Center 2"
@@ -215,7 +247,9 @@ class SilvasoftServicesTests(TestCase):
         silvasoft_client_mock = MagicMock()
         silvasoft_client_mock.add_sales_invoice.return_value = True
         _get_silvasoft_client_mock.return_value = silvasoft_client_mock
-        services.synchronize_borrelreservation_to_silvasoft(self.borrel_reservation, "test-identifier")
+        services.synchronize_borrelreservation_to_silvasoft(
+            self.borrel_reservation, "test-identifier"
+        )
         silvasoft_client_mock.add_sales_invoice.assert_called_with(
             json={
                 "CustomerNumber": self.silvasoft_association.silvasoft_customer_number,
@@ -258,10 +292,14 @@ class SilvasoftServicesTests(TestCase):
         self, _get_silvasoft_client_mock: MagicMock
     ):
         self.set_amounts_used()
-        SilvasoftBorrelProduct.objects.get(product=self.reservation_item_2.product).delete()
+        SilvasoftBorrelProduct.objects.get(
+            product=self.reservation_item_2.product
+        ).delete()
 
         def throw_exception():
-            services.synchronize_borrelreservation_to_silvasoft(self.borrel_reservation, "test-identifier")
+            services.synchronize_borrelreservation_to_silvasoft(
+                self.borrel_reservation, "test-identifier"
+            )
 
         self.assertRaises(SilvasoftException, throw_exception)
 
@@ -316,7 +354,9 @@ class SilvasoftServicesTests(TestCase):
         silvasoft_client_mock = MagicMock()
         silvasoft_client_mock.add_sales_invoice.return_value = True
         _get_silvasoft_client_mock.return_value = silvasoft_client_mock
-        services.synchronize_borrelreservation_to_silvasoft(self.borrel_reservation, "test-identifier")
+        services.synchronize_borrelreservation_to_silvasoft(
+            self.borrel_reservation, "test-identifier"
+        )
         silvasoft_client_mock.add_sales_invoice.assert_called_with(
             json={
                 "CustomerNumber": self.silvasoft_association.silvasoft_customer_number,
@@ -358,12 +398,17 @@ class SilvasoftServicesTests(TestCase):
     ):
         self.set_amounts_used()
         ReservationItem.objects.create(
-            reservation=self.borrel_reservation, product=self.product_6, amount_reserved=15, amount_used=17
+            reservation=self.borrel_reservation,
+            product=self.product_6,
+            amount_reserved=15,
+            amount_used=17,
         )
         silvasoft_client_mock = MagicMock()
         silvasoft_client_mock.add_sales_invoice.return_value = True
         _get_silvasoft_client_mock.return_value = silvasoft_client_mock
-        services.synchronize_borrelreservation_to_silvasoft(self.borrel_reservation, "test-identifier")
+        services.synchronize_borrelreservation_to_silvasoft(
+            self.borrel_reservation, "test-identifier"
+        )
         silvasoft_client_mock.add_sales_invoice.assert_called_with(
             json={
                 "CustomerNumber": self.silvasoft_association.silvasoft_customer_number,

@@ -27,7 +27,9 @@ class VenueViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_request_reservation_view_get(self):
-        self.assertTrue(self.client.login(username=self.user.username, password="password"))
+        self.assertTrue(
+            self.client.login(username=self.user.username, password="password")
+        )
         response = self.client.get(reverse("venues:add_reservation"))
         self.assertEqual(response.status_code, 200)
 
@@ -37,7 +39,9 @@ class VenueViewTests(TestCase):
 
     @freeze_time()
     def test_request_reservation_view_post(self):
-        self.assertTrue(self.client.login(username=self.user.username, password="password"))
+        self.assertTrue(
+            self.client.login(username=self.user.username, password="password")
+        )
         reservation_pks_before_post = [x.pk for x in models.Reservation.objects.all()]
         now = timezone.localtime(timezone.now())
         response = self.client.post(
@@ -54,7 +58,9 @@ class VenueViewTests(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         reservation_pks_after_post = [x.pk for x in models.Reservation.objects.all()]
-        reservations_created = list(set(reservation_pks_after_post).difference(set(reservation_pks_before_post)))
+        reservations_created = list(
+            set(reservation_pks_after_post).difference(set(reservation_pks_before_post))
+        )
         self.assertEqual(len(reservations_created), 1)
         reservation_created = models.Reservation.objects.get(pk=reservations_created[0])
         self.assertEqual(reservation_created.title, "Test reservation")
@@ -76,7 +82,9 @@ class VenueViewTests(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_list_reservations_view(self):
-        self.assertTrue(self.client.login(username=self.user.username, password="password"))
+        self.assertTrue(
+            self.client.login(username=self.user.username, password="password")
+        )
         models.Reservation.objects.create(
             title="Test reservation",
             user_created=self.user,

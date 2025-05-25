@@ -30,7 +30,9 @@ class BorrelConfig(AppConfig):
         """Register menu items."""
         from qualifications.apps import user_has_borrel_brevet_lazy
 
-        if not request.user.is_authenticated or not user_has_borrel_brevet_lazy(request):
+        if not request.user.is_authenticated or not user_has_borrel_brevet_lazy(
+            request
+        ):
             return []
 
         return [

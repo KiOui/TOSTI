@@ -48,4 +48,6 @@ class VenueStatusScreen(View):
             # No player configured for the venue.
             player = None
 
-        return render(request, self.template_name, {"player": player, "order_venue": order_venue})
+        return render(
+            request, self.template_name, {"player": player, "order_venue": order_venue}
+        )

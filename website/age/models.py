@@ -15,14 +15,20 @@ class AgeRegistration(models.Model):
         (MANUAL, "Manually"),
     )
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="is_18_years_old")
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name="is_18_years_old"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     minimum_age = models.PositiveIntegerField()
 
-    verified_by = models.CharField(max_length=100, null=True, blank=True, choices=VERIFIED_BY_CHOICES)
+    verified_by = models.CharField(
+        max_length=100, null=True, blank=True, choices=VERIFIED_BY_CHOICES
+    )
     attributes = models.JSONField(max_length=1000, null=True, blank=True)
-    verified_by_user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    verified_by_user = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True
+    )
 
     def __str__(self):
         """Convert this object to string."""

@@ -19,7 +19,12 @@ from django.urls import reverse
 
 from cron.helpers import humanize_duration
 from cron.models import CronJobLog, CronJobLock
-from cron.tests.crons import TestErrorCronJob, TestSuccessCronJob, Test5minsCronJob, TestRunAtTimesCronJob
+from cron.tests.crons import (
+    TestErrorCronJob,
+    TestSuccessCronJob,
+    Test5minsCronJob,
+    TestRunAtTimesCronJob,
+)
 
 
 User = get_user_model()
@@ -112,7 +117,9 @@ class TestRunCrons(TransactionTestCase):
         self._call(self.success_cron, force=True)
         self.assertEqual(CronJobLog.objects.all().count(), 1)
 
-    @override_settings(DJANGO_CRON_LOCK_BACKEND="cron.backends.lock.database.DatabaseLock")
+    @override_settings(
+        DJANGO_CRON_LOCK_BACKEND="cron.backends.lock.database.DatabaseLock"
+    )
     def test_database_locking_backend(self):
         # TODO: to test it properly we would need to run multiple jobs at the same time
         cron_job_locks = CronJobLock.objects.all().count()
@@ -137,7 +144,9 @@ class TestRunCrons(TransactionTestCase):
         mock_do.assert_called_once()
         self.assertEqual(1, CronJobLog.objects.count())
         log = CronJobLog.objects.get()
-        self.assertEqual("message", log.message.strip())  # CronJobManager adds new line at the end of each message
+        self.assertEqual(
+            "message", log.message.strip()
+        )  # CronJobManager adds new line at the end of each message
         self.assertTrue(log.is_success)
 
     def test_runs_every_mins(self):
@@ -187,17 +196,23 @@ class TestRunCrons(TransactionTestCase):
     def test_runs_at_time(self):
         current_time = timezone.now()
 
-        with freeze_time(current_time.replace(hour=0, minute=0, second=1, microsecond=0)):
+        with freeze_time(
+            current_time.replace(hour=0, minute=0, second=1, microsecond=0)
+        ):
             response = self._call(self.run_at_times_cron)
         self.assertReportedRun(TestRunAtTimesCronJob, response)
         self.assertEqual(CronJobLog.objects.all().count(), 1)
 
-        with freeze_time(current_time.replace(hour=0, minute=4, second=50, microsecond=0)):
+        with freeze_time(
+            current_time.replace(hour=0, minute=4, second=50, microsecond=0)
+        ):
             response = self._call(self.run_at_times_cron)
         self.assertReportedNoRun(TestRunAtTimesCronJob, response)
         self.assertEqual(CronJobLog.objects.all().count(), 1)
 
-        with freeze_time(current_time.replace(hour=0, minute=5, second=1, microsecond=0)):
+        with freeze_time(
+            current_time.replace(hour=0, minute=5, second=1, microsecond=0)
+        ):
             response = self._call(self.run_at_times_cron)
         self.assertReportedRun(TestRunAtTimesCronJob, response)
         self.assertEqual(CronJobLog.objects.all().count(), 2)
@@ -262,13 +277,17 @@ class TestRunCrons(TransactionTestCase):
 
     def test_silent_produces_no_output_no_run(self):
         time_to_freeze = timezone.now()
-        time_to_freeze = time_to_freeze.replace(month=1, day=1, hour=0, minute=0, second=0)
+        time_to_freeze = time_to_freeze.replace(
+            month=1, day=1, hour=0, minute=0, second=0
+        )
         with freeze_time(time_to_freeze):
             response = self._call(self.run_at_times_cron, silent=True)
         self.assertEqual(1, CronJobLog.objects.count())
         self.assertEqual("", response)
 
-        time_to_freeze = time_to_freeze.replace(month=1, day=1, hour=0, minute=0, second=1)
+        time_to_freeze = time_to_freeze.replace(
+            month=1, day=1, hour=0, minute=0, second=1
+        )
         with freeze_time(time_to_freeze):
             response = self._call(self.run_at_times_cron, silent=True)
 
@@ -331,7 +350,9 @@ class TestRunCrons(TransactionTestCase):
             self.assertEqual(humanize_duration(duration), humanized)
 
     def test_remove_old_succeeded_job_logs(self):
-        mock_date = datetime.datetime(2022, 5, 1, 12, 0, 0, tzinfo=tz.gettz(timezone.get_current_timezone_name()))
+        mock_date = datetime.datetime(
+            2022, 5, 1, 12, 0, 0, tzinfo=tz.gettz(timezone.get_current_timezone_name())
+        )
         for _ in range(5):
             with freeze_time(mock_date):
                 call_command("runcrons", self.run_and_remove_old_logs)
@@ -344,20 +365,28 @@ class TestRunCrons(TransactionTestCase):
         with freeze_time(mock_date_in_future):
             call_command("runcrons", self.five_mins_cron)
             self.assertEqual(CronJobLog.objects.all().count(), 1)
-            self.assertEqual(CronJobLog.objects.all().first().end_time, mock_date_in_future)
+            self.assertEqual(
+                CronJobLog.objects.all().first().end_time, mock_date_in_future
+            )
 
         mock_date_in_past = timezone.now() - datetime.timedelta(days=365)
         with freeze_time(mock_date_in_past):
             call_command("runcrons", self.five_mins_cron)
             self.assertEqual(CronJobLog.objects.all().count(), 2)
-            self.assertEqual(CronJobLog.objects.all().order_by("start_time").first().end_time, mock_date_in_past)
+            self.assertEqual(
+                CronJobLog.objects.all().order_by("start_time").first().end_time,
+                mock_date_in_past,
+            )
 
         mock_date_in_future_plus_one_minute = mock_date_in_future + timedelta(minutes=1)
         with freeze_time(mock_date_in_future_plus_one_minute):
             call_command("runcrons", self.five_mins_cron)
             self.assertEqual(CronJobLog.objects.all().count(), 2)
             # Old job log will be removed.
-            self.assertEqual(CronJobLog.objects.all().order_by("start_time").first().end_time, mock_date_in_past)
+            self.assertEqual(
+                CronJobLog.objects.all().order_by("start_time").first().end_time,
+                mock_date_in_past,
+            )
 
 
 class TestCronLoop(TransactionTestCase):
@@ -367,5 +396,7 @@ class TestCronLoop(TransactionTestCase):
         return call("cronloop", *args, **kwargs)
 
     def test_repeat_twice(self):
-        self._call(cron_classes=[self.success_cron, self.success_cron], repeat=2, sleep=1)
+        self._call(
+            cron_classes=[self.success_cron, self.success_cron], repeat=2, sleep=1
+        )
         self.assertEqual(CronJobLog.objects.all().count(), 4)

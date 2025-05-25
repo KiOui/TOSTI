@@ -75,7 +75,15 @@ class BorrelReservationAdmin(AutocompleteFilterMixin, ExportMixin, admin.ModelAd
     """Custom admin for borrel reservations."""
 
     resource_class = BorrelReservationResource
-    list_display = ["title", "association", "user_created", "start", "end", "accepted", "submitted"]
+    list_display = [
+        "title",
+        "association",
+        "user_created",
+        "start",
+        "end",
+        "accepted",
+        "submitted",
+    ]
     search_fields = ["title"]
     autocomplete_fields = ["venue_reservation"]
     inlines = [ReservationItemInline]

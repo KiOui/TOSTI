@@ -24,7 +24,9 @@ class IsAuthenticatedOrTokenHasScopeForMethod(BasePermission):
         is_authenticated = IsAuthenticated().has_permission(request, view)
         oauth2authenticated = False
         if is_authenticated:
-            oauth2authenticated = isinstance(request.successful_authenticator, OAuth2Authentication)
+            oauth2authenticated = isinstance(
+                request.successful_authenticator, OAuth2Authentication
+            )
 
         token = request.auth
         has_scope = False

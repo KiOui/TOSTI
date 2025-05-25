@@ -34,7 +34,11 @@ class BorrelReservationForm(forms.ModelForm):
         self.user = request.user
         super().__init__(*args, **kwargs)
         # Automatically set association to user association
-        if request is not None and request.user.is_authenticated and request.user.association is not None:
+        if (
+            request is not None
+            and request.user.is_authenticated
+            and request.user.association is not None
+        ):
             self.fields["association"].initial = self.user.association
 
     def clean(self):
@@ -53,7 +57,9 @@ class BorrelReservationForm(forms.ModelForm):
                 )
                 .exists()
             ):
-                raise ValidationError("There is already another overlapping reservation for this venue.")
+                raise ValidationError(
+                    "There is already another overlapping reservation for this venue."
+                )
 
     def clean_venue(self):
         """Validate the venue field."""
@@ -111,8 +117,12 @@ class BorrelReservationForm(forms.ModelForm):
                     "rows": 2,
                 }
             ),
-            "start": DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
-            "end": DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
+            "start": DateTimeInput(
+                attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"
+            ),
+            "end": DateTimeInput(
+                attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"
+            ),
         }
         help_texts = {
             "start": "When do you need your reserved items.",
@@ -140,8 +150,12 @@ class BorrelReservationUpdateForm(forms.ModelForm):
                     "rows": 2,
                 }
             ),
-            "start": DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
-            "end": DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
+            "start": DateTimeInput(
+                attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"
+            ),
+            "end": DateTimeInput(
+                attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"
+            ),
         }
 
 
@@ -165,7 +179,9 @@ class BorrelReservationSubmissionForm(forms.ModelForm):
             self.fields["cleaning_scheme"].label = mark_safe(
                 "I have cleaned the canteens according to the {} setup by "
                 "Olympus.".format(
-                    '<a href="{}" target="_blank">cleaning scheme</a>'.format(config.CLEANING_SCHEME_URL)
+                    '<a href="{}" target="_blank">cleaning scheme</a>'.format(
+                        config.CLEANING_SCHEME_URL
+                    )
                     if config.CLEANING_SCHEME_URL
                     else "cleaning scheme"
                 )
@@ -190,8 +206,12 @@ class BorrelReservationSubmissionForm(forms.ModelForm):
                     "rows": 2,
                 }
             ),
-            "start": DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
-            "end": DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
+            "start": DateTimeInput(
+                attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"
+            ),
+            "end": DateTimeInput(
+                attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"
+            ),
         }
 
 

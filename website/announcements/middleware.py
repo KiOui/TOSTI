@@ -18,9 +18,13 @@ class ClosedAnnouncementsMiddleware:
         response = self.get_response(request)
 
         closed_announcements = validate_closed_announcements(
-            sanitize_closed_announcements(request.COOKIES.get("closed-announcements", None))
+            sanitize_closed_announcements(
+                request.COOKIES.get("closed-announcements", None)
+            )
         )
-        response.set_cookie("closed-announcements", encode_closed_announcements(closed_announcements))
+        response.set_cookie(
+            "closed-announcements", encode_closed_announcements(closed_announcements)
+        )
 
         return response
 

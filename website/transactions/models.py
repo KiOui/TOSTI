@@ -41,24 +41,43 @@ class Transaction(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
-    account = models.ForeignKey(Account, on_delete=models.PROTECT, null=True, blank=False, related_name="transactions")
+    account = models.ForeignKey(
+        Account,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=False,
+        related_name="transactions",
+    )
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     timestamp = models.DateTimeField(auto_now_add=True, editable=False)
 
     description = models.CharField(max_length=255)
     processor = models.ForeignKey(
-        User, on_delete=models.SET_NULL, null=True, blank=False, related_name="transactions_processed"
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=False,
+        related_name="transactions_processed",
     )
 
-    payable_content_type = models.ForeignKey(ContentType, on_delete=models.SET_NULL, null=True, blank=True)
+    payable_content_type = models.ForeignKey(
+        ContentType, on_delete=models.SET_NULL, null=True, blank=True
+    )
     payable_object_id = models.CharField(max_length=255, null=True, blank=True)
     payable_object = GenericForeignKey("payable_content_type", "payable_object_id")
 
     # The following fields are used to link transactions together and maintain the integrity of the account
     # The fields are not editable because they should be calculated automatically. This is verified in the save method.
-    _balance_after = models.DecimalField(max_digits=10, decimal_places=2, editable=False)
+    _balance_after = models.DecimalField(
+        max_digits=10, decimal_places=2, editable=False
+    )
     _previous_transaction = models.OneToOneField(
-        "self", on_delete=models.PROTECT, null=True, blank=True, related_name="_next_transaction", editable=False
+        "self",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="_next_transaction",
+        editable=False,
     )
 
     def save(self, *args, **kwargs):
@@ -88,16 +107,29 @@ class Transaction(models.Model):
 
         # We could simply always overwrite the values of balance_after and previous_transaction
         # However, we want to make sure that the values are correct and throw an error if they are not consistent
-        if self._balance_after is not None and balance_after is not None and self._balance_after != balance_after:
+        if (
+            self._balance_after is not None
+            and balance_after is not None
+            and self._balance_after != balance_after
+        ):
             # Check if balance after is correct, if it was already provided
-            raise IntegrityError("Balance after is not equal to previous balance after + amount")
+            raise IntegrityError(
+                "Balance after is not equal to previous balance after + amount"
+            )
         else:
             # Calculate balance after, if it was not provided
-            self._balance_after = balance_after if balance_after is not None else self.amount
+            self._balance_after = (
+                balance_after if balance_after is not None else self.amount
+            )
 
-        if self._previous_transaction and self._previous_transaction != previous_transaction:
+        if (
+            self._previous_transaction
+            and self._previous_transaction != previous_transaction
+        ):
             # Check if previous transaction is correct, if it was already provided
-            raise IntegrityError("Previous transaction is not the last transaction of the account")
+            raise IntegrityError(
+                "Previous transaction is not the last transaction of the account"
+            )
         else:
             # Set previous transaction to the last transaction of the account, if it was not provided
             self._previous_transaction = previous_transaction

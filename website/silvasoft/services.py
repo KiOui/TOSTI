@@ -41,7 +41,11 @@ class SilvasoftClient:
     @staticmethod
     def can_create_client():
         """Check whether all settings are instantiated."""
-        return config.SILVASOFT_API_URL and config.SILVASOFT_USERNAME and config.SILVASOFT_API_KEY
+        return (
+            config.SILVASOFT_API_URL
+            and config.SILVASOFT_USERNAME
+            and config.SILVASOFT_API_KEY
+        )
 
     def get_api_url(self, path):
         """Get API URL."""
@@ -126,7 +130,11 @@ class SilvasoftClient:
 def get_silvasoft_client() -> SilvasoftClient:
     """Get the default Silvasoft client (with the login credentials in the Django settings file)."""
     if SilvasoftClient.can_create_client():
-        return SilvasoftClient(config.SILVASOFT_API_URL, config.SILVASOFT_USERNAME, config.SILVASOFT_API_KEY)
+        return SilvasoftClient(
+            config.SILVASOFT_API_URL,
+            config.SILVASOFT_USERNAME,
+            config.SILVASOFT_API_KEY,
+        )
     else:
         raise SilvasoftException(
             "SilvasoftClient could not be created, please provide valid settings for Silvasoft to function."
@@ -208,17 +216,25 @@ def synchronize_shift_to_silvasoft(shift: Shift, silvasoft_identifier):
     )
 
 
-def synchronize_borrelreservation_to_silvasoft(borrel_reservation: BorrelReservation, silvasoft_identifier):
+def synchronize_borrelreservation_to_silvasoft(
+    borrel_reservation: BorrelReservation, silvasoft_identifier
+):
     """Synchronize a Borrel Reservation to Silvasoft."""
     if borrel_reservation.association is None:
-        raise SilvasoftException("No association set for {}.".format(borrel_reservation))
+        raise SilvasoftException(
+            "No association set for {}.".format(borrel_reservation)
+        )
 
     try:
-        silvasoft_association = SilvasoftAssociation.objects.get(association=borrel_reservation.association)
+        silvasoft_association = SilvasoftAssociation.objects.get(
+            association=borrel_reservation.association
+        )
     except SilvasoftAssociation.DoesNotExist:
         raise SilvasoftException(
             "No Silvasoft client for {} exists, if you want to automatically synchronize borrel reservations to "
-            "Silvasoft, please add a SilvasoftAssociation for it.".format(borrel_reservation.association)
+            "Silvasoft, please add a SilvasoftAssociation for it.".format(
+                borrel_reservation.association
+            )
         )
 
     try:
@@ -230,22 +246,30 @@ def synchronize_borrelreservation_to_silvasoft(borrel_reservation: BorrelReserva
         )
 
     order_lines = []
-    for reservation_item in borrel_reservation.items.filter(product__can_be_submitted=True):
+    for reservation_item in borrel_reservation.items.filter(
+        product__can_be_submitted=True
+    ):
         if reservation_item.amount_used is None:
             raise SilvasoftException(
                 "The amount used for {} is not filled in yet, please register how much is used for {} and then rerun "
-                "synchronization.".format(reservation_item.product, reservation_item.product)
+                "synchronization.".format(
+                    reservation_item.product, reservation_item.product
+                )
             )
 
         if reservation_item.amount_used == 0:
             continue
 
         try:
-            silvasoft_borrel_product = SilvasoftBorrelProduct.objects.get(product=reservation_item.product)
+            silvasoft_borrel_product = SilvasoftBorrelProduct.objects.get(
+                product=reservation_item.product
+            )
         except SilvasoftBorrelProduct.DoesNotExist:
             raise SilvasoftException(
                 "No Silvasoft Borrel Product exists for {}, if you want to automatically synchronize to Silvasoft,"
-                " please add a Silvasoft Borrel Product for it.".format(reservation_item.product)
+                " please add a Silvasoft Borrel Product for it.".format(
+                    reservation_item.product
+                )
             )
 
         order_line_to_append = {
@@ -282,10 +306,14 @@ def synchronize_borrelreservation_to_silvasoft(borrel_reservation: BorrelReserva
 def refresh_cached_relations():
     """Refresh the relations cached in TOSTI."""
     client = get_silvasoft_client()
-    relations = SilvasoftClient.get_all(client.list_relations, url_parameters={"IsCustomer": True})
+    relations = SilvasoftClient.get_all(
+        client.list_relations, url_parameters={"IsCustomer": True}
+    )
     CachedRelation.objects.all().delete()
     for relation in relations:
-        CachedRelation.objects.create(name=relation["Name"], customer_number=relation["CustomerNumber"])
+        CachedRelation.objects.create(
+            name=relation["Name"], customer_number=relation["CustomerNumber"]
+        )
 
 
 def refresh_cached_products():
@@ -295,4 +323,6 @@ def refresh_cached_products():
     CachedProduct.objects.all().delete()
     for product in products:
         if product["ArticleNumber"] is not None:
-            CachedProduct.objects.create(name=product["Name"], product_number=product["ArticleNumber"])
+            CachedProduct.objects.create(
+                name=product["Name"], product_number=product["ArticleNumber"]
+            )

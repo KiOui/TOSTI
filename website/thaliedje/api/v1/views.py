@@ -83,8 +83,18 @@ class PlayerTrackSearchAPIView(APIView):
 
     schema = CustomAutoSchema(
         manual_operations=[
-            {"name": "query", "in": "query", "required": True, "schema": {"type": "string"}},
-            {"name": "maximum", "in": "query", "required": False, "schema": {"type": "int"}},
+            {
+                "name": "query",
+                "in": "query",
+                "required": True,
+                "schema": {"type": "string"},
+            },
+            {
+                "name": "maximum",
+                "in": "query",
+                "required": False,
+                "schema": {"type": "int"},
+            },
         ],
         response_schema={
             "type": "object",
@@ -96,8 +106,14 @@ class PlayerTrackSearchAPIView(APIView):
                         "type": "object",
                         "properties": {
                             "name": {"type": "string", "example": "string"},
-                            "artists": {"type": "array", "items": {"type": "string", "example": "string"}},
-                            "id": {"type": "string", "example": "6tcCTgpI1JWsgReB9ttSUD"},
+                            "artists": {
+                                "type": "array",
+                                "items": {"type": "string", "example": "string"},
+                            },
+                            "id": {
+                                "type": "string",
+                                "example": "6tcCTgpI1JWsgReB9ttSUD",
+                            },
                         },
                     },
                 },
@@ -112,7 +128,10 @@ class PlayerTrackSearchAPIView(APIView):
         player = kwargs.get("player")
 
         if not player.can_request_song(request.user):
-            return Response(status=status.HTTP_403_FORBIDDEN, data="You are not allowed to request songs.")
+            return Response(
+                status=status.HTTP_403_FORBIDDEN,
+                data="You are not allowed to request songs.",
+            )
 
         query = request.GET.get("query", "")
         try:
@@ -129,14 +148,19 @@ class PlayerTrackSearchAPIView(APIView):
             results = player.search(query, maximum, query_type=type_to_search)
         else:
             results = []
-        return Response(status=status.HTTP_200_OK, data={"query": query, "results": results})
+        return Response(
+            status=status.HTTP_200_OK, data={"query": query, "results": results}
+        )
 
 
 class PlayerTrackAddAPIView(APIView):
     """API view to add tracks to the player's queue."""
 
     schema = CustomAutoSchema(
-        request_schema={"type": "object", "properties": {"id": {"type": "string", "example": "string"}}}
+        request_schema={
+            "type": "object",
+            "properties": {"id": {"type": "string", "example": "string"}},
+        }
     )
     permission_classes = [IsAuthenticatedOrTokenHasScope]
     required_scopes = ["thaliedje:request"]
@@ -146,7 +170,10 @@ class PlayerTrackAddAPIView(APIView):
         player = kwargs.get("player")
 
         if not player.can_request_song(request.user):
-            return Response(status=status.HTTP_403_FORBIDDEN, data="You are not allowed to request songs.")
+            return Response(
+                status=status.HTTP_403_FORBIDDEN,
+                data="You are not allowed to request songs.",
+            )
 
         track_id = request.data.get("id", None)
         if track_id is None:
@@ -154,7 +181,11 @@ class PlayerTrackAddAPIView(APIView):
 
         try:
             requested = request_song(player, request.user, track_id)
-            player.log_action(request.user, "request_song", 'Requested song "{}"'.format(requested.track.track_name))
+            player.log_action(
+                request.user,
+                "request_song",
+                'Requested song "{}"'.format(requested.track.track_name),
+            )
         except spotipy.SpotifyException:
             return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
         return Response(status=status.HTTP_200_OK)
@@ -166,7 +197,12 @@ class PlayerPlayAPIView(APIView):
     schema = CustomAutoSchema(
         request_schema={
             "type": "object",
-            "properties": {"context_uri": {"type": "string", "example": "spotify:album:1Je1IMUlBXcx1Fz0WE7oPT"}},
+            "properties": {
+                "context_uri": {
+                    "type": "string",
+                    "example": "spotify:album:1Je1IMUlBXcx1Fz0WE7oPT",
+                }
+            },
         }
     )
     serializer_class = PlayerSerializer
@@ -177,13 +213,18 @@ class PlayerPlayAPIView(APIView):
         """Make player play."""
         player = kwargs.get("player")
         if not player.can_control(request.user):
-            return Response(status=status.HTTP_403_FORBIDDEN, data="You are not allowed to control this player.")
+            return Response(
+                status=status.HTTP_403_FORBIDDEN,
+                data="You are not allowed to control this player.",
+            )
 
         try:
             context_uri = request.data.get("context_uri", None)
             if player.can_request_playlist(request.user) and context_uri is not None:
                 player.start_playing(context_uri)
-                player.log_action(request.user, "play", f"Started playback {context_uri}.")
+                player.log_action(
+                    request.user, "play", f"Started playback {context_uri}."
+                )
             else:
                 player.start()
                 player.log_action(request.user, "play", "Started playback.")
@@ -193,7 +234,8 @@ class PlayerPlayAPIView(APIView):
             else:
                 return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
         return Response(
-            status=status.HTTP_200_OK, data=self.serializer_class(player, context={"request": request}).data
+            status=status.HTTP_200_OK,
+            data=self.serializer_class(player, context={"request": request}).data,
         )
 
 
@@ -208,7 +250,10 @@ class PlayerPauseAPIView(APIView):
         """Make player pause."""
         player = kwargs.get("player")
         if not player.can_control(request.user):
-            return Response(status=status.HTTP_403_FORBIDDEN, data="You are not allowed to control this player.")
+            return Response(
+                status=status.HTTP_403_FORBIDDEN,
+                data="You are not allowed to control this player.",
+            )
         try:
             player.pause()
             player.log_action(request.user, "pause", "Paused playback.")
@@ -218,7 +263,8 @@ class PlayerPauseAPIView(APIView):
             else:
                 return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
         return Response(
-            status=status.HTTP_200_OK, data=self.serializer_class(player, context={"request": request}).data
+            status=status.HTTP_200_OK,
+            data=self.serializer_class(player, context={"request": request}).data,
         )
 
 
@@ -229,7 +275,14 @@ class PlayerVolumeAPIView(APIView):
     schema = CustomAutoSchema(
         request_schema={
             "type": "object",
-            "properties": {"volume_percent": {"type": "integer", "minimum": 0, "maximum": 100, "example": 75}},
+            "properties": {
+                "volume_percent": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100,
+                    "example": 75,
+                }
+            },
         }
     )
     permission_classes = [IsAuthenticatedOrTokenHasScope]
@@ -239,7 +292,10 @@ class PlayerVolumeAPIView(APIView):
         """Make player pause."""
         player = kwargs.get("player")
         if not player.can_control(request.user):
-            return Response(status=status.HTTP_403_FORBIDDEN, data="You are not allowed to control this player.")
+            return Response(
+                status=status.HTTP_403_FORBIDDEN,
+                data="You are not allowed to control this player.",
+            )
 
         volume = int(request.data.get("volume"))
         try:
@@ -251,7 +307,8 @@ class PlayerVolumeAPIView(APIView):
             else:
                 return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
         return Response(
-            status=status.HTTP_200_OK, data=self.serializer_class(player, context={"request": request}).data
+            status=status.HTTP_200_OK,
+            data=self.serializer_class(player, context={"request": request}).data,
         )
 
 
@@ -266,7 +323,10 @@ class PlayerNextAPIView(APIView):
         """Make player go to the next song."""
         player = kwargs.get("player")
         if not player.can_control(request.user):
-            return Response(status=status.HTTP_403_FORBIDDEN, data="You are not allowed to control this player.")
+            return Response(
+                status=status.HTTP_403_FORBIDDEN,
+                data="You are not allowed to control this player.",
+            )
 
         try:
             player.next()
@@ -277,7 +337,8 @@ class PlayerNextAPIView(APIView):
             else:
                 return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
         return Response(
-            status=status.HTTP_200_OK, data=self.serializer_class(player, context={"request": request}).data
+            status=status.HTTP_200_OK,
+            data=self.serializer_class(player, context={"request": request}).data,
         )
 
 
@@ -292,7 +353,10 @@ class PlayerPreviousAPIView(APIView):
         """Make player go to the previous song."""
         player = kwargs.get("player")
         if not player.can_control(request.user):
-            return Response(status=status.HTTP_403_FORBIDDEN, data="You are not allowed to control this player.")
+            return Response(
+                status=status.HTTP_403_FORBIDDEN,
+                data="You are not allowed to control this player.",
+            )
         try:
             player.previous()
             player.log_action(request.user, "previous", "Skipped to previous song.")
@@ -302,7 +366,8 @@ class PlayerPreviousAPIView(APIView):
             else:
                 return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
         return Response(
-            status=status.HTTP_200_OK, data=self.serializer_class(player, context={"request": request}).data
+            status=status.HTTP_200_OK,
+            data=self.serializer_class(player, context={"request": request}).data,
         )
 
 
@@ -327,7 +392,10 @@ class PlayerShuffleAPIView(APIView):
         """Make player go to the previous song."""
         player = kwargs.get("player")
         if not player.can_control(request.user):
-            return Response(status=status.HTTP_403_FORBIDDEN, data="You are not allowed to control this player.")
+            return Response(
+                status=status.HTTP_403_FORBIDDEN,
+                data="You are not allowed to control this player.",
+            )
 
         state = request.data.get("state", None)
         if state is None:
@@ -338,14 +406,17 @@ class PlayerShuffleAPIView(APIView):
 
         try:
             player.shuffle = state
-            player.log_action(request.user, "shuffle", "Set shuffle to '{}'.".format(state))
+            player.log_action(
+                request.user, "shuffle", "Set shuffle to '{}'.".format(state)
+            )
         except spotipy.SpotifyException as e:
             if e.http_status == 403:
                 return Response(status=status.HTTP_403_FORBIDDEN)
             else:
                 return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
         return Response(
-            status=status.HTTP_200_OK, data=self.serializer_class(player, context={"request": request}).data
+            status=status.HTTP_200_OK,
+            data=self.serializer_class(player, context={"request": request}).data,
         )
 
 
@@ -370,23 +441,31 @@ class PlayerRepeatAPIView(APIView):
         """Make player go to the previous song."""
         player = kwargs.get("player")
         if not player.can_control(request.user):
-            return Response(status=status.HTTP_403_FORBIDDEN, data="You are not allowed to control this player.")
+            return Response(
+                status=status.HTTP_403_FORBIDDEN,
+                data="You are not allowed to control this player.",
+            )
 
         state = request.data.get("state", None)
         if state is None:
             raise ValidationError("A state is required.")
 
         if state != "off" and state != "context" and state != "track":
-            raise ValidationError("The state parameter should be one of 'off', 'context' or 'track'.")
+            raise ValidationError(
+                "The state parameter should be one of 'off', 'context' or 'track'."
+            )
 
         try:
             player.repeat = state
-            player.log_action(request.user, "repeat", "Set repeat to '{}'.".format(state))
+            player.log_action(
+                request.user, "repeat", "Set repeat to '{}'.".format(state)
+            )
         except spotipy.SpotifyException as e:
             if e.http_status == 403:
                 return Response(status=status.HTTP_403_FORBIDDEN)
             else:
                 return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
         return Response(
-            status=status.HTTP_200_OK, data=self.serializer_class(player, context={"request": request}).data
+            status=status.HTTP_200_OK,
+            data=self.serializer_class(player, context={"request": request}).data,
         )

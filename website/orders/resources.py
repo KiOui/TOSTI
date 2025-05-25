@@ -14,11 +14,15 @@ class ShiftResource(resources.ModelResource):
 
     def before_export(self, queryset, *args, **kwargs):
         """Initialize by creating a field for each product."""
-        product_names = models.Order.objects.filter(shift__in=queryset).values_list("product__name", "product__id")
+        product_names = models.Order.objects.filter(shift__in=queryset).values_list(
+            "product__name", "product__id"
+        )
         for product_name, product_id in product_names:
             attribute_id_ordered = f"__product_{product_name}_ordered"
             self.fields[attribute_id_ordered] = Field(
-                column_name=f"{product_name}", attribute=attribute_id_ordered, readonly=True
+                column_name=f"{product_name}",
+                attribute=attribute_id_ordered,
+                readonly=True,
             )
             self.added_product_fields[attribute_id_ordered] = product_id
 

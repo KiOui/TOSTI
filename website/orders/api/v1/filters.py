@@ -23,7 +23,9 @@ class ProductFilter(FilterSet):
 class ShiftFilter(FilterSet):
     """Shift FilterSet."""
 
-    venue = ModelChoiceFilter(field_name="venue__venue", to_field_name="slug", queryset=Venue.objects.all())
+    venue = ModelChoiceFilter(
+        field_name="venue__venue", to_field_name="slug", queryset=Venue.objects.all()
+    )
 
     class Meta:
         """Meta class."""

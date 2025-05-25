@@ -55,7 +55,9 @@ class BorrelReservationBaseView(FormView):
             products_reserved = instance.items.values_list("product")
             new_products = products.exclude(id__in=products_reserved)
             num_extra = new_products.count()
-            max_num = products.values("pk").union(products_reserved.values("pk")).count()
+            max_num = (
+                products.values("pk").union(products_reserved.values("pk")).count()
+            )
         else:
             num_extra = products.count()
             max_num = products.count()
@@ -113,7 +115,9 @@ class BorrelReservationBaseView(FormView):
         # initialized with full objects by `_initialize_forms()`
         for form in formset.forms:
             if isinstance(form.initial["product"], int):
-                form.initial["product"] = Product.objects.get(id=form.initial["product"])
+                form.initial["product"] = Product.objects.get(
+                    id=form.initial["product"]
+                )
 
         # Do the actual sorting
         formset.forms.sort(
@@ -121,7 +125,11 @@ class BorrelReservationBaseView(FormView):
                 (
                     x.initial["product"].category.id
                     if x.initial["product"].category
-                    else (ProductCategory.objects.latest("pk").pk + 1 if ProductCategory.objects.count() > 0 else 1)
+                    else (
+                        ProductCategory.objects.latest("pk").pk + 1
+                        if ProductCategory.objects.count() > 0
+                        else 1
+                    )
                 ),
                 x.initial["product"].name,
             )
@@ -146,7 +154,9 @@ class BorrelReservationBaseView(FormView):
 
 
 @method_decorator(login_required, name="dispatch")
-class BorrelReservationCreateView(BasicBorrelBrevetRequiredMixin, BorrelReservationBaseView, CreateView):
+class BorrelReservationCreateView(
+    BasicBorrelBrevetRequiredMixin, BorrelReservationBaseView, CreateView
+):
     """Create a new reservation (request)."""
 
     template_name = "borrel/borrel_reservation_create.html"
@@ -162,7 +172,9 @@ class BorrelReservationCreateView(BasicBorrelBrevetRequiredMixin, BorrelReservat
         else:
             context["items"] = self._get_inline_formset()
 
-        self._initialize_forms(context["items"].forms, Product.objects.available_products())
+        self._initialize_forms(
+            context["items"].forms, Product.objects.available_products()
+        )
         self._sort_formset(context["items"])
 
         return context
@@ -178,8 +190,14 @@ class BorrelReservationCreateView(BasicBorrelBrevetRequiredMixin, BorrelReservat
             items.instance = obj
             items.save()
 
-            log_action(self.request.user, obj, ADDITION, "Created reservation via website.")
-            messages.add_message(self.request, messages.SUCCESS, "Your borrel reservation has been placed.")
+            log_action(
+                self.request.user, obj, ADDITION, "Created reservation via website."
+            )
+            messages.add_message(
+                self.request,
+                messages.SUCCESS,
+                "Your borrel reservation has been placed.",
+            )
             send_borrel_reservation_request_email(obj)
             if obj.venue_reservation is not None:
                 send_reservation_request_email(obj.venue_reservation)
@@ -218,7 +236,9 @@ class BorrelBorrelReservationUpdateView(BorrelReservationBaseView, UpdateView):
         new_products = products.exclude(id__in=products_reserved)
 
         if self.request.POST:
-            context["items"] = self._get_inline_formset(data=self.request.POST, instance=self.get_object())
+            context["items"] = self._get_inline_formset(
+                data=self.request.POST, instance=self.get_object()
+            )
             self._initialize_forms(context["items"].extra_forms, new_products)
         else:
             context["items"] = self._get_inline_formset(instance=self.get_object())
@@ -234,7 +254,11 @@ class BorrelBorrelReservationUpdateView(BorrelReservationBaseView, UpdateView):
     def post(self, request, *args, **kwargs):
         """Check if this reservation can be changed."""
         if not self.get_object().can_be_changed:
-            messages.add_message(self.request, messages.ERROR, "You cannot change this reservation anymore.")
+            messages.add_message(
+                self.request,
+                messages.ERROR,
+                "You cannot change this reservation anymore.",
+            )
             return redirect(self.get_success_url())
         return super().post(request, *args, **kwargs)
 
@@ -249,11 +273,19 @@ class BorrelBorrelReservationUpdateView(BorrelReservationBaseView, UpdateView):
             items.instance = obj
             items.save()
 
-            log_action(self.request.user, obj, CHANGE, "Updated reservation via website.")
-            messages.add_message(self.request, messages.SUCCESS, "Your borrel reservation has been updated.")
+            log_action(
+                self.request.user, obj, CHANGE, "Updated reservation via website."
+            )
+            messages.add_message(
+                self.request,
+                messages.SUCCESS,
+                "Your borrel reservation has been updated.",
+            )
             return redirect(self.get_success_url())
         else:
-            messages.add_message(self.request, messages.ERROR, f"Something went wrong. {items.errors}")
+            messages.add_message(
+                self.request, messages.ERROR, f"Something went wrong. {items.errors}"
+            )
             return self.form_invalid(form)
 
 
@@ -269,20 +301,34 @@ class ReservationRequestCancelView(DeleteView):
         """Only allow access to reservations users have access to."""
         if not self.request.user.is_authenticated:
             return super().get_queryset().none()
-        return super().get_queryset().filter(pk__in=self.request.user.borrel_reservations_access.values("pk"))
+        return (
+            super()
+            .get_queryset()
+            .filter(pk__in=self.request.user.borrel_reservations_access.values("pk"))
+        )
 
     def dispatch(self, request, *args, **kwargs):
         """Display a warning if the reservation cannot be cancelled."""
         if not self.get_object().can_be_changed:
-            messages.add_message(self.request, messages.ERROR, "You cannot cancel this reservation anymore.")
+            messages.add_message(
+                self.request,
+                messages.ERROR,
+                "You cannot cancel this reservation anymore.",
+            )
             return redirect(self.get_success_url())
         return super().dispatch(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
         """Delete the reservation."""
         obj = self.get_object()
-        log_action(self.request.user, obj, DELETION, "Cancelled reservation via website.")
-        messages.add_message(self.request, messages.SUCCESS, "Your borrel reservation has been cancelled.")
+        log_action(
+            self.request.user, obj, DELETION, "Cancelled reservation via website."
+        )
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            "Your borrel reservation has been cancelled.",
+        )
         return super().delete(request, *args, **kwargs)
 
 
@@ -298,7 +344,11 @@ class ListReservationsView(ListView):
         """Only list reservations you have access to."""
         if not self.request.user.is_authenticated:
             return super().get_queryset().none()
-        return super().get_queryset().filter(pk__in=self.request.user.borrel_reservations_access.values("pk"))
+        return (
+            super()
+            .get_queryset()
+            .filter(pk__in=self.request.user.borrel_reservations_access.values("pk"))
+        )
 
 
 @method_decorator(login_required, name="dispatch")
@@ -308,7 +358,9 @@ class JoinReservationView(BasicBorrelBrevetRequiredMixin, View):
     def get(self, *args, **kwargs):
         """Process a get request."""
         try:
-            reservation = BorrelReservation.objects.get(join_code=self.kwargs.get("code"))
+            reservation = BorrelReservation.objects.get(
+                join_code=self.kwargs.get("code")
+            )
         except BorrelReservation.DoesNotExist:
             messages.add_message(self.request, messages.INFO, "Invalid code.")
             return redirect(reverse("index"))
@@ -316,13 +368,24 @@ class JoinReservationView(BasicBorrelBrevetRequiredMixin, View):
         if self.request.user not in reservation.users_access.all():
             reservation.users_access.add(self.request.user)
             reservation.save()
-            log_action(self.request.user, reservation, CHANGE, "Joined reservation via website.")
-            messages.add_message(self.request, messages.INFO, "You now have access to this reservation.")
+            log_action(
+                self.request.user,
+                reservation,
+                CHANGE,
+                "Joined reservation via website.",
+            )
+            messages.add_message(
+                self.request, messages.INFO, "You now have access to this reservation."
+            )
 
-        return redirect(reverse("borrel:view_reservation", kwargs={"pk": reservation.pk}))
+        return redirect(
+            reverse("borrel:view_reservation", kwargs={"pk": reservation.pk})
+        )
 
 
-class BorrelReservationSubmitView(BasicBorrelBrevetRequiredMixin, BorrelReservationBaseView, UpdateView):
+class BorrelReservationSubmitView(
+    BasicBorrelBrevetRequiredMixin, BorrelReservationBaseView, UpdateView
+):
     """View and update a reservation."""
 
     template_name = "borrel/borrel_reservation_submit.html"
@@ -335,7 +398,10 @@ class BorrelReservationSubmitView(BasicBorrelBrevetRequiredMixin, BorrelReservat
         venue_reservation = self.get_object().venue_reservation
         kwargs.update({"add_accept_terms": venue_reservation is not None})
         kwargs.update(
-            {"add_re_enabled_music_system": venue_reservation is not None and venue_reservation.needs_music_keys}
+            {
+                "add_re_enabled_music_system": venue_reservation is not None
+                and venue_reservation.needs_music_keys
+            }
         )
         return kwargs
 
@@ -347,7 +413,9 @@ class BorrelReservationSubmitView(BasicBorrelBrevetRequiredMixin, BorrelReservat
         new_products = products.exclude(id__in=products_reserved)
 
         if self.request.POST:
-            context["items"] = self._get_inline_formset(data=self.request.POST, instance=self.get_object())
+            context["items"] = self._get_inline_formset(
+                data=self.request.POST, instance=self.get_object()
+            )
             self._initialize_forms(context["items"].extra_forms, new_products)
         else:
             context["items"] = self._get_inline_formset(instance=self.get_object())
@@ -369,10 +437,16 @@ class BorrelReservationSubmitView(BasicBorrelBrevetRequiredMixin, BorrelReservat
     def dispatch(self, request, *args, **kwargs):
         """Display error messages in certain conditions."""
         if self.get_object().submitted:
-            messages.add_message(self.request, messages.INFO, "Your borrel reservation was already submitted.")
+            messages.add_message(
+                self.request,
+                messages.INFO,
+                "Your borrel reservation was already submitted.",
+            )
             return redirect(self.get_success_url())
         if not self.get_object().can_be_submitted:
-            messages.add_message(self.request, messages.WARNING, "This reservation cannot be submitted.")
+            messages.add_message(
+                self.request, messages.WARNING, "This reservation cannot be submitted."
+            )
             return redirect(self.get_success_url())
         return super().dispatch(request, *args, **kwargs)
 
@@ -383,11 +457,17 @@ class BorrelReservationSubmitView(BasicBorrelBrevetRequiredMixin, BorrelReservat
     def form_valid(self, form):
         """Process the form."""
         if self.get_object().submitted:
-            messages.add_message(self.request, messages.INFO, "Your borrel reservation was already submitted.")
+            messages.add_message(
+                self.request,
+                messages.INFO,
+                "Your borrel reservation was already submitted.",
+            )
             return redirect(self.get_success_url())
 
         if not self.get_object().can_be_submitted:
-            messages.add_message(self.request, messages.WARNING, "This reservation cannot be submitted.")
+            messages.add_message(
+                self.request, messages.WARNING, "This reservation cannot be submitted."
+            )
             return redirect(self.get_success_url())
 
         context = self.get_context_data()
@@ -400,12 +480,18 @@ class BorrelReservationSubmitView(BasicBorrelBrevetRequiredMixin, BorrelReservat
             obj.submitted_at = timezone.now()
             obj.save()
 
-            log_action(self.request.user, obj, CHANGE, "Submitted reservation via website.")
-            messages.add_message(self.request, messages.SUCCESS, "Your borrel reservation is submitted.")
+            log_action(
+                self.request.user, obj, CHANGE, "Submitted reservation via website."
+            )
+            messages.add_message(
+                self.request, messages.SUCCESS, "Your borrel reservation is submitted."
+            )
 
             return redirect(self.get_success_url())
         else:
-            messages.add_message(self.request, messages.ERROR, f"Something went wrong. {items.errors}")
+            messages.add_message(
+                self.request, messages.ERROR, f"Something went wrong. {items.errors}"
+            )
             return self.form_invalid(form)
 
 
@@ -439,7 +525,10 @@ class BorrelReservationFeed(ICalFeed):
                 for reserved_item in item.items.all()
             ]
         )
-        if item.venue_reservation is not None and item.venue_reservation.needs_music_keys:
+        if (
+            item.venue_reservation is not None
+            and item.venue_reservation.needs_music_keys
+        ):
             return (
                 f"Title: {item.title}<br>"
                 f"Comments: {item.comments}<br>"
@@ -470,21 +559,27 @@ class BorrelReservationFeed(ICalFeed):
         """Get item link."""
         return "https://{}{}".format(
             Site.objects.get_current().domain,
-            reverse("admin:borrel_borrelreservation_change", kwargs={"object_id": item.id}),
+            reverse(
+                "admin:borrel_borrelreservation_change", kwargs={"object_id": item.id}
+            ),
         )
 
 
 def statistics(request):
     """Render the statistics."""
     try:
-        borrel_product_category = ProductCategory.objects.get(id=config.STATISTICS_BORREL_CATEGORY)
+        borrel_product_category = ProductCategory.objects.get(
+            id=config.STATISTICS_BORREL_CATEGORY
+        )
         borrel_product_category_ordered_per_association = json.dumps(
             generate_product_category_ordered_per_association(borrel_product_category)
         )
         average_beer_per_association_per_borrel = json.dumps(
             generate_beer_per_association_per_borrel(borrel_product_category)
         )
-        beer_consumption_over_time = json.dumps(generate_beer_consumption_over_time(borrel_product_category))
+        beer_consumption_over_time = json.dumps(
+            generate_beer_consumption_over_time(borrel_product_category)
+        )
     except ProductCategory.DoesNotExist:
         return None
 

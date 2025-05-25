@@ -59,5 +59,7 @@ def run_at_time_localized(run_at_time: str) -> str:
     timezone_offset_minutes = timezone_offset_minutes % 60
     interpreted_time = time.strptime(run_at_time, "%H:%M")
     localized_time_hours = int((interpreted_time.tm_hour + timezone_offset_hours) % 24)
-    localized_time_minutes = int((interpreted_time.tm_min + timezone_offset_minutes) % 60)
+    localized_time_minutes = int(
+        (interpreted_time.tm_min + timezone_offset_minutes) % 60
+    )
     return f"{localized_time_hours:02d}:{localized_time_minutes:02d}"

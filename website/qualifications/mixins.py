@@ -10,6 +10,9 @@ class BasicBorrelBrevetRequiredMixin(AccessMixin):
 
     def dispatch(self, request, *args, **kwargs):
         """Dispatch method."""
-        if not request.user.is_authenticated or not BasicBorrelBrevet.objects.filter(user=request.user).exists():
+        if (
+            not request.user.is_authenticated
+            or not BasicBorrelBrevet.objects.filter(user=request.user).exists()
+        ):
             return self.handle_no_permission()
         return super().dispatch(request, *args, **kwargs)

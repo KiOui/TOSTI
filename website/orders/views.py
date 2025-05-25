@@ -40,7 +40,9 @@ class ShiftView(LoginRequiredMixin, TemplateView):
                 and user_can_manage_shifts_in_venue(self.request.user, shift.venue),
                 "has_order_permissions": self.request.user.is_authenticated
                 and not user_is_blacklisted(self.request.user),
-                "user_gets_priority": user_gets_prioritized_orders(self.request.user, shift),
+                "user_gets_priority": user_gets_prioritized_orders(
+                    self.request.user, shift
+                ),
             },
         )
         return context
@@ -61,7 +63,9 @@ class ShiftManagementView(LoginRequiredMixin, TemplateView):
         if request.user in shift.assignees.all():
             return super(ShiftManagementView, self).dispatch(request, *args, **kwargs)
 
-        asked_join_shift = request.COOKIES.get(f"TOSTI_ASKED_JOIN_SHIFT_{shift.id}", None)
+        asked_join_shift = request.COOKIES.get(
+            f"TOSTI_ASKED_JOIN_SHIFT_{shift.id}", None
+        )
 
         if asked_join_shift is not None:
             # We have already asked the user whether they wanted to join the shift, and they denied.
@@ -120,7 +124,9 @@ class CreateShiftView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         """Add user to the assignees list after creating the shift."""
         response = super(CreateShiftView, self).form_valid(form)
-        log_action(self.request.user, self.object, ADDITION, "Created shift via website.")
+        log_action(
+            self.request.user, self.object, ADDITION, "Created shift via website."
+        )
         self.object.assignees.add(self.request.user.id)
         self.object.save()
         return response
@@ -153,7 +159,9 @@ class JoinShiftView(LoginRequiredMixin, TemplateView):
         elif confirm == "No":
             response = redirect("orders:shift_admin", shift=shift)
             # Set a cookie that will prevent this page from displaying for 10 minutes.
-            response.set_cookie(f"TOSTI_ASKED_JOIN_SHIFT_{shift.id}", "true", max_age=600)
+            response.set_cookie(
+                f"TOSTI_ASKED_JOIN_SHIFT_{shift.id}", "true", max_age=600
+            )
             return response
         else:
             return render(request, self.template_name, {"shift": shift})
@@ -186,32 +194,45 @@ class AccountHistoryTabView(LoginRequiredMixin, TemplateView):
 
 def explainer_page_how_to_order_tab(request, item):
     """Render the explainer how to order tab."""
-    return render_to_string("orders/explainer.html", context={"request": request, "item": item})
+    return render_to_string(
+        "orders/explainer.html", context={"request": request, "item": item}
+    )
 
 
 def explainer_page_how_to_manage_shift_tab(request, item):
     """Render the explainer how to manage shift tab."""
     if (
         request.user.is_authenticated
-        and get_objects_for_user(request.user, "orders.can_manage_shift_in_venue").exists()
+        and get_objects_for_user(
+            request.user, "orders.can_manage_shift_in_venue"
+        ).exists()
     ):
-        return render_to_string("orders/explainer_admin.html", context={"request": request, "item": item})
+        return render_to_string(
+            "orders/explainer_admin.html", context={"request": request, "item": item}
+        )
     else:
         return None
 
 
 def explainer_page_how_to_hand_in_deposit(request, item):
     """Render the explainer how to hand in deposit."""
-    return render_to_string("orders/explainer_deposit.html", context={"request": request, "item": item})
+    return render_to_string(
+        "orders/explainer_deposit.html", context={"request": request, "item": item}
+    )
 
 
 def explainer_page_how_to_process_deposit(request, item):
     """Render the explainer how to manage a deposit."""
     if (
         request.user.is_authenticated
-        and get_objects_for_user(request.user, "orders.can_manage_shift_in_venue").exists()
+        and get_objects_for_user(
+            request.user, "orders.can_manage_shift_in_venue"
+        ).exists()
     ):
-        return render_to_string("orders/explainer_transactions_admin.html", context={"request": request, "item": item})
+        return render_to_string(
+            "orders/explainer_transactions_admin.html",
+            context={"request": request, "item": item},
+        )
     else:
         return None
 

@@ -33,7 +33,9 @@ class AccountView(TemplateView):
                 "association": request.user.association,
             }
         )
-        rendered_tab = render_to_string("users/user_profile_form.html", context={"form": form}, request=request)
+        rendered_tab = render_to_string(
+            "users/user_profile_form.html", context={"form": form}, request=request
+        )
         return render(
             request,
             self.template_name,
@@ -56,12 +58,20 @@ class AccountView(TemplateView):
         if form.is_valid():
             request.user.association = form.cleaned_data.get("association")
             request.user.save()
-            messages.add_message(self.request, messages.SUCCESS, "Your profile has been saved.")
-        rendered_tab = render_to_string("users/user_profile_form.html", context={"form": form}, request=request)
+            messages.add_message(
+                self.request, messages.SUCCESS, "Your profile has been saved."
+            )
+        rendered_tab = render_to_string(
+            "users/user_profile_form.html", context={"form": form}, request=request
+        )
         return render(
             request,
             self.template_name,
-            {"active": kwargs.get("active"), "tabs": kwargs.get("tabs"), "rendered_tab": rendered_tab},
+            {
+                "active": kwargs.get("active"),
+                "tabs": kwargs.get("tabs"),
+                "rendered_tab": rendered_tab,
+            },
         )
 
 

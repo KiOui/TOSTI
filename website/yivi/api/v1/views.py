@@ -27,7 +27,10 @@ class YiviStartAPIView(APIView):
             "properties": {
                 "disclose": {
                     "type": "array",
-                    "items": {"type": "array", "items": {"type": "array", "items": {"type": "string"}}},
+                    "items": {
+                        "type": "array",
+                        "items": {"type": "array", "items": {"type": "string"}},
+                    },
                 },
             },
         },
@@ -104,7 +107,10 @@ class YiviResultAPIView(APIView):
                             "type": "object",
                             "properties": {
                                 "rawvalue": {"type": "string"},
-                                "value": {"type": "object", "properties": {"": {"type": "string"}}},
+                                "value": {
+                                    "type": "object",
+                                    "properties": {"": {"type": "string"}},
+                                },
                                 "id": {"type": "string"},
                                 "status": {"type": "string"},
                                 "issuancetime": {"type": "integer"},
@@ -129,6 +135,8 @@ class YiviResultAPIView(APIView):
         response["token"] = session.id
 
         if response.get("proofStatus") == "VALID":
-            signals.attributes_verified.send_robust(self.__class__, session=session, attributes=response["disclosed"])
+            signals.attributes_verified.send_robust(
+                self.__class__, session=session, attributes=response["disclosed"]
+            )
 
         return Response(data=response)

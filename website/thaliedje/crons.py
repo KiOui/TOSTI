@@ -13,7 +13,9 @@ class StopMusicCronJob(CronJobBase):
 
     RUN_AT_TIMES = [config.THALIEDJE_STOP_PLAYERS_AT]
     RETRY_AFTER_FAILURE_MINS = 1
-    schedule = Schedule(run_at_times=RUN_AT_TIMES, retry_after_failure_mins=RETRY_AFTER_FAILURE_MINS)
+    schedule = Schedule(
+        run_at_times=RUN_AT_TIMES, retry_after_failure_mins=RETRY_AFTER_FAILURE_MINS
+    )
     code = "thaliedje.stopmusic"
 
     def do(self):
@@ -32,7 +34,9 @@ class StartMusicCronJob(CronJobBase):
     RUN_AT_TIMES = [config.THALIEDJE_START_PLAYERS_AT]
     RETRY_AFTER_FAILURE_MINS = 1
     schedule = Schedule(
-        run_at_times=RUN_AT_TIMES, retry_after_failure_mins=RETRY_AFTER_FAILURE_MINS, run_weekly_on_days=WEEKDAYS
+        run_at_times=RUN_AT_TIMES,
+        retry_after_failure_mins=RETRY_AFTER_FAILURE_MINS,
+        run_weekly_on_days=WEEKDAYS,
     )
     code = "thaliedje.startmusic"
 
@@ -46,7 +50,10 @@ class StartMusicCronJob(CronJobBase):
                 player.repeat = "context"
                 player.shuffle = True
 
-                if config.THALIEDJE_START_PLAYER_URI is not None and config.THALIEDJE_START_PLAYER_URI != "":
+                if (
+                    config.THALIEDJE_START_PLAYER_URI is not None
+                    and config.THALIEDJE_START_PLAYER_URI != ""
+                ):
                     player.start_playing(config.THALIEDJE_START_PLAYER_URI)
                 else:
                     player.start()

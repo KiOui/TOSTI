@@ -79,7 +79,9 @@ class SilvasoftBorrelProduct(models.Model):
 class SilvasoftInvoice(models.Model):
     """Abstract model for indicating a connected invoice ID in Silvasoft."""
 
-    silvasoft_identifier = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    silvasoft_identifier = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False
+    )
 
     class Meta:
         """Meta class."""
@@ -90,7 +92,9 @@ class SilvasoftInvoice(models.Model):
 class SilvasoftShiftInvoice(SilvasoftInvoice):
     """Model for indicating a connected invoice ID in Silvasoft for Shifts."""
 
-    shift = models.OneToOneField(Shift, on_delete=models.CASCADE, related_name="silvasoft_invoice")
+    shift = models.OneToOneField(
+        Shift, on_delete=models.CASCADE, related_name="silvasoft_invoice"
+    )
 
     def __str__(self):
         """Convert this object to string."""
@@ -124,7 +128,9 @@ class SilvasoftSynchronization(models.Model):
 class SilvasoftShiftSynchronization(SilvasoftSynchronization):
     """Model for indicating when a TOSTI Shift has been synchronized with Silvasoft."""
 
-    shift = models.ForeignKey(Shift, on_delete=models.CASCADE, related_name="silvasoft_synchronization")
+    shift = models.ForeignKey(
+        Shift, on_delete=models.CASCADE, related_name="silvasoft_synchronization"
+    )
 
     def __str__(self):
         """Convert this object to string."""
@@ -137,11 +143,15 @@ class SilvasoftBorrelReservationSynchronization(SilvasoftSynchronization):
     """Model for indicating when a TOSTI BorrelReservation has been synchronized with Silvasoft."""
 
     borrel_reservation = models.ForeignKey(
-        BorrelReservation, on_delete=models.CASCADE, related_name="silvasoft_synchronization"
+        BorrelReservation,
+        on_delete=models.CASCADE,
+        related_name="silvasoft_synchronization",
     )
 
     def __str__(self):
         """Convert this object to string."""
         return "Borrel Reservation {} synchronized at {}: {}".format(
-            self.borrel_reservation, self.created, "succeeded" if self.succeeded else "failed"
+            self.borrel_reservation,
+            self.created,
+            "succeeded" if self.succeeded else "failed",
         )

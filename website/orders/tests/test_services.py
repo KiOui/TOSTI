@@ -25,9 +25,13 @@ class OrderServicesTests(TestCase):
         order_venue = models.OrderVenue.objects.create(venue=venue_pk_1)
         cls.order_venue = order_venue
         cls.shift = models.Shift.objects.create(
-            venue=order_venue, start=timezone.now(), end=timezone.now() + timedelta(hours=4)
+            venue=order_venue,
+            start=timezone.now(),
+            end=timezone.now() + timedelta(hours=4),
         )
-        cls.product = models.Product.objects.create(name="Test product", current_price=1.25)
+        cls.product = models.Product.objects.create(
+            name="Test product", current_price=1.25
+        )
         cls.normal_user = User.objects.get(pk=2)
 
     def setUp(self):
@@ -41,7 +45,9 @@ class OrderServicesTests(TestCase):
         order_do_delete = models.Order.objects.create(
             shift=self.shift, product=self.product, user=self.normal_user, paid=True
         )
-        order_not_paid = models.Order.objects.create(shift=self.shift, product=self.product, user=self.normal_user)
+        order_not_paid = models.Order.objects.create(
+            shift=self.shift, product=self.product, user=self.normal_user
+        )
         order_do_delete.created = timezone.now() - timedelta(days=60)
         order_do_delete.save()
         order_not_paid.created = timezone.now() - timedelta(days=60)
@@ -49,26 +55,63 @@ class OrderServicesTests(TestCase):
 
         with self.subTest("Data minimisation dry run"):
             services.execute_data_minimisation(dry_run=True)
-            self.assertTrue(models.Order.objects.filter(id=order_do_delete.id, user=self.normal_user).exists())
-            self.assertTrue(models.Order.objects.filter(id=order_do_not_delete.id, user=self.normal_user).exists())
-            self.assertTrue(models.Order.objects.filter(id=order_not_paid.id, user=self.normal_user).exists())
+            self.assertTrue(
+                models.Order.objects.filter(
+                    id=order_do_delete.id, user=self.normal_user
+                ).exists()
+            )
+            self.assertTrue(
+                models.Order.objects.filter(
+                    id=order_do_not_delete.id, user=self.normal_user
+                ).exists()
+            )
+            self.assertTrue(
+                models.Order.objects.filter(
+                    id=order_not_paid.id, user=self.normal_user
+                ).exists()
+            )
 
         with self.subTest("Normal Data minimisation run"):
             services.execute_data_minimisation()
-            self.assertFalse(models.Order.objects.filter(id=order_do_delete.id, user=self.normal_user).exists())
-            self.assertTrue(models.Order.objects.filter(id=order_do_not_delete.id, user=self.normal_user).exists())
-            self.assertTrue(models.Order.objects.filter(id=order_not_paid.id, user=self.normal_user).exists())
+            self.assertFalse(
+                models.Order.objects.filter(
+                    id=order_do_delete.id, user=self.normal_user
+                ).exists()
+            )
+            self.assertTrue(
+                models.Order.objects.filter(
+                    id=order_do_not_delete.id, user=self.normal_user
+                ).exists()
+            )
+            self.assertTrue(
+                models.Order.objects.filter(
+                    id=order_not_paid.id, user=self.normal_user
+                ).exists()
+            )
 
     def test_add_user_to_assignees_of_shift(self):
-        start = timezone.make_aware(datetime.datetime(year=2022, month=3, day=4, hour=12, minute=15))
-        end = timezone.make_aware(datetime.datetime(year=2022, month=3, day=4, hour=13, minute=30))
-        shift = models.Shift.objects.create(venue=self.order_venue, start=start, end=end)
+        start = timezone.make_aware(
+            datetime.datetime(year=2022, month=3, day=4, hour=12, minute=15)
+        )
+        end = timezone.make_aware(
+            datetime.datetime(year=2022, month=3, day=4, hour=13, minute=30)
+        )
+        shift = models.Shift.objects.create(
+            venue=self.order_venue, start=start, end=end
+        )
         self.assertFalse(shift.assignees.filter(id=self.normal_user.id).exists())
 
         with self.subTest("Adding a user as assignee without permissions"):
-            self.assertRaises(PermissionError, services.add_user_to_assignees_of_shift, self.normal_user, shift)
+            self.assertRaises(
+                PermissionError,
+                services.add_user_to_assignees_of_shift,
+                self.normal_user,
+                shift,
+            )
             self.assertFalse(shift.assignees.filter(id=self.normal_user.id).exists())
-        assign_perm("orders.can_manage_shift_in_venue", self.normal_user, self.order_venue)
+        assign_perm(
+            "orders.can_manage_shift_in_venue", self.normal_user, self.order_venue
+        )
 
         with self.subTest("Adding a user as assignee with permissions"):
             services.add_user_to_assignees_of_shift(self.normal_user, shift)

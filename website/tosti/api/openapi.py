@@ -68,7 +68,9 @@ class CustomAutoSchema(AutoSchema):
         """
         super().__init__(*args, **kwargs)
         self.manual_operations = [] if manual_operations is None else manual_operations
-        self.manual_field_mappings = {} if manual_field_mappings is None else manual_field_mappings
+        self.manual_field_mappings = (
+            {} if manual_field_mappings is None else manual_field_mappings
+        )
         self.request_schema = request_schema
         self.response_schema = response_schema
 
@@ -93,7 +95,12 @@ class CustomAutoSchema(AutoSchema):
         self.request_media_types = self.map_parsers(path, method)
 
         if self.request_schema is not None:
-            return {"content": {ct: {"schema": self.request_schema} for ct in self.request_media_types}}
+            return {
+                "content": {
+                    ct: {"schema": self.request_schema}
+                    for ct in self.request_media_types
+                }
+            }
 
         serializer = self.get_request_serializer(path, method)
 
@@ -103,7 +110,9 @@ class CustomAutoSchema(AutoSchema):
         content = self.map_writable_model_serializer(serializer)
         item_schema = content
 
-        return {"content": {ct: {"schema": item_schema} for ct in self.request_media_types}}
+        return {
+            "content": {ct: {"schema": item_schema} for ct in self.request_media_types}
+        }
 
     def map_writable_model_serializer(self, serializer):
         """Map a WritableModelSerializer."""
@@ -122,7 +131,11 @@ class CustomAutoSchema(AutoSchema):
                 schema["writeOnly"] = True
             if field.allow_null:
                 schema["nullable"] = True
-            if field.default is not None and field.default != empty and not callable(field.default):
+            if (
+                field.default is not None
+                and field.default != empty
+                and not callable(field.default)
+            ):
                 schema["default"] = field.default
             if field.help_text:
                 schema["description"] = str(field.help_text)
@@ -150,7 +163,10 @@ class CustomAutoSchema(AutoSchema):
 
         return {
             status_code: {
-                "content": {ct: {"schema": self.response_schema} for ct in self.response_media_types},
+                "content": {
+                    ct: {"schema": self.response_schema}
+                    for ct in self.response_media_types
+                },
                 "description": "",
             }
         }

@@ -33,7 +33,10 @@ def construct_disclose_tree(user: User):
         yivi_disclose_tree.append(
             [
                 [
-                    {"type": settings.AGE_VERIFICATION_USERNAME_ATTRIBUTE, "value": user.username},
+                    {
+                        "type": settings.AGE_VERIFICATION_USERNAME_ATTRIBUTE,
+                        "value": user.username,
+                    },
                     {
                         "type": settings.AGE_VERIFICATION_INSTITUTE_ATTRIBUTE,
                         "value": settings.AGE_VERIFICATION_INSTITUTE_VALUE,
@@ -61,7 +64,9 @@ def get_highest_proven_age_from_proven_attributes(proven_attributes):
     for proven_attribute in proven_attributes:
         proven_attribute_id = proven_attribute["id"]
         if proven_attribute_id in settings.AGE_VERIFICATION_MINIMUM_AGE_MAPPING.keys():
-            proven_attribute_minimum_age = settings.AGE_VERIFICATION_MINIMUM_AGE_MAPPING[proven_attribute_id]
+            proven_attribute_minimum_age = (
+                settings.AGE_VERIFICATION_MINIMUM_AGE_MAPPING[proven_attribute_id]
+            )
             if highest_age is None or highest_age < proven_attribute_minimum_age:
                 highest_age = proven_attribute_minimum_age
     return highest_age

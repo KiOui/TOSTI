@@ -25,11 +25,15 @@ def send_borrel_reservation_request_email(borrel_reservation: models.BorrelReser
     html_content = template.render(context)
 
     return send_email(
-        "TOSTI: Borrel Reservation request", html_content, [config.BORREL_SEND_BORREL_RESERVATION_REQUEST_EMAILS_TO]
+        "TOSTI: Borrel Reservation request",
+        html_content,
+        [config.BORREL_SEND_BORREL_RESERVATION_REQUEST_EMAILS_TO],
     )
 
 
-def send_borrel_reservation_status_change_email(borrel_reservation: models.BorrelReservation):
+def send_borrel_reservation_status_change_email(
+    borrel_reservation: models.BorrelReservation,
+):
     """Construct and send a borrel reservation status change email."""
     template = get_template("email/borrel_reservation_status.html")
 
@@ -40,7 +44,11 @@ def send_borrel_reservation_status_change_email(borrel_reservation: models.Borre
 
     html_content = template.render(context)
 
-    return send_email("TOSTI: Borrel Reservation status change", html_content, [borrel_reservation.user_created.email])
+    return send_email(
+        "TOSTI: Borrel Reservation status change",
+        html_content,
+        [borrel_reservation.user_created.email],
+    )
 
 
 def generate_product_category_ordered_per_association(category):
@@ -133,15 +141,23 @@ def generate_beer_consumption_over_time(category):
         else:
             next_year = current_year
 
-        begin_date = timezone.make_aware(timezone.datetime(year=current_year, month=current_month, day=1))
-        end_date = timezone.make_aware(timezone.datetime(year=next_year, month=next_month, day=1))
+        begin_date = timezone.make_aware(
+            timezone.datetime(year=current_year, month=current_month, day=1)
+        )
+        end_date = timezone.make_aware(
+            timezone.datetime(year=next_year, month=next_month, day=1)
+        )
 
         amount_of_beer_ordered = ReservationItem.objects.filter(
-            reservation__end__gte=begin_date, reservation__end__lt=end_date, product__category=category
+            reservation__end__gte=begin_date,
+            reservation__end__lt=end_date,
+            product__category=category,
         ).aggregate(beer_used=Sum("amount_used"))
         data["labels"].append(str(calendar.month_name[current_month]))
         data["datasets"][0]["data"].append(
-            amount_of_beer_ordered["beer_used"] if amount_of_beer_ordered["beer_used"] is not None else 0
+            amount_of_beer_ordered["beer_used"]
+            if amount_of_beer_ordered["beer_used"] is not None
+            else 0
         )
 
         current_month = current_month + 1

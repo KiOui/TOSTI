@@ -15,7 +15,11 @@ def render_start_shift_buttons(context, venues=None):
     if venues is None:
         venues = OrderVenue.objects.filter(venue__active=True).order_by("venue__name")
 
-    buttons = [{"venue": venue} for venue in venues if user_can_manage_shifts_in_venue(context["request"].user, venue)]
+    buttons = [
+        {"venue": venue}
+        for venue in venues
+        if user_can_manage_shifts_in_venue(context["request"].user, venue)
+    ]
 
     return {"venues": buttons}
 
@@ -28,8 +32,14 @@ def currently_active_shift_for_venue(venue: OrderVenue):
     start = timezone.localize(datetime(today.year, today.month, today.day))
 
     if venue.shifts.filter(start__lte=today, end__gte=today, finalized=False).exists():
-        return venue.shifts.filter(start__lte=today, end__gte=today, finalized=False).first()
+        return venue.shifts.filter(
+            start__lte=today, end__gte=today, finalized=False
+        ).first()
     elif venue.shifts.filter(end__gte=start, finalized=False).exists():
-        return venue.shifts.filter(end__gte=start, finalized=False).order_by("-end").first()
+        return (
+            venue.shifts.filter(end__gte=start, finalized=False)
+            .order_by("-end")
+            .first()
+        )
     else:
         return None

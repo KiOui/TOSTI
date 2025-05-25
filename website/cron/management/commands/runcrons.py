@@ -32,7 +32,9 @@ class Command(BaseCommand):
         """
         parser.add_argument("cron_classes", nargs="*")
         parser.add_argument("--force", action="store_true", help="Force cron runs")
-        parser.add_argument("--silent", action="store_true", help="Do not push any message on console")
+        parser.add_argument(
+            "--silent", action="store_true", help="Do not push any message on console"
+        )
         parser.add_argument(
             "--dry-run",
             action="store_true",
@@ -56,7 +58,8 @@ class Command(BaseCommand):
         except ImportError:
             error = traceback.format_exc()
             self.stdout.write(
-                "ERROR: Make sure these are valid cron class names: %s\n\n%s" % (cron_class_names, error)
+                "ERROR: Make sure these are valid cron class names: %s\n\n%s"
+                % (cron_class_names, error)
             )
             return
 
@@ -73,7 +76,9 @@ class Command(BaseCommand):
         close_old_connections()
 
 
-def run_cron_with_cache_check(cron_class, force=False, silent=False, dry_run=False, stdout=None):
+def run_cron_with_cache_check(
+    cron_class, force=False, silent=False, dry_run=False, stdout=None
+):
     """
     Check the cache and run the cron or not.
 
@@ -84,7 +89,9 @@ def run_cron_with_cache_check(cron_class, force=False, silent=False, dry_run=Fal
     :param stdout: where to write feedback to.
     """
     try:
-        manager = CronJobManager(cron_class, silent=silent, dry_run=dry_run, stdout=stdout)
+        manager = CronJobManager(
+            cron_class, silent=silent, dry_run=dry_run, stdout=stdout
+        )
     except BadCronJobError as e:
         if not silent:
             stdout.write(f"{e}\n")

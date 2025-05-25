@@ -18,7 +18,11 @@ class TostiViewTests(TestCase):
             order_venue_1 = OrderVenue.objects.create(venue=venue_pk_1)
             venue_pk_2 = Venue.objects.get(pk=2)
             OrderVenue.objects.create(venue=venue_pk_2)
-            Shift.objects.create(venue=order_venue_1, start=timezone.now(), end=timezone.now() + timedelta(hours=4))
+            Shift.objects.create(
+                venue=order_venue_1,
+                start=timezone.now(),
+                end=timezone.now() + timedelta(hours=4),
+            )
             response = self.client.get(reverse("index"))
             self.assertEqual(response.status_code, 200)
 

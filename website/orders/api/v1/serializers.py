@@ -31,7 +31,9 @@ class ProductSerializer(serializers.ModelSerializer):
             try:
                 return Product.objects.get(id=data)
             except Product.DoesNotExist:
-                raise serializers.ValidationError("Product with id {} not found.".format(data))
+                raise serializers.ValidationError(
+                    "Product with id {} not found.".format(data)
+                )
         else:
             return super(ProductSerializer, self).to_internal_value(data)
 
@@ -76,7 +78,9 @@ class OrderSerializer(WritableModelSerializer):
                 return value
             else:
                 raise serializers.ValidationError(
-                    "Product {} is not available in venue {}.".format(value, shift.venue)
+                    "Product {} is not available in venue {}.".format(
+                        value, shift.venue
+                    )
                 )
         else:
             return value

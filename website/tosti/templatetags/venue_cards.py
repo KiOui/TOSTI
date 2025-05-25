@@ -9,7 +9,9 @@ register = template.Library()
 
 
 @register.inclusion_tag("tosti/venue_card.html", takes_context=True)
-def render_venue_card(context, shift=None, venue=None, show_player=True, show_venue_reservation=True):
+def render_venue_card(
+    context, shift=None, venue=None, show_player=True, show_venue_reservation=True
+):
     """Render venue card."""
     if shift and venue is None:
         venue = shift.venue
@@ -22,8 +24,13 @@ def render_venue_card(context, shift=None, venue=None, show_player=True, show_ve
         ).first()
         or None,
         "request": context.get("request"),
-        "admin": (venue and user_can_manage_shifts_in_venue(context["request"].user, venue))
-        or (shift and user_can_manage_shifts_in_venue(context["request"].user, shift.venue)),
+        "admin": (
+            venue and user_can_manage_shifts_in_venue(context["request"].user, venue)
+        )
+        or (
+            shift
+            and user_can_manage_shifts_in_venue(context["request"].user, shift.venue)
+        ),
         "show_player": show_player and Player.get_player(venue.venue) is not None,
     }
 

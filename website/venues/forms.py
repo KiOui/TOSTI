@@ -17,7 +17,11 @@ class ReservationForm(forms.ModelForm):
         super(ReservationForm, self).__init__(*args, **kwargs)
 
         self.fields["venue"].queryset = Venue.objects.filter(can_be_reserved=True)
-        if request is not None and request.user.is_authenticated and request.user.association is not None:
+        if (
+            request is not None
+            and request.user.is_authenticated
+            and request.user.association is not None
+        ):
             self.fields["association"].initial = request.user.association
 
     def clean_start(self):
@@ -33,7 +37,9 @@ class ReservationForm(forms.ModelForm):
         start = self.cleaned_data.get("start", None)
         end = self.cleaned_data.get("end")
         if start is not None and end <= start:
-            raise ValidationError("The end of the reservation should be after the start of the reservation")
+            raise ValidationError(
+                "The end of the reservation should be after the start of the reservation"
+            )
         return end
 
     def clean(self):
@@ -49,8 +55,12 @@ class ReservationForm(forms.ModelForm):
             and self.cleaned_data.get("end", None) is not None
             and venue is not None
         ):
-            start = self.cleaned_data.get("start").astimezone(timezone.get_current_timezone())
-            end = self.cleaned_data.get("end").astimezone(timezone.get_current_timezone())
+            start = self.cleaned_data.get("start").astimezone(
+                timezone.get_current_timezone()
+            )
+            end = self.cleaned_data.get("end").astimezone(
+                timezone.get_current_timezone()
+            )
 
             if (
                 Reservation.objects.filter(venue=venue)
@@ -62,16 +72,30 @@ class ReservationForm(forms.ModelForm):
                 )
                 .exists()
             ):
-                raise ValidationError("An overlapping reservation for this venue already exists.")
+                raise ValidationError(
+                    "An overlapping reservation for this venue already exists."
+                )
 
     class Meta:
         """Meta class."""
 
         model = Reservation
-        fields = ["venue", "association", "start", "end", "title", "comments", "needs_music_keys"]
+        fields = [
+            "venue",
+            "association",
+            "start",
+            "end",
+            "title",
+            "comments",
+            "needs_music_keys",
+        ]
         widgets = {
-            "start": DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
-            "end": DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
+            "start": DateTimeInput(
+                attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"
+            ),
+            "end": DateTimeInput(
+                attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"
+            ),
         }
 
 

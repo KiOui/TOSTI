@@ -37,7 +37,9 @@ class DjangoCronJobLock:
 
         Here you can optionally call self.notice_lock_failed().
         """
-        raise NotImplementedError("You have to implement lock(self) method for your class")
+        raise NotImplementedError(
+            "You have to implement lock(self) method for your class"
+        )
 
     def release(self):
         """
@@ -45,7 +47,9 @@ class DjangoCronJobLock:
 
         Typically called from __exit__ method. There is no need to return anything.
         """
-        raise NotImplementedError("You have to implement release(self) method for your class")
+        raise NotImplementedError(
+            "You have to implement release(self) method for your class"
+        )
 
     def lock_failed_message(self) -> str:
         """Message for when the lock failed to acquire."""

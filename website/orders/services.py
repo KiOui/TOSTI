@@ -27,7 +27,9 @@ def user_gets_prioritized_orders(user, shift):
     """User's order get put first in the queue."""
     return (
         get_users_with_perms(
-            shift.venue, only_with_perms_in=["gets_prioritized_orders_in_venue"], with_superusers=False
+            shift.venue,
+            only_with_perms_in=["gets_prioritized_orders_in_venue"],
+            with_superusers=False,
         )
         .filter(pk=user.pk)
         .exists()
@@ -51,7 +53,9 @@ def execute_data_minimisation(dry_run=False):
     return users
 
 
-def add_scanned_order(product: Product, shift: Shift, ready=True, paid=True, picked_up=True) -> Order:
+def add_scanned_order(
+    product: Product, shift: Shift, ready=True, paid=True, picked_up=True
+) -> Order:
     """
     Add a single Scanned Order (of type TYPE_SCANNED).
 
@@ -125,7 +129,9 @@ def add_user_order(
         raise OrderException("This Shift is closed")
 
     # Check Shift order maximum while ignoring Products without Shift restrictions
-    if not product.ignore_shift_restrictions and not shift.user_can_order_amount(user, amount=1):
+    if not product.ignore_shift_restrictions and not shift.user_can_order_amount(
+        user, amount=1
+    ):
         raise OrderException("User can not order that many products in this shift")
 
     if not product.orderable:
@@ -141,7 +147,9 @@ def add_user_order(
 
     # Check per-Product order maximum
     if not product.user_can_order_amount(user, shift, amount=1):
-        raise OrderException("User can not order {} {} for this shift".format(product, 1))
+        raise OrderException(
+            "User can not order {} {} for this shift".format(product, 1)
+        )
 
     return Order.objects.create(
         product=product,
@@ -161,7 +169,9 @@ def add_user_to_assignees_of_shift(user, shift: Shift):
     if user in shift.assignees.all():
         return
     if not user_can_manage_shifts_in_venue(user, shift.venue):
-        raise PermissionError("User does not have permissions to manage shifts in this venue.")
+        raise PermissionError(
+            "User does not have permissions to manage shifts in this venue."
+        )
     shift.assignees.add(User.objects.get(pk=user.pk))
     shift.save()
 
@@ -177,7 +187,9 @@ def generate_order_statistics():
 
     last_year = timezone.now() - datetime.timedelta(days=365)
 
-    for product in Product.objects.annotate(order_count=Count("orders", filter=Q(orders__created__gte=last_year))):
+    for product in Product.objects.annotate(
+        order_count=Count("orders", filter=Q(orders__created__gte=last_year))
+    ):
         data["labels"].append(str(product))
         data["datasets"][0]["data"].append(product.order_count)
 
@@ -196,7 +208,9 @@ def generate_orders_per_venue_statistics():
     last_year = timezone.now() - datetime.timedelta(days=365)
 
     for venue in OrderVenue.objects.annotate(
-        order_count=Count("shifts__orders", filter=Q(shifts__orders__created__gte=last_year))
+        order_count=Count(
+            "shifts__orders", filter=Q(shifts__orders__created__gte=last_year)
+        )
     ):
         data["labels"].append(str(venue))
         data["datasets"][0]["data"].append(venue.order_count)

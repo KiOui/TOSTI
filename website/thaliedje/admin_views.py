@@ -60,7 +60,9 @@ class SpofityAuthorizeView(PermissionRequiredMixin, TemplateView):
                 client_id=form.cleaned_data.get("client_id")
             )
             spotify_auth_code.client_secret = form.cleaned_data.get("client_secret")
-            spotify_auth_code.redirect_uri = request.build_absolute_uri(reverse("admin:add_token"))
+            spotify_auth_code.redirect_uri = request.build_absolute_uri(
+                reverse("admin:add_token")
+            )
             if created:
                 spotify_auth_code.slug = spotify_auth_code.client_id
             spotify_auth_code.save()
@@ -98,11 +100,15 @@ class SpotifyTokenView(PermissionRequiredMixin, TemplateView):
             try:
                 spotify_auth_code = SpotifyPlayer.objects.get(client_id=client_id)
             except SpotifyPlayer.DoesNotExist:
-                return render(request, self.template_name, {"error": "Client ID was not found."})
+                return render(
+                    request, self.template_name, {"error": "Client ID was not found."}
+                )
             # Generate the first access token and store in cache
             access_token = spotify_auth_code.auth.get_access_token(code=code)
             if access_token is not None:
-                response = redirect("admin:authorization_succeeded", spotify=spotify_auth_code)
+                response = redirect(
+                    "admin:authorization_succeeded", spotify=spotify_auth_code
+                )
             else:
                 response = render(
                     request,
@@ -115,7 +121,9 @@ class SpotifyTokenView(PermissionRequiredMixin, TemplateView):
             return render(
                 request,
                 self.template_name,
-                {"error": "No Spotify code found, make sure you are reaching this page via a Spotify redirect."},
+                {
+                    "error": "No Spotify code found, make sure you are reaching this page via a Spotify redirect."
+                },
             )
 
 

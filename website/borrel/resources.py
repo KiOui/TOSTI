@@ -15,7 +15,9 @@ class ProductResource(resources.ModelResource):
             return
 
         try:
-            row["category"], _ = models.ProductCategory.objects.get_or_create(name=category_name)
+            row["category"], _ = models.ProductCategory.objects.get_or_create(
+                name=category_name
+            )
         except models.ProductCategory.MultipleObjectsReturned:
             return
 
@@ -44,10 +46,18 @@ class ProductResource(resources.ModelResource):
 class BorrelReservationResource(resources.ModelResource):
     """Borrel Reservation Resource."""
 
-    user_created__full_name = Field(attribute="user_created__full_name", column_name="user_created")
-    user_updated__full_name = Field(attribute="user_updated__full_name", column_name="user_updated")
-    user_submitted__full_name = Field(attribute="user_submitted__full_name", column_name="user_submitted")
-    venue_reservation__venue__name = Field(attribute="venue_reservation__venue__name", column_name="venue")
+    user_created__full_name = Field(
+        attribute="user_created__full_name", column_name="user_created"
+    )
+    user_updated__full_name = Field(
+        attribute="user_updated__full_name", column_name="user_updated"
+    )
+    user_submitted__full_name = Field(
+        attribute="user_submitted__full_name", column_name="user_submitted"
+    )
+    venue_reservation__venue__name = Field(
+        attribute="venue_reservation__venue__name", column_name="venue"
+    )
     association__name = Field(attribute="association__name", column_name="association")
 
     def __init__(self, **kwargs):
@@ -57,18 +67,22 @@ class BorrelReservationResource(resources.ModelResource):
 
     def before_export(self, queryset, *args, **kwargs):
         """Initialize by creating a field for each product."""
-        product_names = models.ReservationItem.objects.filter(reservation__in=queryset).values_list(
-            "product_name", flat=True
-        )
+        product_names = models.ReservationItem.objects.filter(
+            reservation__in=queryset
+        ).values_list("product_name", flat=True)
         for product_name in product_names:
             attribute_id_reserved = f"__product_{product_name}_reserved"
             attribute_id_used = f"__product_{product_name}_used"
             self.fields[attribute_id_reserved] = Field(
-                column_name=f"{product_name} (reserved)", attribute=attribute_id_reserved, readonly=True
+                column_name=f"{product_name} (reserved)",
+                attribute=attribute_id_reserved,
+                readonly=True,
             )
             self.added_product_fields[attribute_id_reserved] = product_name
             self.fields[attribute_id_used] = Field(
-                column_name=f"{product_name} (used)", attribute=attribute_id_used, readonly=True
+                column_name=f"{product_name} (used)",
+                attribute=attribute_id_used,
+                readonly=True,
             )
             self.added_product_fields[attribute_id_used] = product_name
 

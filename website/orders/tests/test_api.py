@@ -27,9 +27,14 @@ class OrderAPITests(APITestCase):
         order_venue = models.OrderVenue.objects.create(venue=venue_pk_1)
         cls.order_venue = order_venue
         cls.shift = models.Shift.objects.create(
-            venue=order_venue, start=timezone.now(), end=timezone.now() + timedelta(hours=4), can_order=True
+            venue=order_venue,
+            start=timezone.now(),
+            end=timezone.now() + timedelta(hours=4),
+            can_order=True,
         )
-        cls.product = models.Product.objects.create(name="Test product", current_price=1.25)
+        cls.product = models.Product.objects.create(
+            name="Test product", current_price=1.25
+        )
         cls.product_not_available_at_venue = models.Product.objects.create(
             name="Not available at venue", current_price=0.6
         )
@@ -50,7 +55,11 @@ class OrderAPITests(APITestCase):
         )
         cls.user_with_permissions.set_password("password")
         cls.user_with_permissions.save()
-        assign_perm("orders.can_manage_shift_in_venue", cls.user_with_permissions, cls.order_venue)
+        assign_perm(
+            "orders.can_manage_shift_in_venue",
+            cls.user_with_permissions,
+            cls.order_venue,
+        )
         cls.shift.assignees.add(cls.user_with_permissions)
 
     def setUp(self):
@@ -60,19 +69,25 @@ class OrderAPITests(APITestCase):
     def test_list_orders_not_logged_in(self):
         """Listing orders of a Shift should fail if not logged in."""
         Order.objects.create(user=None, product=self.product, shift=self.shift)
-        response = self.client.get(reverse("v1:orders_listcreate", kwargs={"shift": self.shift}))
+        response = self.client.get(
+            reverse("v1:orders_listcreate", kwargs={"shift": self.shift})
+        )
         self.assertEqual(response.status_code, 403)
 
     def test_list_orders(self):
         """Listing orders of a Shift should fail if not logged in."""
         Order.objects.create(user=None, product=self.product, shift=self.shift)
         self.client.login(username=self.normal_user.username, password="password")
-        response = self.client.get(reverse("v1:orders_listcreate", kwargs={"shift": self.shift}))
+        response = self.client.get(
+            reverse("v1:orders_listcreate", kwargs={"shift": self.shift})
+        )
         self.assertEqual(response.status_code, 200)
 
     def test_create_order_not_logged_in(self):
         """Non-logged in users should not be able to order items."""
-        response = self.client.post(reverse("v1:orders_listcreate", kwargs={"shift": self.shift}))
+        response = self.client.post(
+            reverse("v1:orders_listcreate", kwargs={"shift": self.shift})
+        )
         self.assertEqual(response.status_code, 403)
 
     def test_create_order_logged_in_normal_user(self):
@@ -110,7 +125,9 @@ class OrderAPITests(APITestCase):
 
         with self.subTest("Privileged user"):
             orders_before = Order.objects.all().count()
-            self.client.login(username=self.user_with_permissions.username, password="password")
+            self.client.login(
+                username=self.user_with_permissions.username, password="password"
+            )
             response = self.client.post(
                 reverse("v1:orders_listcreate", kwargs={"shift": self.shift}),
                 {
@@ -127,7 +144,12 @@ class OrderAPITests(APITestCase):
         self.client.login(username=self.normal_user.username, password="password")
         response = self.client.post(
             reverse("v1:orders_listcreate", kwargs={"shift": self.shift}),
-            {"product": self.product.id, "ready": True, "paid": True, "priority": Order.PRIORITY_PRIORITIZED},
+            {
+                "product": self.product.id,
+                "ready": True,
+                "paid": True,
+                "priority": Order.PRIORITY_PRIORITIZED,
+            },
             format="json",
         )
         self.assertEqual(response.status_code, 403)
@@ -233,14 +255,23 @@ class OrderAPITests(APITestCase):
         )
         orders_after = Order.objects.all().count()
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(str(response.data["detail"]), "Shift is finalized, no Orders can be added anymore")
+        self.assertEqual(
+            str(response.data["detail"]),
+            "Shift is finalized, no Orders can be added anymore",
+        )
         self.assertEqual(orders_before, orders_after)
 
     def test_create_scanned_order(self):
         """A user with privileges can create scanned orders."""
         orders_before = Order.objects.all().count()
-        self.client.login(username=self.user_with_permissions.username, password="password")
-        self.assertTrue(self.user_with_permissions.has_perm("orders.can_manage_shift_in_venue", self.order_venue))
+        self.client.login(
+            username=self.user_with_permissions.username, password="password"
+        )
+        self.assertTrue(
+            self.user_with_permissions.has_perm(
+                "orders.can_manage_shift_in_venue", self.order_venue
+            )
+        )
         response = self.client.post(
             reverse("v1:orders_listcreate", kwargs={"shift": self.shift}),
             {
@@ -257,8 +288,14 @@ class OrderAPITests(APITestCase):
 
     def test_create_normal_order_as_privileged_user(self):
         """A privileged user should be able to create normal orders."""
-        self.client.login(username=self.user_with_permissions.username, password="password")
-        self.assertTrue(self.user_with_permissions.has_perm("orders.can_manage_shift_in_venue", self.order_venue))
+        self.client.login(
+            username=self.user_with_permissions.username, password="password"
+        )
+        self.assertTrue(
+            self.user_with_permissions.has_perm(
+                "orders.can_manage_shift_in_venue", self.order_venue
+            )
+        )
 
         with self.subTest("Explicit type set"):
             orders_before = Order.objects.all().count()
@@ -293,8 +330,14 @@ class OrderAPITests(APITestCase):
 
     def test_create_order_made_paid_ready(self):
         """A privileged user should be able to create orders with paid and ready attributes set."""
-        self.client.login(username=self.user_with_permissions.username, password="password")
-        self.assertTrue(self.user_with_permissions.has_perm("orders.can_manage_shift_in_venue", self.order_venue))
+        self.client.login(
+            username=self.user_with_permissions.username, password="password"
+        )
+        self.assertTrue(
+            self.user_with_permissions.has_perm(
+                "orders.can_manage_shift_in_venue", self.order_venue
+            )
+        )
         with self.subTest("Normal order"):
             orders_before = Order.objects.all().count()
             response = self.client.post(
@@ -353,7 +396,10 @@ class OrderAPITests(APITestCase):
     def test_full_update_order_not_logged_in(self):
         order = Order.objects.create(user=None, product=self.product, shift=self.shift)
         response = self.client.put(
-            reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk}),
+            reverse(
+                "v1:orders_retrieveupdatedestroy",
+                kwargs={"shift": self.shift, "pk": order.pk},
+            ),
             {
                 "paid": True,
                 "ready": True,
@@ -367,7 +413,10 @@ class OrderAPITests(APITestCase):
         order = Order.objects.create(user=None, product=self.product, shift=self.shift)
         self.client.login(username=self.normal_user.username, password="password")
         response = self.client.put(
-            reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk}),
+            reverse(
+                "v1:orders_retrieveupdatedestroy",
+                kwargs={"shift": self.shift, "pk": order.pk},
+            ),
             {
                 "paid": True,
                 "ready": True,
@@ -379,9 +428,14 @@ class OrderAPITests(APITestCase):
 
     def test_full_update_order(self):
         order = Order.objects.create(user=None, product=self.product, shift=self.shift)
-        self.client.login(username=self.user_with_permissions.username, password="password")
+        self.client.login(
+            username=self.user_with_permissions.username, password="password"
+        )
         response = self.client.put(
-            reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk}),
+            reverse(
+                "v1:orders_retrieveupdatedestroy",
+                kwargs={"shift": self.shift, "pk": order.pk},
+            ),
             {
                 "paid": True,
                 "ready": True,
@@ -398,7 +452,10 @@ class OrderAPITests(APITestCase):
     def test_partial_update_order_not_logged_in(self):
         order = Order.objects.create(user=None, product=self.product, shift=self.shift)
         response = self.client.patch(
-            reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk}),
+            reverse(
+                "v1:orders_retrieveupdatedestroy",
+                kwargs={"shift": self.shift, "pk": order.pk},
+            ),
             {
                 "priority": Order.PRIORITY_DEPRIORITIZED,
             },
@@ -408,10 +465,15 @@ class OrderAPITests(APITestCase):
 
     def test_parial_update_order_someone_else(self):
         with self.subTest("Terminal created order"):
-            order = Order.objects.create(user=None, product=self.product, shift=self.shift)
+            order = Order.objects.create(
+                user=None, product=self.product, shift=self.shift
+            )
             self.client.login(username=self.normal_user.username, password="password")
             response = self.client.patch(
-                reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk}),
+                reverse(
+                    "v1:orders_retrieveupdatedestroy",
+                    kwargs={"shift": self.shift, "pk": order.pk},
+                ),
                 {
                     "priority": Order.PRIORITY_DEPRIORITIZED,
                 },
@@ -420,10 +482,15 @@ class OrderAPITests(APITestCase):
             self.assertEqual(response.status_code, 403)
 
         with self.subTest("Order someone else"):
-            order = Order.objects.create(user=self.user_with_permissions, product=self.product, shift=self.shift)
+            order = Order.objects.create(
+                user=self.user_with_permissions, product=self.product, shift=self.shift
+            )
             self.client.login(username=self.normal_user.username, password="password")
             response = self.client.patch(
-                reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk}),
+                reverse(
+                    "v1:orders_retrieveupdatedestroy",
+                    kwargs={"shift": self.shift, "pk": order.pk},
+                ),
                 {
                     "priority": Order.PRIORITY_DEPRIORITIZED,
                 },
@@ -433,10 +500,15 @@ class OrderAPITests(APITestCase):
 
     def test_parial_update_order_normal_user(self):
         with self.subTest("Deprioritize"):
-            order = Order.objects.create(user=self.normal_user, product=self.product, shift=self.shift)
+            order = Order.objects.create(
+                user=self.normal_user, product=self.product, shift=self.shift
+            )
             self.client.login(username=self.normal_user.username, password="password")
             response = self.client.patch(
-                reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk}),
+                reverse(
+                    "v1:orders_retrieveupdatedestroy",
+                    kwargs={"shift": self.shift, "pk": order.pk},
+                ),
                 {
                     "priority": Order.PRIORITY_DEPRIORITIZED,
                 },
@@ -447,10 +519,15 @@ class OrderAPITests(APITestCase):
             self.assertEqual(order.priority, Order.PRIORITY_DEPRIORITIZED)
 
         with self.subTest("Paid"):
-            order = Order.objects.create(user=self.normal_user, product=self.product, shift=self.shift)
+            order = Order.objects.create(
+                user=self.normal_user, product=self.product, shift=self.shift
+            )
             self.client.login(username=self.normal_user.username, password="password")
             response = self.client.patch(
-                reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk}),
+                reverse(
+                    "v1:orders_retrieveupdatedestroy",
+                    kwargs={"shift": self.shift, "pk": order.pk},
+                ),
                 {
                     "paid": True,
                 },
@@ -461,10 +538,15 @@ class OrderAPITests(APITestCase):
             self.assertFalse(order.paid)
 
         with self.subTest("Ready"):
-            order = Order.objects.create(user=self.normal_user, product=self.product, shift=self.shift)
+            order = Order.objects.create(
+                user=self.normal_user, product=self.product, shift=self.shift
+            )
             self.client.login(username=self.normal_user.username, password="password")
             response = self.client.patch(
-                reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk}),
+                reverse(
+                    "v1:orders_retrieveupdatedestroy",
+                    kwargs={"shift": self.shift, "pk": order.pk},
+                ),
                 {
                     "ready": True,
                 },
@@ -477,11 +559,17 @@ class OrderAPITests(APITestCase):
     def test_partial_update_order_disable_deprioritize(self):
         """For a normal user, disabling deprioritize should not be possible."""
         order = Order.objects.create(
-            user=self.normal_user, product=self.product, shift=self.shift, priority=Order.PRIORITY_DEPRIORITIZED
+            user=self.normal_user,
+            product=self.product,
+            shift=self.shift,
+            priority=Order.PRIORITY_DEPRIORITIZED,
         )
         self.client.login(username=self.normal_user.username, password="password")
         response = self.client.patch(
-            reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk}),
+            reverse(
+                "v1:orders_retrieveupdatedestroy",
+                kwargs={"shift": self.shift, "pk": order.pk},
+            ),
             {
                 "priority": Order.PRIORITY_NORMAL,
             },
@@ -493,11 +581,19 @@ class OrderAPITests(APITestCase):
 
     def test_partial_update_order_privileged_user(self):
         order = Order.objects.create(
-            user=self.normal_user, product=self.product, shift=self.shift, priority=Order.PRIORITY_DEPRIORITIZED
+            user=self.normal_user,
+            product=self.product,
+            shift=self.shift,
+            priority=Order.PRIORITY_DEPRIORITIZED,
         )
-        self.client.login(username=self.user_with_permissions.username, password="password")
+        self.client.login(
+            username=self.user_with_permissions.username, password="password"
+        )
         response = self.client.patch(
-            reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk}),
+            reverse(
+                "v1:orders_retrieveupdatedestroy",
+                kwargs={"shift": self.shift, "pk": order.pk},
+            ),
             {
                 "priority": Order.PRIORITY_NORMAL,
                 "paid": True,
@@ -513,20 +609,32 @@ class OrderAPITests(APITestCase):
 
     def test_delete_order_not_logged_in(self):
         order = Order.objects.create(
-            user=None, product=self.product, shift=self.shift, priority=Order.PRIORITY_DEPRIORITIZED
+            user=None,
+            product=self.product,
+            shift=self.shift,
+            priority=Order.PRIORITY_DEPRIORITIZED,
         )
         response = self.client.delete(
-            reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk})
+            reverse(
+                "v1:orders_retrieveupdatedestroy",
+                kwargs={"shift": self.shift, "pk": order.pk},
+            )
         )
         self.assertEqual(response.status_code, 403)
 
     def test_delete_order_not_privileged(self):
         order = Order.objects.create(
-            user=self.normal_user, product=self.product, shift=self.shift, priority=Order.PRIORITY_DEPRIORITIZED
+            user=self.normal_user,
+            product=self.product,
+            shift=self.shift,
+            priority=Order.PRIORITY_DEPRIORITIZED,
         )
         self.client.login(username=self.normal_user.username, password="password")
         response = self.client.delete(
-            reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk})
+            reverse(
+                "v1:orders_retrieveupdatedestroy",
+                kwargs={"shift": self.shift, "pk": order.pk},
+            )
         )
         self.assertEqual(response.status_code, 403)
 
@@ -538,29 +646,50 @@ class OrderAPITests(APITestCase):
                 shift=self.shift,
                 priority=Order.PRIORITY_DEPRIORITIZED,
             )
-            self.client.login(username=self.user_with_permissions.username, password="password")
+            self.client.login(
+                username=self.user_with_permissions.username, password="password"
+            )
             response = self.client.delete(
-                reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk})
+                reverse(
+                    "v1:orders_retrieveupdatedestroy",
+                    kwargs={"shift": self.shift, "pk": order.pk},
+                )
             )
             self.assertEqual(response.status_code, 204)
 
         with self.subTest("Terminal order"):
             order = Order.objects.create(
-                user=None, product=self.product, shift=self.shift, priority=Order.PRIORITY_DEPRIORITIZED
+                user=None,
+                product=self.product,
+                shift=self.shift,
+                priority=Order.PRIORITY_DEPRIORITIZED,
             )
-            self.client.login(username=self.user_with_permissions.username, password="password")
+            self.client.login(
+                username=self.user_with_permissions.username, password="password"
+            )
             response = self.client.delete(
-                reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk})
+                reverse(
+                    "v1:orders_retrieveupdatedestroy",
+                    kwargs={"shift": self.shift, "pk": order.pk},
+                )
             )
             self.assertEqual(response.status_code, 204)
 
         with self.subTest("Other users order"):
             order = Order.objects.create(
-                user=self.normal_user, product=self.product, shift=self.shift, priority=Order.PRIORITY_DEPRIORITIZED
+                user=self.normal_user,
+                product=self.product,
+                shift=self.shift,
+                priority=Order.PRIORITY_DEPRIORITIZED,
             )
-            self.client.login(username=self.user_with_permissions.username, password="password")
+            self.client.login(
+                username=self.user_with_permissions.username, password="password"
+            )
             response = self.client.delete(
-                reverse("v1:orders_retrieveupdatedestroy", kwargs={"shift": self.shift, "pk": order.pk})
+                reverse(
+                    "v1:orders_retrieveupdatedestroy",
+                    kwargs={"shift": self.shift, "pk": order.pk},
+                )
             )
             self.assertEqual(response.status_code, 204)
 
@@ -575,7 +704,11 @@ class OrderAPITests(APITestCase):
 
     def test_create_shift_normal_user(self):
         self.client.login(username=self.normal_user.username, password="password")
-        self.assertFalse(self.normal_user.has_perm("orders.can_manage_shift_in_venue", self.order_venue))
+        self.assertFalse(
+            self.normal_user.has_perm(
+                "orders.can_manage_shift_in_venue", self.order_venue
+            )
+        )
         response = self.client.post(
             reverse("v1:shifts_listcreate"),
             {
@@ -593,8 +726,14 @@ class OrderAPITests(APITestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_create_shift(self):
-        self.client.login(username=self.user_with_permissions.username, password="password")
-        self.assertTrue(self.user_with_permissions.has_perm("orders.can_manage_shift_in_venue", self.order_venue))
+        self.client.login(
+            username=self.user_with_permissions.username, password="password"
+        )
+        self.assertTrue(
+            self.user_with_permissions.has_perm(
+                "orders.can_manage_shift_in_venue", self.order_venue
+            )
+        )
         Shift.objects.all().delete()
         response = self.client.post(
             reverse("v1:shifts_listcreate"),
@@ -615,10 +754,16 @@ class OrderAPITests(APITestCase):
         shift = Shift.objects.first()
         self.assertEqual(shift.venue, self.order_venue)
         self.assertEqual(
-            shift.start, timezone.datetime(year=2023, month=3, day=9, hour=10, tzinfo=datetime.timezone.utc)
+            shift.start,
+            timezone.datetime(
+                year=2023, month=3, day=9, hour=10, tzinfo=datetime.timezone.utc
+            ),
         )
         self.assertEqual(
-            shift.end, timezone.datetime(year=2023, month=3, day=9, hour=12, tzinfo=datetime.timezone.utc)
+            shift.end,
+            timezone.datetime(
+                year=2023, month=3, day=9, hour=12, tzinfo=datetime.timezone.utc
+            ),
         )
         self.assertTrue(shift.can_order)
         self.assertFalse(shift.finalized)
@@ -629,8 +774,14 @@ class OrderAPITests(APITestCase):
 
     @freeze_time("2023-03-09T13:00:00", tz_offset=1)
     def test_create_shift_finalized(self):
-        self.client.login(username=self.user_with_permissions.username, password="password")
-        self.assertTrue(self.user_with_permissions.has_perm("orders.can_manage_shift_in_venue", self.order_venue))
+        self.client.login(
+            username=self.user_with_permissions.username, password="password"
+        )
+        self.assertTrue(
+            self.user_with_permissions.has_perm(
+                "orders.can_manage_shift_in_venue", self.order_venue
+            )
+        )
         Shift.objects.all().delete()
         response = self.client.post(
             reverse("v1:shifts_listcreate"),
@@ -650,17 +801,24 @@ class OrderAPITests(APITestCase):
         self.assertEqual(Shift.objects.all().count(), 1)
         shift = Shift.objects.first()
         self.assertEqual(
-            shift.end, timezone.datetime(year=2023, month=3, day=9, hour=13, tzinfo=datetime.timezone.utc)
+            shift.end,
+            timezone.datetime(
+                year=2023, month=3, day=9, hour=13, tzinfo=datetime.timezone.utc
+            ),
         )
 
     def test_retrieve_shift(self):
         with self.subTest("Not logged in"):
-            response = self.client.get(reverse("v1:shift_retrieveupdate", kwargs={"pk": self.shift.pk}))
+            response = self.client.get(
+                reverse("v1:shift_retrieveupdate", kwargs={"pk": self.shift.pk})
+            )
             self.assertEqual(response.status_code, 403)
 
         with self.subTest("Logged in"):
             self.client.login(username=self.normal_user.username, password="password")
-            response = self.client.get(reverse("v1:shift_retrieveupdate", kwargs={"pk": self.shift.pk}))
+            response = self.client.get(
+                reverse("v1:shift_retrieveupdate", kwargs={"pk": self.shift.pk})
+            )
             self.assertEqual(response.status_code, 200)
 
     def test_full_update_shift_not_logged_in(self):
@@ -681,7 +839,11 @@ class OrderAPITests(APITestCase):
 
     def test_full_update_shift_normal_user(self):
         self.client.login(username=self.normal_user.username, password="password")
-        self.assertFalse(self.normal_user.has_perm("orders.can_manage_shift_in_venue", self.order_venue))
+        self.assertFalse(
+            self.normal_user.has_perm(
+                "orders.can_manage_shift_in_venue", self.order_venue
+            )
+        )
         response = self.client.put(
             reverse("v1:shift_retrieveupdate", kwargs={"pk": self.shift.pk}),
             {
@@ -698,8 +860,14 @@ class OrderAPITests(APITestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_full_update_shift(self):
-        self.client.login(username=self.user_with_permissions.username, password="password")
-        self.assertTrue(self.user_with_permissions.has_perm("orders.can_manage_shift_in_venue", self.order_venue))
+        self.client.login(
+            username=self.user_with_permissions.username, password="password"
+        )
+        self.assertTrue(
+            self.user_with_permissions.has_perm(
+                "orders.can_manage_shift_in_venue", self.order_venue
+            )
+        )
         response = self.client.put(
             reverse("v1:shift_retrieveupdate", kwargs={"pk": self.shift.pk}),
             {
@@ -716,10 +884,16 @@ class OrderAPITests(APITestCase):
         self.assertEqual(response.status_code, 200)
         shift = Shift.objects.get(pk=self.shift.pk)
         self.assertEqual(
-            shift.start, timezone.datetime(year=2023, month=3, day=9, hour=10, tzinfo=datetime.timezone.utc)
+            shift.start,
+            timezone.datetime(
+                year=2023, month=3, day=9, hour=10, tzinfo=datetime.timezone.utc
+            ),
         )
         self.assertEqual(
-            shift.end, timezone.datetime(year=2023, month=3, day=9, hour=15, tzinfo=datetime.timezone.utc)
+            shift.end,
+            timezone.datetime(
+                year=2023, month=3, day=9, hour=15, tzinfo=datetime.timezone.utc
+            ),
         )
         self.assertFalse(shift.can_order)
         self.assertFalse(shift.finalized)
@@ -728,8 +902,14 @@ class OrderAPITests(APITestCase):
         self.assertEqual(shift.assignees.all().count(), 0)
 
     def test_full_update_shift_venue_not_updated(self):
-        self.client.login(username=self.user_with_permissions.username, password="password")
-        self.assertTrue(self.user_with_permissions.has_perm("orders.can_manage_shift_in_venue", self.order_venue))
+        self.client.login(
+            username=self.user_with_permissions.username, password="password"
+        )
+        self.assertTrue(
+            self.user_with_permissions.has_perm(
+                "orders.can_manage_shift_in_venue", self.order_venue
+            )
+        )
         test_venue = Venue.objects.create(name="Extra venue", slug="extra_venue")
         test_order_venue = OrderVenue.objects.create(venue=test_venue)
         response = self.client.put(
@@ -764,7 +944,11 @@ class OrderAPITests(APITestCase):
     def test_partial_update_shift_normal_user(self):
         """A normal user should not be able to use PATCH on a Shift."""
         self.client.login(username=self.normal_user.username, password="password")
-        self.assertFalse(self.normal_user.has_perm("orders.can_manage_shift_in_venue", self.order_venue))
+        self.assertFalse(
+            self.normal_user.has_perm(
+                "orders.can_manage_shift_in_venue", self.order_venue
+            )
+        )
         response = self.client.patch(
             reverse("v1:shift_retrieveupdate", kwargs={"pk": self.shift.pk}),
             {
@@ -776,8 +960,14 @@ class OrderAPITests(APITestCase):
 
     def test_partial_update_shift(self):
         """Test PATCH update of Shift properties."""
-        self.client.login(username=self.user_with_permissions.username, password="password")
-        self.assertTrue(self.user_with_permissions.has_perm("orders.can_manage_shift_in_venue", self.order_venue))
+        self.client.login(
+            username=self.user_with_permissions.username, password="password"
+        )
+        self.assertTrue(
+            self.user_with_permissions.has_perm(
+                "orders.can_manage_shift_in_venue", self.order_venue
+            )
+        )
 
         with self.subTest("Start"):
             response = self.client.patch(
@@ -790,7 +980,10 @@ class OrderAPITests(APITestCase):
             self.assertEqual(response.status_code, 200)
             shift = Shift.objects.get(pk=self.shift.pk)
             self.assertEqual(
-                shift.start, timezone.datetime(year=2023, month=3, day=9, hour=10, tzinfo=datetime.timezone.utc)
+                shift.start,
+                timezone.datetime(
+                    year=2023, month=3, day=9, hour=10, tzinfo=datetime.timezone.utc
+                ),
             )
 
         with self.subTest("End"):
@@ -804,7 +997,10 @@ class OrderAPITests(APITestCase):
             self.assertEqual(response.status_code, 200)
             shift = Shift.objects.get(pk=self.shift.pk)
             self.assertEqual(
-                shift.end, timezone.datetime(year=2023, month=3, day=9, hour=15, tzinfo=datetime.timezone.utc)
+                shift.end,
+                timezone.datetime(
+                    year=2023, month=3, day=9, hour=15, tzinfo=datetime.timezone.utc
+                ),
             )
 
         with self.subTest("Can order"):
@@ -857,8 +1053,14 @@ class OrderAPITests(APITestCase):
 
     def test_partial_update_shift_venue(self):
         """Updating a Shift venue should not be possible."""
-        self.client.login(username=self.user_with_permissions.username, password="password")
-        self.assertTrue(self.user_with_permissions.has_perm("orders.can_manage_shift_in_venue", self.order_venue))
+        self.client.login(
+            username=self.user_with_permissions.username, password="password"
+        )
+        self.assertTrue(
+            self.user_with_permissions.has_perm(
+                "orders.can_manage_shift_in_venue", self.order_venue
+            )
+        )
         test_venue = Venue.objects.create(name="Extra venue", slug="extra_venue")
         test_order_venue = OrderVenue.objects.create(venue=test_venue)
         response = self.client.patch(
@@ -873,10 +1075,20 @@ class OrderAPITests(APITestCase):
     @freeze_time("2023-03-09T13:00:00", tz_offset=1)
     def test_partial_update_shift_make_finalized(self):
         """Finalize a shift with PATCH."""
-        self.client.login(username=self.user_with_permissions.username, password="password")
-        self.assertTrue(self.user_with_permissions.has_perm("orders.can_manage_shift_in_venue", self.order_venue))
-        self.shift.start = timezone.datetime(year=2023, month=3, day=9, hour=10, tzinfo=datetime.timezone.utc)
-        self.shift.end = timezone.datetime(year=2023, month=3, day=9, hour=16, tzinfo=datetime.timezone.utc)
+        self.client.login(
+            username=self.user_with_permissions.username, password="password"
+        )
+        self.assertTrue(
+            self.user_with_permissions.has_perm(
+                "orders.can_manage_shift_in_venue", self.order_venue
+            )
+        )
+        self.shift.start = timezone.datetime(
+            year=2023, month=3, day=9, hour=10, tzinfo=datetime.timezone.utc
+        )
+        self.shift.end = timezone.datetime(
+            year=2023, month=3, day=9, hour=16, tzinfo=datetime.timezone.utc
+        )
         self.shift.save()
         response = self.client.patch(
             reverse("v1:shift_retrieveupdate", kwargs={"pk": self.shift.pk}),
@@ -889,15 +1101,26 @@ class OrderAPITests(APITestCase):
         shift = Shift.objects.get(pk=self.shift.pk)
         self.assertTrue(shift.finalized)
         self.assertEqual(
-            shift.end, timezone.datetime(year=2023, month=3, day=9, hour=13, tzinfo=datetime.timezone.utc)
+            shift.end,
+            timezone.datetime(
+                year=2023, month=3, day=9, hour=13, tzinfo=datetime.timezone.utc
+            ),
         )
         self.assertFalse(shift.can_order)
 
     def test_partial_update_shift_make_finalized_orders_not_ready(self):
         """Finalizing a Shift where some orders are not ready or paid yet should fail."""
-        self.client.login(username=self.user_with_permissions.username, password="password")
-        self.assertTrue(self.user_with_permissions.has_perm("orders.can_manage_shift_in_venue", self.order_venue))
-        Order.objects.create(product=self.product, shift=self.shift, user=self.normal_user)
+        self.client.login(
+            username=self.user_with_permissions.username, password="password"
+        )
+        self.assertTrue(
+            self.user_with_permissions.has_perm(
+                "orders.can_manage_shift_in_venue", self.order_venue
+            )
+        )
+        Order.objects.create(
+            product=self.product, shift=self.shift, user=self.normal_user
+        )
         response = self.client.patch(
             reverse("v1:shift_retrieveupdate", kwargs={"pk": self.shift.pk}),
             {
@@ -909,8 +1132,14 @@ class OrderAPITests(APITestCase):
 
     def test_partial_update_shift_unfinalize(self):
         """A Shift can never be unfinalized."""
-        self.client.login(username=self.user_with_permissions.username, password="password")
-        self.assertTrue(self.user_with_permissions.has_perm("orders.can_manage_shift_in_venue", self.order_venue))
+        self.client.login(
+            username=self.user_with_permissions.username, password="password"
+        )
+        self.assertTrue(
+            self.user_with_permissions.has_perm(
+                "orders.can_manage_shift_in_venue", self.order_venue
+            )
+        )
         self.shift.finalized = True
         self.shift.save()
         response = self.client.patch(

@@ -11,7 +11,9 @@ class DataMinimisationCronJob(CronJobBase):
 
     RUN_AT_TIMES = ["00:00"]
     RETRY_AFTER_FAILURE_MINS = 1
-    schedule = Schedule(run_at_times=RUN_AT_TIMES, retry_after_failure_mins=RETRY_AFTER_FAILURE_MINS)
+    schedule = Schedule(
+        run_at_times=RUN_AT_TIMES, retry_after_failure_mins=RETRY_AFTER_FAILURE_MINS
+    )
     code = "tosti.dataminimisation"
 
     def do(self):

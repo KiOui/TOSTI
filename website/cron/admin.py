@@ -50,7 +50,9 @@ class CronJobLogAdmin(admin.ModelAdmin):
             super()
             .get_queryset(request)
             .annotate(
-                duration=ExpressionWrapper(F("end_time") - F("start_time"), DurationField()),
+                duration=ExpressionWrapper(
+                    F("end_time") - F("start_time"), DurationField()
+                ),
             )
         )
 

@@ -55,7 +55,9 @@ class LoggedUpdateAPIView(UpdateAPIView):
                     "changed": {
                         "name": str(serializer.instance._meta.verbose_name),
                         "object": str(serializer.instance),
-                        "fields": helper.set_changed_model(serializer.instance).changed_fields,
+                        "fields": helper.set_changed_model(
+                            serializer.instance
+                        ).changed_fields,
                     }
                 }
             ],
@@ -91,7 +93,9 @@ class LoggedRetrieveDestroyAPIView(LoggedDestroyAPIView, RetrieveDestroyAPIView)
     pass
 
 
-class LoggedRetrieveUpdateDestroyAPIView(LoggedUpdateAPIView, LoggedDestroyAPIView, RetrieveUpdateDestroyAPIView):
+class LoggedRetrieveUpdateDestroyAPIView(
+    LoggedUpdateAPIView, LoggedDestroyAPIView, RetrieveUpdateDestroyAPIView
+):
     """RetrieveUpdateDestroyAPIView with logged actions."""
 
     pass

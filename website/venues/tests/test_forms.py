@@ -115,7 +115,9 @@ class VenuesFormsTests(TestCase):
             form = forms.ReservationForm(form_data)
             self.assertFalse(form.is_valid())
 
-        with self.subTest("Reservation completely overlapping already created reservation"):
+        with self.subTest(
+            "Reservation completely overlapping already created reservation"
+        ):
             form_data = {
                 "venue": self.venue,
                 "association": self.association,

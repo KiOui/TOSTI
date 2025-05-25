@@ -15,7 +15,11 @@ from django.urls import reverse
 from django.utils import timezone
 from model_utils.managers import InheritanceManager
 from queryable_properties.managers import QueryablePropertiesManager
-from queryable_properties.properties import RangeCheckProperty, AnnotationProperty, queryable_property
+from queryable_properties.properties import (
+    RangeCheckProperty,
+    AnnotationProperty,
+    queryable_property,
+)
 from requests import ReadTimeout
 from spotipy import SpotifyOAuth, SpotifyException
 from spotipy.client import Spotify
@@ -30,7 +34,9 @@ class Player(models.Model):
 
     display_name = models.CharField(max_length=255, default="", blank=True)
     slug = models.SlugField(unique=True, max_length=100)
-    venue = models.OneToOneField(Venue, on_delete=models.SET_NULL, null=True, blank=True)
+    venue = models.OneToOneField(
+        Venue, on_delete=models.SET_NULL, null=True, blank=True
+    )
 
     objects = InheritanceManager()
 
@@ -191,7 +197,10 @@ class Player(models.Model):
             return False
         control_event = self.active_control_event
         if control_event is not None:
-            if control_event.respect_blacklist and ThaliedjeBlacklistedUser.user_is_blacklisted(user):
+            if (
+                control_event.respect_blacklist
+                and ThaliedjeBlacklistedUser.user_is_blacklisted(user)
+            ):
                 return False
             return control_event.can_request_playlist(user)
         return user.has_perm(
@@ -201,7 +210,9 @@ class Player(models.Model):
     def user_is_throttled(self, user):
         """Check if a user is throttled."""
         if (
-            SpotifyQueueItem.objects.filter(requested_by=user, added__gte=timezone.now() - timedelta(hours=1)).count()
+            SpotifyQueueItem.objects.filter(
+                requested_by=user, added__gte=timezone.now() - timedelta(hours=1)
+            ).count()
             >= config.THALIEDJE_MAX_SONG_REQUESTS_PER_HOUR
         ):
             return True
@@ -214,12 +225,17 @@ class Player(models.Model):
 
         control_event = self.active_control_event
         if control_event is not None:
-            if control_event.respect_blacklist and ThaliedjeBlacklistedUser.user_is_blacklisted(user):
+            if (
+                control_event.respect_blacklist
+                and ThaliedjeBlacklistedUser.user_is_blacklisted(user)
+            ):
                 return False
             if control_event.check_throttling and self.user_is_throttled(user):
                 return False
             return control_event.can_request_song(user)
-        return not ThaliedjeBlacklistedUser.user_is_blacklisted(user) and not self.user_is_throttled(user)
+        return not ThaliedjeBlacklistedUser.user_is_blacklisted(
+            user
+        ) and not self.user_is_throttled(user)
 
     def can_control(self, user):
         """Check if a user can control the player."""
@@ -227,10 +243,15 @@ class Player(models.Model):
             return False
         control_event = self.active_control_event
         if control_event is not None:
-            if control_event.respect_blacklist and ThaliedjeBlacklistedUser.user_is_blacklisted(user):
+            if (
+                control_event.respect_blacklist
+                and ThaliedjeBlacklistedUser.user_is_blacklisted(user)
+            ):
                 return False
             return control_event.can_control_player(user)
-        return user.has_perm("thaliedje.can_control", self) and not ThaliedjeBlacklistedUser.user_is_blacklisted(user)
+        return user.has_perm(
+            "thaliedje.can_control", self
+        ) and not ThaliedjeBlacklistedUser.user_is_blacklisted(user)
 
 
 class MarietjePlayer(Player):
@@ -254,7 +275,9 @@ class MarietjePlayer(Player):
     @property
     def auth(self):
         """Get Marietje Auth credentials."""
-        return MarietjeClientCredentials(self.url, self.client_id, self.client_secret, cache_path=self.cache_path)
+        return MarietjeClientCredentials(
+            self.url, self.client_id, self.client_secret, cache_path=self.cache_path
+        )
 
     @property
     def marietje(self):
@@ -674,7 +697,9 @@ class SpotifyPlayer(Player):
         """Queue a track."""
         track_info = self.do_spotify_request(self.spotify.track, track_id)
 
-        self.do_spotify_request(self.spotify.add_to_queue, track_id, device_id=self.playback_device_id)
+        self.do_spotify_request(
+            self.spotify.add_to_queue, track_id, device_id=self.playback_device_id
+        )
 
         cache.delete(self._queue_cache_key)
 
@@ -688,10 +713,14 @@ class SpotifyPlayer(Player):
         """Start playing something on the playback device of a Player."""
         if self._current_playback is None:
             # If the playback device is not active, make it active
-            self.do_spotify_request(self.spotify.transfer_playback, device_id=self.playback_device_id)
+            self.do_spotify_request(
+                self.spotify.transfer_playback, device_id=self.playback_device_id
+            )
 
         self.do_spotify_request(
-            self.spotify.start_playback, device_id=self.playback_device_id, context_uri=context_uri
+            self.spotify.start_playback,
+            device_id=self.playback_device_id,
+            context_uri=context_uri,
         )
 
         cache.delete(self._current_playback_cache_key)
@@ -700,25 +729,35 @@ class SpotifyPlayer(Player):
         """Start playing on the playback device of a Player."""
         if self._current_playback is None:
             # If the playback device is not active, make it active
-            self.do_spotify_request(self.spotify.transfer_playback, device_id=self.playback_device_id)
+            self.do_spotify_request(
+                self.spotify.transfer_playback, device_id=self.playback_device_id
+            )
 
-        self.do_spotify_request(self.spotify.start_playback, device_id=self.playback_device_id)
+        self.do_spotify_request(
+            self.spotify.start_playback, device_id=self.playback_device_id
+        )
         cache.delete(self._current_playback_cache_key)
 
     def pause(self):
         """Pause the playback device of a Player."""
-        self.do_spotify_request(self.spotify.pause_playback, device_id=self.playback_device_id)
+        self.do_spotify_request(
+            self.spotify.pause_playback, device_id=self.playback_device_id
+        )
         cache.delete(self._current_playback_cache_key)
 
     def next(self):
         """Skip to the next track on the playback device of a Player."""
-        self.do_spotify_request(self.spotify.next_track, device_id=self.playback_device_id)
+        self.do_spotify_request(
+            self.spotify.next_track, device_id=self.playback_device_id
+        )
         cache.delete(self._current_playback_cache_key)
         cache.delete(self._queue_cache_key)
 
     def previous(self):
         """Skip to the next track on the playback device of a Player."""
-        self.do_spotify_request(self.spotify.previous_track, device_id=self.playback_device_id)
+        self.do_spotify_request(
+            self.spotify.previous_track, device_id=self.playback_device_id
+        )
         cache.delete(self._current_playback_cache_key)
         cache.delete(self._queue_cache_key)
 
@@ -806,7 +845,9 @@ class SpotifyPlayer(Player):
     @volume.setter
     def volume(self, volume_percent):
         """Set the volume of the playback device of a Player."""
-        self.do_spotify_request(self.spotify.volume, volume_percent, device_id=self.playback_device_id)
+        self.do_spotify_request(
+            self.spotify.volume, volume_percent, device_id=self.playback_device_id
+        )
         cache.delete(self._current_playback_cache_key)
 
     @property
@@ -820,7 +861,9 @@ class SpotifyPlayer(Player):
     @shuffle.setter
     def shuffle(self, shuffle_state: bool):
         """Set the shuffle state of the playback device of a Player."""
-        self.do_spotify_request(self.spotify.shuffle, shuffle_state, device_id=self.playback_device_id)
+        self.do_spotify_request(
+            self.spotify.shuffle, shuffle_state, device_id=self.playback_device_id
+        )
         cache.delete(self._current_playback_cache_key)
         cache.delete(self._queue_cache_key)
 
@@ -837,7 +880,9 @@ class SpotifyPlayer(Player):
         """Set the repeat state of the playback device of a Player."""
         if repeat_state not in ["off", "track", "context"]:
             raise ValueError("Repeat state must be one of 'off', 'track', or 'context'")
-        self.do_spotify_request(self.spotify.repeat, repeat_state, device_id=self.playback_device_id)
+        self.do_spotify_request(
+            self.spotify.repeat, repeat_state, device_id=self.playback_device_id
+        )
         cache.delete(self._current_playback_cache_key)
 
     def search(self, query, maximum=5, query_type="track"):
@@ -850,7 +895,9 @@ class SpotifyPlayer(Player):
         :return: a list of tracks [{"name": the trackname, "artists": [a list of artist names],
          "id": the Spotify track id}]
         """
-        results = self.do_spotify_request(self.spotify.search, q=query, limit=maximum, type=query_type)
+        results = self.do_spotify_request(
+            self.spotify.search, q=query, limit=maximum, type=query_type
+        )
 
         if results is None:
             return []
@@ -861,7 +908,9 @@ class SpotifyPlayer(Player):
             # Filter out None values as the Spotipy library might return None for data it can't decode
             trimmed_result_for_key = [x for x in results[key]["items"] if x is not None]
             if key == "tracks":
-                trimmed_result_for_key = sorted(trimmed_result_for_key, key=lambda x: -x["popularity"])
+                trimmed_result_for_key = sorted(
+                    trimmed_result_for_key, key=lambda x: -x["popularity"]
+                )
                 trimmed_result_for_key = [
                     {
                         "type": x["type"],
@@ -895,7 +944,9 @@ class SpotifyPlayer(Player):
                         "owner": x["owner"],
                         "id": x["id"],
                         "uri": x["uri"],
-                        "image": x["images"][0]["url"] if len(x["images"]) > 0 else None,
+                        "image": (
+                            x["images"][0]["url"] if len(x["images"]) > 0 else None
+                        ),
                     }
                     for x in trimmed_result_for_key
                 ]
@@ -958,7 +1009,10 @@ class SpotifyTrack(models.Model):
             updated = True
 
         artists = (
-            [SpotifyArtist.get_or_create_from_spotify(x) for x in spotify_data["artists"]]
+            [
+                SpotifyArtist.get_or_create_from_spotify(x)
+                for x in spotify_data["artists"]
+            ]
             if "artists" in spotify_data.keys()
             else []
         )
@@ -981,10 +1035,20 @@ class SpotifyQueueItem(models.Model):
     device for a Player, requested by a certain user.
     """
 
-    track = models.ForeignKey(SpotifyTrack, related_name="requests", on_delete=models.SET_NULL, null=True, blank=True)
-    player = models.ForeignKey(Player, related_name="requests", on_delete=models.CASCADE)
+    track = models.ForeignKey(
+        SpotifyTrack,
+        related_name="requests",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+    player = models.ForeignKey(
+        Player, related_name="requests", on_delete=models.CASCADE
+    )
     added = models.DateTimeField(auto_now_add=True)
-    requested_by = models.ForeignKey(User, related_name="requests", null=True, on_delete=models.SET_NULL, blank=True)
+    requested_by = models.ForeignKey(
+        User, related_name="requests", null=True, on_delete=models.SET_NULL, blank=True
+    )
 
     @classmethod
     def queue_track(cls, spotify_data, player, user):
@@ -1022,14 +1086,20 @@ class ThaliedjeBlacklistedUser(models.Model):
 class ThaliedjeControlEvent(models.Model):
     """Model for setting different control permissions during a certain time period."""
 
-    event = models.OneToOneField(Reservation, on_delete=models.CASCADE, null=False, blank=False)
+    event = models.OneToOneField(
+        Reservation, on_delete=models.CASCADE, null=False, blank=False
+    )
 
     association_can_request = models.BooleanField(default=False)
     association_can_control = models.BooleanField(default=False)
     association_can_request_playlist = models.BooleanField(default=False)
 
-    selected_users = models.ManyToManyField(User, blank=True, related_name="thaliedje_control_events")
-    join_code = models.CharField(max_length=255, blank=True, null=True, validators=[MinLengthValidator(20)])
+    selected_users = models.ManyToManyField(
+        User, blank=True, related_name="thaliedje_control_events"
+    )
+    join_code = models.CharField(
+        max_length=255, blank=True, null=True, validators=[MinLengthValidator(20)]
+    )
     selected_users_can_request = models.BooleanField(default=False)
     selected_users_can_control = models.BooleanField(default=False)
     selected_users_can_request_playlist = models.BooleanField(default=False)
@@ -1125,7 +1195,10 @@ class ThaliedjeControlEvent(models.Model):
             and user.association == self.association
         ):
             return True
-        if self.selected_users_can_request_playlist and user in self.selected_users.all():
+        if (
+            self.selected_users_can_request_playlist
+            and user in self.selected_users.all()
+        ):
             return True
         if user in self.admins.all():
             return True
@@ -1135,7 +1208,9 @@ class ThaliedjeControlEvent(models.Model):
         """Get the absolute url for this event."""
         return reverse("thaliedje:event-control", kwargs={"pk": self.pk})
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+    def save(
+        self, force_insert=False, force_update=False, using=None, update_fields=None
+    ):
         """Save the reservation."""
         if not self.join_code:
             self.join_code = secrets.token_urlsafe(20)
@@ -1166,7 +1241,9 @@ class ThaliedjeControlEvent(models.Model):
         except cls.DoesNotExist:
             return None
         except cls.MultipleObjectsReturned:
-            logging.error("Multiple active ThaliedjeControlEvents found for player %s", player)
+            logging.error(
+                "Multiple active ThaliedjeControlEvents found for player %s", player
+            )
             return None
 
     class Meta:

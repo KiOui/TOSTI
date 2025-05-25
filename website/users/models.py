@@ -66,16 +66,24 @@ class User(AbstractUser):
     override_short_name = models.CharField(max_length=50, blank=True, null=True)
 
     association = models.ForeignKey(
-        Association, related_name="users", null=True, blank=True, on_delete=models.SET_NULL
+        Association,
+        related_name="users",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
     )
 
     def extract_first_and_last_name_from_username(self):
         """Update the user's first and last name based on their display name."""
         if self.full_name and not self.first_name and not self.last_name:
-            first_name = self.full_name[self.full_name.find("(") + 1 : self.full_name.find(")")]  # noqa: E203
+            first_name = self.full_name[
+                self.full_name.find("(") + 1 : self.full_name.find(")")
+            ]  # noqa: E203
             last_name = self.full_name.split(",")[0]
 
-            insert = self.full_name[self.full_name.rfind(".") + 1 : self.full_name.find("(")].strip()  # noqa: E203
+            insert = self.full_name[
+                self.full_name.rfind(".") + 1 : self.full_name.find("(")
+            ].strip()  # noqa: E203
             if len(insert) > 0:
                 last_name = insert + " " + last_name
 
@@ -133,7 +141,9 @@ class User(AbstractUser):
 class GroupSettings(models.Model):
     """Extra settings for a Django Group."""
 
-    group = models.OneToOneField(BaseGroup, on_delete=CASCADE, primary_key=True, related_name="settings")
+    group = models.OneToOneField(
+        BaseGroup, on_delete=CASCADE, primary_key=True, related_name="settings"
+    )
     gets_staff_permissions = models.BooleanField(
         default=False,
         help_text=(
@@ -143,7 +153,10 @@ class GroupSettings(models.Model):
         ),
     )
     display_on_website = models.BooleanField(
-        default=False, help_text=("If enabled, the members of this group will be displayed on a webpage.")
+        default=False,
+        help_text=(
+            "If enabled, the members of this group will be displayed on a webpage."
+        ),
     )
 
     class Meta:

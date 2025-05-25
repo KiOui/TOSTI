@@ -22,7 +22,9 @@ def send_reservation_status_change_email_receiver(sender, instance, **kwargs):
 
 
 @receiver(post_save, sender=Reservation)
-def set_reservation_accepted_if_automatic_reservations_are_enabled(sender, instance, created, **kwargs):
+def set_reservation_accepted_if_automatic_reservations_are_enabled(
+    sender, instance, created, **kwargs
+):
     """Set a reservation to accepted if enabled on the venue."""
     if not created:
         return

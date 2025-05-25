@@ -18,12 +18,16 @@ class FailedRunsNotificationCronJob(CronJobBase):
         crons_to_check = [get_class(x) for x in settings.CRON_CLASSES]
         emails = [admin[1] for admin in settings.ADMINS]
 
-        failed_runs_cronjob_email_prefix = getattr(settings, "FAILED_RUNS_CRONJOB_EMAIL_PREFIX", "")
+        failed_runs_cronjob_email_prefix = getattr(
+            settings, "FAILED_RUNS_CRONJOB_EMAIL_PREFIX", ""
+        )
 
         for cron in crons_to_check:
 
             min_failures = getattr(cron, "MIN_NUM_FAILURES", 10)
-            jobs = CronJobLog.objects.filter(code=cron.code).order_by("-end_time")[:min_failures]
+            jobs = CronJobLog.objects.filter(code=cron.code).order_by("-end_time")[
+                :min_failures
+            ]
             failures = 0
             message = ""
 

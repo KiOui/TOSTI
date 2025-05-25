@@ -24,7 +24,9 @@ def user_can_open_fridge(user, fridge):
     if user_is_blacklisted(user, fridge):
         return False, None
 
-    if fridge.minimum_age is not None and not verify_minimum_age(user, fridge.minimum_age):
+    if fridge.minimum_age is not None and not verify_minimum_age(
+        user, fridge.minimum_age
+    ):
         return False, None
 
     opening_hours = fridge.current_opening_hours
@@ -33,11 +35,15 @@ def user_can_open_fridge(user, fridge):
 
     if config.FRIDGE_REQUIRE_DAILY_OPENING:
         # This requires a daily opening by a user with the open_always permission.
-        already_opened_today = AccessLog.objects.filter(fridge=fridge, timestamp__date=timezone.now().date()).exists()
+        already_opened_today = AccessLog.objects.filter(
+            fridge=fridge, timestamp__date=timezone.now().date()
+        ).exists()
         if not already_opened_today:
             return False, None
 
-    if opening_hours.filter(Q(restrict_to_groups__in=user.groups.all()) | Q(restrict_to_groups__isnull=True)).exists():
+    if opening_hours.filter(
+        Q(restrict_to_groups__in=user.groups.all()) | Q(restrict_to_groups__isnull=True)
+    ).exists():
         return True, fridge.unlock_for_how_long
 
     return False, None

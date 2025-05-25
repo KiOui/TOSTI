@@ -174,7 +174,12 @@ class MarietjeClientCredentials(MarietjeAuthBase):
 
         headers = _make_authorization_headers(self.client_id, self.client_secret)
 
-        logger.debug("sending POST request to %s with Headers: %s and Body: %r", self.token_url(), headers, payload)
+        logger.debug(
+            "sending POST request to %s with Headers: %s and Body: %r",
+            self.token_url(),
+            headers,
+            payload,
+        )
 
         try:
             response = self._session.post(
@@ -302,7 +307,9 @@ class Marietje:
         )
 
         try:
-            response = self._session.request(method, url, headers=headers, timeout=self.requests_timeout, **args)
+            response = self._session.request(
+                method, url, headers=headers, timeout=self.requests_timeout, **args
+            )
 
             response.raise_for_status()
             results = response.json()
@@ -340,7 +347,9 @@ class Marietje:
                 reason = retry_error.args[0].reason
             except (IndexError, AttributeError):
                 reason = None
-            raise MarietjeException(429, -1, "%s:\n %s" % (request.path_url, "Max Retries"), reason=reason)
+            raise MarietjeException(
+                429, -1, "%s:\n %s" % (request.path_url, "Max Retries"), reason=reason
+            )
         except ValueError:
             results = None
 

@@ -9,7 +9,9 @@ def sanitize_closed_announcements(closed_announcements) -> list:
     if closed_announcements is None or not isinstance(closed_announcements, str):
         return []
     try:
-        closed_announcements_list = json.loads(urllib.parse.unquote(closed_announcements))
+        closed_announcements_list = json.loads(
+            urllib.parse.unquote(closed_announcements)
+        )
     except json.JSONDecodeError:
         return []
 
@@ -25,7 +27,11 @@ def sanitize_closed_announcements(closed_announcements) -> list:
 
 def validate_closed_announcements(closed_announcements) -> list:
     """Verify the integers in the list such that the ID's that in the database exist only remain."""
-    return list(Announcement.objects.filter(id__in=closed_announcements).values_list("id", flat=True))
+    return list(
+        Announcement.objects.filter(id__in=closed_announcements).values_list(
+            "id", flat=True
+        )
+    )
 
 
 def encode_closed_announcements(closed_announcements: list) -> str:

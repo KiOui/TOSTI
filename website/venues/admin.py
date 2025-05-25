@@ -32,7 +32,9 @@ class ReservationAdminForm(forms.ModelForm):
         if not instance:
             self.fields["venue"].queryset = Venue.objects.filter(can_be_reserved=True)
         else:
-            self.fields["venue"].queryset = Venue.objects.filter(Q(can_be_reserved=True) | Q(pk=instance.pk))
+            self.fields["venue"].queryset = Venue.objects.filter(
+                Q(can_be_reserved=True) | Q(pk=instance.pk)
+            )
 
 
 class ReservationAdminUserFilter(AutocompleteFilter):
@@ -46,7 +48,15 @@ class ReservationAdminUserFilter(AutocompleteFilter):
 class ReservationAdmin(admin.ModelAdmin):
     """Custom admin for reservations."""
 
-    list_display = ["title", "venue", "association", "start", "end", "user_created", "accepted"]
+    list_display = [
+        "title",
+        "venue",
+        "association",
+        "start",
+        "end",
+        "user_created",
+        "accepted",
+    ]
     list_filter = [
         "venue",
         "association",

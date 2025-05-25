@@ -11,10 +11,14 @@ register = template.Library()
 def render_announcements(context):
     """Render all active announcements."""
     request = context.get("request")
-    closed_announcements = sanitize_closed_announcements(request.COOKIES.get("closed-announcements", None))
+    closed_announcements = sanitize_closed_announcements(
+        request.COOKIES.get("closed-announcements", None)
+    )
 
     return {
-        "announcements": Announcement.objects.visible().filter(~Q(id__in=closed_announcements)),
+        "announcements": Announcement.objects.visible().filter(
+            ~Q(id__in=closed_announcements)
+        ),
         "app_announcements": getattr(request, "_app_announcements", []),
         "closed_announcements": closed_announcements,
     }

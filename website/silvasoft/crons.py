@@ -23,7 +23,9 @@ class SynchronizeSilvasoft(CronJobBase):
     RUN_EVERY_MINS = 60
     RETRY_AFTER_FAILURE_MINS = 30
     code = "silvasoft.synchronize"
-    schedule = Schedule(run_every_mins=RUN_EVERY_MINS, retry_after_failure_mins=RETRY_AFTER_FAILURE_MINS)
+    schedule = Schedule(
+        run_every_mins=RUN_EVERY_MINS, retry_after_failure_mins=RETRY_AFTER_FAILURE_MINS
+    )
 
     def do(self):
         """Synchronize Shifts and Borrel Reservations to Silvasoft."""
@@ -41,11 +43,15 @@ class SynchronizeSilvasoft(CronJobBase):
             if maximum_synchronizations_to_run == 0:
                 return
 
-            silvasoft_invoice, _ = SilvasoftBorrelReservationInvoice.objects.get_or_create(
-                borrel_reservation=borrel_reservation
+            silvasoft_invoice, _ = (
+                SilvasoftBorrelReservationInvoice.objects.get_or_create(
+                    borrel_reservation=borrel_reservation
+                )
             )
             try:
-                synchronize_borrelreservation_to_silvasoft(borrel_reservation, silvasoft_invoice.silvasoft_identifier)
+                synchronize_borrelreservation_to_silvasoft(
+                    borrel_reservation, silvasoft_invoice.silvasoft_identifier
+                )
                 SilvasoftBorrelReservationSynchronization.objects.create(
                     borrel_reservation=borrel_reservation, succeeded=True
                 )
@@ -65,11 +71,19 @@ class SynchronizeSilvasoft(CronJobBase):
             if maximum_synchronizations_to_run == 0:
                 return
 
-            silvasoft_invoice, _ = SilvasoftShiftInvoice.objects.get_or_create(shift=shift)
+            silvasoft_invoice, _ = SilvasoftShiftInvoice.objects.get_or_create(
+                shift=shift
+            )
             try:
-                synchronize_shift_to_silvasoft(shift, silvasoft_invoice.silvasoft_identifier)
-                SilvasoftShiftSynchronization.objects.create(shift=shift, succeeded=True)
+                synchronize_shift_to_silvasoft(
+                    shift, silvasoft_invoice.silvasoft_identifier
+                )
+                SilvasoftShiftSynchronization.objects.create(
+                    shift=shift, succeeded=True
+                )
             except SilvasoftException:
-                SilvasoftShiftSynchronization.objects.create(shift=shift, succeeded=False)
+                SilvasoftShiftSynchronization.objects.create(
+                    shift=shift, succeeded=False
+                )
 
             maximum_synchronizations_to_run = maximum_synchronizations_to_run - 1

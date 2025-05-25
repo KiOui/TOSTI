@@ -12,15 +12,25 @@ class AccountForm(forms.Form):
         required=False,
     )
     first_name = forms.CharField(
-        label="First name", widget=forms.TextInput(attrs={"readonly": "readonly"}), required=False
+        label="First name",
+        widget=forms.TextInput(attrs={"readonly": "readonly"}),
+        required=False,
     )
     last_name = forms.CharField(
-        label="Last name", widget=forms.TextInput(attrs={"readonly": "readonly"}), required=False
+        label="Last name",
+        widget=forms.TextInput(attrs={"readonly": "readonly"}),
+        required=False,
     )
     full_name = forms.CharField(
-        label="Full name", widget=forms.TextInput(attrs={"readonly": "readonly"}), required=False
+        label="Full name",
+        widget=forms.TextInput(attrs={"readonly": "readonly"}),
+        required=False,
     )
     email = forms.EmailField(
-        label="Email address", widget=forms.TextInput(attrs={"readonly": "readonly"}), required=False
+        label="Email address",
+        widget=forms.TextInput(attrs={"readonly": "readonly"}),
+        required=False,
     )
-    association = forms.ModelChoiceField(queryset=Association.objects.all(), required=False)
+    association = forms.ModelChoiceField(
+        queryset=Association.objects.all(), required=False
+    )

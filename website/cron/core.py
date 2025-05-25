@@ -68,7 +68,11 @@ class CronJobBase(abc.ABC):
             last_job = CronJobLog.objects.filter(code=cls.code).latest("start_time")
         except CronJobLog.DoesNotExist:
             return timedelta()
-        return last_job.start_time + timedelta(minutes=cls.schedule.run_every_mins) - utc_now()
+        return (
+            last_job.start_time
+            + timedelta(minutes=cls.schedule.run_every_mins)
+            - utc_now()
+        )
 
     @property
     def id(self) -> str:
@@ -87,19 +91,31 @@ class CronJobManager:
     """
 
     def __init__(
-        self, cron_job_class: type(CronJobBase), silent: bool = False, dry_run: bool = False, stdout: TextIO = None
+        self,
+        cron_job_class: type(CronJobBase),
+        silent: bool = False,
+        dry_run: bool = False,
+        stdout: TextIO = None,
     ):
         """Initialize a CronJobManager."""
         from cron.models import CronJobLog
 
         if not issubclass(cron_job_class, CronJobBase):
-            raise BadCronJobError("The cron job to be run must be a subclass of {}".format(CronJobBase.__name__))
+            raise BadCronJobError(
+                "The cron job to be run must be a subclass of {}".format(
+                    CronJobBase.__name__
+                )
+            )
 
         if cron_job_class.code is None:
-            raise BadCronJobError(f"Cron class '{cron_job_class.id}' does not have a code attribute")
+            raise BadCronJobError(
+                f"Cron class '{cron_job_class.id}' does not have a code attribute"
+            )
 
         if cron_job_class.schedule is None:
-            raise BadCronJobError(f"Cron class '{cron_job_class.id}' does not have a schedule attribute")
+            raise BadCronJobError(
+                f"Cron class '{cron_job_class.id}' does not have a schedule attribute"
+            )
 
         self.cron_job_class = cron_job_class
         self.lock_class = self.get_lock_class()
@@ -137,7 +153,10 @@ class CronJobManager:
                 return False
 
         if self.cron_job_class.schedule.run_weekly_on_days is not None:
-            if not current_time.weekday() in self.cron_job_class.schedule.run_weekly_on_days:
+            if (
+                not current_time.weekday()
+                in self.cron_job_class.schedule.run_weekly_on_days
+            ):
                 return False
 
         if self.cron_job_class.schedule.retry_after_failure_mins:
@@ -151,15 +170,21 @@ class CronJobManager:
             if (
                 last_job
                 and not last_job.is_success
-                and current_time + timedelta(seconds=self.cron_job_class.schedule.run_tolerance_seconds)
-                <= last_job.start_time + timedelta(minutes=self.cron_job_class.schedule.retry_after_failure_mins)
+                and current_time
+                + timedelta(seconds=self.cron_job_class.schedule.run_tolerance_seconds)
+                <= last_job.start_time
+                + timedelta(
+                    minutes=self.cron_job_class.schedule.retry_after_failure_mins
+                )
             ):
                 return False
 
         if self.cron_job_class.schedule.run_every_mins is not None:
             try:
                 latest_previous_successful_run = (
-                    CronJobLog.objects.filter(code=self.cron_job_class.code, is_success=True)
+                    CronJobLog.objects.filter(
+                        code=self.cron_job_class.code, is_success=True
+                    )
                     .filter(start_time__lt=current_time)
                     .latest("start_time")
                 )
@@ -176,17 +201,28 @@ class CronJobManager:
 
         if self.cron_job_class.schedule.run_at_times:
             for time_data in self.cron_job_class.schedule.run_at_times:
-                localized_time_data = time.strptime(run_at_time_localized(time_data), "%H:%M")
+                localized_time_data = time.strptime(
+                    run_at_time_localized(time_data), "%H:%M"
+                )
                 actual_time = time.strptime(
-                    "{}:{}".format(timezone.localtime(current_time).hour, timezone.localtime(current_time).minute),
+                    "{}:{}".format(
+                        timezone.localtime(current_time).hour,
+                        timezone.localtime(current_time).minute,
+                    ),
                     "%H:%M",
                 )
                 if actual_time >= localized_time_data:
                     qset = CronJobLog.objects.filter(
-                        code=self.cron_job_class.code, ran_at_time=time_data, is_success=True
+                        code=self.cron_job_class.code,
+                        ran_at_time=time_data,
+                        is_success=True,
                     ).filter(
                         Q(start_time__gt=current_time)
-                        | Q(end_time__gte=current_time.replace(hour=0, minute=0, second=0, microsecond=0))
+                        | Q(
+                            end_time__gte=current_time.replace(
+                                hour=0, minute=0, second=0, microsecond=0
+                            )
+                        )
                     )
                     if not qset:
                         self.user_time = time_data
@@ -204,7 +240,9 @@ class CronJobManager:
         self.cron_log.save()
 
         if not self.cron_log.is_success and CronJobManager.should_write_log():
-            logger.error(f"{self.cron_log.code} cronjob error:\n{self.cron_log.message}")
+            logger.error(
+                f"{self.cron_log.code} cronjob error:\n{self.cron_log.message}"
+            )
 
     @staticmethod
     def make_log_msg(messages: list[str]) -> str:
@@ -236,12 +274,18 @@ class CronJobManager:
                 logger.info(ex_value)
         else:
             if not self.silent:
-                self.stdout.write("[\N{HEAVY BALLOT X}] {0}\n".format(self.cron_job_class.code))
+                self.stdout.write(
+                    "[\N{HEAVY BALLOT X}] {0}\n".format(self.cron_job_class.code)
+                )
             try:
-                trace = "".join(traceback.format_exception(ex_type, ex_value, ex_traceback))
+                trace = "".join(
+                    traceback.format_exception(ex_type, ex_value, ex_traceback)
+                )
                 self.make_log(self.messages + [trace], success=False)
             except Exception as e:
-                err_msg = f"Error saving cronjob ({self.cron_job_class.id}) log message: {e}"
+                err_msg = (
+                    f"Error saving cronjob ({self.cron_job_class.id}) log message: {e}"
+                )
                 logger.error(err_msg)
 
         return True  # prevent exception propagation
@@ -252,12 +296,16 @@ class CronJobManager:
             if self.should_run_now(force):
                 if not self.dry_run:
                     cron_job = self.cron_job_class()
-                    logger.debug(f"Running cron: {self.cron_job_class.id} code {self.cron_job_class.code}")
+                    logger.debug(
+                        f"Running cron: {self.cron_job_class.id} code {self.cron_job_class.code}"
+                    )
                     self.make_log(["Job in progress"], success=True)
                     self.messages: list[str] = cron_job.do()
                     self.make_log(self.messages, success=True)
                 if not self.silent:
-                    self.stdout.write(f"[\N{HEAVY CHECK MARK}] {self.cron_job_class.code}\n")
+                    self.stdout.write(
+                        f"[\N{HEAVY CHECK MARK}] {self.cron_job_class.code}\n"
+                    )
                 self._remove_old_success_job_logs(self.cron_job_class)
             elif not self.silent:
                 self.stdout.write(f"[ ] {self.cron_job_class.code}\n")
@@ -273,7 +321,11 @@ class CronJobManager:
 
     def _remove_old_success_job_logs(self, job_class: type(CronJobBase)):
         """Remove old successful cron job logs if necessary."""
-        if job_class.remove_successful_cron_logs or getattr(settings, "REMOVE_SUCCESSFUL_CRON_LOGS", False):
+        if job_class.remove_successful_cron_logs or getattr(
+            settings, "REMOVE_SUCCESSFUL_CRON_LOGS", False
+        ):
             from cron.models import CronJobLog
 
-            CronJobLog.objects.filter(code=job_class.code, is_success=True).exclude(pk=self.cron_log.pk).delete()
+            CronJobLog.objects.filter(code=job_class.code, is_success=True).exclude(
+                pk=self.cron_log.pk
+            ).delete()

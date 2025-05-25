@@ -20,7 +20,10 @@ class AccountRetrieveAPIView(CreateAPIView):
     """
 
     schema = CustomAutoSchema(
-        request_schema={"type": "object", "properties": {"token": {"type": "string", "example": "string"}}}
+        request_schema={
+            "type": "object",
+            "properties": {"token": {"type": "string", "example": "string"}},
+        }
     )
 
     permission_classes = [IsAuthenticatedOrTokenHasScope]
@@ -40,7 +43,9 @@ class AccountRetrieveAPIView(CreateAPIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
         try:
             account = self.queryset.get(user__username=username)
-            return Response(status=status.HTTP_200_OK, data=self.serializer_class(account).data)
+            return Response(
+                status=status.HTTP_200_OK, data=self.serializer_class(account).data
+            )
         except Account.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
