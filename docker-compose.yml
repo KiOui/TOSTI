@@ -36,6 +36,7 @@ services:
       - db
     depends_on:
       - database
+    user: "70:70"
     volumes:
       - pg-data:/var/lib/postgresql/old:ro
       - pg-data-16:/var/lib/postgresql/new:rw
