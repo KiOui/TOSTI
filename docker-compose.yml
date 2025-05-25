@@ -31,7 +31,7 @@ services:
 
   db-migrator:
     image: ghcr.io/jobdoesburg/pg-migrator:latest
-    restart: no
+    restart: "no"
     networks:
       - db
     depends_on:
