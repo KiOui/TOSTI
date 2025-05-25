@@ -1,6 +1,5 @@
 from cron.core import CronJobBase, Schedule
 
-from thaliedje.models import SpotifyPlayer
 from tosti.services import data_minimisation
 
 WEEKDAYS = [0, 1, 2, 3, 4]
