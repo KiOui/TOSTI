@@ -2,10 +2,7 @@ import logging
 
 from django.core.management import BaseCommand
 
-import thaliedje.services
-import orders.services
-import users.services
-
+from tosti.services import data_minimisation
 
 logger = logging.getLogger(__name__)
 
@@ -25,12 +22,4 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """Execute the command."""
-        processed_orders = orders.services.execute_data_minimisation(options["dry-run"])
-        for p in processed_orders:
-            logger.info("Removed order data for {}".format(p))
-        processed_thaliedje = thaliedje.services.execute_data_minimisation(options["dry-run"])
-        for p in processed_thaliedje:
-            logger.info("Removed thaliedje data for {}".format(p))
-        processed_users = users.services.execute_data_minimisation(options["dry-run"])
-        for p in processed_users:
-            logger.info("Removed user account for {}".format(p))
+        data_minimisation(options["dry-run"])

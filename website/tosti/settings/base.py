@@ -267,6 +267,7 @@ CRON_CLASSES = [
     "thaliedje.crons.StartMusicCronJob",
     "silvasoft.crons.SynchronizeSilvasoft",
     "yivi.crons.CleanupSessionCronJob",
+    "tosti.crons.DataMinimisationCronJob",
 ]
 
 DJANGO_CRON_DELETE_LOGS_OLDER_THAN = 14

@@ -26,9 +26,9 @@ class YiviException(Exception):
 class Yivi:
     """Yivi class."""
 
-    def __init__(self, prefix, token=None):
+    def __init__(self, url, token=None):
         """Initialize Yivi class."""
-        self.prefix = prefix
+        self.url = url
         self.token = token
 
     def _auth_headers(self):
@@ -43,7 +43,7 @@ class Yivi:
         args = {"params": params}
 
         if not url.startswith("http"):
-            url = self.prefix + url
+            url = self.url + url
 
         headers = self._auth_headers()
 
