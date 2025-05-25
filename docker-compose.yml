@@ -30,7 +30,7 @@ services:
       retries: 5
 
   db-migrator:
-    image: ghcr.io/jobdoesburg/pg-migrator:latest
+    image: ghcr.io/jobdoesburg/pg-migrator:13-to-16
     restart: "no"
     networks:
       - db
@@ -70,7 +70,6 @@ services:
       YIVI_SERVER_TOKEN: ${YIVI_TOKEN}
       SAML_ENTITY_ID: tosti.science.ru.nl
       SAML_BASE_URL: https://tosti.science.ru.nl
-      SAML_METADATA_FILE: ${SAML_METADATA_FILE}
       SAML_PUBLIC_KEY_FILE: ${SAML_PUBLIC_KEY_FILE}
       SAML_PRIVATE_KEY_FILE: ${SAML_PRIVATE_KEY_FILE}
       EMAIL_HOST: smtp.science.ru.nl
