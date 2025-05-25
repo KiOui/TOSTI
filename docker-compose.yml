@@ -42,7 +42,8 @@ services:
     environment:
       OLD_PG_VERSION: 13
       NEW_PG_VERSION: 16
-      MIGRATION_UID: 70
+      UID: 70
+      GID: 70
 
   web:
     image: ghcr.io/kioui/tosti:latest
