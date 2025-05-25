@@ -1,53 +1,260 @@
-# TOSTI
+# TOSTI - Tartarus Order System for Take-away Items
 
-Welcome to the repository of **Tartarus Order System for Take-away Items**, TOSTI for short. 
-This application is designed to provide [Tartarus](https://tartarus.science.ru.nl) with an online tool for ordering take-away items.
-There are also a lot of other integrated features:
+[![Docker Image CI](https://github.com/KiOui/TOSTI/actions/workflows/docker-image.yml/badge.svg)](https://github.com/KiOui/TOSTI/actions/workflows/docker-image.yml)
+[![Linting](https://github.com/KiOui/TOSTI/actions/workflows/linting.yaml/badge.svg)](https://github.com/KiOui/TOSTI/actions/workflows/linting.yaml)
+[![Testing](https://github.com/KiOui/TOSTI/actions/workflows/testing.yaml/badge.svg)](https://github.com/KiOui/TOSTI/actions/workflows/testing.yaml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-- SAML user authentication (for usage with the Radboud University SSO service)
-- A music controller for Spotify and the custom Marietje music system (read-only)
-- A QR-code token based identification system
-- Transactions / balance tracking for users
-- Room reservations
-- Borrel reservations (ordering items for an event, and submitting how much were used)
-- Synchronization towards a bookkeeping system
-- Age verification using [Yivi](https://www.yivi.app)
-- A digital lock system for fridges
+TOSTI is a comprehensive web application designed for [Tartarus](https://tartarus.science.ru.nl) to manage take-away orders and various other features for student associations at Radboud University.
 
-## Getting started
-This project is built using the [Django](https://github.com/django/django) framework. [Poetry](https://python-poetry.org) is used for dependency management.
+## 🚀 Features
 
-### Development setup
+### Core Features
+- **Order Management System**: Online ordering system for take-away items (such as tostis)
+- **Financial Transactions**: User balance tracking and transaction management
+- **User Authentication**: SAML-based SSO integration (with Radboud University via SURFconext)
+- **Music Control**: Spotify and Marietje integration for controlling music players
+- **Room Reservations**: Venue reservation system with calendar integration
+- **Borrel Management**: Event reservation system with inventory tracking
+- **Age Verification**: Yivi-based age verification system
+- **Smart Fridge Access**: Digital lock system for automated fridge access
+- **QR Code Identification**: Token-based user identification system
+- **Bookkeeping Integration**: Synchronization with Silvasoft accounting system
 
-0. Get [Python](https://www.python.org) 3.11 installed on your system (but 3.8 or higher should work as well, probably). Protip: use [pyenv](https://github.com/pyenv/pyenv) to manage your Python versions.
-1. Clone this repository. 
-2. Install Poetry by following the steps on [their website](https://python-poetry.org/docs/#installation).
-3. Make sure `poetry` uses your your correct base python version: `poetry env use python`. 
-4. Run `poetry install` to install all dependencies (into a virtual environment dedicated to this project).
-5. Run `poetry shell` to start a shell that uses your virtual environment (or prefix all commands with `poetry run`).
-6. Run ```cd website``` to change directories to the ```website``` folder containing the project.
-7. Run ```./manage.py migrate``` to initialise the database and run all migrations. 
-8. Run ```./manage.py createsuperuser``` to create an administrator that is able to access the backend interface later on. 
-9. Run ```./manage.py runserver``` to start the development server locally.
+### Additional Features
+- Multi-venue support with separate canteens (North/South)
+- Real-time order status tracking
+- Statistics and analytics dashboard
+- OAuth2 API for third-party integrations
+- iCal feeds for reservations
+- Automated music scheduling
 
-Now your server is setup and running on ```localhost:8000```.
-Notice that SAML login will not be used by default on development systems.
+## 🏗️ Architecture
 
-## Deploying
-TOSTI is deployed using Docker and Docker Compose. The `docker-compose.yml` file is used to define the services that are used in the deployment. The `Dockerfile` is used to define the image that is used for the Django application.
+TOSTI is built using:
+- **Backend**: Django 5.1 (Python)
+- **Frontend**: Django templates with Bootstrap 5
+- **Database**: PostgreSQL (production) / SQLite (development)
+- **Caching**: File-based cache (production) / In-memory (development)
+- **Authentication**: SAML2 (via djangosaml2)
+- **API**: Django REST Framework with OAuth2
+- **Task Scheduling**: Custom cron implementation
+- **Containerization**: Docker & Docker Compose
 
-Specifically, TOSTI is running in the [PGO environment](https://github.com/miekg/pgo) of [CNCZ](https://cncz.science.ru.nl/nl/) (the IT department of the Radboud University Faculty of Science). 
-This automatically deploys the `docker-compose.yml` file.
-To interact with the environment, you should use the [`pgoctl`](https://github.com/miekg/pgo/blob/main/cmd/pgoctl/) client.
-This client connects with the PGO API to manage the environment via SSH.
-Therefore, your SSH public key must be in the `ssh` directory of this project.
+## 📁 Project Structure
 
-Run (for example) `pgoctl -i ~/.ssh/id_ed25519 -- dockervm02.science.ru.nl:tosti//up` to deploy the application, and `pgoctl -i ~/.ssh/id_ed25519 -- dockervm02.science.ru.nl:tosti//down` to stop the application.
-Or run `pgoctl -i ~/.ssh/id_ed25519 -- dockervm02.science.ru.nl:tosti//logs` to see the logs.
-Or run `pgoctl -i ~/.ssh/id_ed25519 -- dockervm02.science.ru.nl:tosti//exec web python manage.py sendtestemail` to send a test email.
-Notice that `pgoctl` does not (yet) support interactive commands, so you cannot run `manage.py shell` for example.
-Also any non-successful commands (with a non-zero exit code) will not be shown and will not show their output.
-Finally, you must be connected with the CNCZ VPN to use `pgoctl`.
+```
+website/
+├── age/                    # Age verification module
+├── announcements/          # System announcements
+├── associations/           # Student associations management
+├── borrel/                 # Event/borrel reservation system
+├── cron/                   # Custom cron job implementation
+├── fridges/                # Smart fridge access control
+├── orders/                 # Core ordering system
+├── qualifications/         # User qualifications (e.g., borrel brevet)
+├── silvasoft/              # Bookkeeping integration
+├── status_screen/          # Order status display
+├── thaliedje/              # Music player control
+├── tosti/                  # Main application settings
+├── transactions/           # Financial transactions
+├── users/                  # User management
+├── venues/                 # Venue reservation system
+└── yivi/                   # Yivi integration for age verification
+```
 
-Important notices:
-- Via `/admin-login`, it is possible to bypass SAML login (for example for first installation when SAML has not yet been set up).
+## 🛠️ Development Setup
+
+### Prerequisites
+- Python 3.11+ (recommended to use [pyenv](https://github.com/pyenv/pyenv))
+- [Poetry](https://python-poetry.org) for dependency management
+- Git
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/KiOui/TOSTI.git
+   cd TOSTI
+   ```
+
+2. **Install Poetry**
+   ```bash
+   curl -sSL https://install.python-poetry.org | python3 -
+   ```
+
+3. **Set up Python environment**
+   ```bash
+   poetry env use python3.11
+   poetry install
+   ```
+
+4. **Activate virtual environment**
+   ```bash
+   poetry shell
+   ```
+
+5. **Set up the database**
+   ```bash
+   cd website
+   ./manage.py migrate
+   ```
+
+6. **Create a superuser**
+   ```bash
+   ./manage.py createsuperuser
+   ```
+
+7. **Load initial data (optional)**
+   ```bash
+   ./manage.py loaddata tosti/fixtures/default.json
+   ```
+
+8. **Run the development server**
+   ```bash
+   ./manage.py runserver
+   ```
+
+The application will be available at `http://localhost:8000`.
+
+### Development Notes
+- SAML authentication is disabled in development mode
+- Use `/admin-login` in production for local authentication
+- API documentation is available at `/api/docs`
+
+## 🐳 Production Deployment
+
+TOSTI is deployed using Docker and Docker Compose in the [PGO environment](https://github.com/miekg/pgo) at CNCZ (Radboud University IT department).
+
+### Docker Deployment
+
+1. **Build and run with Docker Compose**
+   ```bash
+   docker-compose up -d
+   ```
+
+2. **Environment Variables**
+   Create a `.env` file based on `.env.example`:
+   ```env
+   YIVI_SERVER_TOKEN=your-yivi-token
+   POSTGRES_PASSWORD=secure-password
+   DJANGO_SECRET_KEY=your-secret-key
+   SENTRY_DSN=your-sentry-dsn
+   # ... other variables
+   ```
+
+### PGO Deployment
+
+For deployment on the CNCZ infrastructure:
+
+```bash
+# Deploy the application
+pgoctl -i ~/.ssh/id_ed25519 -- dockervm02.science.ru.nl:tosti//up
+
+# View logs
+pgoctl -i ~/.ssh/id_ed25519 -- dockervm02.science.ru.nl:tosti//logs
+
+# Stop the application
+pgoctl -i ~/.ssh/id_ed25519 -- dockervm02.science.ru.nl:tosti//down
+```
+
+**Note**: You must be connected to the CNCZ VPN and have your SSH key in the `ssh` directory.
+
+## 🔧 Configuration
+
+### Key Settings
+
+Configuration is managed through Django Constance for runtime settings:
+
+- **General**: Footer text, cleaning scheme URL
+- **Email**: Notification recipients for reservations
+- **Shifts**: Default maximum orders per shift
+- **Music (Thaliedje)**: Start/stop times, holiday mode
+- **Silvasoft**: API credentials for bookkeeping
+- **Fridges**: Daily opening requirements
+
+### SAML Configuration
+
+For production SAML authentication:
+1. Place metadata in `website/tosti/saml/metadata.xml`
+2. Configure entity ID and base URL in environment variables
+3. Ensure certificates are properly set up
+
+## 📡 API
+
+TOSTI provides a RESTful API with OAuth2 authentication.
+
+### Available Scopes
+- `read`: Read access to the API
+- `write`: Write access to the API
+- `orders:order`: Place orders
+- `orders:manage`: Manage all orders
+- `thaliedje:request`: Request songs
+- `thaliedje:manage`: Control music players
+- `transactions:write`: Create transactions
+
+### API Documentation
+Interactive API documentation is available at `/api/docs` when running the application.
+
+## 🧪 Testing
+
+Run the test suite:
+```bash
+cd website
+poetry run python manage.py test
+```
+
+Run with coverage:
+```bash
+poetry run coverage run website/manage.py test website/
+poetry run coverage report
+```
+
+## 🔍 Code Quality
+
+### Linting
+```bash
+poetry run black website
+poetry run flake8 website
+poetry run pydocstyle website
+```
+
+### Checks
+The project uses GitHub Actions for automated testing and linting on every push.
+
+## 🤝 Contributing
+
+Contributions are welcome! 
+
+### Development Workflow
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run tests and linting
+5. Submit a pull request
+
+### Code Style
+- Follow PEP 8
+- Use Black for formatting
+- Write docstrings for all functions
+- Maximum line length: 119 characters
+
+## 📧 Contact
+
+- **Maintainers**: Website committee of Tartarus
+- **Email**: tartaruswebsite@science.ru.nl
+- **Security Issues**: www-tosti@science.ru.nl
+
+## 🔒 Security
+
+For security vulnerabilities, please email www-tosti@science.ru.nl instead of creating a public issue.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- Original developers: Lars van Rhijn, Job Doesburg
+- All contributors who have helped improve TOSTI
+- - CNCZ for hosting infrastructure
