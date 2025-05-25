@@ -20,7 +20,7 @@ from queryable_properties.properties import (
     AnnotationProperty,
     queryable_property,
 )
-from requests import ReadTimeout
+from requests import ReadTimeout, RequestException
 from spotipy import SpotifyOAuth, SpotifyException
 from spotipy.client import Spotify
 
@@ -298,10 +298,23 @@ class MarietjePlayer(Player):
         try:
             return func(*args, **kwargs)
         except MarietjeException as e:
-            logging.warning("Marietje error: %s", e)
+            logging.warning("Marietje error for player %s: %s", self.id, e)
             return None
-        except ReadTimeout:
-            logging.warning("Marietje request timed out.")
+        except (ReadTimeout, ConnectionError, RequestException) as e:
+            logging.warning(
+                "Network error for MarietjePlayer %s request %s: %s",
+                self.id,
+                func.__name__,
+                e,
+            )
+            return None
+        except Exception as e:
+            logging.error(
+                "Unexpected error for MarietjePlayer %s request %s: %s",
+                self.id,
+                func.__name__,
+                e,
+            )
             return None
 
     @property
@@ -328,14 +341,21 @@ class MarietjePlayer(Player):
                 return None
             return cached_result
 
-        playback = self._get_current_playback()
+        try:
+            playback = self._get_current_playback()
+        except (ConnectionError, RequestException, ReadTimeout) as e:
+            logging.warning(
+                f"Failed to get playback data for MarietjePlayer {self.id}: {e}"
+            )
+            # Cache the failure for a shorter time to avoid hammering the API
+            cache.set(self._current_playback_cache_key, "unavailable", 30)
+            return None
 
         if playback is None:
-            cache.set(self._current_playback_cache_key, "unavailable", 5)
+            cache.set(self._current_playback_cache_key, "unavailable", 30)
             return None
 
         cache.set(self._current_playback_cache_key, playback, 5)
-
         return playback
 
     @property
