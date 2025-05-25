@@ -26,7 +26,7 @@ uritemplate = "^4.1.1"
 django-autocompletefilter = "^0.0.8" # No official support for Django >= 4.0.
 django-bootstrap5 = "^23.4"
 django-filter = "^24.1"
-django-constance = {extras = ["database"], version = "^2.9.0"} # No official support for Django 5.0.
+django-constance = "^4.3.2" # No official support for Django 5.0.
 html2text = "^2020.1.16"
 django-ical = "^1.9.2" # No official support for Django 5.0.
 fontawesomefree = "^6.1.1"
