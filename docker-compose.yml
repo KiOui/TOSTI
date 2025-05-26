@@ -18,7 +18,6 @@ services:
       - db
     volumes:
       - pg-data:/var/lib/postgresql/data
-      - pg-data-16:/pg-data-16
     environment:
       POSTGRES_USER: tosti
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -28,33 +27,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-  toolbox:
-    image: postgres:13.3-alpine
-    command: sleep infinity
-    user: postgres:postgres
-    working_dir: /workspace
-    networks:
-      - db
-    volumes:
-      - pg-data:/var/lib/postgresql/data
-    restart: unless-stopped
-
-  db-migrator:
-    image: ghcr.io/jobdoesburg/pg-migrator:13-to-16
-    restart: "no"
-    networks:
-      - db
-    depends_on:
-      - database
-    volumes:
-      - pg-data:/var/lib/postgresql/old:ro
-      - pg-data-16:/var/lib/postgresql/new:rw
-    environment:
-      OLD_PG_VERSION: 13
-      NEW_PG_VERSION: 16
-      UID: 70
-      GID: 70
 
   web:
     image: ghcr.io/kioui/tosti:latest
@@ -127,7 +99,5 @@ networks:
 
 volumes:
   pg-data:
-  pg-data-16:
-  pg-data-backup:
   media:
   cache:
