@@ -32,6 +32,7 @@ services:
   toolbox:
     image: postgres:13.3-alpine
     command: sleep infinity
+    user: postgres:postgres
     working_dir: /workspace
     volumes:
       - pg-data:/pg-data:rw
