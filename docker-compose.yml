@@ -37,9 +37,7 @@ services:
     networks:
       - db
     volumes:
-      - pg-data:/pg-data:rw
-      - pg-data-16:/pg-data-16:rw
-      - pg-data-backup:/pg-data-backup:ro
+      - pg-data:/var/lib/postgresql/data
     restart: unless-stopped
 
   db-migrator:
