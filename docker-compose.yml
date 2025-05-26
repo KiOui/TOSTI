@@ -30,13 +30,13 @@ services:
       retries: 5
 
   toolbox:
-    image: ubuntu:22.04
+    image: postgres:13.3-alpine
     command: sleep infinity
     working_dir: /workspace
     volumes:
       - pg-data:/pg-data:rw
       - pg-data-16:/pg-data-16:rw
-      - pg-data-backup:/pg-data-backup:rw
+      - pg-data-backup:/pg-data-backup:ro
     restart: unless-stopped
 
   db-migrator:
