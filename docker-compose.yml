@@ -29,6 +29,15 @@ services:
       timeout: 5s
       retries: 5
 
+  toolbox:
+    image: ubuntu:22.04
+    command: sleep infinity
+    working_dir: /workspace
+    volumes:
+      - pg-data:/pg-data:rw
+      - pg-data-16:/pg-data-16:rw
+    restart: unless-stopped
+
   db-migrator:
     image: ghcr.io/jobdoesburg/pg-migrator:13-to-16
     restart: "no"
