@@ -12,12 +12,13 @@ services:
       YIVI_TOKEN: ${YIVI_TOKEN}
 
   database:
-    image: postgres:16-alpine
+    image: postgres:13.3-alpine
     restart: unless-stopped
     networks:
       - db
     volumes:
-      - pg-data-16:/var/lib/postgresql/data
+      - pg-data:/var/lib/postgresql/data
+      - pg-data-16:/pg-data-16
     environment:
       POSTGRES_USER: tosti
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -41,7 +42,6 @@ services:
     environment:
       OLD_PG_VERSION: 13
       NEW_PG_VERSION: 16
-      POSTGRES_USER: tosti
       UID: 70
       GID: 70
 
