@@ -41,6 +41,7 @@ services:
     environment:
       OLD_PG_VERSION: 13
       NEW_PG_VERSION: 16
+      POSTGRES_USER: tosti
       UID: 70
       GID: 70
 
