@@ -45,8 +45,6 @@ RUN chown -R nobody:nogroup $DJANGO_MEDIA_ROOT
 RUN chown -R nobody:nogroup /var/log/django.log
 RUN chown -R nobody:nogroup /app/cache
 
-RUN mkdir -p /app/tosti/saml
-
 EXPOSE 80
 
 # Command to run uWSGI

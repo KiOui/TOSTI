@@ -141,8 +141,10 @@ SAML_CONFIG = {
         },
     },
     "metadata": {
-        "local": [
-            os.path.join(BASE_DIR, "tosti", "saml", "metadata.xml"),
+        "remote": [
+            {
+                "url": "https://metadata.surfconext.nl/idp-metadata.xml",
+            }
         ],
     },
     "debug": 1,

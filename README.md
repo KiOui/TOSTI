@@ -17,7 +17,7 @@ TOSTI is a comprehensive web application designed for [Tartarus](https://tartaru
 - **Room Reservations**: Venue reservation system with calendar integration
 - **Borrel Management**: Event reservation system with inventory tracking
 - **Age Verification**: Yivi-based age verification system
-- **Smart Fridge Access**: Digital lock system for automated fridge access
+- **Smart Fridge Access**: Digital lock system for automated fridge access, using [TOSTI-fridge-client](https://github.com/KiOui/TOSTI-fridge-client)
 - **QR Code Identification**: Token-based user identification system
 - **Bookkeeping Integration**: Synchronization with Silvasoft accounting system
 
@@ -162,9 +162,7 @@ pgoctl -i ~/.ssh/id_ed25519 -- dockervm02.science.ru.nl:tosti//down
 
 ## 🔧 Configuration
 
-### Key Settings
-
-Configuration is managed through Django Constance for runtime settings:
+Specific configuration is managed through Django Constance for runtime settings:
 
 - **General**: Footer text, cleaning scheme URL
 - **Email**: Notification recipients for reservations
@@ -172,13 +170,6 @@ Configuration is managed through Django Constance for runtime settings:
 - **Music (Thaliedje)**: Start/stop times, holiday mode
 - **Silvasoft**: API credentials for bookkeeping
 - **Fridges**: Daily opening requirements
-
-### SAML Configuration
-
-For production SAML authentication:
-1. Place metadata in `website/tosti/saml/metadata.xml`
-2. Configure entity ID and base URL in environment variables
-3. Ensure certificates are properly set up
 
 ## 📡 API
 
