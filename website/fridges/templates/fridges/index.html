@@ -11,6 +11,7 @@
         {% if user.is_authenticated %}
         <p class="mt-1 mb-4">
             Use your personal QR code at the top to identify yourself and open the fridge (only during opening hours).
+            Don't forget to proof your age via <a href="{% url 'users:account' %}?active=age">your profile page</a> first!
         </p>
         {% else %}
         <p class="mt-1 mb-4">
