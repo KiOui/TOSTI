@@ -125,10 +125,10 @@ SAML_CONFIG = {
                 "assertion_consumer_service": [
                     (f"{os.environ.get('SAML_BASE_URL')}/saml/acs/", saml2.BINDING_HTTP_POST),
                 ],
-                "single_logout_service": [
-                    (f"{os.environ.get('SAML_BASE_URL')}/saml/ls/", saml2.BINDING_HTTP_REDIRECT),
-                    (f"{os.environ.get('SAML_BASE_URL')}/saml/ls/post", saml2.BINDING_HTTP_POST),
-                ],
+                # "single_logout_service": [
+                #     (f"{os.environ.get('SAML_BASE_URL')}/saml/ls/", saml2.BINDING_HTTP_REDIRECT),
+                #     (f"{os.environ.get('SAML_BASE_URL')}/saml/ls/post", saml2.BINDING_HTTP_POST),
+                # ],
             },
             "signing_algorithm": xmldsig.SIG_RSA_SHA256,
             "digest_algorithm": xmldsig.DIGEST_SHA256,
