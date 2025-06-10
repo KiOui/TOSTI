@@ -15,7 +15,7 @@ django = ">=5.0,<5.1" # We cant use 5.1 yet because we need to upgrade postgres 
 Pillow = "^10.4.0"
 django-admin-autocomplete-filter = "^0.7.1"
 django-import-export = "^3.3.7"
-requests = "^2.32.0"
+requests = "^2.32.4"
 spotipy = "^2.25.1"
 coverage = "^6.5.0"
 django-guardian = "^2.4.0" # Does not support Django >= 4.0.
