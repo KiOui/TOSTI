@@ -215,6 +215,7 @@
                 methods: {
                     startTimer() {
                         this.running = true;
+                        clearTimeout(this.timer);
                         this.fetchUserToken();
                     },
                     stopTimer() {
@@ -249,7 +250,7 @@
                         }).finally(() => {
                             this.loading = false;
                             if (this.running) {
-                                this.timer = setTimeout(this.fetchUserToken, 20000);
+                                this.timer = setTimeout(this.fetchUserToken, 10000); // 10 seconds
                             }
                         });
                     }
