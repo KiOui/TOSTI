@@ -2,7 +2,7 @@ from datetime import timedelta
 
 from django.contrib.auth import get_user_model
 from django.core.signing import TimestampSigner, SignatureExpired, BadSignature
-from django.db.models import Count
+from django.db.models import Count, ProtectedError
 from django.utils import timezone
 
 from associations.models import Association
@@ -68,10 +68,13 @@ def execute_data_minimisation(dry_run=False):
     processed = []
     for user in users:
         if not user.is_superuser:
-            processed.append(user)
-            if not dry_run:
-                user.delete()
-
+            try:
+                if not dry_run:
+                    user.delete()
+                processed.append(user)
+            except ProtectedError:
+                # Skip users with protected references
+                continue
     return processed
 
 
