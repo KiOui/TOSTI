@@ -164,6 +164,15 @@
                         <h2>Identify yourself</h2><br>
                     </div>
                     <div class="modal-body">
+                        {% if not minimum_registered_age %}
+                            <a href="{% url 'users:account' %}?active=age">
+                                <div class="alert alert-danger text-center">
+                                    <i class="bi bi-check-circle-fill me-2"></i>
+                                    <strong>Want to open the beer fridge?</strong><br>
+                                    Click here to verify your age first!
+                                </div>
+                            </a>
+                        {% endif %}
                         <div id="qrcode" class="d-flex justify-content-center align-items-center">
                             <qrcode-vue v-if="!loading" class="rounded" :value="value" level="H" :margin="margin" :size="250"
                                         render-as="canvas"></qrcode-vue>

@@ -88,6 +88,7 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "tosti.context_processors.google_analytics",
                 "tosti.context_processors.footer_credits",
+                "tosti.context_processors.minimum_registered_age",
             ],
         },
     },
