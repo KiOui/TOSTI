@@ -35,7 +35,17 @@ def construct_disclose_tree(user: User):
                 [
                     {
                         "type": settings.AGE_VERIFICATION_USERNAME_ATTRIBUTE,
-                        "value": user.username,
+                        "value": user.username.lower(),
+                    },
+                    {
+                        "type": settings.AGE_VERIFICATION_INSTITUTE_ATTRIBUTE,
+                        "value": settings.AGE_VERIFICATION_INSTITUTE_VALUE,
+                    },
+                ],
+                [
+                    {
+                        "type": settings.AGE_VERIFICATION_USERNAME_ATTRIBUTE,
+                        "value": user.username.upper(),
                     },
                     {
                         "type": settings.AGE_VERIFICATION_INSTITUTE_ATTRIBUTE,
