@@ -51,7 +51,7 @@ def construct_disclose_tree(user: User):
                         "type": settings.AGE_VERIFICATION_INSTITUTE_ATTRIBUTE,
                         "value": settings.AGE_VERIFICATION_INSTITUTE_VALUE,
                     },
-                ]
+                ],
             ]
         )
 
