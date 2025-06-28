@@ -1,33 +1,184 @@
 {% load static %}
 
 <div class="row justify-content-center">
-    <div class="col-12 col-lg-6">
-        <h2>Age check</h2>
-        <p>
-            Some actions (such as opening the beer fridge) require you to prove that you are 18 years or older. To
-            prove that you are of a certain age, you can <a href="{% url 'explainers' %}">use online verification with Yivi</a>.
+    <div class="col-12 col-lg-8">
+        <h2 class="text-center mb-4">Age Verification Required</h2>
+        <p class="text-center text-muted mb-5">
+            Access to the beer fridge requires age verification (18+) using the Yivi app
         </p>
+
         {% if minimum_registered_age %}
-            <p class="alert alert-success mb-5">
-                You have been verified to be over {{ minimum_registered_age }} years old.
-            </p>
+            <div class="alert alert-success text-center">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <strong>Verified!</strong> You are confirmed to be over {{ minimum_registered_age }} years old.
+            </div>
         {% else %}
-            <div class="alert alert-danger mb-5">
-                <p class="mb-2">Your age has not been verified yet.</p>
-                    <div class="d-flex justify-content-center">
-                        <button class="btn btn-primary mx-auto" data-bs-toggle="modal" data-bs-target="#verify-age-modal">
-                            Verify your age with Yivi
-                        </button>
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <!-- Progress indicator -->
+                    <div class="progress mb-4" style="height: 6px;">
+                        <div class="progress-bar" role="progressbar" style="width: 0%" id="progress-bar"></div>
                     </div>
-                    <div class="modal" id="verify-age-modal" tabindex="-1" role="dialog" aria-labelledby="verify-age-modal-label" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered d-flex justify-content-center" role="document">
-                            <div class="modal-content" id="yivi-web-form">
+
+                    <!-- Step 1: Download App -->
+                    <div class="step-item" data-step="1">
+                        <div class="d-flex align-items-start mb-4">
+                            <div class="step-number me-3">
+                                <span class="badge bg-primary rounded-pill">1</span>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h3 class="mb-3">Step 1: Download the Yivi app</h3>
+                                <p class="mb-3">
+                                    Yivi is a <a href="https://yivi.app" target="_blank" class="text-decoration-underline">private and secure digital identity app</a>, pioneered at Radboud University.
+                                </p>
+                                <p class="mb-3">To prove your age, you will first need to download and install the app.</p>
+                                <div class="d-flex gap-3 justify-content-center flex-wrap mb-3">
+                                    <a href="https://apps.apple.com/nl/app/irma-authenticatie/id1294092994" target="_blank" class="download-button">
+                                        <img src="{% static 'age/svg/appstore.svg' %}" alt="app store">
+                                    </a>
+                                    <a href="https://play.google.com/store/apps/details?id=org.irmacard.cardemu" target="_blank" class="download-button">
+                                        <img src="{% static 'age/svg/playstore.svg' %}" alt="google play store">
+                                    </a>
+                                    <a href="https://f-droid.org/en/packages/org.irmacard.cardemu/" target="_blank" class="download-button">
+                                        <img src="{% static 'age/svg/fdroid.svg' %}" alt="f droid">
+                                    </a>
+                                </div>
+                                <div class="text-center mt-2">
+                                    <button class="btn btn-primary btn-lg" onclick="nextStep(2)">I've downloaded the app</button>
+                                </div>
                             </div>
                         </div>
                     </div>
+
+                    <div class="step-item d-none" data-step="2">
+                        <div class="d-flex align-items-start mb-4">
+                            <div class="step-number me-3">
+                                <span class="badge bg-primary rounded-pill">2</span>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h3 class="mb-3">Step 2: Set up your Yivi wallet</h3>
+                                <p class="mb-3">
+                                    Open the Yivi app and follow the setup process to create your digital identity.<br>
+                                    You will choose a PIN and possibly verify your email address.
+                                    Then, you will have a Yivi wallet ready to use.
+                                </p>
+                                <div class="text-center mt-2">
+                                    <button class="btn btn-secondary btn-lg" onclick="prevStep(1)">Back</button>
+                                    <button class="btn btn-primary btn-lg ms-2" onclick="nextStep(3)">My Yivi wallet is ready</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-item d-none" data-step="3">
+                        <div class="d-flex align-items-start mb-4">
+                            <div class="step-number me-3">
+                                <span class="badge bg-primary rounded-pill">3</span>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h3 class="mb-3">Step 3: Using the Yivi app</h3>
+                                <p class="mb-3">Open the Yivi app and follow the setup process to create your digital identity.</p>
+                                <p class="mb-3">
+                                    First, you will be loading some credentials in the Yivi app.<br>
+                                    Then, you will disclose these credentials to TOSTI.<br>
+                                    Let us explain how this process works.
+                                </p>
+                                <div class="text-center mt-2">
+                                    <button class="btn btn-secondary btn-lg" onclick="prevStep(2)">Back</button>
+                                    <button class="btn btn-primary btn-lg ms-2" onclick="nextStep(4)">Let's go!</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-item d-none" data-step="4">
+                        <div class="d-flex align-items-start mb-4">
+                            <div class="step-number me-3">
+                                <span class="badge bg-primary rounded-pill">4</span>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h3 class="mb-3">Step 4: Load your Yivi credentials</h3>
+                                <div class="d-flex gap-3 justify-content-center flex-wrap mb-3">
+                                    <img src="{% static 'age/svg/digid.svg' %}" alt="DigiD" style="height: 40px; width: auto;">
+                                    <img src="{% static 'age/svg/idin.svg' %}" alt="iDIN" style="height: 40px; width: auto;">
+                                </div>
+                                <p class="mb-3">
+                                    To prove your age, you need to load a personal identity credential in the Yivi app.
+                                    This can be done via your municipality with DigiD, or via your bank with iDIN.
+                                </p>
+                                <div class="d-flex gap-3 justify-content-center flex-wrap mb-3">
+                                    <img src="{% static 'age/svg/surfconext.svg' %}" alt="DigiD" style="height: 40px; width: auto;">
+                                </div>
+                                <p class="mb-3">
+                                    Second, to prove that your TOSTI account matches your Yivi wallet, you need to load a Radboud University credential.
+                                    This will be done via SURFconext.
+                                </p>
+                                <p class="mb-3">
+                                    After loading the credentials, you will come back and disclose them to TOSTI.
+                                </p>
+                                <div class="text-center mt-2">
+                                    <button class="btn btn-secondary btn-lg" onclick="prevStep(3)">Back</button>
+                                    <button class="btn btn-primary btn-lg ms-2" onclick="nextStep(5)">I understand!</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-item d-none" data-step="5">
+                        <div class="d-flex align-items-start mb-4">
+                            <div class="step-number me-3">
+                                <span class="badge bg-primary rounded-pill">5</span>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h3 class="mb-3">Step 5: Verify your age</h3>
+                                <p class="mb-3">Now let's use Yivi to securely verify that you're 18 or older.<br>
+                                This will all happen through the Yivi app!</p>
+                                <div class="text-center mt-2">
+                                    <button class="btn btn-secondary btn-lg" onclick="prevStep(4)">Back</button>
+                                    <button class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#verify-age-modal">
+                                        <i class="bi bi-qr-code me-2"></i>Start Yivi age verification
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+
+            <div class="text-center mt-4">
+                <p class="text-muted">
+                    <strong>Can't use the Yivi app?</strong>
+                    <a href="{% url 'users:staff' %}" class="text-decoration-none">Contact a staff member</a>
+                    for manual verification.
+                </p>
+            </div>
+
+            <div class="modal" id="verify-age-modal" tabindex="-1" role="dialog" aria-labelledby="verify-age-modal-label" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered d-flex justify-content-center" role="document">
+                    <div class="modal-content" id="yivi-web-form"></div>
+                </div>
+            </div>
+
             <script src="{% static "yivi/js/yivi.js" %}" type="text/javascript"></script>
             <script>
+                // Step navigation
+                function nextStep(step) {
+                    document.querySelectorAll('.step-item').forEach(item => item.classList.add('d-none'));
+                    document.querySelector(`[data-step="${step}"]`).classList.remove('d-none');
+                    updateProgress(step);
+                }
+
+                function prevStep(step) {
+                    document.querySelectorAll('.step-item').forEach(item => item.classList.add('d-none'));
+                    document.querySelector(`[data-step="${step}"]`).classList.remove('d-none');
+                    updateProgress(step);
+                }
+
+                function updateProgress(step) {
+                    const progress = (step / 5) * 100;
+                    document.getElementById('progress-bar').style.width = progress + '%';
+                }
+
                 const TOSTI_YIVI_COOKIE_NAME = "TOSTI_YIVI_TOKEN";
                 const RETURN_FROM_YIVI_QUERY_PARAMETER_NAME = "return_from_yivi";
 
@@ -35,14 +186,11 @@
 
                 function loadYiviFromCookie() {
                     let savedData = null;
-
                     try {
                         savedData = JSON.parse(get_cookie(TOSTI_YIVI_COOKIE_NAME));
                     } catch {
                         set_cookie(TOSTI_YIVI_COOKIE_NAME, null, 0);
-                        tata.error("", "Failed to parse cookie from storage. If you are using incognito mode in the " +
-                            "browser, please try again in a normal browser window. If this issue persist please " +
-                            "contact an administrator.");
+                        tata.error("", "Failed to parse cookie from storage. Please try again in a normal browser window.");
                         setQueryParameter(RETURN_FROM_YIVI_QUERY_PARAMETER_NAME, "false");
                         return false;
                     }
@@ -67,16 +215,13 @@
                                 result: {
                                     url: (o, {sessionPtr, sessionToken}) => `/api/v1/yivi/session/${sessionToken}/result/`,
                                     method: 'GET',
-                                    headers: {
-                                        "X-CSRFToken": get_csrf_token(),
-                                    },
+                                    headers: {"X-CSRFToken": get_csrf_token()},
                                 }
                             }
                         });
                     } catch {
                         set_cookie(TOSTI_YIVI_COOKIE_NAME, null, 0);
-                        tata.error("", "Failed to recreate Yivi session. Please try again. If this issue persist " +
-                            "please contact an administrator.");
+                        tata.error("", "Failed to recreate Yivi session. Please try again.");
                         setQueryParameter(RETURN_FROM_YIVI_QUERY_PARAMETER_NAME, "false");
                         return false;
                     }
@@ -105,17 +250,17 @@
                             result: {
                                 url: (o, {sessionPtr, sessionToken}) => `/api/v1/yivi/session/${sessionToken}/result/`,
                                 method: 'GET',
-                                headers: {
-                                    "X-CSRFToken": get_csrf_token(),
-                                },
+                                headers: {"X-CSRFToken": get_csrf_token()},
                             }
                         }
                     });
                 }
 
+                // Handle return from Yivi
                 const urlParams = new URLSearchParams(window.location.search);
                 const returnFromYivi = urlParams.get('return_from_yivi');
                 let yiviWeb = null;
+
                 if (returnFromYivi === 'true') {
                     yiviWeb = loadYiviFromCookie();
                     if (yiviWeb === false) {
@@ -124,56 +269,82 @@
                         started = true;
                         yiviWeb.start()
                             .then(() => {
-                                tata.success("", "Your age has been verified. You will be redirected in a couple of seconds.");
+                                tata.success("", "Your age has been verified. Refreshing page...");
                                 set_cookie(TOSTI_YIVI_COOKIE_NAME, null, 0);
                                 setQueryParameter(RETURN_FROM_YIVI_QUERY_PARAMETER_NAME, "false");
-                                setTimeout(() => {
-                                    window.location.reload();
-                                }, 3000);
+                                setTimeout(() => window.location.reload(), 3000);
                             })
                             .catch(error => {
-                                if (error === "Aborted") {
-                                    return;
-                                }
+                                if (error === "Aborted") return;
                                 set_cookie(TOSTI_YIVI_COOKIE_NAME, null, 0);
                                 setQueryParameter(RETURN_FROM_YIVI_QUERY_PARAMETER_NAME, "false");
-                                tata.error("", `Failed to verify your age, the following error occurred: ${error}`);
+                                tata.error("", `Verification failed: ${error}`);
                             });
                         window.onload = () => {
-                            const ageModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('verify-age-modal'));
-                            ageModal.show();
+                            nextStep(3); // Jump to verification step
+                            bootstrap.Modal.getOrCreateInstance(document.getElementById('verify-age-modal')).show();
                         }
                     }
                 } else {
                     yiviWeb = loadNewYivi();
                 }
 
+                // Start verification when modal opens
                 document.getElementById("verify-age-modal").addEventListener('shown.bs.modal', () => {
-                    if (started === true) {
-                        return;
-                    }
-
+                    if (started) return;
                     started = true;
                     yiviWeb.start()
                         .then(() => {
-                            tata.success("", "Your age has been verified. You will be redirected in a couple of seconds.");
-                            setTimeout(() => {
-                                window.location.reload();
-                            }, 3000);
+                            tata.success("", "Age verified successfully! Refreshing page...");
+                            setTimeout(() => window.location.reload(), 3000);
                         })
                         .catch(error => {
-                            if (error === "Aborted") {
-                                return;
-                            }
-                            tata.error("", `Failed to verify your age, the following error occurred: ${error}`);
+                            if (error === "Aborted") return;
+                            tata.error("", `Verification failed: ${error}`);
                         });
                 });
             </script>
         {% endif %}
-        <p>
-            Alternatively, if you cannot use the online verification method, you can ask a
-            <a href="{% url 'users:staff' %}">staff member</a> to verify your birthdate by using a passport
-            or identity card.
-        </p>
     </div>
 </div>
+
+<style>
+.step-number .badge {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+}
+
+.step-item {
+    transition: all 0.3s ease;
+}
+
+.progress-bar {
+    transition: width 0.3s ease;
+}
+
+.download-button {
+    display: inline-block;
+    background-color: #000;
+    border-radius: 12px;
+    padding: 12px 16px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.download-button:hover {
+    background-color: #333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.download-button img {
+    height: 30px;
+    width: auto;
+    display: block;
+}
+</style>

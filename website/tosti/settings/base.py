@@ -274,11 +274,8 @@ DJANGO_CRON_DELETE_LOGS_OLDER_THAN = 14
 
 AGE_VERIFICATION_MINIMUM_AGE_MAPPING = {
     "pbdf.gemeente.personalData.over18": 18,
+    "pbdf.pbdf.idin.over18": 18,
     "pbdf.pbdf.ageLimits.over18": 18,
-    "pbdf.pilot-amsterdam.passport.over18": 18,
-    "pbdf.bzkpilot.personalData.over18": 18,
-    "pbdf.pilot-amsterdam.idcard.over18": 18,
-    "pbdf.nijmegen.ageLimits.over18": 18,
 }
 
 AGE_VERIFICATION_USERNAME_ATTRIBUTE = "pbdf.pbdf.surfnet-2.id"
