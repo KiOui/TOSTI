@@ -21,7 +21,7 @@ class ProductAdmin(ImportExportModelAdmin):
     """Custom admin for borrel inventory products."""
 
     resource_class = ProductResource
-    search_fields = ["name", "category"]
+    search_fields = ["name", "category__name"]
     list_display = [
         "name",
         "description",
