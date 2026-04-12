@@ -26,7 +26,6 @@ from cron.tests.crons import (
     TestRunAtTimesCronJob,
 )
 
-
 User = get_user_model()
 
 

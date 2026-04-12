@@ -14,7 +14,6 @@ from django.conf import settings
 from orders import models
 from venues.models import Venue
 
-
 User = get_user_model()
 logging.disable()
 

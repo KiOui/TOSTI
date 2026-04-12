@@ -11,39 +11,40 @@ package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.13"
-django = ">=5.1.15,<5.2" # We cant use 5.1 yet because we need to upgrade postgres first (which is complicated with PGO)
+django = ">=5.1.15,<5.2" # Staying on 5.1.x until PostgreSQL is upgraded to 14+ (currently 13.3)
 Pillow = "^12.1.1"
 django-admin-autocomplete-filter = "^0.7.1"
-django-import-export = "^3.3.7"
-requests = "^2.33.0"
+django-import-export = "^4.0.0"
+requests = "^2.32.0"
 spotipy = "^2.25.1"
-coverage = "^6.5.0"
+coverage = "^7.0.0"
 django-guardian = "^3.0.6"
 djangorestframework = "^3.15.2"
-django-oauth-toolkit = "^2.4.0"
+django-oauth-toolkit = "^3.0.0"
 django-cors-headers = "^4.3.1"
 uritemplate = "^4.1.1"
-django-autocompletefilter = "^0.0.8" # No official support for Django >= 4.0.
-django-bootstrap5 = "^23.4"
-django-filter = "^24.1"
+django-autocompletefilter = "^0.0.9"
+django-bootstrap5 = "^26.0"
+django-filter = "^25.0"
 django-constance = "^4.3.2" # No official support for Django 5.0.
-html2text = "^2020.1.16"
+html2text = "^2025.0.0"
 django-ical = "^1.9.2" # No official support for Django 5.0.
 fontawesomefree = "^6.1.1"
-django-tinymce = "^4.1.0"
-bleach = { extras = ["css"], version = "^5.0.1" }
-django-admin-rangefilter = "^0.12.1"
+django-tinymce = "^5.0.0"
+bleach = { extras = ["css"], version = "^6.0.0" }
+django-admin-rangefilter = "^0.13.0"
 django-queryable-properties = "^1.9.2"
 djangosaml2 = "^1.9.3" # No official support for Django 5.0.
-django-model-utils = "^4.4.0"
+django-model-utils = "^5.0.0"
 inflection = "^0.5.1"
-pyopenssl = ">=22.0.0"
+pyopenssl = "<24.3"
 cryptography = ">=38.0.0"
+pysaml2 = "^7.5.4"
 
 [tool.poetry.group.dev.dependencies]
 black = "^26.3.1"
 pydocstyle = "^6.1.1"
-flake8 = "^6.0.0"
+flake8 = "^7.0.0"
 freezegun = "^1.2.1"
 tomli = "^2.0.1"
 

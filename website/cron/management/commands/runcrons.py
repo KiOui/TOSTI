@@ -11,7 +11,6 @@ from django.utils import timezone
 from cron.core import CronJobManager, get_class, BadCronJobError
 from cron.models import CronJobLog
 
-
 logger = logging.getLogger("cron")
 
 

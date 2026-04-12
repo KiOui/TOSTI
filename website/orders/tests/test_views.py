@@ -12,7 +12,6 @@ from orders.models import Shift, OrderVenue
 from orders.services import add_user_to_assignees_of_shift, user_is_blacklisted
 from venues.models import Venue
 
-
 User = get_user_model()
 logging.disable()
 

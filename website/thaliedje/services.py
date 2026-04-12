@@ -10,7 +10,6 @@ from thaliedje.models import (
     SpotifyTrack,
 )
 
-
 User = get_user_model()
 
 

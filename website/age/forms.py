@@ -3,7 +3,6 @@ from django.contrib.auth import get_user_model
 
 from age.models import AgeRegistration
 
-
 User = get_user_model()
 
 

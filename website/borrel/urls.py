@@ -2,7 +2,6 @@ from django.urls import path
 
 from borrel import views
 
-
 urlpatterns = [
     path(
         "reservations/", views.ListReservationsView.as_view(), name="list_reservations"

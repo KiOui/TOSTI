@@ -3,7 +3,6 @@ from cron.core import CronJobBase, Schedule
 
 from thaliedje.models import SpotifyPlayer
 
-
 WEEKDAYS = [0, 1, 2, 3, 4]
 WEEKENDS = [5, 6]
 

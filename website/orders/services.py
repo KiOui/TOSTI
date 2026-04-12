@@ -9,7 +9,6 @@ from orders.exceptions import OrderException
 from orders.models import Order, Product, Shift, OrderBlacklistedUser, OrderVenue
 from users.models import User
 
-
 logger = logging.getLogger(__name__)
 
 

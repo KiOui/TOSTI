@@ -13,7 +13,6 @@ from orders import models
 from orders.models import Order, Shift, OrderVenue
 from venues.models import Venue
 
-
 User = get_user_model()
 logging.disable()
 
