@@ -12,7 +12,7 @@ package-mode = false
 [tool.poetry.dependencies]
 python = "^3.13"
 django = ">=5.1.15,<5.2" # We cant use 5.1 yet because we need to upgrade postgres first (which is complicated with PGO)
-Pillow = "^10.4.0"
+Pillow = "^12.1.1"
 django-admin-autocomplete-filter = "^0.7.1"
 django-import-export = "^3.3.7"
 requests = "^2.33.0"
