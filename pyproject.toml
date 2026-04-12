@@ -41,7 +41,7 @@ pyopenssl = ">=22.0.0"
 cryptography = ">=38.0.0"
 
 [tool.poetry.group.dev.dependencies]
-black = "^24.3.0"
+black = "^26.3.1"
 pydocstyle = "^6.1.1"
 flake8 = "^6.0.0"
 freezegun = "^1.2.1"
