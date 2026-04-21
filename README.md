@@ -85,7 +85,7 @@ website/
 
 3. **Set up Python environment**
    ```bash
-   poetry env use python3.14
+   poetry env use python3.13
    poetry install
    ```
 
