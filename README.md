@@ -85,13 +85,13 @@ website/
 
 3. **Set up Python environment**
    ```bash
-   poetry env use python3.13
+   poetry env use python3.14
    poetry install
    ```
 
 4. **Activate virtual environment**
    ```bash
-   poetry shell
+   eval $(poetry env activate)
    ```
 
 5. **Set up the database**
