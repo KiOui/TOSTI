@@ -4,9 +4,9 @@ name: "Deploy"
 
 on:
   workflow_run:
-    # Trigger on the image build only — it's what we deploy. We verify
-    # Testing and linting succeeded for the same SHA inside the job.
-    workflows: ["Docker Image CI"]
+    # CI runs test + lint + build-image as a linear pipeline. By the time CI
+    # succeeds on master, we know a new image has been pushed to GHCR.
+    workflows: ["CI"]
     types: [completed]
     branches: [master]
 
@@ -27,25 +27,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
-
-      - name: "Verify Testing and linting succeeded for this SHA"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SHA: ${{ github.event.workflow_run.head_sha }}
-        run: |
-          set -euo pipefail
-          for workflow in "Testing" "Linting"; do
-            conclusion=$(gh run list \
-              --workflow "$workflow" \
-              --commit "$SHA" \
-              --json conclusion \
-              --jq '.[0].conclusion // "missing"')
-            if [ "$conclusion" != "success" ]; then
-              echo "::error::$workflow for $SHA concluded as '$conclusion' (expected 'success'); refusing to deploy."
-              exit 1
-            fi
-            echo "$workflow: success"
-          done
 
       - name: "Install SSH key and known_hosts"
         env:

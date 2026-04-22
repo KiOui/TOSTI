@@ -1,8 +1,7 @@
 # TOSTI - Tartarus Order System for Take-away Items
 
-[![Docker Image CI](https://github.com/KiOui/TOSTI/actions/workflows/docker-image.yml/badge.svg)](https://github.com/KiOui/TOSTI/actions/workflows/docker-image.yml)
-[![Linting](https://github.com/KiOui/TOSTI/actions/workflows/linting.yaml/badge.svg)](https://github.com/KiOui/TOSTI/actions/workflows/linting.yaml)
-[![Testing](https://github.com/KiOui/TOSTI/actions/workflows/testing.yaml/badge.svg)](https://github.com/KiOui/TOSTI/actions/workflows/testing.yaml)
+[![CI](https://github.com/KiOui/TOSTI/actions/workflows/ci.yaml/badge.svg)](https://github.com/KiOui/TOSTI/actions/workflows/ci.yaml)
+[![Deploy](https://github.com/KiOui/TOSTI/actions/workflows/deploy.yaml/badge.svg)](https://github.com/KiOui/TOSTI/actions/workflows/deploy.yaml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 TOSTI is a comprehensive web application designed for [Tartarus](https://tartarus.science.ru.nl) to manage take-away orders and various other features for student associations at Radboud University.
@@ -118,7 +117,7 @@ The application will be available at `http://localhost:8000`.
 
 ## 🐳 Production Deployment
 
-TOSTI runs in production as a Docker Compose stack on a VM. Deployments are automated: every push to `master` that passes testing, linting, and the image build is deployed by `.github/workflows/deploy.yaml`.
+TOSTI runs in production as a Docker Compose stack on a VM. Deployments are automated: every push to `master` that passes CI (test + lint + image build) is deployed by `.github/workflows/deploy.yaml`.
 
 Deployment configuration — `docker-compose.yml`, `Caddyfile`, `.env.example` — lives in [`deploy/`](deploy/). See [`deploy/README.md`](deploy/README.md) for VM prerequisites, required GitHub secrets, and rollback procedure.
 

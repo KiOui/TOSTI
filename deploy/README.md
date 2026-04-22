@@ -1,6 +1,6 @@
 # Deployment
 
-Production deployment for TOSTI runs on a Docker Compose stack on a VM, orchestrated by `.github/workflows/deploy.yaml`. Every successful push to `master` (after testing, linting, and image build all pass) is deployed automatically.
+Production deployment for TOSTI runs on a Docker Compose stack on a VM, orchestrated by `.github/workflows/deploy.yaml`. It fires after the `CI` workflow (test + lint + image build) succeeds on `master`.
 
 ## Contents of this directory
 
