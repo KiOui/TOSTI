@@ -112,19 +112,13 @@ services:
     depends_on:
       database:
         condition: service_healthy
-      yivi:
-        condition: service_started
     volumes:
       - media:/media
       - cache:/app/cache
       - ./saml/private.key:/app/tosti/saml/private.key:ro
       - ./saml/public.crt:/app/tosti/saml/public.cert:ro
     environment: *django-web-env
-    healthcheck:
-      test: ["CMD", "python", "manage.py", "check"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    # healthcheck is defined in the Dockerfile (HEALTHCHECK instruction).
 
   cron:
     image: *tosti-image
@@ -143,6 +137,9 @@ services:
       - media:/media
       - cache:/app/cache
     environment: *django-core-env
+    # cron shares the web image but doesn't serve HTTP; skip the image healthcheck.
+    healthcheck:
+      disable: true
 
 networks:
   # Public-facing (caddy, yivi) + backend HTTP (web, yivi).

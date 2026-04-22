@@ -53,5 +53,8 @@ RUN mkdir -p /app/tosti/saml
 
 EXPOSE 80
 
+HEALTHCHECK --interval=10s --timeout=5s --retries=5 --start-period=60s \
+    CMD curl -fsS http://127.0.0.1/ready || exit 1
+
 # Command to run uWSGI
 CMD ["/bin/sh", "/entrypoint.sh"]
