@@ -33,3 +33,15 @@ class TostiViewTests(TestCase):
     def test_documentation_view(self):
         response = self.client.get(reverse("documentation"))
         self.assertEqual(response.status_code, 200)
+
+    def test_live(self):
+        for path in ("/live", "/live/"):
+            response = self.client.get(path)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.content, b"ok")
+
+    def test_ready(self):
+        for path in ("/ready", "/ready/"):
+            response = self.client.get(path)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.content, b"ok")

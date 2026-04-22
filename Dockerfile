@@ -6,7 +6,7 @@ ENV PYTHONUNBUFFERED 1
 
 # Install system dependencies
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends gcc libpq-dev python3-dev cron python3-pip xmlsec1 python3-dev libssl-dev libsasl2-dev \
+    && apt-get install -y --no-install-recommends gcc libpq-dev python3-dev cron python3-pip xmlsec1 python3-dev libssl-dev libsasl2-dev curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Set the working directory in the container
@@ -48,6 +48,9 @@ RUN chown -R nobody:nogroup /app/cache
 RUN mkdir -p /app/tosti/saml
 
 EXPOSE 80
+
+HEALTHCHECK --interval=10s --timeout=5s --retries=5 --start-period=60s \
+    CMD curl -fsS http://127.0.0.1/ready || exit 1
 
 # Command to run uWSGI
 CMD ["/bin/sh", "/entrypoint.sh"]
