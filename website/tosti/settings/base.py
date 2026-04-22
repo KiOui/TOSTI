@@ -28,7 +28,6 @@ INSTALLED_APPS = [
     "django_filters",
     "drf_spectacular",
     "rangefilter",
-    "cron",
     "announcements",
     "users",
     "qualifications",
