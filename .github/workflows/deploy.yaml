@@ -18,7 +18,7 @@ jobs:
   deploy:
     name: "Deploy to production"
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, production]
     environment: tosti.science.ru.nl
     timeout-minutes: 15
 
@@ -28,43 +28,33 @@ jobs:
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
 
-      - name: "Install SSH key and known_hosts"
-        env:
-          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-          DEPLOY_SSH_KNOWN_HOSTS: ${{ vars.DEPLOY_SSH_KNOWN_HOSTS }}
-        run: |
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          printf '%s\n' "$DEPLOY_SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
-          chmod 644 ~/.ssh/known_hosts
-
       - name: "Materialize SAML keys from secrets"
         env:
           SAML_PRIVATE_KEY: ${{ secrets.SAML_PRIVATE_KEY }}
           SAML_PUBLIC_CERT: ${{ secrets.SAML_PUBLIC_CERT }}
+          DEPLOY_DIR: ${{ vars.DEPLOY_DIR }}
         run: |
           set -euo pipefail
           if [ -z "$SAML_PRIVATE_KEY" ] || [ -z "$SAML_PUBLIC_CERT" ]; then
-            echo "::error::SAML_PRIVATE_KEY or SAML_PUBLIC_CERT is empty; refusing to deploy (would wipe the VM's SAML keys)."
+            echo "::error::SAML_PRIVATE_KEY or SAML_PUBLIC_CERT is empty; refusing to deploy."
             exit 1
           fi
-          mkdir -p saml
-          printf '%s' "$SAML_PRIVATE_KEY" > saml/private.key
-          printf '%s' "$SAML_PUBLIC_CERT" > saml/public.crt
-          chmod 600 saml/private.key
-          chmod 644 saml/public.crt
+          mkdir -p "$DEPLOY_DIR/saml"
+          umask 077
+          printf '%s' "$SAML_PRIVATE_KEY" > "$DEPLOY_DIR/saml/private.key"
+          printf '%s' "$SAML_PUBLIC_CERT" > "$DEPLOY_DIR/saml/public.crt"
+          chmod 600 "$DEPLOY_DIR/saml/private.key"
+          chmod 644 "$DEPLOY_DIR/saml/public.crt"
 
-      - name: "Rsync stack files to VM"
+      - name: "Copy compose + Caddyfile into deploy dir"
+        env:
+          DEPLOY_DIR: ${{ vars.DEPLOY_DIR }}
         run: |
-          rsync -az --delete \
-            deploy/docker-compose.yml deploy/Caddyfile \
-            ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:${{ vars.DEPLOY_DIR }}/
-          rsync -az --delete saml/ \
-            ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:${{ vars.DEPLOY_DIR }}/saml/
+          set -euo pipefail
+          install -m 644 deploy/docker-compose.yml "$DEPLOY_DIR/docker-compose.yml"
+          install -m 644 deploy/Caddyfile "$DEPLOY_DIR/Caddyfile"
 
-      - name: "Write .env on VM"
+      - name: "Write .env in deploy dir"
         env:
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
@@ -78,9 +68,11 @@ jobs:
           EMAIL_HOST: ${{ vars.EMAIL_HOST }}
           EMAIL_PORT: ${{ vars.EMAIL_PORT }}
           EMAIL_ADDRESS: ${{ vars.EMAIL_ADDRESS }}
+          DEPLOY_DIR: ${{ vars.DEPLOY_DIR }}
         run: |
-          ssh ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} \
-            "umask 077 && cat > ${{ vars.DEPLOY_DIR }}/.env" <<EOF
+          set -euo pipefail
+          umask 077
+          cat > "$DEPLOY_DIR/.env" <<EOF
           POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
           DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
           YIVI_TOKEN=${YIVI_TOKEN}
@@ -96,21 +88,23 @@ jobs:
           EOF
 
       - name: "Pull image and restart stack"
+        env:
+          DEPLOY_DIR: ${{ vars.DEPLOY_DIR }}
         run: |
-          ssh ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} \
-            "cd ${{ vars.DEPLOY_DIR }} && docker compose pull && docker compose up -d --remove-orphans"
+          set -euo pipefail
+          cd "$DEPLOY_DIR"
+          docker compose pull
+          docker compose up -d --remove-orphans
 
       - name: "Wait for web to be healthy"
         env:
           DEPLOY_DIR: ${{ vars.DEPLOY_DIR }}
         run: |
-          ssh ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} \
-            "DEPLOY_DIR=$DEPLOY_DIR bash -se" <<'EOF'
           set -euo pipefail
           cd "$DEPLOY_DIR"
           web_cid=$(docker compose ps -q web)
           if [ -z "$web_cid" ]; then
-            echo "::error::web container not found under compose project; did 'compose up' succeed?"
+            echo "::error::web container not found; did 'compose up' succeed?"
             exit 1
           fi
           for i in $(seq 1 60); do
@@ -124,4 +118,3 @@ jobs:
           echo "timeout waiting for web to become healthy"
           docker logs --tail 100 "$web_cid"
           exit 1
-          EOF

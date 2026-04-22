@@ -2,6 +2,8 @@
 
 Production deployment for TOSTI runs on a Docker Compose stack on a VM, orchestrated by `.github/workflows/deploy.yaml`. It fires after the `CI` workflow (test + lint + image build) succeeds on `master`.
 
+The deploy runs on a **self-hosted GitHub Actions runner installed on the VM itself**. The runner polls GitHub over outbound HTTPS; GitHub never connects inbound. This was necessary because the CNCZ network blocks inbound SSH from the public internet, so a push-based model would have needed a VPN or an SSH hole.
+
 ## Contents of this directory
 
 | File | Purpose |
@@ -12,21 +14,29 @@ Production deployment for TOSTI runs on a Docker Compose stack on a VM, orchestr
 
 ## VM prerequisites (one-time setup)
 
-- Deploy user (e.g. `deploy-tosti`) exists with a home directory at the deploy path (e.g. `/opt/tosti`).
-- Deploy user is in the `docker` group so it can run `docker compose` without sudo.
+- A `deploy-tosti` system user owns `/opt/tosti/` (mode 770, group-writable).
+- A `github-runner` system user exists, in groups `docker` and `deploy-tosti` so it can run `docker compose` and write to `/opt/tosti/`.
 - Docker Engine + Compose plugin installed.
-- The deploy user's `~/.ssh/authorized_keys` contains the public half of the `DEPLOY_SSH_KEY` secret.
-- SAML private key + public cert already on the VM under `/opt/tosti/saml/` (overwritten by each deploy from the GitHub secrets).
+- The self-hosted runner is installed under `~github-runner/actions-runner/` and managed by systemd (`actions.runner.KiOui-TOSTI.tosti-vm.service`).
+- SAML private key + public cert are under `/opt/tosti/saml/` (overwritten by each deploy from the GitHub secrets).
+
+### Installing the self-hosted runner
+
+Follow [GitHub's self-hosted runner instructions](https://github.com/KiOui/TOSTI/settings/actions/runners/new) — they show the exact `curl` + `./config.sh` commands for the current runner version. Use these settings:
+
+- **User to run as**: `github-runner` (create with `useradd --system --create-home --shell /bin/bash --groups docker,deploy-tosti github-runner`).
+- **Runner name**: `tosti-vm`.
+- **Labels**: `tosti-vm,production`. `tosti-vm` identifies the machine; `production` is the tier that `deploy.yaml`'s `runs-on:` filters on. When a staging runner is added later, it would be labeled `tosti-staging-vm,staging` and a staging workflow would use `runs-on: [self-hosted, staging]`.
+- **Install as a service**: `sudo ./svc.sh install github-runner && sudo ./svc.sh start`.
 
 ## GitHub Environment
 
-The workflow runs against a GitHub Environment named **`tosti.science.ru.nl`**. Scope secrets to this Environment (Settings → Environments) so a compromised PR on another branch cannot exfiltrate them. Add required reviewers for extra safety.
+The workflow runs against a GitHub Environment named **`tosti.science.ru.nl`**. Scope secrets to this Environment (Settings → Environments) so workflows on other branches cannot exfiltrate them. Add required reviewers for extra safety — every deploy waits for human approval.
 
 ### Environment secrets
 
 | Secret | Purpose |
 | --- | --- |
-| `DEPLOY_SSH_KEY` | Private SSH key for the deploy user. |
 | `POSTGRES_PASSWORD` | Postgres password. |
 | `DJANGO_SECRET_KEY` | Django secret key. |
 | `YIVI_TOKEN` | Yivi server token. |
@@ -38,10 +48,8 @@ The workflow runs against a GitHub Environment named **`tosti.science.ru.nl`**. 
 
 | Variable | Example | Purpose |
 | --- | --- | --- |
-| `DEPLOY_USER` | `deploy-tosti` | SSH username on the VM. |
-| `DEPLOY_HOST` | `tosti.vm.science.ru.nl` | SSH hostname of the VM. |
-| `DEPLOY_DIR` | `/opt/tosti` | Deploy target directory on the VM. |
-| `DEPLOY_SSH_KNOWN_HOSTS` | output of `ssh-keyscan <host>` | Pins the VM's host key. **Without this, SSH will fail in CI.** |
+| `DEPLOY_DIR` | `/opt/tosti` | Where the compose stack lives on the VM. |
+| `DEPLOY_HOST` | `tosti.vm.science.ru.nl` | VM's direct hostname; used by Caddy for the vhost redirect `tosti.vm → tosti`. |
 | `DJANGO_HOSTNAME` | `tosti.science.ru.nl` | Public hostname served by Caddy for the Django app. |
 | `YIVI_HOSTNAME` | `yivi.tosti.science.ru.nl` | Public hostname served by Caddy for the Yivi server. |
 | `DJANGO_ALLOWED_HOSTS` | `tosti.science.ru.nl` | Django's `ALLOWED_HOSTS`. |
@@ -52,24 +60,30 @@ The workflow runs against a GitHub Environment named **`tosti.science.ru.nl`**. 
 
 ## What the workflow does
 
-1. Rsyncs `deploy/docker-compose.yml` and `deploy/Caddyfile` to `$DEPLOY_DIR/` on the VM.
-2. Materializes the SAML key/cert from secrets and rsyncs them to `$DEPLOY_DIR/saml/`.
-3. Writes `$DEPLOY_DIR/.env` (mode 600) from the Environment's secrets and vars.
-4. Runs `docker compose pull && docker compose up -d --remove-orphans`.
-5. Polls `docker inspect` until `tosti-web-1` reports `healthy`; fails the job if it doesn't within ~5 minutes.
+Runs directly on the VM via the self-hosted runner:
+
+1. Checks out the commit that passed CI.
+2. Writes SAML key/cert from secrets into `$DEPLOY_DIR/saml/`.
+3. Copies `docker-compose.yml` and `Caddyfile` from the repo into `$DEPLOY_DIR/`.
+4. Writes `$DEPLOY_DIR/.env` (mode 600) from the Environment's secrets and vars.
+5. Runs `docker compose pull && docker compose up -d --remove-orphans`.
+6. Polls `docker inspect` until the `web` container reports `healthy`; fails the job if it doesn't within ~5 minutes.
 
 ## Rollback
 
 Every master commit is published to `ghcr.io/kioui/tosti:sha-<commit-sha>` (full 40-char SHA) in addition to `:latest`. To roll back:
 
 ```bash
-ssh deploy-tosti@<vm>
+ssh jdoesburg@<vm>
+sudo -iu deploy-tosti
 cd /opt/tosti
 # Edit docker-compose.yml to pin the previous image, e.g.:
 #   image: ghcr.io/kioui/tosti:sha-abc123...
 docker compose up -d
 ```
 
-## Local verification before first deploy
+## Security notes
 
-Temporarily change the workflow's `on:` trigger to `workflow_dispatch` to run it manually from the Actions tab. Add a preliminary SSH check step (`ssh ... 'echo hello && docker ps'`) to confirm credentials and host access before letting the real deploy run.
+- The runner executes any code that lands on `master`. Branch protection on `master` + required reviewers on the `tosti.science.ru.nl` Environment are the main defenses.
+- Never set "Run workflows from fork pull requests" without approval — a malicious PR could exfiltrate secrets or run commands on the VM.
+- The `github-runner` user should not have sudo. If it needs elevated privileges for something specific, use a tightly scoped sudoers rule.
