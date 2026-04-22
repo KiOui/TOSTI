@@ -30,7 +30,7 @@ jobs:
         run: uv sync --locked --all-extras --dev
 
       - name: "Run Black"
-        run: uv run black --quiet --check website
+        run: uv run black --check website
 
       - name: "Run flake8"
         run: >-

@@ -81,7 +81,7 @@ class Yivi:
             request = retry_error.request
             try:
                 reason = retry_error.args[0].reason
-            except (IndexError, AttributeError):
+            except IndexError, AttributeError:
                 reason = None
             raise YiviException(
                 429, -1, "%s:\n %s" % (request.path_url, "Max Retries"), reason=reason

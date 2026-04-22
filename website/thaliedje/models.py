@@ -789,7 +789,7 @@ class SpotifyPlayer(Player):
             return None
         try:
             return current_playback["item"]["album"]["images"][0]["url"]
-        except (KeyError, IndexError, TypeError):
+        except KeyError, IndexError, TypeError:
             return None
 
     @property
@@ -800,7 +800,7 @@ class SpotifyPlayer(Player):
             return None
         try:
             return current_playback["item"]["name"]
-        except (KeyError, IndexError, TypeError):
+        except KeyError, IndexError, TypeError:
             return None
 
     @property
@@ -811,7 +811,7 @@ class SpotifyPlayer(Player):
             return []
         try:
             return self.get_artists_for_spotify_track(self._current_playback["item"])
-        except (KeyError, IndexError, TypeError):
+        except KeyError, IndexError, TypeError:
             return []
 
     @property
