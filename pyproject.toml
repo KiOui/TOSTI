@@ -47,7 +47,6 @@ dev = [
     "black>=26.3.1",
     "flake8>=7.3.0",
     "freezegun>=1.5.5",
-    "pydocstyle>=6.3.0",
 ]
 
 [tool.black]

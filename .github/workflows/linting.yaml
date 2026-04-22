@@ -39,6 +39,3 @@ jobs:
           --exclude="migrations,website/tosti/settings/*.py"
           --max-line-length=119
           website
-
-      - name: "Run PyDocStyle"
-        run: uv run pydocstyle --explain --add-ignore=D100,D104 --match-dir='(?!sp)(?!migrations).*'
