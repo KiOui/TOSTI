@@ -182,7 +182,12 @@ class BorrelReservation(models.Model):
         if not self.join_code:
             self.join_code = secrets.token_urlsafe(20)
 
-        super().save(force_insert, force_update, using, update_fields)
+        super().save(
+            force_insert=force_insert,
+            force_update=force_update,
+            using=using,
+            update_fields=update_fields,
+        )
 
         if self.user_created and self.user_created not in self.users_access.all():
             self.users_access.add(self.user_created)
@@ -266,7 +271,12 @@ class ReservationItem(models.Model):
         ):
             self.amount_reserved = 0
 
-        super().save(force_insert, force_update, using, update_fields)
+        super().save(
+            force_insert=force_insert,
+            force_update=force_update,
+            using=using,
+            update_fields=update_fields,
+        )
 
         self.reservation.updated_at = timezone.now()
         self.reservation.save()

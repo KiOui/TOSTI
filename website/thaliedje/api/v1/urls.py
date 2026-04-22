@@ -1,4 +1,4 @@
-from django.urls import path, register_converter
+from django.urls import path
 from thaliedje.api.v1.views import (
     PlayerListAPIView,
     PlayerRetrieveAPIView,
@@ -14,9 +14,6 @@ from thaliedje.api.v1.views import (
     PlayerVolumeAPIView,
     PlayerQueueAPIView,
 )
-from thaliedje.converters import PlayerConverter
-
-register_converter(PlayerConverter, "player")
 
 urlpatterns = [
     path("players/", PlayerListAPIView.as_view(), name="player_list"),

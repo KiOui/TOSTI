@@ -1,5 +1,4 @@
 from django.contrib.admin.models import LogEntry, ADDITION
-from django.contrib.admin.options import get_content_type_for_model
 
 
 from django.forms import model_to_dict
@@ -52,11 +51,10 @@ class ModelDiffCalculator:
 
 def log_action(user, object, flag=ADDITION, message=None):
     """Create an admin log."""
-    return LogEntry.objects.log_action(
+    return LogEntry.objects.log_actions(
         user_id=user.pk,
-        content_type_id=get_content_type_for_model(object).pk,
-        object_id=object.pk,
-        object_repr=str(object),
+        queryset=[object],
         action_flag=flag,
         change_message=message,
+        single_object=True,
     )

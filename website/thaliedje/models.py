@@ -1242,7 +1242,12 @@ class ThaliedjeControlEvent(models.Model):
         if self.everyone_can_request_playlist:
             self.everyone_can_request = True
 
-        super().save(force_insert, force_update, using, update_fields)
+        super().save(
+            force_insert=force_insert,
+            force_update=force_update,
+            using=using,
+            update_fields=update_fields,
+        )
 
     def __str__(self):
         """Convert this object to string."""
