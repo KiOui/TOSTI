@@ -100,12 +100,12 @@ class BorrelReservationResource(resources.ModelResource):
             pass
         return None
 
-    def export_field(self, field, obj):
+    def export_field(self, field, obj, **kwargs):
         """Check for added product field before exporting."""
         if field.attribute in self.added_product_fields.keys():
             return self.export_product_field(field, obj)
         else:
-            return super(BorrelReservationResource, self).export_field(field, obj)
+            return super(BorrelReservationResource, self).export_field(field, obj, **kwargs)
 
     class Meta:
         """Meta class."""
