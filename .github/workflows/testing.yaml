@@ -13,43 +13,32 @@ jobs:
       - name: "Checkout the repository"
         uses: actions/checkout@v4
 
-      - name: "Setup Python"
-        uses: actions/setup-python@v1
-        with:
-          python-version: '3.13'
-
       - name: "Install OS dependencies"
         run: |
           sudo apt-get update
           sudo apt-get install -y --fix-missing libxmlsec1-dev pkg-config
 
-      - name: "Install Poetry"
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install poetry
-
-      - name: "Restore any cached Poetry dependencies"
-        uses: actions/cache@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
         with:
-          path: ~/.cache/pypoetry/virtualenvs
-          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-poetry-
+          enable-cache: true
 
-      - name: "Install any new dependencies"
-        run: poetry install
-        if: steps.cache.outputs.cache-hit != 'true'
+      - name: Set up Python
+        run: uv python install
+
+      - name: Install the project
+        run: uv sync --locked --all-extras --dev
 
       - name: "Test migrations"
         run: |
-          poetry run python website/manage.py makemigrations --no-input --check --dry-run
+          uv run python website/manage.py makemigrations --no-input --check --dry-run
 
       - name: "Perform Django self-check"
         run: |
-          poetry run python3 website/manage.py check
+          uv run python3 website/manage.py check
 
       - name: "Run Django tests using Coverage"
-        run: poetry run coverage run website/manage.py test website/
+        run: uv run coverage run website/manage.py test website/
 
       - name: "Check Coverage report"
-        run: poetry run coverage report --omit "*/site-packages/*,*/migrations/*"
+        run: uv run coverage report --omit "*/site-packages/*,*/migrations/*"

@@ -1,4 +1,4 @@
-[tool.poetry]
+[project]
 name = "tosti"
 version = "4.0.0"
 description = "Tartarus Order System for Take-away Items"
@@ -6,53 +6,49 @@ authors = ["Job Doesburg <job.doesburg@gmail.com>", "Lars van Rhijn <larsvanrhij
 maintainers = ["Job Doesburg <job.doesburg@gmail.com>", "Lars van Rhijn <larsvanrhijn@gmail.com>"]
 readme = "README.md"
 repository = "https://github.com/KiOui/TOSTI"
+requires-python = ">=3.14"
 license = "MIT"
-package-mode = false
+dependencies = [
+    "bleach[css]>=6.3.0",
+    "coverage>=7.13.5",
+    "cryptography>=43.0.3",
+    "django>=6.0.4",
+    "django-admin-autocomplete-filter>=0.7.1",
+    "django-admin-rangefilter>=0.13.5",
+    "django-autocompletefilter>=0.0.9",
+    "django-bootstrap5>=26.2",
+    "django-constance>=4.3.5", # No official support for Django 6.0.
+    "django-cors-headers>=4.9.0",
+    "django-filter>=25.2",
+    "django-guardian>=3.3.1",
+    "django-ical>=1.9.2", # No official support for Django 6.0.
+    "django-import-export>=4.4.0",
+    "django-model-utils>=5.0.0",
+    "django-oauth-toolkit>=3.2.0",
+    "django-queryable-properties>=1.12.1",
+    "django-tinymce>=5.0.0",
+    "djangorestframework>=3.17.1",
+    "djangosaml2>=1.12.0", # No official support for Django 6.0.
+    "fontawesomefree>=6.6.0",
+    "html2text>=2025.4.15",
+    "inflection>=0.5.1",
+    "pillow>=12.2.0",
+    "pyopenssl>=24.2.1",
+    "pysaml2>=7.5.4",
+    "pytz>=2026.1.post1",
+    "requests>=2.33.1",
+    "spotipy>=2.26.0",
+    "tomli>=2.4.1",
+    "uritemplate>=4.2.0",
+]
 
-[tool.poetry.dependencies]
-python = "^3.13"
-django = ">=5.1.15,<5.2" # Staying on 5.1.x until PostgreSQL is upgraded to 14+ (currently 13.3)
-Pillow = "^12.1.1"
-django-admin-autocomplete-filter = "^0.7.1"
-django-import-export = "^4.0.0"
-requests = "^2.32.0"
-spotipy = "^2.25.1"
-coverage = "^7.0.0"
-django-guardian = "^3.0.6"
-djangorestframework = "^3.15.2"
-django-oauth-toolkit = "^3.0.0"
-django-cors-headers = "^4.3.1"
-uritemplate = "^4.1.1"
-django-autocompletefilter = "^0.0.9"
-django-bootstrap5 = "^26.0"
-django-filter = "^25.0"
-django-constance = "^4.3.2" # No official support for Django 5.0.
-html2text = "^2025.0.0"
-django-ical = "^1.9.2" # No official support for Django 5.0.
-fontawesomefree = "^6.1.1"
-django-tinymce = "^5.0.0"
-bleach = { extras = ["css"], version = "^6.0.0" }
-django-admin-rangefilter = "^0.13.0"
-django-queryable-properties = "^1.9.2"
-djangosaml2 = "^1.9.3" # No official support for Django 5.0.
-django-model-utils = "^5.0.0"
-inflection = "^0.5.1"
-pyopenssl = "<24.3"
-cryptography = ">=38.0.0"
-pysaml2 = "^7.5.4"
-pytz = "^2026.1.post1"
-
-[tool.poetry.group.dev.dependencies]
-black = "^26.3.1"
-pydocstyle = "^6.1.1"
-flake8 = "^7.0.0"
-freezegun = "^1.2.1"
-tomli = "^2.0.1"
-
-[tool.poetry.group.prod.dependencies]
-uwsgi = "^2.0.23"
-psycopg2-binary = "^2.9.1"
-sentry-sdk = "^2.8.0"
+[project.optional-dependencies]
+dev = [
+    "black>=26.3.1",
+    "flake8>=7.3.0",
+    "freezegun>=1.5.5",
+    "pydocstyle>=6.3.0",
+]
 
 [tool.black]
 exclude = '''
@@ -61,7 +57,3 @@ exclude = '''
   | website/tosti/settings
 )/
 '''
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
