@@ -1,4 +1,4 @@
-from django.urls import path, register_converter
+from django.urls import path
 
 from orders.api.v1.views import (
     ShiftListCreateAPIView,
@@ -9,10 +9,6 @@ from orders.api.v1.views import (
     ShiftRetrieveUpdateAPIView,
     OrderVenueListAPIView,
 )
-from orders.converters import ShiftConverter, OrderConverter
-
-register_converter(ShiftConverter, "shift")
-register_converter(OrderConverter, "order")
 
 urlpatterns = [
     path("shifts/", ShiftListCreateAPIView.as_view(), name="shifts_listcreate"),

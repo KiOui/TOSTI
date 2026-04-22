@@ -33,7 +33,7 @@ class FridgeUnlockAPIView(ClientProtectedResourceMixin, APIView):
 
         try:
             user = get_user_from_identification_token(user_token)
-        except (User.DoesNotExist, BadSignature, SignatureExpired):
+        except User.DoesNotExist, BadSignature, SignatureExpired:
             return Response(
                 {"detail": "Invalid user_token"},
                 status=status.HTTP_400_BAD_REQUEST,

@@ -86,7 +86,7 @@ class BorrelReservationForm(forms.ModelForm):
 
     def save(self, commit=True):
         """Save the form."""
-        value = super().save(commit)
+        value = super().save(commit=commit)
         if (
             commit
             and self.cleaned_data.get("venue", None) is not None
