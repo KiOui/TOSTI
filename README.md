@@ -67,7 +67,7 @@ website/
 
 ### Prerequisites
 - Python 3.13+ (recommended to use [pyenv](https://github.com/pyenv/pyenv))
-- [Poetry](https://python-poetry.org) for dependency management
+- [uv](https://docs.astral.sh/uv/) for dependency management
 - Git
 
 ### Installation
@@ -78,41 +78,35 @@ website/
    cd TOSTI
    ```
 
-2. **Install Poetry**
+2. **Install uv**
    ```bash
-   curl -sSL https://install.python-poetry.org | python3 -
+   curl -LsSf https://astral.sh/uv/install.sh | sh
    ```
 
-3. **Set up Python environment**
+3. **Set up uv environment**
    ```bash
-   poetry env use python3.13
-   poetry install
+   uv sync --locked --all-extras --dev
    ```
 
-4. **Activate virtual environment**
-   ```bash
-   eval $(poetry env activate)
-   ```
-
-5. **Set up the database**
+4. **Set up the database**
    ```bash
    cd website
-   ./manage.py migrate
+   uv run ./manage.py migrate
    ```
 
-6. **Create a superuser**
+5. **Create a superuser**
    ```bash
-   ./manage.py createsuperuser
+   uv run ./manage.py createsuperuser
    ```
 
-7. **Load initial data (optional)**
+6. **Load initial data (optional)**
    ```bash
-   ./manage.py loaddata tosti/fixtures/default.json
+   uv run ./manage.py loaddata tosti/fixtures/default.json
    ```
 
-8. **Run the development server**
+7. **Run the development server**
    ```bash
-   ./manage.py runserver
+   uv run ./manage.py runserver
    ```
 
 The application will be available at `http://localhost:8000`.
@@ -192,22 +186,22 @@ Interactive API documentation is available at `/api/docs` when running the appli
 Run the test suite:
 ```bash
 cd website
-poetry run python manage.py test
+uv run python manage.py test
 ```
 
 Run with coverage:
 ```bash
-poetry run coverage run website/manage.py test website/
-poetry run coverage report
+uv run coverage run website/manage.py test website/
+uv run coverage report
 ```
 
 ## 🔍 Code Quality
 
 ### Linting
 ```bash
-poetry run black website
-poetry run flake8 website
-poetry run pydocstyle website
+uv run black website
+uv run flake8 website
+uv run pydocstyle website
 ```
 
 ### Checks
