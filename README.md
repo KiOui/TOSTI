@@ -118,41 +118,17 @@ The application will be available at `http://localhost:8000`.
 
 ## 🐳 Production Deployment
 
-TOSTI is deployed using Docker and Docker Compose in the [PGO environment](https://github.com/miekg/pgo) at CNCZ (Radboud University IT department).
+TOSTI runs in production as a Docker Compose stack on a VM. Deployments are automated: every push to `master` that passes testing, linting, and the image build is deployed by `.github/workflows/deploy.yaml`.
 
-### Docker Deployment
+Deployment configuration — `docker-compose.yml`, `Caddyfile`, `.env.example` — lives in [`deploy/`](deploy/). See [`deploy/README.md`](deploy/README.md) for VM prerequisites, required GitHub secrets, and rollback procedure.
 
-1. **Build and run with Docker Compose**
-   ```bash
-   docker-compose up -d
-   ```
-
-2. **Environment Variables**
-   Create a `.env` file based on `.env.example`:
-   ```env
-   YIVI_SERVER_TOKEN=your-yivi-token
-   POSTGRES_PASSWORD=secure-password
-   DJANGO_SECRET_KEY=your-secret-key
-   SENTRY_DSN=your-sentry-dsn
-   # ... other variables
-   ```
-
-### PGO Deployment
-
-For deployment on the CNCZ infrastructure:
+To run the stack manually (e.g. on a fresh VM before CI is wired up):
 
 ```bash
-# Deploy the application
-pgoctl -i ~/.ssh/id_ed25519 -- dockervm02.science.ru.nl:tosti//up
-
-# View logs
-pgoctl -i ~/.ssh/id_ed25519 -- dockervm02.science.ru.nl:tosti//logs
-
-# Stop the application
-pgoctl -i ~/.ssh/id_ed25519 -- dockervm02.science.ru.nl:tosti//down
+cd deploy
+cp .env.example .env  # fill in POSTGRES_PASSWORD, DJANGO_SECRET_KEY, YIVI_TOKEN, SENTRY_DSN
+docker compose up -d
 ```
-
-**Note**: You must be connected to the CNCZ VPN and have your SSH key in the `ssh` directory.
 
 ## 🔧 Configuration
 

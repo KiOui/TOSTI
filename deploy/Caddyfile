@@ -1,0 +1,11 @@
+{$DJANGO_HOSTNAME} {
+	reverse_proxy web:80
+}
+
+{$YIVI_HOSTNAME} {
+	reverse_proxy yivi:80
+}
+
+{$DEPLOY_HOST} {
+	redir https://{$DJANGO_HOSTNAME}{uri} permanent
+}

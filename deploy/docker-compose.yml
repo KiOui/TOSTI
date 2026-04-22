@@ -28,17 +28,17 @@ x-django-core-env: &django-core-env
 # Cron doesn't do any of these.
 x-django-web-env: &django-web-env
   <<: *django-core-env
-  DJANGO_ALLOWED_HOSTS: tosti.science.ru.nl
+  DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS}
   YIVI_SERVER_URL: http://yivi:80
   YIVI_SERVER_TOKEN: ${YIVI_TOKEN}
-  SAML_ENTITY_ID: tosti.science.ru.nl
-  SAML_BASE_URL: https://tosti.science.ru.nl
-  EMAIL_HOST: smtp.science.ru.nl
-  EMAIL_PORT: 25
-  EMAIL_DEFAULT_SENDER: "www-tosti@science.ru.nl"
-  EMAIL_HOST_USER: "www-tosti@science.ru.nl"
-  DEFAULT_FROM_EMAIL: "TOSTI <www-tosti@science.ru.nl>"
-  SERVER_EMAIL: "www-tosti@science.ru.nl"
+  SAML_ENTITY_ID: ${SAML_ENTITY_ID}
+  SAML_BASE_URL: https://${DJANGO_HOSTNAME}
+  EMAIL_HOST: ${EMAIL_HOST}
+  EMAIL_PORT: ${EMAIL_PORT}
+  EMAIL_DEFAULT_SENDER: ${EMAIL_ADDRESS}
+  EMAIL_HOST_USER: ${EMAIL_ADDRESS}
+  DEFAULT_FROM_EMAIL: "TOSTI <${EMAIL_ADDRESS}>"
+  SERVER_EMAIL: ${EMAIL_ADDRESS}
 
 services:
   caddy:
@@ -55,6 +55,10 @@ services:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy-data:/data
       - caddy-config:/config
+    environment:
+      DJANGO_HOSTNAME: ${DJANGO_HOSTNAME}
+      YIVI_HOSTNAME: ${YIVI_HOSTNAME}
+      DEPLOY_HOST: ${DEPLOY_HOST}
     depends_on:
       web:
         condition: service_healthy
@@ -72,7 +76,7 @@ services:
   yivi:
     image: ghcr.io/privacybydesign/irma:edge
     command: >
-      server -v --requestors '{"tosti": {"auth_method": "token", "key": "${YIVI_TOKEN}"}}' --production --no-email --url https://yivi.tosti.science.ru.nl --port 80
+      server -v --requestors '{"tosti": {"auth_method": "token", "key": "${YIVI_TOKEN}"}}' --production --no-email --url https://${YIVI_HOSTNAME} --port 80
     restart: unless-stopped
     logging: *default-logging
     security_opt:
@@ -118,7 +122,12 @@ services:
       - ./saml/private.key:/app/tosti/saml/private.key:ro
       - ./saml/public.crt:/app/tosti/saml/public.cert:ro
     environment: *django-web-env
-    # healthcheck is defined in the Dockerfile (HEALTHCHECK instruction).
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
 
   cron:
     image: *tosti-image
@@ -137,9 +146,6 @@ services:
       - media:/media
       - cache:/app/cache
     environment: *django-core-env
-    # cron shares the web image but doesn't serve HTTP; skip the image healthcheck.
-    healthcheck:
-      disable: true
 
 networks:
   # Public-facing (caddy, yivi) + backend HTTP (web, yivi).
@@ -147,8 +153,7 @@ networks:
   # Database-only network; no internet access, no external services.
   db:
     internal: true
-  # Outbound-only network for services that need to reach external APIs
-  # (cron → Silvasoft, Spotify) without being reachable from caddy.
+  # Outbound-only network for services that need to reach external APIs without being reachable from caddy.
   outbound:
 
 volumes:
