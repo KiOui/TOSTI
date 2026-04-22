@@ -34,7 +34,5 @@ class HealthCheckMiddleware:
                 cursor.execute("SELECT 1")
                 cursor.fetchone()
         except DatabaseError:
-            return HttpResponse(
-                "db unavailable", content_type="text/plain", status=503
-            )
+            return HttpResponse("db unavailable", content_type="text/plain", status=503)
         return HttpResponse("ok", content_type="text/plain")
