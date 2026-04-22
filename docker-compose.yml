@@ -1,69 +1,125 @@
-version: "3.6"
+name: tosti
+
+x-tosti-image: &tosti-image ghcr.io/kioui/tosti:latest
+
+# Cap container log growth: 3 × 10 MB per service.
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+# Postgres connection info — needed by anything that talks to the DB.
+x-db-env: &db-env
+  POSTGRES_USER: tosti
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  POSTGRES_DB: tosti
+  POSTGRES_HOST: database
+  POSTGRES_PORT: 5432
+
+# Minimum env needed to boot Django + report errors. Used by every service
+# that imports the Django settings (web, cron).
+x-django-core-env: &django-core-env
+  <<: *db-env
+  DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+  SENTRY_DSN: ${SENTRY_DSN}
+
+# Web-only env: HTTP serving, SAML login, Yivi requests, outgoing mail.
+# Cron doesn't do any of these.
+x-django-web-env: &django-web-env
+  <<: *django-core-env
+  DJANGO_ALLOWED_HOSTS: tosti.science.ru.nl
+  YIVI_SERVER_URL: http://yivi:80
+  YIVI_SERVER_TOKEN: ${YIVI_TOKEN}
+  SAML_ENTITY_ID: tosti.science.ru.nl
+  SAML_BASE_URL: https://tosti.science.ru.nl
+  EMAIL_HOST: smtp.science.ru.nl
+  EMAIL_PORT: 25
+  EMAIL_DEFAULT_SENDER: "www-tosti@science.ru.nl"
+  EMAIL_HOST_USER: "www-tosti@science.ru.nl"
+  DEFAULT_FROM_EMAIL: "TOSTI <www-tosti@science.ru.nl>"
+  SERVER_EMAIL: "www-tosti@science.ru.nl"
 
 services:
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    logging: *default-logging
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      web:
+        condition: service_healthy
+      yivi:
+        condition: service_started
+    networks:
+      - web
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:2019/config/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
   yivi:
     image: ghcr.io/privacybydesign/irma:edge
     command: >
       server -v --requestors '{"tosti": {"auth_method": "token", "key": "${YIVI_TOKEN}"}}' --production --no-email --url https://yivi.tosti.science.ru.nl --port 80
     restart: unless-stopped
+    logging: *default-logging
+    security_opt:
+      - no-new-privileges:true
     networks:
       - web
     environment:
       YIVI_TOKEN: ${YIVI_TOKEN}
 
   database:
-    image: postgres:13.3-alpine
+    image: postgres:17-alpine
     restart: unless-stopped
+    logging: *default-logging
+    security_opt:
+      - no-new-privileges:true
     networks:
       - db
     volumes:
       - pg-data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_USER: tosti
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: tosti
+    environment: *db-env
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "tosti"]
+      test: ["CMD", "pg_isready", "-U", "tosti", "-d", "tosti"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 10s
 
   web:
-    image: ghcr.io/kioui/tosti:latest
+    image: *tosti-image
     restart: unless-stopped
+    logging: *default-logging
+    security_opt:
+      - no-new-privileges:true
     networks:
       - web
       - db
-    expose:
-      - "80"
     depends_on:
-      - database
-      - yivi
+      database:
+        condition: service_healthy
+      yivi:
+        condition: service_started
     volumes:
       - media:/media
       - cache:/app/cache
-    environment:
-      POSTGRES_USER: tosti
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: tosti
-      POSTGRES_HOST: database
-      POSTGRES_PORT: 5432
-      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
-      DJANGO_ALLOWED_HOSTS: tosti.science.ru.nl,new.tosti.science.ru.nl
-      SENTRY_DSN: ${SENTRY_DSN}
-      YIVI_SERVER_URL: http://yivi:80
-      YIVI_SERVER_TOKEN: ${YIVI_TOKEN}
-      SAML_ENTITY_ID: tosti.science.ru.nl
-      SAML_BASE_URL: https://tosti.science.ru.nl
-      SAML_PUBLIC_KEY_FILE: ${SAML_PUBLIC_KEY_FILE}
-      SAML_PRIVATE_KEY_FILE: ${SAML_PRIVATE_KEY_FILE}
-      EMAIL_HOST: smtp.science.ru.nl
-      EMAIL_PORT: 25
-      EMAIL_DEFAULT_SENDER: "www-tosti@science.ru.nl"
-      EMAIL_HOST_USER: "www-tosti@science.ru.nl"
-      DEFAULT_FROM_EMAIL: "TOSTI <www-tosti@science.ru.nl>"
-      SERVER_EMAIL: "www-tosti@science.ru.nl"
-
+      - ./saml/private.key:/app/tosti/saml/private.key:ro
+      - ./saml/public.crt:/app/tosti/saml/public.cert:ro
+    environment: *django-web-env
     healthcheck:
       test: ["CMD", "python", "manage.py", "check"]
       interval: 10s
@@ -71,33 +127,36 @@ services:
       retries: 5
 
   cron:
-    image: ghcr.io/kioui/tosti:latest
+    image: *tosti-image
     entrypoint: ["/bin/sh", "/entrypoint_cron.sh"]
     restart: unless-stopped
+    logging: *default-logging
+    security_opt:
+      - no-new-privileges:true
     networks:
-      - web
       - db
+      - outbound
     depends_on:
-      - database
-      - yivi
+      database:
+        condition: service_healthy
     volumes:
       - media:/media
       - cache:/app/cache
-    environment:
-      POSTGRES_USER: tosti
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: tosti
-      POSTGRES_HOST: database
-      POSTGRES_PORT: 5432
-      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+    environment: *django-core-env
 
 networks:
+  # Public-facing (caddy, yivi) + backend HTTP (web, yivi).
   web:
-    external: true
-    name: caddy_reverseproxy
+  # Database-only network; no internet access, no external services.
   db:
+    internal: true
+  # Outbound-only network for services that need to reach external APIs
+  # (cron → Silvasoft, Spotify) without being reachable from caddy.
+  outbound:
 
 volumes:
   pg-data:
   media:
   cache:
+  caddy-data:
+  caddy-config:
