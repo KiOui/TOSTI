@@ -66,7 +66,7 @@ website/
 ## 🛠️ Development Setup
 
 ### Prerequisites
-- Python 3.13+ (recommended to use [pyenv](https://github.com/pyenv/pyenv))
+- Python 3.14+ (recommended to use [pyenv](https://github.com/pyenv/pyenv))
 - [uv](https://docs.astral.sh/uv/) for dependency management
 - Git
 
