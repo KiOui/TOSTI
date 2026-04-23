@@ -27,7 +27,6 @@ INSTALLED_APPS = [
     "rest_framework",
     "django_filters",
     "rangefilter",
-    "cron",
     "announcements",
     "users",
     "qualifications",

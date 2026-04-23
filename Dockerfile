@@ -6,7 +6,7 @@ ENV PYTHONUNBUFFERED=1
 
 # Install system dependencies
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends gcc libpq-dev python3-dev cron python3-pip xmlsec1 python3-dev libssl-dev libsasl2-dev curl ca-certificates \
+    && apt-get install -y --no-install-recommends gcc libpq-dev python3-dev python3-pip xmlsec1 python3-dev libssl-dev libsasl2-dev curl ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 # Install uv
