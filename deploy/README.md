@@ -43,7 +43,6 @@ The workflow runs against a GitHub Environment named **`tosti.science.ru.nl`**. 
 | `SENTRY_DSN` | Sentry DSN for error reporting. |
 | `SAML_PRIVATE_KEY` | Full PEM of the SAML SP private key. |
 | `SAML_PUBLIC_CERT` | Full PEM of the SAML SP public certificate. |
-| `SENTRY_AUTH_TOKEN` | Sentry integration token with `project:releases` scope (used by deploy to mark the release as deployed). |
 
 ### Environment variables (not secret)
 
@@ -58,8 +57,6 @@ The workflow runs against a GitHub Environment named **`tosti.science.ru.nl`**. 
 | `EMAIL_HOST` | `smtp.science.ru.nl` | SMTP server. |
 | `EMAIL_PORT` | `25` | SMTP port. |
 | `EMAIL_ADDRESS` | `www-tosti@science.ru.nl` | From/sender address; used for `EMAIL_HOST_USER`, `EMAIL_DEFAULT_SENDER`, `DEFAULT_FROM_EMAIL`, `SERVER_EMAIL`. |
-| `SENTRY_ORG` | `tosti` | Sentry organization slug (used by deploy to create the release). |
-| `SENTRY_PROJECT` | `tosti` | Sentry project slug (used by deploy to create the release). |
 
 ## What the workflow does
 

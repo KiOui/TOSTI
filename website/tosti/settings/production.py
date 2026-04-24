@@ -63,20 +63,22 @@ LOGGING = {
             "filename": "/var/log/django.log",
         },
         "console": {
-            "level": "INFO",
+            "level": "WARNING",
             "class": "logging.StreamHandler",
         },
     },
     "root": {
         "handlers": ["console"],
-        "level": "INFO",
+        "level": "WARNING",
     },
     "loggers": {
         "django": {
             "handlers": ["file", "console"],
-            "level": "INFO",
+            "level": "WARNING",
             "propagate": False,
         },
+        # pysaml2 is noisy at INFO (metadata refresh, schema loading).
+        "saml2": {"level": "ERROR", "propagate": True},
     },
 }
 
@@ -105,7 +107,7 @@ if os.environ.get("SENTRY_DSN"):
         environment=os.environ.get("SENTRY_ENVIRONMENT", "production"),
         integrations=[
             DjangoIntegration(),
-            LoggingIntegration(level=logging.INFO, event_level=logging.ERROR),
+            LoggingIntegration(level=logging.WARNING, event_level=logging.ERROR),
         ],
         traces_sample_rate=1.0,
         profiles_sample_rate=1.0,
@@ -122,6 +124,8 @@ CACHES = {
 }
 
 # SAML SP SETTINGS
+# Silence the "django-csp could not be found" warning; Caddy sets CSP upstream.
+SAML_CSP_HANDLER = ""
 SAML_SESSION_COOKIE_NAME = "saml_session"
 SESSION_COOKIE_SECURE = False
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True

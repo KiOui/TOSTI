@@ -118,14 +118,3 @@ jobs:
           echo "timeout waiting for web to become healthy"
           docker logs --tail 100 "$web_cid"
           exit 1
-
-      - name: "Create Sentry release"
-        uses: getsentry/action-release@v3
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_ORG: ${{ vars.SENTRY_ORG }}
-          SENTRY_PROJECT: ${{ vars.SENTRY_PROJECT }}
-        with:
-          version: ${{ github.event.workflow_run.head_sha }}
-          environment: production
-          finalize: true
