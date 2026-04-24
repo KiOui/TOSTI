@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib import admin
+from django.contrib.auth.views import LogoutView
 from django.urls import path, include
 from django.views.generic import RedirectView
 
@@ -74,21 +75,13 @@ urlpatterns = [
     ),
     path(
         "logout/",
-        RedirectView.as_view(
-            url="/saml/logout/" if not settings.DEBUG else "/admin-logout",
-            query_string=True,
-        ),
+        LogoutView.as_view(next_page="/"),
         name="logout",
     ),
     path(
         "admin/login/",
         RedirectView.as_view(url="/login", query_string=True),
         name="login-redirect",
-    ),
-    path(
-        "admin/logout/",
-        RedirectView.as_view(url="/logout", query_string=True),
-        name="logout-redirect",
     ),
     path("admin-login/", admin.site.login, name="admin-login"),
     path("admin-logout/", admin.site.logout, name="admin-logout"),
