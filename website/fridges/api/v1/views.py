@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from fridges.services import user_can_open_fridge, log_access
+from tosti.api.openapi import CustomAutoSchema
 from users.services import get_user_from_identification_token
 
 User = get_user_model()
@@ -13,6 +14,30 @@ User = get_user_model()
 
 class FridgeUnlockAPIView(ClientProtectedResourceMixin, APIView):
     """API view for testing whether a Fridge is allowed to be unlocked."""
+
+    schema = CustomAutoSchema(
+        request_schema={
+            "type": "object",
+            "required": ["user_token"],
+            "properties": {"user_token": {"type": "string"}},
+        },
+        response_schema={
+            "type": "object",
+            "properties": {
+                "user": {"type": "string"},
+                "unlock": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "fridge": {"type": "string"},
+                            "unlock_for": {"type": "integer", "nullable": True},
+                        },
+                    },
+                },
+            },
+        },
+    )
 
     def post(self, request, *args, **kwargs):
         """Process a request to unlock."""

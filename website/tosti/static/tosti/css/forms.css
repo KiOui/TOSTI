@@ -27,11 +27,11 @@ form p span {
 
 form input[type=text], select {
     padding:5px;
-    border:2px solid #ccc;
+    border:2px solid var(--bs-border-color);
 }
 
 form input[type=text]:focus {
-    border-color:#333;
+    border-color: var(--bs-emphasis-color);
 }
 
 form textarea {

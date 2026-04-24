@@ -60,12 +60,12 @@ class YiviStartAPIView(APIView):
 
     def post(self, request, **kwargs):
         """Start a Yivi request."""
-        yivi_client = get_yivi_client()
         disclose = request.data.get("disclose", None)
         if disclose is None:
             return Response(status=400, data="Parameter 'disclose' must be specified.")
 
         try:
+            yivi_client = get_yivi_client()
             response = yivi_client.start_session(
                 {
                     "@context": "https://irma.app/ld/request/disclosure/v2",
@@ -126,10 +126,10 @@ class YiviResultAPIView(APIView):
 
     def get(self, request, **kwargs):
         """Get the result of a Yivi session."""
-        yivi_client = get_yivi_client()
         session_uuid = kwargs.get("pk")
         session = get_object_or_404(Session, pk=session_uuid, user=request.user)
         try:
+            yivi_client = get_yivi_client()
             response = yivi_client.session_result(session.session_token)
         except YiviException as e:
             return Response(status=e.http_status, data=e.msg)

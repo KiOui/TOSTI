@@ -4,6 +4,7 @@ from rest_framework.generics import RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from tosti.api.openapi import CustomAutoSchema
 from tosti.api.permissions import IsAuthenticatedOrTokenHasScopeForMethod
 from users.api.v1.serializers import UserSerializer
 from users.services import get_identification_token
@@ -44,6 +45,12 @@ class IdentificationTokenView(APIView):
     Use this API view to get the identification token of the currently logged-in User.
     """
 
+    schema = CustomAutoSchema(
+        response_schema={
+            "type": "object",
+            "properties": {"token": {"type": "string"}},
+        },
+    )
     permission_classes = [IsAuthenticatedOrTokenHasScopeForMethod]
     required_scopes_for_method = {
         "GET": ["read"],

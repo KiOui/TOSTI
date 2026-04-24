@@ -7,6 +7,11 @@
     --bs-nav-link-color: var(--primary);
     --bs-nav-link-hover-color: var(--primary-hover);
     --bs-nav-link-active-color: var(--primary);
+    /* Share the project's page colors with Bootstrap so tables, cards, and
+       modals inherit the same background as the page instead of Bootstrap's
+       default palette. */
+    --bs-body-bg: var(--background-color);
+    --bs-body-color: var(--text-color);
 }
 .nav-link {
     color: var(--primary);

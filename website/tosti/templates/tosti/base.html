@@ -8,8 +8,17 @@
     </title>
     <script>
         CSRF_TOKEN = "{{ csrf_token }}";
+        // Keep Bootstrap 5.3's data-bs-theme in sync with the OS color scheme so
+        // tables, dropdowns and modals pick up the right palette automatically.
+        (function () {
+            const mq = window.matchMedia("(prefers-color-scheme: dark)");
+            const apply = () => document.documentElement.setAttribute(
+                "data-bs-theme", mq.matches ? "dark" : "light"
+            );
+            apply();
+            mq.addEventListener("change", apply);
+        })();
     </script>
-    {% include 'tosti/analytics.html' %}
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Base CSS -->
@@ -117,34 +126,34 @@
                                         {{ user.get_short_name }}
                                     </a>
                                     <div class="dropdown-menu p-2" aria-labelledby="navbarDropdownMenuLink">
-                                        <a class="nav-link text-dark" href="{% url "users:account" %}">
+                                        <a class="nav-link text-body" href="{% url "users:account" %}">
                                             My account
                                         </a>
                                         <hr class="my-1">
                                         {% render_user_menu %}
                                         <hr class="my-1">
-                                        <a class="nav-link text-dark" href="{% url "documentation" %}">
+                                        <a class="nav-link text-body" href="{% url "documentation" %}">
                                             Documentation
                                         </a>
-                                        <a class="nav-link text-dark" href="{% url "statistics" %}">
+                                        <a class="nav-link text-body" href="{% url "statistics" %}">
                                             Statistics
                                         </a>
-                                        <a class="nav-link text-dark" href="{% url "privacy" %}">
+                                        <a class="nav-link text-body" href="{% url "privacy" %}">
                                             Privacy
                                         </a>
-                                        <a class="nav-link text-dark" href="{% url "users:staff" %}">
+                                        <a class="nav-link text-body" href="{% url "users:staff" %}">
                                             Staff
                                         </a>
                                         <hr class="my-1">
                                         {% if user.is_staff %}
-                                            <a class="nav-link text-dark" href="{% url "admin:index" %}">
+                                            <a class="nav-link text-body" href="{% url "admin:index" %}">
                                                 Site admin
                                             </a>
                                         {% endif %}
                                         <form method="post" action="{% url "logout" %}" class="m-0">
                                             {% csrf_token %}
                                             <button type="submit"
-                                                    class="nav-link text-dark bg-transparent border-0 text-start w-100"
+                                                    class="nav-link text-body bg-transparent border-0 text-start w-100"
                                                     style="font: inherit; text-transform: inherit;">
                                                 Logout
                                             </button>
@@ -203,7 +212,7 @@
             const QR_POPUP_MODAL_ID = "qr-popup";
 
             const headerQrCodeApp = createApp({
-                components: { QrcodeVue },
+                components: { QrcodeVue: QrcodeVue.default },
                 data() {
                     return {
                         margin: 2,
@@ -279,7 +288,7 @@
 {% block footer %}
 <footer class="mt-auto footer">
     <div class="container text-center">
-        <p class="text-muted mb-3" style="font-size: 1em;">
+        <p class="text-body-secondary mb-3" style="font-size: 1em;">
             {% autoescape off %}
             {{ FOOTER_CREDITS_TEXT }}
             {% endautoescape %}

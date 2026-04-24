@@ -1,52 +1,53 @@
-from oauth2_provider.scopes import get_scopes_backend
-from rest_framework import serializers
-from rest_framework.fields import empty
-from rest_framework.reverse import reverse
-from rest_framework.schemas.openapi import SchemaGenerator, AutoSchema
+"""
+Backwards-compatible schema helpers for the TOSTI API.
 
-from tosti.api.serializers import WritableModelSerializer
+The project historically used DRF's built-in OpenAPI generator with a custom
+``CustomAutoSchema`` class supporting ``manual_operations``, ``request_schema``,
+``response_schema`` and ``manual_field_mappings`` kwargs.
+
+DRF's generator was dropped in favour of drf-spectacular. This module re-exports
+``CustomAutoSchema`` so the existing view declarations (``schema = CustomAutoSchema(...)``)
+keep working: the kwargs are translated into drf-spectacular's hook points.
+"""
+
+from drf_spectacular.openapi import AutoSchema
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import OpenApiParameter
+
+_LOCATION_MAP = {
+    "query": OpenApiParameter.QUERY,
+    "path": OpenApiParameter.PATH,
+    "header": OpenApiParameter.HEADER,
+    "cookie": OpenApiParameter.COOKIE,
+}
+
+_TYPE_MAP = {
+    "string": OpenApiTypes.STR,
+    "integer": OpenApiTypes.INT,
+    "number": OpenApiTypes.FLOAT,
+    "boolean": OpenApiTypes.BOOL,
+    "array": OpenApiTypes.STR,  # fallback; use OpenApiParameter directly for complex types
+    "object": OpenApiTypes.OBJECT,
+}
 
 
-class OpenAPISchemaGenerator(SchemaGenerator):
-    """Open API Schema Generator."""
-
-    def has_view_permissions(self, path, method, view):
-        """
-        Check if a view has permissions to be accessed.
-
-        This method has been overridden as some of the views require an object permission. If an object is not defined
-        an AttributeError will be thrown.
-        """
-        try:
-            return super().has_view_permissions(path, method, view)
-        except AttributeError, ValueError:
-            return True
-
-    def get_schema(self, request=None, public=False):
-        """Get schema."""
-        schema = super().get_schema(request, public)
-        if "components" in schema:
-            schema["components"]["securitySchemes"] = {
-                "oauth2": {
-                    "type": "oauth2",
-                    "description": "OAuth2",
-                    "flows": {
-                        "implicit": {
-                            "authorizationUrl": reverse("oauth2_provider:authorize"),
-                            "scopes": get_scopes_backend().get_all_scopes(),
-                        }
-                    },
-                }
-            }
-        return schema
+def _to_open_api_parameter(raw):
+    """Convert a legacy manual-operation dict to an OpenApiParameter."""
+    if isinstance(raw, OpenApiParameter):
+        return raw
+    schema = raw.get("schema", {}) if isinstance(raw.get("schema"), dict) else {}
+    openapi_type = _TYPE_MAP.get(schema.get("type", "string"), OpenApiTypes.STR)
+    return OpenApiParameter(
+        name=raw["name"],
+        type=openapi_type,
+        location=_LOCATION_MAP.get(raw.get("in", "query"), OpenApiParameter.QUERY),
+        required=raw.get("required", False),
+        description=raw.get("description", ""),
+    )
 
 
 class CustomAutoSchema(AutoSchema):
-    """
-    Custom Auto Schema.
-
-    Used for creating customized operations on top of the AutoSchema class.
-    """
+    """drf-spectacular-backed compatibility wrapper for the old schema API."""
 
     def __init__(
         self,
@@ -57,123 +58,30 @@ class CustomAutoSchema(AutoSchema):
         *args,
         **kwargs,
     ):
-        """
-        Initialize CustomAutoSchema.
-
-        :param manual_operations: custom manual operation fields
-        :param request_schema: optional custom request schema
-        :param response_schema: optional custom response schema
-        :param args: arguments
-        :param kwargs: keyword arguments
-        """
         super().__init__(*args, **kwargs)
-        self.manual_operations = [] if manual_operations is None else manual_operations
-        self.manual_field_mappings = (
-            {} if manual_field_mappings is None else manual_field_mappings
-        )
-        self.request_schema = request_schema
-        self.response_schema = response_schema
+        self._manual_operations = manual_operations or []
+        self._request_schema = request_schema
+        self._response_schema = response_schema
+        # manual_field_mappings was used with WritableModelSerializer to override
+        # individual field schemas. drf-spectacular doesn't have a direct equivalent;
+        # the simplest forward path is to apply these mappings in a component hook.
+        self._manual_field_mappings = manual_field_mappings or {}
 
-    def get_operation(self, path, method):
-        """Add manual fields to operation."""
-        op = super().get_operation(path, method)
-        for manual_field in self.manual_operations:
-            op["parameters"].append(manual_field)
+    def get_override_parameters(self):
+        """Surface legacy ``manual_operations`` as override parameters."""
+        return [_to_open_api_parameter(p) for p in self._manual_operations]
 
-        if self.view and hasattr(self.view, "required_scopes"):
-            op["security"] = {"oauth2": self.view.required_scopes}
-        elif self.view and hasattr(self.view, "required_scopes_for_method"):
-            op["security"] = {"oauth2": self.view.required_scopes_for_method[method]}
+    def get_request_serializer(self):
+        """Return a raw schema dict so drf-spectacular uses it verbatim."""
+        if self._request_schema is not None:
+            # drf-spectacular expects dict keys to be media types; wrap accordingly.
+            return {"application/json": self._request_schema}
+        return super().get_request_serializer()
 
-        return op
-
-    def get_request_body(self, path, method):
-        """Get custom request body."""
-        if method not in ("PUT", "PATCH", "POST"):
-            return {}
-
-        self.request_media_types = self.map_parsers(path, method)
-
-        if self.request_schema is not None:
-            return {
-                "content": {
-                    ct: {"schema": self.request_schema}
-                    for ct in self.request_media_types
-                }
-            }
-
-        serializer = self.get_request_serializer(path, method)
-
-        if not isinstance(serializer, WritableModelSerializer):
-            return super().get_request_body(path, method)
-
-        content = self.map_writable_model_serializer(serializer)
-        item_schema = content
-
-        return {
-            "content": {ct: {"schema": item_schema} for ct in self.request_media_types}
-        }
-
-    def map_writable_model_serializer(self, serializer):
-        """Map a WritableModelSerializer."""
-        required = []
-        properties = {}
-
-        for field in serializer.get_writable_fields():
-            if isinstance(field, serializers.HiddenField):
-                continue
-
-            if field.required:
-                required.append(field.field_name)
-
-            schema = self.map_field(field)
-            if field.write_only:
-                schema["writeOnly"] = True
-            if field.allow_null:
-                schema["nullable"] = True
-            if (
-                field.default is not None
-                and field.default != empty
-                and not callable(field.default)
-            ):
-                schema["default"] = field.default
-            if field.help_text:
-                schema["description"] = str(field.help_text)
-            self.map_field_validators(field, schema)
-
-            properties[field.field_name] = schema
-
-        result = {"type": "object", "properties": properties}
-        if required:
-            result["required"] = required
-
-        return result
-
-    def get_responses(self, path, method):
-        """Get custom responses."""
-        if self.response_schema is None:
-            return super().get_responses(path, method)
-
-        if method == "DELETE":
-            return {"204": {"description": ""}}
-
-        self.response_media_types = self.map_renderers(path, method)
-
-        status_code = "201" if method == "POST" else "200"
-
-        return {
-            status_code: {
-                "content": {
-                    ct: {"schema": self.response_schema}
-                    for ct in self.response_media_types
-                },
-                "description": "",
-            }
-        }
-
-    def map_field(self, field):
-        """Get custom field mappings."""
-        if field.field_name in self.manual_field_mappings.keys():
-            return self.manual_field_mappings[field.field_name]
-        else:
-            return super().map_field(field)
+    def get_response_serializers(self):
+        """Return a raw schema dict so drf-spectacular uses it verbatim."""
+        if self._response_schema is not None:
+            # drf-spectacular expects status codes as keys here; use 200/201 defaults.
+            status_code = "201" if self.method == "POST" else "200"
+            return {status_code: self._response_schema}
+        return super().get_response_serializers()

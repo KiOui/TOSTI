@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     "guardian",
     "rest_framework",
     "django_filters",
+    "drf_spectacular",
     "rangefilter",
     "cron",
     "announcements",
@@ -41,6 +42,7 @@ INSTALLED_APPS = [
     "status_screen",
     "oauth2_provider",
     "corsheaders",
+    "csp",
     "yivi",
     "age",
     "fridges",
@@ -71,6 +73,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.contrib.admindocs.middleware.XViewMiddleware",
     "djangosaml2.middleware.SamlSessionMiddleware",
+    "csp.middleware.CSPMiddleware",
     "announcements.middleware.ClosedAnnouncementsMiddleware",
     "announcements.middleware.AppAnnouncementMiddleware",
     "tosti.middleware.RequestMetricsMiddleware",
@@ -89,7 +92,6 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "tosti.context_processors.google_analytics",
                 "tosti.context_processors.footer_credits",
                 "tosti.context_processors.minimum_registered_age",
             ],
@@ -144,7 +146,22 @@ REST_FRAMEWORK = {
     ),
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.URLPathVersioning",
-    "DEFAULT_SCHEMA_CLASS": "tosti.api.openapi.CustomAutoSchema",
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+# OpenAPI schema (drf-spectacular)
+SPECTACULAR_SETTINGS = {
+    "TITLE": "TOSTI API",
+    "DESCRIPTION": "Tartarus Order System for Take-away Items",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "SCHEMA_PATH_PREFIX": r"/api/v[0-9]+",
+    # OAuth2 settings for the django-oauth-toolkit extension.
+    "OAUTH2_FLOWS": ["implicit"],
+    "OAUTH2_AUTHORIZATION_URL": "/oauth/authorize/",
+    "OAUTH2_TOKEN_URL": "/oauth/token/",
+    "OAUTH2_REFRESH_URL": None,
+    "OAUTH2_SCOPES": None,  # Auto-populated from oauth2_provider's scope backend.
 }
 
 # CORS
@@ -179,6 +196,26 @@ MESSAGE_TAGS = {
     messages.SUCCESS: "alert-success success",
     messages.WARNING: "alert-warning warning",
     messages.ERROR: "alert-danger danger",
+}
+
+# Content-Security-Policy. Spotify album art + a couple of CDN scripts.
+# Inline scripts/styles are allowed because templates use onclick= handlers
+# and inline <script> blocks; migrating to nonces is a separate project.
+CONTENT_SECURITY_POLICY = {
+    "DIRECTIVES": {
+        "default-src": ["'self'"],
+        # Vue's global build compiles in-template expressions via new Function(),
+        # which needs 'unsafe-eval'. Switching to the runtime-only build would
+        # require pre-compiled render functions (i.e. a build step).
+        "script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+        "style-src": ["'self'", "'unsafe-inline'"],
+        "font-src": ["'self'", "data:"],
+        "img-src": ["'self'", "data:", "https://i.scdn.co"],
+        "connect-src": ["'self'"],
+        "frame-ancestors": ["'none'"],
+        "base-uri": ["'self'"],
+        "form-action": ["'self'"],
+    },
 }
 
 CONSTANCE_BACKEND = "constance.backends.database.DatabaseBackend"

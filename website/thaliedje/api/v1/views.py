@@ -72,6 +72,25 @@ class PlayerRequestsAPIView(ListAPIView):
 class PlayerQueueAPIView(APIView):
     """Get the current player's queue."""
 
+    schema = CustomAutoSchema(
+        response_schema={
+            "type": "array",
+            "nullable": True,
+            "items": {
+                "type": "object",
+                "properties": {
+                    "track_id": {"type": "string"},
+                    "track_name": {"type": "string"},
+                    "track_artists": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                    },
+                    "duration_ms": {"type": "integer"},
+                },
+            },
+        },
+    )
+
     def get(self, request, **kwargs):
         """Get the player's current queue."""
         player = self.kwargs.get("player")
@@ -93,7 +112,7 @@ class PlayerTrackSearchAPIView(APIView):
                 "name": "maximum",
                 "in": "query",
                 "required": False,
-                "schema": {"type": "int"},
+                "schema": {"type": "integer"},
             },
         ],
         response_schema={
@@ -160,7 +179,8 @@ class PlayerTrackAddAPIView(APIView):
         request_schema={
             "type": "object",
             "properties": {"id": {"type": "string", "example": "string"}},
-        }
+        },
+        response_schema={"type": "object"},
     )
     permission_classes = [IsAuthenticatedOrTokenHasScope]
     required_scopes = ["thaliedje:request"]
@@ -377,7 +397,7 @@ class PlayerShuffleAPIView(APIView):
     schema = CustomAutoSchema(
         request_schema={
             "type": "object",
-            "properties": {"state": {"type": "bool", "example": "true"}},
+            "properties": {"state": {"type": "boolean", "example": True}},
         }
     )
     serializer_class = PlayerSerializer

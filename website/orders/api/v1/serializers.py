@@ -1,4 +1,5 @@
 from django.core.exceptions import ValidationError
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from orders import models
@@ -135,6 +136,7 @@ class ShiftSerializer(WritableModelSerializer):
 
     assignees = UserSerializer(many=True, read_only=False)
     amount_of_orders = serializers.SerializerMethodField()
+    is_active = serializers.BooleanField(read_only=True)
     venue = OrderVenueSerializer(many=False, read_only=False)
 
     def __init__(self, *args, **kwargs):
@@ -144,6 +146,7 @@ class ShiftSerializer(WritableModelSerializer):
             # If we are updating.
             self.fields.get("venue").read_only = True
 
+    @extend_schema_field(serializers.IntegerField())
     def get_amount_of_orders(self, instance):
         """Get the amount of orders in the shift."""
         return instance.orders.filter(type=Order.TYPE_ORDERED).count()

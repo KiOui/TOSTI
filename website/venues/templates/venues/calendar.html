@@ -35,12 +35,11 @@
 {% endblock %}
 
 {% block styles %}
-    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/main.min.css' rel='stylesheet' />
     <link href='{% static 'venues/css/calendar.css' %}' rel='stylesheet' />
 {% endblock %}
 
 {% block js %}
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/main.min.js"></script>
+    <script src="{% static 'venues/js/fullcalendar.index.global.min.js' %}"></script>
     <script>
         let calendar = null;
         document.addEventListener('DOMContentLoaded', async function () {

@@ -1,7 +1,5 @@
 from django.urls import path, include
-from rest_framework.schemas import get_schema_view
-
-from tosti.api.openapi import OpenAPISchemaGenerator
+from drf_spectacular.views import SpectacularAPIView
 
 app_name = "tosti"
 
@@ -14,15 +12,5 @@ urlpatterns = [
     path("users/", include("users.api.v1.urls")),
     path("yivi/", include("yivi.api.v1.urls")),
     path("fridges/", include("fridges.api.v1.urls")),
-    path(
-        "schema",
-        get_schema_view(
-            title="API v1",
-            url="/api/v1/",
-            version=1,
-            urlconf="tosti.api.v1.urls",
-            generator_class=OpenAPISchemaGenerator,
-        ),
-        name="schema-v1",
-    ),
+    path("schema", SpectacularAPIView.as_view(api_version="v1"), name="schema-v1"),
 ]

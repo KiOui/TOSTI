@@ -115,6 +115,56 @@ The application will be available at `http://localhost:8000`.
 - Use `/admin-login` in production for local authentication
 - API documentation is available at `/api/docs`
 
+### Vendored frontend libraries
+
+All third-party JS/CSS is vendored in-repo — no CDN dependencies at runtime. To bump versions:
+
+```bash
+# Vue (use the production build only — the dev build emits a runtime warning)
+curl -sfL https://unpkg.com/vue@<X.Y.Z>/dist/vue.global.prod.js \
+  -o website/tosti/static/tosti/js/vue.global.prod.js
+
+# qrcode.vue
+curl -sfL https://unpkg.com/qrcode.vue@<X.Y.Z>/dist/qrcode.vue.browser.min.js \
+  -o website/tosti/static/tosti/js/qrcode.vue.browser.min.js
+
+# Chart.js (used on the statistics page; the bundle references its sourcemap)
+curl -sfL https://cdn.jsdelivr.net/npm/chart.js@<X.Y.Z>/dist/chart.umd.min.js \
+  -o website/tosti/static/tosti/js/chart.umd.min.js
+curl -sfL https://cdn.jsdelivr.net/npm/chart.js@<X.Y.Z>/dist/chart.umd.min.js.map \
+  -o website/tosti/static/tosti/js/chart.umd.min.js.map
+
+# FullCalendar 6+ — CSS is inlined into the JS, no separate stylesheet
+curl -sfL https://cdn.jsdelivr.net/npm/fullcalendar@<X.Y.Z>/index.global.min.js \
+  -o website/venues/static/venues/js/fullcalendar.index.global.min.js
+
+# Bootstrap (grab both minified and unminified + source maps)
+BS=<X.Y.Z>
+for f in js/bootstrap.bundle.js js/bootstrap.bundle.js.map \
+         js/bootstrap.bundle.min.js js/bootstrap.bundle.min.js.map \
+         css/bootstrap.css css/bootstrap.css.map \
+         css/bootstrap.min.css css/bootstrap.min.css.map; do
+  curl -sfL "https://cdn.jsdelivr.net/npm/bootstrap@$BS/dist/$f" \
+    -o "website/tosti/static/tosti/$f"
+done
+
+# Swagger UI (used on /api/docs)
+SW=<X.Y.Z>
+for f in swagger-ui-bundle.js swagger-ui-bundle.js.map \
+         swagger-ui-standalone-preset.js swagger-ui-standalone-preset.js.map; do
+  curl -sfL "https://cdn.jsdelivr.net/npm/swagger-ui-dist@$SW/$f" \
+    -o "website/tosti/static/tosti/js/$f"
+done
+for f in swagger-ui.css swagger-ui.css.map; do
+  curl -sfL "https://cdn.jsdelivr.net/npm/swagger-ui-dist@$SW/$f" \
+    -o "website/tosti/static/tosti/css/$f"
+done
+```
+
+The Neucha font is also self-hosted under `website/tosti/static/tosti/fonts/`.
+
+Verify Vue: `head -2 website/tosti/static/tosti/js/vue.global.prod.js` should print the expected version, and the file should be a single-line minified bundle (not ~16 000 lines of source — that would be the dev build in disguise).
+
 ## 🐳 Production Deployment
 
 TOSTI runs in production as a Docker Compose stack on a VM. Deployments are automated: every push to `master` that passes CI (test + lint + image build) is deployed by `.github/workflows/deploy.yaml`.

@@ -124,8 +124,6 @@ CACHES = {
 }
 
 # SAML SP SETTINGS
-# Silence the "django-csp could not be found" warning; Caddy sets CSP upstream.
-SAML_CSP_HANDLER = ""
 SAML_SESSION_COOKIE_NAME = "saml_session"
 SESSION_COOKIE_SECURE = False
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
