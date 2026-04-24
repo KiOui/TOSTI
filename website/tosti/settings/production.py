@@ -148,12 +148,12 @@ SAML_CONFIG = {
         ],
     },
     "debug": 1,
-    "key_file": os.path.join(BASE_DIR, "tosti", "saml", "private.key"),
-    "cert_file": os.path.join(BASE_DIR, "tosti", "saml", "public.cert"),
+    "key_file": os.environ.get("SAML_KEY_FILE", "/run/secrets/saml_private_key"),
+    "cert_file": os.environ.get("SAML_CERT_FILE", "/run/secrets/saml_public_cert"),
     "encryption_keypairs": [
         {
-            "key_file": os.path.join(BASE_DIR, "tosti", "saml", "private.key"),
-            "cert_file": os.path.join(BASE_DIR, "tosti", "saml", "public.cert"),
+            "key_file": os.environ.get("SAML_KEY_FILE", "/run/secrets/saml_private_key"),
+            "cert_file": os.environ.get("SAML_CERT_FILE", "/run/secrets/saml_public_cert"),
         }
     ],
     "contact_person": [

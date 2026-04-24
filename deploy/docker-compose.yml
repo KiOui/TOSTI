@@ -119,8 +119,11 @@ services:
     volumes:
       - media:/media
       - cache:/app/cache
-      - ./saml/private.key:/app/tosti/saml/private.key:ro
-      - ./saml/public.crt:/app/tosti/saml/public.cert:ro
+    secrets:
+      - source: saml_private_key
+        mode: 0444
+      - source: saml_public_cert
+        mode: 0444
     environment: *django-web-env
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://127.0.0.1/ready"]
@@ -162,3 +165,9 @@ volumes:
   cache:
   caddy-data:
   caddy-config:
+
+secrets:
+  saml_private_key:
+    file: ./saml/private.key
+  saml_public_cert:
+    file: ./saml/public.crt
