@@ -69,15 +69,31 @@ Runs directly on the VM via the self-hosted runner:
 5. Runs `docker compose pull && docker compose up -d --remove-orphans`.
 6. Polls `docker inspect` until the `web` container reports `healthy`; fails the job if it doesn't within ~5 minutes.
 
+## Releases and image tags
+
+The CI image gets tagged by source:
+
+| Source | Tags applied |
+| --- | --- |
+| Push to `master` | `sha-<40-char-sha>`, `latest` |
+| Published release `v1.2.3` | `sha-<40-char-sha>`, `1.2.3`, `1.2`, `1`, `latest` (unless pre-release) |
+| Published pre-release `v1.2.3-rc1` | `sha-<40-char-sha>`, `1.2.3-rc1`, `1.2`, `1` (no `latest`) |
+
+To cut a release: on GitHub → Releases → "Draft a new release" → create a new tag `vX.Y.Z` targeting `master` → click "Generate release notes" → publish. CI picks up the `release: published` event, runs test + lint, and pushes the image with the semver tags. The `:latest` tag moves forward too, so the next auto-deploy picks up the released build.
+
+Deploys still trigger from master pushes only — releases don't trigger an extra deploy, they just add stable tags for rollback.
+
 ## Rollback
 
-Every master commit is published to `ghcr.io/kioui/tosti:sha-<commit-sha>` (full 40-char SHA) in addition to `:latest`. To roll back:
+Every build is published with an immutable `sha-<commit-sha>` tag, and every release adds semver tags (`1.2.3`, `1.2`, `1`). To roll back:
 
 ```bash
 ssh jdoesburg@<vm>
 sudo -iu deploy-tosti
 cd /opt/tosti
-# Edit docker-compose.yml to pin the previous image, e.g.:
+# Edit docker-compose.yml to pin a previous image. Prefer a semver tag if available:
+#   image: ghcr.io/kioui/tosti:1.2.3
+# Or an exact commit:
 #   image: ghcr.io/kioui/tosti:sha-abc123...
 docker compose up -d
 ```

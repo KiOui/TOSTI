@@ -7,11 +7,13 @@ on:
     branches: ["master"]
   pull_request:
     branches: ["master"]
+  release:
+    types: [published]
 
 concurrency:
   group: ci-${{ github.ref }}
-  # Cancel superseded PR runs; never cancel master runs (they publish images).
-  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+  # Cancel superseded PR runs; never cancel master or release runs (they publish images).
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
@@ -90,7 +92,8 @@ jobs:
   build-image:
     name: "Build & push image"
     needs: [test, lint]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    # Build+push on master pushes and on published releases; skip on PRs.
+    if: github.event_name == 'push' || github.event_name == 'release'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -108,9 +111,16 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/kioui/tosti
+          # Tag strategy:
+          #   master push   → sha-<sha>, latest
+          #   release vX.Y.Z → sha-<sha>, X.Y.Z, X.Y, X (and "latest" only on non-prerelease)
           tags: |
             type=sha,format=long
             type=raw,value=latest,enable={{is_default_branch}}
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=raw,value=latest,enable=${{ github.event_name == 'release' && github.event.release.prerelease == false }}
 
       - uses: docker/build-push-action@v6
         with:
