@@ -120,10 +120,8 @@ services:
       - media:/media
       - cache:/app/cache
     secrets:
-      - source: saml_private_key
-        mode: 0444
-      - source: saml_public_cert
-        mode: 0444
+      - saml_private_key
+      - saml_public_cert
     environment: *django-web-env
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://127.0.0.1/ready"]

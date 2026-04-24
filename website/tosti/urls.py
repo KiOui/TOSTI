@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.contrib import admin
-from django.contrib.auth.views import LogoutView
 from django.urls import path, include
 from django.views.generic import RedirectView
 
@@ -13,6 +12,7 @@ from .views import (
     DocumentationView,
     ExplainerView,
     AfterLoginRedirectView,
+    LogoutView,
     StatisticsView,
 )
 
@@ -73,11 +73,7 @@ urlpatterns = [
         ),
         name="login",
     ),
-    path(
-        "logout/",
-        LogoutView.as_view(next_page="/"),
-        name="logout",
-    ),
+    path("logout/", LogoutView.as_view(), name="logout"),
     path(
         "admin/login/",
         RedirectView.as_view(url="/login", query_string=True),

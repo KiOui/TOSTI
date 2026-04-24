@@ -141,9 +141,11 @@
                                                 Site admin
                                             </a>
                                         {% endif %}
-                                        <form method="post" action="{% url "logout" %}" class="d-inline">
+                                        <form method="post" action="{% url "logout" %}" class="m-0">
                                             {% csrf_token %}
-                                            <button type="submit" class="nav-link text-dark btn btn-link p-0">
+                                            <button type="submit"
+                                                    class="nav-link text-dark bg-transparent border-0 text-start w-100"
+                                                    style="font: inherit; text-transform: none;">
                                                 Logout
                                             </button>
                                         </form>

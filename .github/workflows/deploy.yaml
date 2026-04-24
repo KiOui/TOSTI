@@ -40,10 +40,10 @@ jobs:
             exit 1
           fi
           mkdir -p "$DEPLOY_DIR/saml"
-          umask 077
           printf '%s' "$SAML_PRIVATE_KEY" > "$DEPLOY_DIR/saml/private.key"
           printf '%s' "$SAML_PUBLIC_CERT" > "$DEPLOY_DIR/saml/public.crt"
-          chmod 600 "$DEPLOY_DIR/saml/private.key"
+          chmod 755 "$DEPLOY_DIR/saml"
+          chmod 644 "$DEPLOY_DIR/saml/private.key"
           chmod 644 "$DEPLOY_DIR/saml/public.crt"
 
       - name: "Copy compose + Caddyfile into deploy dir"
@@ -123,8 +123,8 @@ jobs:
         uses: getsentry/action-release@v3
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+          SENTRY_ORG: ${{ vars.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ vars.SENTRY_PROJECT }}
         with:
           version: ${{ github.event.workflow_run.head_sha }}
           environment: production

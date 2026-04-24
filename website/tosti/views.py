@@ -1,16 +1,31 @@
 from django.apps import apps
 from django.contrib import messages
+from django.contrib.auth import logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
-from django.http import HttpResponseNotFound
+from django.http import HttpResponseNotFound, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
 from django.urls import reverse
+from django.views import View
+from django.views.decorators.csrf import csrf_protect
 from django.views.generic import TemplateView, RedirectView
+from django.utils.decorators import method_decorator
 from oauth2_provider.generators import generate_client_secret
 from oauth2_provider.models import Application
 
 from tosti.forms import OAuthCredentialsForm
+
+
+@method_decorator(csrf_protect, name="dispatch")
+class LogoutView(View):
+    """Log the user out and redirect to the homepage."""
+
+    http_method_names = ["post"]
+
+    def post(self, request, *args, **kwargs):
+        logout(request)
+        return HttpResponseRedirect("/")
 
 
 class IndexView(TemplateView):
