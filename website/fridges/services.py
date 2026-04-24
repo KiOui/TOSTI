@@ -4,6 +4,7 @@ from django.utils import timezone
 
 from age.services import verify_minimum_age
 from fridges.models import AccessLog
+from tosti.metrics import emit as emit_metric
 
 
 def user_is_blacklisted(user, fridge):
@@ -27,6 +28,11 @@ def user_can_open_fridge(user, fridge):
     if fridge.minimum_age is not None and not verify_minimum_age(
         user, fridge.minimum_age
     ):
+        emit_metric(
+            "fridge_age_check_failed",
+            fridge=str(fridge),
+            minimum_age=fridge.minimum_age,
+        )
         return False, None
 
     opening_hours = fridge.current_opening_hours
@@ -52,3 +58,4 @@ def user_can_open_fridge(user, fridge):
 def log_access(user, fridge):
     """Log a user opening a fridge."""
     AccessLog.objects.create(user=user, fridge=fridge)
+    emit_metric("fridge_opened", fridge=str(fridge))

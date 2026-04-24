@@ -6,3 +6,7 @@ class YiviConfig(AppConfig):
 
     default_auto_field = "django.db.models.BigAutoField"
     name = "yivi"
+
+    def ready(self):
+        """Register signals."""
+        from yivi import signals  # noqa

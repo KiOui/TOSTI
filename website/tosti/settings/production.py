@@ -3,8 +3,11 @@ from .base import *
 import saml2
 from saml2 import saml, xmldsig
 
+import logging
+
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.logging import LoggingIntegration
 
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
@@ -59,12 +62,20 @@ LOGGING = {
             "class": "logging.FileHandler",
             "filename": "/var/log/django.log",
         },
+        "console": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
     },
     "loggers": {
         "django": {
-            "handlers": ["file"],
-            "level": "ERROR",
-            "propagate": True,
+            "handlers": ["file", "console"],
+            "level": "INFO",
+            "propagate": False,
         },
     },
 }
@@ -90,9 +101,16 @@ MARIETJE_CACHE_PATH = "/app/cache/marietjecache"
 if os.environ.get("SENTRY_DSN"):
     sentry_sdk.init(
         dsn=os.environ.get("SENTRY_DSN"),
-        integrations=[DjangoIntegration()],
+        release=os.environ.get("SENTRY_RELEASE") or None,
+        environment=os.environ.get("SENTRY_ENVIRONMENT", "production"),
+        integrations=[
+            DjangoIntegration(),
+            LoggingIntegration(level=logging.INFO, event_level=logging.ERROR),
+        ],
         traces_sample_rate=1.0,
+        profiles_sample_rate=1.0,
         send_default_pii=True,
+        enable_logs=True,
     )
 
 # CACHES

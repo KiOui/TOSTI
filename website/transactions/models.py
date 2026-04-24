@@ -5,6 +5,8 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models, IntegrityError
 
+from tosti.metrics import emit as emit_metric
+
 User = get_user_model()
 
 
@@ -82,7 +84,8 @@ class Transaction(models.Model):
 
     def save(self, *args, **kwargs):
         """Save the transaction maintaining integrity of the account history."""
-        if not self._state.adding:
+        is_new = self._state.adding
+        if not is_new:
             old_obj = Transaction.objects.get(pk=self.pk)
             if (
                 old_obj.account != self.account
@@ -135,6 +138,15 @@ class Transaction(models.Model):
             self._previous_transaction = previous_transaction
 
         super().save(*args, **kwargs)
+
+        if is_new:
+            if self.amount > 0:
+                direction = "credit"
+            elif self.amount < 0:
+                direction = "debit"
+            else:
+                direction = "zero"
+            emit_metric("transaction_posted", direction=direction)
 
     def __str__(self):
         """Return the string representation of the transaction."""

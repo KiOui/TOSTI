@@ -9,6 +9,7 @@ from thaliedje.models import (
     SpotifyQueueItem,
     SpotifyTrack,
 )
+from tosti.metrics import emit as emit_metric
 
 User = get_user_model()
 
@@ -21,6 +22,7 @@ def request_song(player, user, track_id):
     track_info = player.request_song(track_id)
 
     queued_track = SpotifyQueueItem.queue_track(track_info, player, user)
+    emit_metric("song_requested", venue=str(player))
     return queued_track
 
 

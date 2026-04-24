@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from tosti.api.openapi import CustomAutoSchema
+from tosti.metrics import emit as emit_metric
 from yivi import signals
 from yivi.models import Session
 from yivi.services import get_yivi_client
@@ -76,6 +77,7 @@ class YiviStartAPIView(APIView):
 
         token = response["token"]
         session = Session.objects.create(session_token=token, user=request.user)
+        emit_metric("yivi_session_started")
         response["token"] = session.id
         return Response(data=response)
 

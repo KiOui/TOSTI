@@ -1,12 +1,26 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.db.models.signals import post_save, m2m_changed
 from django.dispatch import receiver
 
+from tosti.metrics import emit as emit_metric
 from users.models import GroupSettings
 from users.services import update_staff_status
 from django.contrib.auth.models import Group
 
 User = get_user_model()
+
+
+@receiver(user_logged_in)
+def on_user_logged_in(sender, request, user, **kwargs):
+    """Emit a metric when a user logs in."""
+    emit_metric("user_logged_in", backend=getattr(user, "backend", None))
+
+
+@receiver(user_logged_out)
+def on_user_logged_out(sender, request, user, **kwargs):
+    """Emit a metric when a user logs out."""
+    emit_metric("user_logged_out")
 
 
 @receiver(post_save, sender=GroupSettings)

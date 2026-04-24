@@ -33,6 +33,7 @@ from borrel.services import (
     generate_beer_per_association_per_borrel,
     generate_beer_consumption_over_time,
 )
+from tosti.metrics import emit as emit_metric
 from tosti.utils import log_action
 from venues.services import send_reservation_request_email
 
@@ -192,6 +193,13 @@ class BorrelReservationCreateView(
 
             log_action(
                 self.request.user, obj, ADDITION, "Created reservation via website."
+            )
+            emit_metric(
+                "borrel_reservation_created",
+                association=(
+                    str(obj.association) if getattr(obj, "association", None) else None
+                ),
+                has_venue_reservation=obj.venue_reservation is not None,
             )
             messages.add_message(
                 self.request,
@@ -482,6 +490,12 @@ class BorrelReservationSubmitView(
 
             log_action(
                 self.request.user, obj, CHANGE, "Submitted reservation via website."
+            )
+            emit_metric(
+                "borrel_reservation_submitted",
+                association=(
+                    str(obj.association) if getattr(obj, "association", None) else None
+                ),
             )
             messages.add_message(
                 self.request, messages.SUCCESS, "Your borrel reservation is submitted."

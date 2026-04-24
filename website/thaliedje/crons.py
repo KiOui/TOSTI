@@ -2,6 +2,7 @@ from constance import config
 from cron.core import CronJobBase, Schedule
 
 from thaliedje.models import SpotifyPlayer
+from tosti.metrics import emit as emit_metric
 
 WEEKDAYS = [0, 1, 2, 3, 4]
 WEEKENDS = [5, 6]
@@ -19,12 +20,16 @@ class StopMusicCronJob(CronJobBase):
 
     def do(self):
         """Stop the music."""
+        stopped = 0
+        failed = 0
         for player in SpotifyPlayer.objects.all():
             try:
                 player.pause()
+                stopped += 1
             except Exception:
                 # Ignore errors when stopping the music
-                pass
+                failed += 1
+        emit_metric("cron_stop_music_run", stopped=stopped, failed=failed)
 
 
 class StartMusicCronJob(CronJobBase):
@@ -42,8 +47,11 @@ class StartMusicCronJob(CronJobBase):
     def do(self):
         """Start the music."""
         if config.THALIEDJE_HOLIDAY_ACTIVE:
+            emit_metric("cron_start_music_run", skipped_reason="holiday")
             return
 
+        started = 0
+        failed = 0
         for player in SpotifyPlayer.objects.all():
             try:
                 player.repeat = "context"
@@ -56,6 +64,8 @@ class StartMusicCronJob(CronJobBase):
                     player.start_playing(config.THALIEDJE_START_PLAYER_URI)
                 else:
                     player.start()
+                started += 1
             except Exception:
                 # Ignore errors when starting the music
-                pass
+                failed += 1
+        emit_metric("cron_start_music_run", started=started, failed=failed)

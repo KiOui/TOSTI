@@ -16,6 +16,7 @@ from django.views.generic import (
 )
 from django_ical.views import ICalFeed
 
+from tosti.metrics import emit as emit_metric
 from tosti.utils import log_action
 from venues import services
 from venues.forms import ReservationForm, ReservationUpdateForm, ReservationDisabledForm
@@ -61,6 +62,10 @@ class RequestReservationView(FormView):
         instance.save()
         log_action(
             self.request.user, instance, ADDITION, "Created reservation via website."
+        )
+        emit_metric(
+            "venue_reservation_created",
+            venue=str(instance.venue) if getattr(instance, "venue", None) else None,
         )
         messages.success(self.request, "Venue reservation request added successfully.")
         services.send_reservation_request_email(instance)

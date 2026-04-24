@@ -3,6 +3,7 @@ from datetime import timedelta
 from django.utils import timezone
 from cron.core import CronJobBase, Schedule
 
+from tosti.metrics import emit as emit_metric
 from yivi import models
 
 
@@ -19,4 +20,7 @@ class CleanupSessionCronJob(CronJobBase):
     def do(self):
         """Cleanup sessions."""
         cleanup_before_date = timezone.now() - timedelta(days=1)
-        models.Session.objects.filter(created_at__lt=cleanup_before_date).delete()
+        deleted, _ = models.Session.objects.filter(
+            created_at__lt=cleanup_before_date
+        ).delete()
+        emit_metric("cron_yivi_cleanup_sessions_run", deleted=deleted)

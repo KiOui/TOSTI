@@ -18,7 +18,7 @@ The deploy runs on a **self-hosted GitHub Actions runner installed on the VM its
 - A `github-runner` system user exists, in groups `docker` and `deploy-tosti` so it can run `docker compose` and write to `/opt/tosti/`.
 - Docker Engine + Compose plugin installed.
 - The self-hosted runner is installed under `~github-runner/actions-runner/` and managed by systemd (`actions.runner.KiOui-TOSTI.tosti-vm.service`).
-- SAML private key + public cert are under `/opt/tosti/saml/` (overwritten by each deploy from the GitHub secrets).
+- SAML private key + public cert are under `/opt/tosti/saml/` (overwritten by each deploy from the GitHub secrets). Docker Compose exposes these to the `web` container via Docker secrets, mounted at `/run/secrets/saml_private_key` and `/run/secrets/saml_public_cert`.
 
 ### Installing the self-hosted runner
 
@@ -43,6 +43,9 @@ The workflow runs against a GitHub Environment named **`tosti.science.ru.nl`**. 
 | `SENTRY_DSN` | Sentry DSN for error reporting. |
 | `SAML_PRIVATE_KEY` | Full PEM of the SAML SP private key. |
 | `SAML_PUBLIC_CERT` | Full PEM of the SAML SP public certificate. |
+| `SENTRY_AUTH_TOKEN` | Sentry integration token with `project:releases` scope (used by deploy to mark the release as deployed). |
+| `SENTRY_ORG` | Sentry organization slug. |
+| `SENTRY_PROJECT` | Sentry project slug. |
 
 ### Environment variables (not secret)
 

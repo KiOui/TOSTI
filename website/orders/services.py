@@ -7,6 +7,7 @@ from guardian.shortcuts import get_users_with_perms
 
 from orders.exceptions import OrderException
 from orders.models import Order, Product, Shift, OrderBlacklistedUser, OrderVenue
+from tosti.metrics import emit as emit_metric
 from users.models import User
 
 logger = logging.getLogger(__name__)
@@ -77,7 +78,7 @@ def add_scanned_order(
     if shift.venue not in product.available_at.all():
         raise OrderException("This Product is not available in this Shift")
 
-    return Order.objects.create(
+    order = Order.objects.create(
         product=product,
         shift=shift,
         type=Order.TYPE_SCANNED,
@@ -87,6 +88,13 @@ def add_scanned_order(
         paid=paid,
         picked_up=picked_up,
     )
+    emit_metric(
+        "order_placed",
+        order_type="scanned",
+        product_name=str(product),
+        venue=str(shift.venue),
+    )
+    return order
 
 
 def add_user_order(
@@ -150,7 +158,7 @@ def add_user_order(
             "User can not order {} {} for this shift".format(product, 1)
         )
 
-    return Order.objects.create(
+    order = Order.objects.create(
         product=product,
         shift=shift,
         type=Order.TYPE_ORDERED,
@@ -161,6 +169,14 @@ def add_user_order(
         picked_up=picked_up,
         priority=priority,
     )
+    emit_metric(
+        "order_placed",
+        order_type="user",
+        product_name=str(product),
+        venue=str(shift.venue),
+        user_association=str(user.association) if user.association else None,
+    )
+    return order
 
 
 def add_user_to_assignees_of_shift(user, shift: Shift):

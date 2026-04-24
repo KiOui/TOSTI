@@ -49,6 +49,9 @@ RUN chown -R nobody:nogroup $DJANGO_MEDIA_ROOT
 RUN chown -R nobody:nogroup /var/log/django.log
 RUN chown -R nobody:nogroup /app/cache
 
+ARG SENTRY_RELEASE
+ENV SENTRY_RELEASE=${SENTRY_RELEASE}
+
 EXPOSE 80
 
 # Command to run uWSGI

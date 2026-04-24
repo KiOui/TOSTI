@@ -7,6 +7,10 @@ class TostiConfig(AppConfig):
 
     name = "tosti"
 
+    def ready(self):
+        """Register signals."""
+        from tosti import signals  # noqa
+
     def menu_items(self, _):
         """Register menu items."""
         return [

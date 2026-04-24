@@ -1,5 +1,6 @@
 from cron.core import CronJobBase, Schedule
 
+from tosti.metrics import emit as emit_metric
 from tosti.services import data_minimisation
 
 WEEKDAYS = [0, 1, 2, 3, 4]
@@ -18,4 +19,10 @@ class DataMinimisationCronJob(CronJobBase):
 
     def do(self):
         """Minimise data in the database."""
-        data_minimisation(dry_run=False)
+        counts = data_minimisation(dry_run=False)
+        emit_metric(
+            "cron_data_minimisation_run",
+            orders_affected=counts["orders"],
+            thaliedje_affected=counts["thaliedje"],
+            users_affected=counts["users"],
+        )

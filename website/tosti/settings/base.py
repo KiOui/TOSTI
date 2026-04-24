@@ -73,6 +73,7 @@ MIDDLEWARE = [
     "djangosaml2.middleware.SamlSessionMiddleware",
     "announcements.middleware.ClosedAnnouncementsMiddleware",
     "announcements.middleware.AppAnnouncementMiddleware",
+    "tosti.middleware.RequestMetricsMiddleware",
 ]
 
 ROOT_URLCONF = "tosti.urls"
