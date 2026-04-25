@@ -1,19 +1,18 @@
+/*
+ * Form layout overrides on top of Bootstrap.
+ *
+ * The page-level `<p>` rule in base.css centers text — forms read better
+ * left-aligned, so we override that here. Borders, focus styling and
+ * background are left to Bootstrap's .form-control class.
+ */
 
 form {
     max-width: 500px;
     margin: auto;
 }
 
-form p label {
-    text-align: left;
-    width: 100%;
-}
-
-form p input {
-    text-align: left;
-    width: 100%;
-}
-
+form p label,
+form p input,
 form p select {
     text-align: left;
     width: 100%;
@@ -23,15 +22,6 @@ form p span {
     font-style: italic;
     font-size: 0.7rem;
     width: 100%;
-}
-
-form input[type=text], select {
-    padding:5px;
-    border:2px solid var(--bs-border-color);
-}
-
-form input[type=text]:focus {
-    border-color: var(--bs-emphasis-color);
 }
 
 form textarea {

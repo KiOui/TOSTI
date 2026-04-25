@@ -15,7 +15,7 @@
                 </li>
             {% endfor %}
         </ul>
-        <div class="tab-content" id="nav-tab-content">
+        <div class="tab-content prose" id="nav-tab-content">
             {% for tab in rendered_tabs %}
                 <div class="tab-pane fade show {% if forloop.first %}active{% endif %}" id="nav-{{ tab.slug }}" role="tabpanel" aria-labelledby="nav-{{ tab.slug }}-tab">
                     {{ tab.content }}

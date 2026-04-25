@@ -55,7 +55,6 @@
     height: 4px;
     left: 50%;
     position: absolute;
-    -webkit-transform: translateX(-50%);
     transform: translateX(-50%);
     width: 4px;
 }

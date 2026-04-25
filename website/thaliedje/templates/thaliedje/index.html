@@ -2,13 +2,15 @@
 {% load static players %}
 
 {% block page %}
-    <div class="container-sm mt-5">
+    <div class="container mt-5">
         <div class="mb-5 text-center">
-            <h1><i class="fa-brands fa-spotify me-4"></i>T.h.a.l.i.e.d.j.e.</h1>
-            <h6>Thalia's Harmonized Application for Listening to Instrumental Entertainment as a Digital Jukebox Experience</h6>
+            <h1><i class="fa-brands fa-spotify me-4" aria-hidden="true"></i>T.h.a.l.i.e.d.j.e.</h1>
+            <p class="lead tagline">Thalia's Harmonized Application for Listening to Instrumental Entertainment as a Digital Jukebox Experience</p>
         </div>
-        <p class="my-1">Thaliedje is the music control system for the student canteens in the Huygens building.</p>
-        <p class="mt-1 mb-5">You can add songs to the queue of the canteens by selecting a canteen below and adding your song.</p>
+        <div class="prose">
+            <p class="my-1">Thaliedje is the music control system for the student canteens in the Huygens building.</p>
+            <p class="mt-1 mb-5">You can add songs to the queue of the canteens by selecting a canteen below and adding your song.</p>
+        </div>
         <div class="row-cols-1 row-cols-lg-3 justify-content-center d-flex flex-wrap">
             {% render_players %}
         </div>

@@ -19,10 +19,13 @@
     </div>
     <script>
         let submit_button = document.getElementById('submit-button');
-        submit_button.onclick = function(event) {
-            if (!confirm("Are you sure you want to submit the borrel reservation? This action can not be made undone.")) {
-                event.preventDefault();
-            }
-        }
+        submit_button.addEventListener("click", function (event) {
+            event.preventDefault();
+            const form = event.currentTarget.closest("form");
+            tosti_confirm(
+                "Are you sure you want to submit the borrel reservation? This action can not be undone.",
+                {title: "Submit borrel reservation", confirmLabel: "Submit", confirmClass: "btn-primary"}
+            ).then(ok => { if (ok && form) form.submit(); });
+        });
     </script>
 {% endblock %}

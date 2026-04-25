@@ -1,24 +1,26 @@
 @import "variables.css";
 
+/*
+ * -------------------- Design token bridge --------------------
+ * Forward TOSTI's design tokens (from variables.css) into Bootstrap's
+ * CSS custom properties so Bootstrap components (tables, cards, modals,
+ * dropdowns, alerts, …) automatically use the same palette.
+ */
 :root {
     --link-color: var(--primary);
     --link-color-hover: var(--primary-hover);
+
+    --bs-body-bg: var(--background-color);
+    --bs-body-color: var(--text-color);
     --bs-link-hover-color: var(--primary-hover);
     --bs-nav-link-color: var(--primary);
     --bs-nav-link-hover-color: var(--primary-hover);
     --bs-nav-link-active-color: var(--primary);
-    /* Share the project's page colors with Bootstrap so tables, cards, and
-       modals inherit the same background as the page instead of Bootstrap's
-       default palette. */
-    --bs-body-bg: var(--background-color);
-    --bs-body-color: var(--text-color);
-}
-.nav-link {
-    color: var(--primary);
 }
 
+/* -------------------- Base elements -------------------- */
 body {
-    font-family: 'Neucha';
+    font-family: 'Neucha', sans-serif;
     background-color: var(--background-color);
     color: var(--text-color);
 }
@@ -28,12 +30,77 @@ a {
     text-decoration: none;
 }
 
+a:hover {
+    text-decoration: none;
+}
+
 a.no-color {
     color: inherit;
     text-decoration: underline;
 }
 
-.site-header, .page-footer {
+/* -------------------- Typography -------------------- */
+/* All headings are centered and lose the browser's default top margin.
+   Section headings (h1–h3) get the brand treatment: uppercase + wide
+   letter-spacing. Sub-headings (h4–h6) read as plain subtitles. */
+h1, h2, h3, h4, h5, h6 {
+    text-align: center;
+    margin-top: 0;
+}
+
+h1, h2, h3 {
+    text-transform: uppercase;
+    letter-spacing: 4px;
+}
+
+h1 { font-size: 3rem; }
+h2 { font-size: 2.25rem; }
+h3 { font-size: 1.75rem; }
+h4 { font-size: 1.5rem; }
+h5 { font-size: 1.25rem; }
+h6 { font-size: 1.125rem; }
+
+/* In tighter contexts (alerts, list items), the brand heading look is too heavy.
+   Drop the letter-spacing and uppercase so they read as inline labels. */
+.alert h1, .alert h2, .alert h3,
+.list-group h1, .list-group h2, .list-group h3 {
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+p {
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+p.btn-note {
+    font-size: 0.8rem;
+}
+
+/* Tagline below an h1 (e.g. "T.O.S.T.I." → "Tartarus Order System..."). Reads
+   as an inline subtitle, not a section heading. */
+.tagline {
+    font-size: 1.125rem;
+    color: var(--sub-title-color);
+    margin-bottom: 0;
+}
+
+/* Constrain prose-heavy pages (explainers, privacy, fridges intro) to a
+   comfortable reading measure rather than the full Bootstrap container width. */
+.prose {
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.tosti-title {
+    letter-spacing: 20px;
+}
+
+/* -------------------- Header / navigation -------------------- */
+.site-header,
+.page-footer {
     background-color: var(--nav-background-color);
     color: var(--nav-link-color);
 }
@@ -47,7 +114,7 @@ a.no-color {
 }
 
 .navbar-toggler {
-    border-color: #ffffff;
+    border-color: var(--nav-link-color);
 }
 
 .nav-item {
@@ -56,58 +123,11 @@ a.no-color {
     padding: 8px;
 }
 
-h1 {
-    text-transform: uppercase;
-    letter-spacing: 4px;
-    text-align: center;
-    font-size: 3rem
+.nav-link {
+    color: var(--primary);
 }
 
-h2 {
-    letter-spacing: 4px;
-    text-align: center;
-    font-size: 2.5rem;
-}
-
-h3 {
-    letter-spacing: 4px;
-    text-align: center;
-    font-size: 2rem
-}
-
-h4 {
-    text-align: center;
-    font-size: 1.75rem
-}
-
-h5 {
-    text-align: center;
-    font-size: 1.5rem
-}
-
-h6 {
-    text-align: center;
-    font-size: 1rem
-}
-
-p {
-    text-align: center;
-    font-size: 1.5rem;
-    margin-bottom: 3rem;
-}
-
-.table {
-    color: var(--text-color);
-}
-
-p.btn-note {
-    font-size: .8rem
-}
-
-.tosti-title {
-    letter-spacing: 20px;
-}
-
+/* Drop-out logo in the center of the navbar sticks out below the nav chrome. */
 .drop-out-header {
     position: absolute;
     margin-top: -20px;
@@ -119,56 +139,101 @@ p.btn-note {
     margin-top: -20px;
 }
 
+/* Header action buttons (QR code, hamburger). */
+.qr-button button,
+.hamburger-menu-button {
+    padding: 10px 10px 7px 10px;
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+    color: var(--primary-contrast);
+}
+
+.qr-button button:hover,
+.qr-button button:focus,
+.hamburger-menu-button:hover,
+.hamburger-menu-button:focus {
+    background-color: var(--primary-active);
+    border-color: var(--primary-active);
+}
+
+/* -------------------- Cards & modals -------------------- */
 .card {
     background-color: var(--card-background);
     color: var(--card-background-contrast);
 }
 
-.card-header, .modal-header {
+.card-header,
+.modal-header,
+.card-footer,
+.modal-footer {
     background-color: var(--card-background-shade);
 }
 
-.card-body, .modal-body {
+/* Uniform modal headers across the site: centered title at one consistent size,
+   filling the available width so the close button doesn't push it off-center. */
+.modal-header {
+    justify-content: center;
+}
+
+.modal-header .modal-title,
+.modal-header > h1,
+.modal-header > h2,
+.modal-header > h3 {
+    flex: 1 1 auto;
+    text-align: center;
+    font-size: 1.75rem;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+}
+
+.card-body,
+.modal-body {
     background-color: var(--card-background);
 }
 
-.card-footer, .modal-footer {
-    background-color: var(--card-background-shade);
+.card a,
+.card a:hover,
+.card a:visited,
+.card a:active {
+    color: unset;
+}
+
+.modal .form-text {
+    color: unset;
 }
 
 .close {
     color: var(--text-color);
 }
 
+/* -------------------- Tables -------------------- */
+.table {
+    color: var(--text-color);
+}
+
+/* -------------------- Large "menu" buttons (home page, venue tiles) -------------------- */
 .btn-ml {
     display: block;
     padding: 10px;
     max-width: 400px;
     margin: 40px auto;
     width: 100%;
-    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
     text-align: center;
     text-decoration: none !important;
+    transition: color 0.15s ease-in-out,
+                background-color 0.15s ease-in-out,
+                border-color 0.15s ease-in-out,
+                box-shadow 0.15s ease-in-out;
 }
 
-a:hover {
-    text-decoration: none;
-}
-
-.btn-on:hover {
-    background-color: var(--button-hover-background);
-    color: var(--button-hover-contrast);
-    border-color: var(--button-hover-border-color);
-}
-
-.btn-ml h2 {
+.btn-ml h2,
+.btn-ml p {
     width: 100%;
     text-align: center;
 }
 
 .btn-ml p {
-    width: 100%;
-    text-align: center;
     margin-bottom: 0;
 }
 
@@ -179,12 +244,19 @@ a:hover {
     cursor: pointer;
 }
 
+.btn-on:hover {
+    background-color: var(--button-hover-background);
+    color: var(--button-hover-contrast);
+    border-color: var(--button-hover-border-color);
+}
+
 .btn-off {
     border: 1px solid var(--button-disabled-background-color);
     background-color: var(--button-disabled-background-color);
     color: var(--button-contrast);
 }
 
+/* -------------------- Misc -------------------- */
 .loader {
     width: 20px;
     height: 20px;
@@ -198,43 +270,19 @@ a:hover {
 }
 
 @keyframes rotation {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
+/* -------------------- Responsive overrides -------------------- */
 @media screen and (max-width: 767px) {
     .extra-margin-top-mobile {
         margin-top: 30px;
     }
-
-    @media screen and (max-width: 500px) {
-        h1 {
-            font-size: 2.5rem;
-        }
-    }
 }
 
-.card a, .card a:hover, .card a:visited, .card a:active {
-    color: unset;
-}
-
-.modal .form-text {
-    color: unset;
-}
-
-/* QR button header, menu button header. */
-.qr-button button, .hamburger-menu-button {
-    padding: 10px 10px 7px 10px;
-    background-color: var(--primary-shade);
-    border-color: var(--primary-shade);
-    color: var(--primary-contrast);
-}
-
-.qr-button button:hover, .hamburger-menu-button:hover, .qr-button button:focus, .hamburger-menu-button:focus {
-    background-color: var(--primary-shade-hover);
-    border-color: var(--primary-shade-hover);
+@media screen and (max-width: 500px) {
+    h1 { font-size: 2.25rem; }
+    h2 { font-size: 1.75rem; }
+    h3 { font-size: 1.5rem; }
 }

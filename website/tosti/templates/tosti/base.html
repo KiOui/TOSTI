@@ -35,9 +35,10 @@
     <script src="{% static 'tosti/js/base.js' %}"></script>
 
     <!-- Icons -->
-    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'tosti/favicon/apple-touch-icon.png' %}">
+    <link rel="icon" href="{% static 'tosti/favicon/favicon.ico' %}" sizes="any">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'tosti/favicon/favicon-32x32.png' %}">
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'tosti/favicon/favicon-16x16.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'tosti/favicon/apple-touch-icon.png' %}">
     <link rel="manifest" href="{% static 'tosti/favicon/site.webmanifest' %}">
     <meta name="msapplication-TileColor" content="#e8b365">
     <meta name="theme-color" content="#e8b365">
@@ -80,18 +81,20 @@
         <nav class="navbar navbar-expand-lg site-header sticky-top navbar-dark">
             <div class="container">
                 <div class="d-block d-lg-none">
-                    <a class="navbar-brand drop-out-header-mobile" href="/"><img
+                    <a class="navbar-brand drop-out-header-mobile" href="/"><img alt=""
                             src="{% static 'tosti/svg/TOSTI-logo.svg' %}" height="80"/></a>
                 </div>
                 <div class="ms-auto d-lg-none d-flex justify-content-end">
                     <button class="btn btn-primary hamburger-menu-button" type="button" data-bs-toggle="offcanvas"
-                            data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
-                        <i class="fa-solid fa-bars fa-xl"></i>
+                            data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar"
+                            aria-label="Open navigation menu">
+                        <i class="fa-solid fa-bars fa-xl" aria-hidden="true"></i>
                     </button>
                     {% if user.is_authenticated %}
                         <div class="align-items-center qr-button ms-2">
-                            <button class="btn" data-bs-toggle="modal" data-bs-target="#qr-popup">
-                                <i class="fa-solid fa-qrcode fa-xl"></i>
+                            <button class="btn" data-bs-toggle="modal" data-bs-target="#qr-popup"
+                                    aria-label="Show my identification QR code">
+                                <i class="fa-solid fa-qrcode fa-xl" aria-hidden="true"></i>
                             </button>
                         </div>
                     {% endif %}
@@ -107,7 +110,7 @@
                             {% render_main_menu_start %}
                         </ul>
                         <div class="mx-auto order-0 position-relative d-lg-block d-none">
-                            <a class="navbar-brand drop-out-header" href="/"><img
+                            <a class="navbar-brand drop-out-header" href="/"><img alt=""
                                     src="{% static 'tosti/svg/TOSTI-logo.svg' %}"
                                     height="120"/></a>
                         </div>
@@ -161,8 +164,9 @@
                                     </div>
                                 </li>
                                 <li class="nav-item d-none d-lg-flex align-items-center qr-button">
-                                    <button class="btn" data-bs-toggle="modal" data-bs-target="#qr-popup">
-                                        <i class="fa-solid fa-qrcode fa-xl"></i>
+                                    <button class="btn" data-bs-toggle="modal" data-bs-target="#qr-popup"
+                                            aria-label="Show my identification QR code">
+                                        <i class="fa-solid fa-qrcode fa-xl" aria-hidden="true"></i>
                                     </button>
                                 </li>
                             {% endif %}
@@ -171,20 +175,18 @@
                 </div>
             </div>
         </nav>
-        <div class="modal" id="qr-popup">
-            <div class="modal-dialog">
+        <div class="modal" id="qr-popup" tabindex="-1" aria-labelledby="qr-popup-label" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
-                    <div class="modal-header fs-2">
-                        <h2>Identify yourself</h2><br>
+                    <div class="modal-header">
+                        <h2 class="modal-title" id="qr-popup-label">Identify yourself</h2>
                     </div>
                     <div class="modal-body">
                         {% if not minimum_registered_age %}
-                            <a href="{% url 'users:account' %}?active=age">
-                                <div class="alert alert-danger text-center">
-                                    <i class="bi bi-check-circle-fill me-2"></i>
-                                    <strong>Want to open the beer fridge?</strong><br>
-                                    Click here to verify your age first!
-                                </div>
+                            <a href="{% url 'users:account' %}?active=age" class="alert alert-danger text-center d-block text-decoration-none">
+                                <i class="fa-solid fa-circle-check me-2" aria-hidden="true"></i>
+                                <strong>Want to open the beer fridge?</strong><br>
+                                Click here to verify your age first!
                             </a>
                         {% endif %}
                         <div id="qrcode" class="d-flex justify-content-center align-items-center">
@@ -203,7 +205,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
@@ -281,6 +283,23 @@
             }).mount('#qrcode');
         </script>
     {% endblock %}
+
+    {# Reusable confirmation modal. Use tosti_confirm(message).then(ok => ...). #}
+    <div class="modal fade" id="tosti-confirm-modal" tabindex="-1" aria-labelledby="tosti-confirm-label" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="tosti-confirm-label">Please confirm</h2>
+                </div>
+                <div class="modal-body" id="tosti-confirm-message"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="tosti-confirm-cancel">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="tosti-confirm-ok">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="page">
         {% block page %}{% endblock %}
     </div>

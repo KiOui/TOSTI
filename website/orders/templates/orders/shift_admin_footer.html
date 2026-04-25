@@ -211,7 +211,11 @@
                 }).catch(error => show_error_from_api(error));
             },
             finalize_shift() {
-                if (confirm('Do you really want to finialize this Shift? Finalizing a Shift will make it read-only, this action can not be reverted!')) {
+                tosti_confirm(
+                    "Do you really want to finalize this shift? Finalizing a shift will make it read-only, this action can not be reverted!",
+                    {title: "Finalize shift", confirmLabel: "Finalize"}
+                ).then(ok => {
+                    if (!ok) return;
                     fetch(
                         '{% url "v1:shift_retrieveupdate" pk=shift.pk %}',
                         {
@@ -233,14 +237,14 @@
                         }
                     }).then(data => {
                         this.shift = data;
-                        tata.success('', 'Shift finalized succesfully');
+                        tata.success('', 'Shift finalized successfully');
                         if (typeof (update_refresh_list) !== 'undefined') {
                             update_refresh_list();
                         }
                     }).catch(() => {
                         tata.error('', "The shift can't be finalized, are you sure all orders are marked paid and ready?");
                     });
-                }
+                });
             }
         }
     }).mount('#admin-footer-wrapper-{{ shift.id }}');

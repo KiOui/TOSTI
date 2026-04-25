@@ -1,9 +1,10 @@
 .add-another-transaction-button {
-    color: rgba(200, 131, 30, 1);
+    color: var(--primary-hover);
 }
 
 .add-another-transaction-button:hover {
-    color: rgba(200, 131, 30, 0.5);
+    color: var(--primary-hover);
+    opacity: 0.5;
 }
 
 .updated-text {

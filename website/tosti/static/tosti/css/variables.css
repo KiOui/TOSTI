@@ -1,7 +1,42 @@
+/*
+ * TOSTI design tokens.
+ *
+ * Structure:
+ *   - Brand tokens (fixed across themes): --primary, --nav-background-color, --footer-*
+ *   - Semantic tokens (flip per theme): --background-color, --text-color, --card-*, --button-*
+ *   - Status tokens (fixed; meant to be high-contrast in both themes): --success, --warning, --danger
+ *
+ * Keep the variable set in :root and in the dark-mode block identical.
+ */
+
 :root {
+    /* Brand */
+    --primary: #e8b365;
+    --primary-hover: #c8831e;
+    --primary-active: #a96f19;
+    --primary-contrast: #ffffff;
+    --primary-contrast-hover: #dddddd;
+
+    --nav-background-color: #e8b365;
+    --nav-link-color: #ffffff;
+    --nav-link-hover-color: rgba(255, 255, 255, 0.75);
+
+    --footer-background-color: #e8b365;
+    --footer-text-color: #ffffff;
+
+    /* Semantic — light theme */
     --background-color: #ffffff;
     --background-shade: #dddddd;
     --background-shade-light: #f7f7f7;
+
+    --text-color: #000000;
+    --title-color: #000000;
+    --sub-title-color: #555555;
+    --link-color: #007bff;
+
+    --card-background: #ffffff;
+    --card-background-shade: rgba(0, 0, 0, 0.03);
+    --card-background-contrast: #000000;
 
     --button-background: #000000;
     --button-contrast: #ffffff;
@@ -11,48 +46,53 @@
     --button-hover-border-color: #000000;
     --button-disabled-background-color: #696969;
 
-    --card-background: #ffffff;
-    --card-background-shade: rgba(0, 0, 0, 0.03);
-    --card-background-contrast: #000000;
-
-    --title-color: #000000;
-    --sub-title-color: #dddddd;
-    --link-color: #007bff;
-    --text-color: #000000;
-
-    --nav-background-color: #e8b365;
-    --nav-link-color: #ffffff;
-    --nav-link-hover-color: rgba(255,255,255,0.75);
-
-    --footer-background-color: #e8b365;
-    --footer-text-color: #ffffff;
-
-    --primary: #e8b365;
-    --primary-shade: #c8831e;
-    --primary-shade-hover: #a96f19;
-    --primary-contrast: #ffffff;
-    --primary-contrast-hover: #dddddd;
-
     --secondary: #000000;
     --secondary-hover: #212121;
     --secondary-contrast: #ffffff;
 
+    /* Status — identical in both themes for consistent meaning */
     --success: #28a745;
     --success-hover: #218838;
     --success-contrast: #ffffff;
     --warning: #ffc107;
     --warning-hover: #e0a800;
-    --warning-contrast: #ffffff;
+    --warning-contrast: #000000;
     --danger: #dc3545;
     --danger-hover: #c82333;
     --danger-contrast: #ffffff;
+    --processing: #fc801b;
+    --processing-contrast: #ffffff;
 }
 
 @media (prefers-color-scheme: dark) {
     :root {
+        /* Brand — unchanged */
+        --primary: #e8b365;
+        --primary-hover: #c8831e;
+        --primary-active: #a96f19;
+        --primary-contrast: #ffffff;
+        --primary-contrast-hover: #dddddd;
+
+        --nav-background-color: #e8b365;
+        --nav-link-color: #ffffff;
+        --nav-link-hover-color: rgba(255, 255, 255, 0.75);
+
+        --footer-background-color: #e8b365;
+        --footer-text-color: #ffffff;
+
+        /* Semantic — dark theme */
         --background-color: #202020;
         --background-shade: #404040;
         --background-shade-light: #696969;
+
+        --text-color: #ffffff;
+        --title-color: #ffffff;
+        --sub-title-color: #bbbbbb;
+        --link-color: #4ea1ff;
+
+        --card-background: #2c2c2c;
+        --card-background-shade: #404040;
+        --card-background-contrast: #ffffff;
 
         --button-background: #000000;
         --button-contrast: #ffffff;
@@ -62,38 +102,21 @@
         --button-hover-border-color: #696969;
         --button-disabled-background-color: #696969;
 
-        --card-background: #696969;
-        --card-background-shade: #404040;
-        --card-background-contrast: #ffffff;
+        --secondary: #ffffff;
+        --secondary-hover: #eeeeee;
+        --secondary-contrast: #000000;
 
-        --title-color: #ffffff;
-        --sub-title-color: #bbbbbb;
-        --link-color: #4ea1ff;
-        --text-color: #ffffff;
-
-        --nav-background-color: #e8b365;
-        --nav-link-color: #ffffff;
-
-        --footer-background-color: #e8b365;
-        --footer-text-color: #ffffff;
-
-        --primary: #e8b365;
-        --primary-hover: #c8831e;
-        --primary-contrast: #ffffff;
-        --primary-contrast-hover: #dddddd;
-
-        --secondary: #000000;
-        --secondary-hover: #212121;
-        --secondary-contrast: #ffffff;
-
+        /* Status — unchanged */
         --success: #28a745;
         --success-hover: #218838;
         --success-contrast: #ffffff;
         --warning: #ffc107;
         --warning-hover: #e0a800;
-        --warning-contrast: #ffffff;
+        --warning-contrast: #000000;
         --danger: #dc3545;
         --danger-hover: #c82333;
         --danger-contrast: #ffffff;
+        --processing: #fc801b;
+        --processing-contrast: #ffffff;
     }
 }

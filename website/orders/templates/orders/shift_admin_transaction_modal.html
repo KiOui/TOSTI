@@ -3,11 +3,11 @@
 <link rel="stylesheet" href="{% static 'orders/css/transaction-popup.css' %}"/>
 
 <div id="transaction-wrapper-{{ shift.id }}">
-    <div class="modal" id="transaction-popup">
-        <div class="modal-dialog">
+    <div class="modal" id="transaction-popup" tabindex="-1" aria-labelledby="transaction-popup-label" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header" style="border-bottom: 0">
-                    <h2 class="mb-0">Transaction administration</h2>
+                <div class="modal-header">
+                    <h2 class="modal-title" id="transaction-popup-label">Transaction administration</h2>
                 </div>
                 <div class="modal-body">
                     <template v-if="account !== null">

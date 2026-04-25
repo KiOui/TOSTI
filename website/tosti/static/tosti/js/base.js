@@ -196,3 +196,42 @@ function get_oauth_token_with_client_credentials(token_endpoint, client_id, clie
 
 update_refresh_list();
 document.addEventListener("visibilitychange", visibilityChange);
+
+// Styled replacement for window.confirm(). Returns a Promise that resolves to true
+// if the user pressed the Confirm button, false otherwise (Cancel, Close, or Escape).
+function tosti_confirm(message, {
+    title = "Please confirm",
+    confirmLabel = "Confirm",
+    cancelLabel = "Cancel",
+    confirmClass = "btn-danger",
+} = {}) {
+    const modalEl = document.getElementById("tosti-confirm-modal");
+    if (!modalEl || typeof bootstrap === "undefined") {
+        // Fallback for non-Bootstrap contexts (admin templates etc.)
+        return Promise.resolve(window.confirm(message));
+    }
+    const titleEl = modalEl.querySelector("#tosti-confirm-label");
+    const msgEl = modalEl.querySelector("#tosti-confirm-message");
+    const okBtn = modalEl.querySelector("#tosti-confirm-ok");
+    const cancelBtn = modalEl.querySelector("#tosti-confirm-cancel");
+
+    titleEl.textContent = title;
+    msgEl.textContent = message;
+    cancelBtn.textContent = cancelLabel;
+    okBtn.textContent = confirmLabel;
+    okBtn.className = `btn ${confirmClass}`;
+
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+    return new Promise(resolve => {
+        let decided = false;
+        const onOk = () => { decided = true; modal.hide(); resolve(true); };
+        const onHidden = () => {
+            okBtn.removeEventListener("click", onOk);
+            modalEl.removeEventListener("hidden.bs.modal", onHidden);
+            if (!decided) resolve(false);
+        };
+        okBtn.addEventListener("click", onOk);
+        modalEl.addEventListener("hidden.bs.modal", onHidden);
+        modal.show();
+    });
+}

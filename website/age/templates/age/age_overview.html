@@ -9,7 +9,7 @@
 
         {% if minimum_registered_age %}
             <div class="alert alert-success text-center">
-                <i class="bi bi-check-circle-fill me-2"></i>
+                <i class="fa-solid fa-circle-check me-2" aria-hidden="true"></i>
                 <strong>Verified!</strong> You are confirmed to be over {{ minimum_registered_age }} years old.
             </div>
         {% else %}
@@ -136,7 +136,7 @@
                                 <div class="text-center mt-2">
                                     <button class="btn btn-secondary btn-lg" onclick="prevStep(4)">Back</button>
                                     <button class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#verify-age-modal">
-                                        <i class="bi bi-qr-code me-2"></i>Start Yivi age verification
+                                        <i class="fa-solid fa-qrcode me-2" aria-hidden="true"></i>Start Yivi age verification
                                     </button>
                                 </div>
                             </div>

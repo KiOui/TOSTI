@@ -16,7 +16,7 @@
                             <template v-for="(track, index) in tracks">
                                 <div class="d-flex my-2">
                                     <div class="me-2">
-                                        <img height="50" v-if="track.image !== null" :src="track.image"/>
+                                        <img height="50" v-if="track.image !== null" :src="track.image" :alt="'Album art for ' + track.name"/>
                                     </div>
                                     <div class="flex-equal-width d-flex flex-column">
                                         <div>
@@ -41,7 +41,7 @@
                                 <template v-for="(playlist, index) in playlists">
                                     <div class="d-flex my-2">
                                         <div class="me-1">
-                                            <img height="50" v-if="playlist.image !== null" :src="playlist.image"/>
+                                            <img height="50" v-if="playlist.image !== null" :src="playlist.image" :alt="'Playlist cover for ' + playlist.name"/>
                                         </div>
                                         <div class="flex-equal-width d-flex flex-column">
                                             <div>
@@ -63,7 +63,7 @@
                                 <template v-for="(album, index) in albums">
                                     <div class="d-flex my-2">
                                         <div class="me-1">
-                                            <img height="50" v-if="album.image !== null" :src="album.image"/>
+                                            <img height="50" v-if="album.image !== null" :src="album.image" :alt="'Album art for ' + album.name"/>
                                         </div>
                                             <div class="flex-equal-width d-flex flex-column">
                                             <div>

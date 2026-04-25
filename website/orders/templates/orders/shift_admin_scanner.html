@@ -4,10 +4,12 @@
 <link rel="stylesheet" href="{% static 'orders/css/search.css' %}"/>
 
 <div id="scanner-wrapper-{{ shift.id }}">
-    <div class="modal" id="scanner-popup">
-        <div class="modal-dialog">
+    <div class="modal" id="scanner-popup" tabindex="-1" aria-labelledby="scanner-popup-label" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header" style="border-bottom: 0">
+                    <h2 class="visually-hidden" id="scanner-popup-label">Scan or search product</h2>
+                    <label for="product-search" class="visually-hidden">Scan barcode or search for a product</label>
                     <input v-model="search_input" type="text" placeholder="Scan barcode or search for a product" class="container-fluid form-control form-control-lg" id="product-search"/>
                 </div>
                 <div class="modal-body search-list py-0"  id="results">
@@ -31,8 +33,8 @@
                 <div class="modal-body d-flex justify-content-center p-0">
                     <div id="scanner"></div>
                 </div>
-                <div class="modal-footer" style="border-top: 0">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -91,6 +93,9 @@
             //call function on modal shown
             document.getElementById(POPUP_MODAL_ID).addEventListener('shown.bs.modal', () => {
                 start_scanner();
+                // Focus the search input so the user (or barcode scanner) can type immediately.
+                const input = document.getElementById("product-search");
+                if (input) input.focus();
             });
 
             //call function on hiding modal

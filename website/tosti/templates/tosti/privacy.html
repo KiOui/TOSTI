@@ -3,9 +3,9 @@
 {% block page %}
     <div class="container my-5 text-center">
         <h1>Privacy</h1>
-        <h6>About the data we collect</h6>
+        <p class="lead tagline">About the data we collect</p>
     </div>
-    <div class="container">
+    <div class="container prose">
         <h3>Who are we</h3>
         <p>
             This website is being maintained by <a href="https://tartarus.science.ru.nl" target="_blank">Tartarus</a>,
@@ -14,8 +14,7 @@
             We can be reached via <a href="mailto:tartarus@science.ru.nl">tartarus@science.ru.nl</a>, or for technical matters,
             via <a href="mailto:www-tosti@science.ru.nl">www-tosti@science.ru.nl</a>
         </p>
-    </div>
-    <div class="container">
+
         <h3>Your account</h3>
         <p>
             To use most features of this site, you need a user account. You can log in with your
@@ -36,8 +35,7 @@
             contractual necessity (for ordering products). Your name will be visible to other users when you order a product
             or when you request a song. Your email address will never be shown to other users.
         </p>
-    </div>
-    <div class="container">
+
         <h3>How long we keep your data</h3>
         <p>
             Your account will be kept for a period of a year after your last login and will, without notification, be removed
@@ -48,25 +46,20 @@
         <p>
             Your song requests and orders will be stored for a year. After this year, they will be anonymized.
         </p>
-    </div>
-    <div class="container">
+
         <h3>If you want to access your data</h3>
         <p>
             You can check out all personal data we keep about you at <a href="{% url 'users:account' %}">your user profile page</a>.
             If you want your data to be deleted or rectified, you can contact us
             <a href="mailto:www-tosti@science.ru.nl">via email</a>.
         </p>
-    </div>
-    <div class="container">
-        <h3 class="mb-3">Who else has access to your data</h3>
 
+        <h3 class="mb-3">Who else has access to your data</h3>
         <h5 class="fw-bold">Radboud University Nijmegen</h5>
         <p>This site is hosted by the Faculty of Science of the Radboud University, who act as data processor.</p>
-
         <h5 class="fw-bold">Functional Software, Inc</h5>
         <p>We use <a href="https://sentry.io/" target="_blank">Sentry</a>, a platform by Functional Software, Inc., for error monitoring. This means that when server errors occur on the website, some data is sent to the Sentry platform. For authenticated users, the username is sent along with an error log. We always try to filter out any personal information from the error logs. Sentry removes this data after 1 month.</p>
-    </div>
-    <div class="container">
+
         <h3>Data Protection Authority</h3>
         <p>
             In case you think we have processed your data unlawfully and wish to file a complaint, you always have the right to do so at
@@ -74,5 +67,4 @@
             But of course, we would prefer it if you would first just notify us about the issue, so we can solve it together 😅.
         </p>
     </div>
-    <br>
 {% endblock %}
