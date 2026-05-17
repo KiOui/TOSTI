@@ -1,0 +1,86 @@
+version: 2
+
+updates:
+  - package-ecosystem: "uv"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Amsterdam"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "python"
+    groups:
+      django:
+        patterns:
+          - "django"
+          - "django-*"
+          - "djangorestframework"
+          - "drf-spectacular"
+        exclude-patterns:
+          # These ship their own release cadence and tend to lag behind
+          # Django's; bumping them in the same PR as Django itself usually
+          # fails on incompatible version constraints. Let them get their
+          # own PRs (via the saml group below or ungrouped).
+          - "djangosaml2"
+          - "django-constance"
+          - "django-ical"
+      saml:
+        patterns:
+          - "djangosaml2"
+          - "pysaml2"
+          - "pyopenssl"
+          - "cryptography"
+      dev-tools:
+        dependency-type: "development"
+      production-patches:
+        dependency-type: "production"
+        update-types:
+          - "patch"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Amsterdam"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    groups:
+      actions:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Amsterdam"
+    labels:
+      - "dependencies"
+      - "docker"
+
+  - package-ecosystem: "docker"
+    directory: "/deploy"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Amsterdam"
+    labels:
+      - "dependencies"
+      - "docker"
+    # Postgres major bumps (17 → 18) change the on-disk format. CI can't
+    # catch this — it would only surface when the new database container
+    # tries to open the existing pg-data volume in production. Keep behind
+    # a human review for the pg_upgrade dance.
+    ignore:
+      - dependency-name: "postgres"
+        update-types:
+          - "version-update:semver-major"
