@@ -128,7 +128,11 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 60s
+      # web's entrypoint runs `migrate --noinput` before uWSGI starts; the
+      # health check counts that time against start_period. 60s is tight
+      # once the schema grows — give it a comfortable buffer so a cold
+      # deploy doesn't fail the check while migrate is still running.
+      start_period: 180s
 
   cron:
     image: *tosti-image
@@ -142,6 +146,12 @@ services:
       - outbound
     depends_on:
       database:
+        condition: service_healthy
+      # Wait for web's entrypoint to finish migrations before cron starts
+      # firing `runcrons`. Otherwise the first cron tick can race the
+      # migration and crash with "relation does not exist" — which lands
+      # in Sentry on every deploy.
+      web:
         condition: service_healthy
     volumes:
       - media:/media
