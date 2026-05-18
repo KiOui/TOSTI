@@ -20,7 +20,7 @@ def _get_commit_sha():
             stderr=subprocess.DEVNULL,
             text=True,
         ).strip()
-    except (subprocess.CalledProcessError, FileNotFoundError, OSError):
+    except subprocess.CalledProcessError, FileNotFoundError, OSError:
         return None
 
 
