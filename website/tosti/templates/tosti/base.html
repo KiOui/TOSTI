@@ -311,6 +311,16 @@
             {% autoescape off %}
             {{ FOOTER_CREDITS_TEXT }}
             {% endautoescape %}
+            {% if COMMIT_SHA_SHORT %}
+                <br>
+                <small class="text-body-secondary">
+                    Version
+                    <a href="https://github.com/KiOui/TOSTI/commit/{{ COMMIT_SHA }}"
+                       class="text-body-secondary"
+                       target="_blank"
+                       rel="noopener noreferrer"><code>{{ COMMIT_SHA_SHORT }}</code></a>
+                </small>
+            {% endif %}
         </p>
     </div>
 </footer>
