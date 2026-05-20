@@ -1,6 +1,7 @@
 from django.contrib import admin, messages
 from django.http import HttpResponseRedirect
 from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 
 from borrel.admin import BorrelReservationAdmin, ReservationItemInline
 from borrel.models import BorrelReservation
@@ -53,7 +54,7 @@ class SilvasoftAssociationAdmin(admin.ModelAdmin):
             except SilvasoftException:
                 self.message_user(
                     request,
-                    format_html(
+                    mark_safe(
                         "Failed to refresh relations from Silvasoft, please consult the server logs for more "
                         "information."
                     ),
@@ -92,7 +93,7 @@ class SilvasoftOrderVenueAdmin(admin.ModelAdmin):
             except SilvasoftException:
                 self.message_user(
                     request,
-                    format_html(
+                    mark_safe(
                         "Failed to refresh relations from Silvasoft, please consult the server logs for more "
                         "information."
                     ),
@@ -131,7 +132,7 @@ class SilvasoftOrderProductAdmin(admin.ModelAdmin):
             except SilvasoftException:
                 self.message_user(
                     request,
-                    format_html(
+                    mark_safe(
                         "Failed to refresh products from Silvasoft, please consult the server logs for more "
                         "information."
                     ),
@@ -170,7 +171,7 @@ class SilvasoftBorrelProductAdmin(admin.ModelAdmin):
             except SilvasoftException:
                 self.message_user(
                     request,
-                    format_html(
+                    mark_safe(
                         "Failed to refresh products from Silvasoft, please consult the server logs for more "
                         "information."
                     ),
@@ -309,7 +310,7 @@ class SilvasoftShiftAdmin(ShiftAdmin):
                 )
                 self.message_user(
                     request,
-                    format_html("Silvasoft synchronisation succeeded."),
+                    mark_safe("Silvasoft synchronisation succeeded."),
                     messages.SUCCESS,
                 )
                 SilvasoftShiftSynchronization.objects.create(shift=obj, succeeded=True)
@@ -317,9 +318,8 @@ class SilvasoftShiftAdmin(ShiftAdmin):
                 self.message_user(
                     request,
                     format_html(
-                        "Failed to synchronize data to Silvasoft, the following exception occurred: '{}'.".format(
-                            e
-                        )
+                        "Failed to synchronize data to Silvasoft, the following exception occurred: '{}'.",
+                        e,
                     ),
                     level=messages.ERROR,
                 )
@@ -478,7 +478,7 @@ class SilvasoftBorrelReservationAdmin(BorrelReservationAdmin):
                 )
                 self.message_user(
                     request,
-                    format_html("Silvasoft synchronisation succeeded."),
+                    mark_safe("Silvasoft synchronisation succeeded."),
                     messages.SUCCESS,
                 )
                 SilvasoftBorrelReservationSynchronization.objects.create(
@@ -488,9 +488,8 @@ class SilvasoftBorrelReservationAdmin(BorrelReservationAdmin):
                 self.message_user(
                     request,
                     format_html(
-                        "Failed to synchronize data to Silvasoft, the following exception occurred: '{}'.".format(
-                            e
-                        )
+                        "Failed to synchronize data to Silvasoft, the following exception occurred: '{}'.",
+                        e,
                     ),
                     level=messages.ERROR,
                 )

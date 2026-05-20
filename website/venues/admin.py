@@ -2,6 +2,7 @@ from admin_auto_filters.filters import AutocompleteFilter
 from django.contrib import admin, messages
 from django import forms
 from django.db.models import Q
+from django.utils.safestring import mark_safe
 from rangefilter.filters import DateRangeFilter
 
 from venues.models import Venue, Reservation
@@ -103,7 +104,9 @@ class ReservationAdmin(admin.ModelAdmin):
             ):
                 self.message_user(
                     request,
-                    "This reservation overlaps with another reservation for the same venue.",
+                    mark_safe(
+                        "This reservation overlaps with another reservation for the same venue."
+                    ),
                     level=messages.WARNING,
                 )
         return super().changeform_view(request, object_id, form_url, extra_context)
