@@ -88,6 +88,18 @@ class ReservationAdmin(admin.ModelAdmin):
     def _change_accepted(queryset, status):
         queryset.update(accepted=status)
 
+    def get_queryset(self, request):
+        """Pre-join the FKs rendered by list_display and __str__."""
+        return (
+            super()
+            .get_queryset(request)
+            .select_related(
+                "venue",
+                "association",
+                "user_created__association",
+            )
+        )
+
     def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
         """Display warning for overlapping reservations."""
         if object_id:

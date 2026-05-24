@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib import admin
+from django.templatetags.static import static
 from django.urls import path, include
 from django.views.generic import RedirectView
 
@@ -84,4 +85,50 @@ urlpatterns = [
     path("after-login/", AfterLoginRedirectView.as_view(), name="after-login"),
     path("admin/doc/", include("django.contrib.admindocs.urls")),
     path("admin/", admin.site.urls),
+    path(
+        "robots.txt",
+        RedirectView.as_view(url=static("tosti/robots.txt"), permanent=True),
+        name="robots-txt",
+    ),
+    path(
+        "favicon.ico",
+        RedirectView.as_view(url=static("tosti/favicon/favicon.ico"), permanent=True),
+        name="favicon",
+    ),
+    path(
+        "apple-touch-icon.png",
+        RedirectView.as_view(
+            url=static("tosti/favicon/apple-touch-icon.png"), permanent=True
+        ),
+    ),
+    path(
+        "apple-touch-icon-precomposed.png",
+        RedirectView.as_view(
+            url=static("tosti/favicon/apple-touch-icon.png"), permanent=True
+        ),
+    ),
+    path(
+        "apple-touch-icon-120x120.png",
+        RedirectView.as_view(
+            url=static("tosti/favicon/apple-touch-icon.png"), permanent=True
+        ),
+    ),
+    path(
+        "apple-touch-icon-120x120-precomposed.png",
+        RedirectView.as_view(
+            url=static("tosti/favicon/apple-touch-icon.png"), permanent=True
+        ),
+    ),
+    path(
+        "android-chrome-192x192.png",
+        RedirectView.as_view(
+            url=static("tosti/favicon/android-chrome-192x192.png"), permanent=True
+        ),
+    ),
+    path(
+        "android-chrome-512x512.png",
+        RedirectView.as_view(
+            url=static("tosti/favicon/android-chrome-512x512.png"), permanent=True
+        ),
+    ),
 ]

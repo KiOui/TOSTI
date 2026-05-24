@@ -17,7 +17,7 @@ class UserAdminForm(forms.ModelForm):
     """Custom AdminForm for Users."""
 
     user_permissions = forms.ModelMultipleChoiceField(
-        Permission.objects.all(),
+        Permission.objects.select_related("content_type"),
         required=False,
         widget=FilteredSelectMultiple("permissions", False),
     )
@@ -110,7 +110,7 @@ class GroupAdminForm(forms.ModelForm):
     """Custom AdminForm for Groups."""
 
     users = forms.ModelMultipleChoiceField(
-        queryset=get_user_model().objects.all(),
+        queryset=get_user_model().objects.select_related("association"),
         required=False,
         widget=FilteredSelectMultiple("users", False),
     )
@@ -119,7 +119,9 @@ class GroupAdminForm(forms.ModelForm):
         """Correctly initialize the form, because users is not a field of Groups, but the other way around."""
         super(GroupAdminForm, self).__init__(*args, **kwargs)
         if self.instance.pk:
-            self.fields["users"].initial = self.instance.user_set.all()
+            self.fields["users"].initial = self.instance.user_set.select_related(
+                "association"
+            )
 
     def save_m2m(self):
         """On save, add selected users to the group."""
@@ -172,7 +174,7 @@ class GroupAdmin(BaseGroupAdmin):
 
     def get_members(self, obj):
         """Get the members of a group."""
-        return ", ".join(str(u) for u in list(obj.user_set.all()))
+        return ", ".join(str(u) for u in obj.user_set.select_related("association"))
 
     get_members.short_description = "Members"
 

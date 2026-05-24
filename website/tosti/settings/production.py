@@ -87,6 +87,12 @@ LOGGING = {
         },
         # pysaml2 is noisy at INFO (metadata refresh, schema loading).
         "saml2": {"level": "ERROR", "propagate": True},
+        # spotipy logs every non-2xx HTTP response from the Spotify API at
+        # ERROR before raising SpotifyException. Our views translate those
+        # exceptions into proper HTTP responses, so the duplicate ERROR log
+        # only pollutes Sentry (e.g. user-driven 403 "Restriction violated"
+        # when the active device cannot play, free-tier limits, etc.).
+        "spotipy.client": {"level": "CRITICAL", "propagate": True},
     },
 }
 
@@ -136,6 +142,10 @@ SAML_SESSION_COOKIE_NAME = "saml_session"
 SESSION_COOKIE_SECURE = False
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SAML_USE_NAME_ID_AS_USERNAME = False
+# SURFconext only advertises HTTP-Redirect for SSO; declaring it as the
+# preferred binding avoids the per-login warning where djangosaml2 tries
+# HTTP-POST first, fails the metadata lookup, and falls back.
+SAML_DEFAULT_BINDING = saml2.BINDING_HTTP_REDIRECT
 SAML_ATTRIBUTE_MAPPING = {
     "uid": ("username",),
     "mail": ("email",),

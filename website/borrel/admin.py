@@ -162,7 +162,18 @@ class BorrelReservationAdmin(AutocompleteFilterMixin, ExportMixin, admin.ModelAd
 
     def get_queryset(self, request):
         """Return queryset."""
-        return super().get_queryset(request).prefetch_related("association")
+        return (
+            super()
+            .get_queryset(request)
+            .select_related(
+                "association",
+                "user_created__association",
+                "user_updated__association",
+                "user_submitted__association",
+                "venue_reservation__venue",
+                "venue_reservation__association",
+            )
+        )
 
     def submitted(self, obj):
         """Reservation is submitted."""
