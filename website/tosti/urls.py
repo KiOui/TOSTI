@@ -53,6 +53,10 @@ urlpatterns = [
         include(("fridges.urls", "fridges"), namespace="fridges"),
     ),
     path(
+        "tampon/",
+        include(("tampon.urls", "tampon"), namespace="tampon"),
+    ),
+    path(
         "status/",
         include(("status_screen.urls", "status_screen"), namespace="status_screen"),
     ),
