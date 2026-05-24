@@ -281,6 +281,15 @@ wheels = [
 ]
 
 [[package]]
+name = "cron-descriptor"
+version = "1.4.5"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/02/83/70bd410dc6965e33a5460b7da84cf0c5a7330a68d6d5d4c3dfdb72ca117e/cron_descriptor-1.4.5.tar.gz", hash = "sha256:f51ce4ffc1d1f2816939add8524f206c376a42c87a5fca3091ce26725b3b1bca", size = 30666, upload-time = "2024-08-24T18:16:48.654Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/88/20/2cfe598ead23a715a00beb716477cfddd3e5948cf203c372d02221e5b0c6/cron_descriptor-1.4.5-py3-none-any.whl", hash = "sha256:736b3ae9d1a99bc3dbfc5b55b5e6e7c12031e7ba5de716625772f8b02dcd6013", size = 50370, upload-time = "2024-08-24T18:16:46.783Z" },
+]
+
+[[package]]
 name = "cryptography"
 version = "43.0.3"
 source = { registry = "https://pypi.org/simple" }
@@ -384,6 +393,23 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/f8/31/bd9e6acdf959d5e19757026c206a6bdfceec3001ee85bb1f9799ce304f87/django_bootstrap5-26.2.tar.gz", hash = "sha256:12331059c8230ba372ffaad990a706151e1ad8f721a870aa2e862cf6746f0d33", size = 51468, upload-time = "2026-02-08T11:47:19.067Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/7a/79/d4b547849a86f450b1f1fb77f306da5d7844aba45f4aa10450d375fc26f5/django_bootstrap5-26.2-py3-none-any.whl", hash = "sha256:179af37c59f4e9b1070fc650f30961c5d903c2c0ad60280ad5b63ed394f68658", size = 26851, upload-time = "2026-02-08T11:47:20.198Z" },
+]
+
+[[package]]
+name = "django-celery-beat"
+version = "2.9.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "celery" },
+    { name = "cron-descriptor" },
+    { name = "django" },
+    { name = "django-timezone-field" },
+    { name = "python-crontab" },
+    { name = "tzdata" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/05/45/fc97bc1d9af8e7dc07f1e37044d9551a30e6793249864cef802341e2e3a8/django_celery_beat-2.9.0.tar.gz", hash = "sha256:92404650f52fcb44cf08e2b09635cb1558327c54b1a5d570f0e2d3a22130934c", size = 177667, upload-time = "2026-02-28T16:45:34.749Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/71/ae/9befa7ae37f5e5c41be636a254fcf47ff30dd5c88bd115070e252f6b9162/django_celery_beat-2.9.0-py3-none-any.whl", hash = "sha256:4a9e5ebe26d6f8d7215e1fc5c46e466016279dc102435a28141108649bdf2157", size = 105013, upload-time = "2026-02-28T16:45:32.822Z" },
 ]
 
 [[package]]
@@ -524,6 +550,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/c4/90/f083ae5fae92c121ed26689c21bba68cb4651defe62bdb70200ef47ece06/django_recurrence-1.14.tar.gz", hash = "sha256:154a6221bd6667c35250d9fa89bbc4792b3f1ec5dc8dff0f5872186b6df3cf76", size = 102449, upload-time = "2025-12-19T21:30:44.915Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/85/08/fec7dd78259512152c75e8c64ac5ba389eef55569915b190f6b798f6ff7a/django_recurrence-1.14-py3-none-any.whl", hash = "sha256:3e7420a38c7fa2f5073598e2a4236c65a983213f30f4413618448b43514649cd", size = 135711, upload-time = "2025-12-19T21:30:43.599Z" },
+]
+
+[[package]]
+name = "django-timezone-field"
+version = "7.2.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/da/05/9b93a66452cdb8a08ab26f08d5766d2332673e659a8b2aeb73f2a904d421/django_timezone_field-7.2.1.tar.gz", hash = "sha256:def846f9e7200b7b8f2a28fcce2b78fb2d470f6a9f272b07c4e014f6ba4c6d2e", size = 13096, upload-time = "2025-12-06T23:50:44.591Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/41/7f/d885667401515b467f84569c56075bc9add72c9fd425fca51a25f4c997e1/django_timezone_field-7.2.1-py3-none-any.whl", hash = "sha256:276915b72c5816f57c3baf9e43f816c695ef940d1b21f91ebf6203c09bf4ad44", size = 13284, upload-time = "2025-12-06T23:50:43.302Z" },
 ]
 
 [[package]]
@@ -894,6 +932,15 @@ wheels = [
 ]
 
 [[package]]
+name = "python-crontab"
+version = "3.3.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/99/7f/c54fb7e70b59844526aa4ae321e927a167678660ab51dda979955eafb89a/python_crontab-3.3.0.tar.gz", hash = "sha256:007c8aee68dddf3e04ec4dce0fac124b93bd68be7470fc95d2a9617a15de291b", size = 57626, upload-time = "2025-07-13T20:05:35.535Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/47/42/bb4afa5b088f64092036221843fc989b7db9d9d302494c1f8b024ee78a46/python_crontab-3.3.0-py3-none-any.whl", hash = "sha256:739a778b1a771379b75654e53fd4df58e5c63a9279a63b5dfe44c0fcc3ee7884", size = 27533, upload-time = "2025-07-13T20:05:34.266Z" },
+]
+
+[[package]]
 name = "python-dateutil"
 version = "2.9.0.post0"
 source = { registry = "https://pypi.org/simple" }
@@ -1140,6 +1187,7 @@ dependencies = [
     { name = "django-admin-rangefilter" },
     { name = "django-autocompletefilter" },
     { name = "django-bootstrap5" },
+    { name = "django-celery-beat" },
     { name = "django-constance" },
     { name = "django-cors-headers" },
     { name = "django-csp" },
@@ -1162,6 +1210,7 @@ dependencies = [
     { name = "pysaml2" },
     { name = "pytz" },
     { name = "pyyaml" },
+    { name = "redis" },
     { name = "requests" },
     { name = "spotipy" },
     { name = "tomli" },
@@ -1183,14 +1232,15 @@ prod = [
 [package.metadata]
 requires-dist = [
     { name = "bleach", extras = ["css"], specifier = ">=6.3.0" },
-    { name = "coverage", specifier = ">=7.14.1" },
     { name = "celery", specifier = ">=5.6.3" },
+    { name = "coverage", specifier = ">=7.14.1" },
     { name = "cryptography", specifier = ">=43.0.3" },
     { name = "django", specifier = ">=6.0.5" },
     { name = "django-admin-autocomplete-filter", specifier = ">=0.7.1" },
     { name = "django-admin-rangefilter", specifier = ">=0.13.5" },
     { name = "django-autocompletefilter", specifier = ">=0.0.9" },
     { name = "django-bootstrap5", specifier = ">=26.2" },
+    { name = "django-celery-beat", specifier = ">=2.9.0" },
     { name = "django-constance", specifier = ">=4.3.5" },
     { name = "django-cors-headers", specifier = ">=4.9.0" },
     { name = "django-csp", specifier = ">=4.0" },
@@ -1213,6 +1263,7 @@ requires-dist = [
     { name = "pysaml2", specifier = ">=7.5.4" },
     { name = "pytz", specifier = ">=2026.2" },
     { name = "pyyaml", specifier = ">=6.0.3" },
+    { name = "redis", specifier = ">=7.4.0" },
     { name = "requests", specifier = ">=2.34.2" },
     { name = "spotipy", specifier = ">=2.26.0" },
     { name = "tomli", specifier = ">=2.4.1" },

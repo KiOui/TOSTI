@@ -27,7 +27,6 @@ RUN uv sync --locked --group prod
 # Copy the current directory contents into the container at /app
 COPY website /app
 COPY entrypoint.sh /
-COPY entrypoint_cron.sh /
 
 ENV DJANGO_SETTINGS_MODULE="tosti.settings.production"
 

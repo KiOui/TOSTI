@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     "django_bootstrap5",
     "tinymce",
     "fontawesomefree",
+    "django_celery_beat",
     "autocompletefilter",
     "import_export",
     "guardian",
