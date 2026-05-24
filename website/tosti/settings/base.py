@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "django_filters",
     "drf_spectacular",
+    "mcp_server",
     "rangefilter",
     "announcements",
     "users",
@@ -78,6 +79,7 @@ MIDDLEWARE = [
     "announcements.middleware.ClosedAnnouncementsMiddleware",
     "announcements.middleware.AppAnnouncementMiddleware",
     "tosti.middleware.RequestMetricsMiddleware",
+    "tosti.middleware.WWWAuthenticateMiddleware",
 ]
 
 ROOT_URLCONF = "tosti.urls"
@@ -164,6 +166,18 @@ SPECTACULAR_SETTINGS = {
     "OAUTH2_REFRESH_URL": None,
     "OAUTH2_SCOPES": None,  # Auto-populated from oauth2_provider's scope backend.
 }
+
+# MCP server (Model Context Protocol) — exposes a subset of the API as
+# LLM-callable tools. Auth piggybacks on the existing OAuth2 / session stack.
+DJANGO_MCP_ENDPOINT = "mcp"
+# OAuth2 must come first so DRF returns a 401 with a Bearer ``WWW-Authenticate``
+# header for unauthenticated requests — the standard signal for OAuth-aware
+# clients (and what RFC 9728 + the MCP spec expect). SessionAuthentication
+# handles browser-flow access for users who arrive via a normal Django login.
+DJANGO_MCP_AUTHENTICATION_CLASSES = [
+    "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
+    "rest_framework.authentication.SessionAuthentication",
+]
 
 # CORS
 CORS_ORIGIN_ALLOW_ALL = True

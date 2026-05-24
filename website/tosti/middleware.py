@@ -102,3 +102,35 @@ class RequestMetricsMiddleware:
         if authenticated:
             return "api_internal"
         return "api_anon"
+
+
+class WWWAuthenticateMiddleware:
+    """Add ``WWW-Authenticate`` to 401s on OAuth-protected paths.
+
+    RFC 9728 expects an unauthenticated request to a protected resource to
+    include a header pointing the client at the resource's metadata document,
+    so the client knows where to bootstrap its OAuth2 flow. Without this header
+    MCP clients can't auto-discover the auth server.
+
+    DRF's default 401 doesn't carry this header; we add it for /mcp and /api/.
+    """
+
+    PROTECTED_PREFIXES = ("/mcp", "/api/")
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        if response.status_code != 401:
+            return response
+        if not any(request.path.startswith(p) for p in self.PROTECTED_PREFIXES):
+            return response
+
+        resource_metadata = request.build_absolute_uri(
+            "/.well-known/oauth-protected-resource"
+        )
+        response["WWW-Authenticate"] = (
+            f'Bearer realm="tosti", resource_metadata="{resource_metadata}"'
+        )
+        return response

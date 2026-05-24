@@ -4,6 +4,11 @@ from django.templatetags.static import static
 from django.urls import path, include
 from django.views.generic import RedirectView
 
+from .oauth_discovery import (
+    DynamicClientRegistrationView,
+    OAuthAuthorizationServerMetadataView,
+    OAuthProtectedResourceMetadataView,
+)
 from .views import (
     IndexView,
     PrivacyView,
@@ -23,6 +28,22 @@ handler500 = custom_handler500
 
 urlpatterns = [
     path("", IndexView.as_view(), name="index"),
+    path("", include("mcp_server.urls")),
+    path(
+        ".well-known/oauth-authorization-server",
+        OAuthAuthorizationServerMetadataView.as_view(),
+        name="oauth-authorization-server-metadata",
+    ),
+    path(
+        ".well-known/oauth-protected-resource",
+        OAuthProtectedResourceMetadataView.as_view(),
+        name="oauth-protected-resource-metadata",
+    ),
+    path(
+        "oauth/register/",
+        DynamicClientRegistrationView.as_view(),
+        name="oauth-dynamic-client-registration",
+    ),
     path("oauth/", include("oauth2_provider.urls", namespace="oauth2_provider")),
     path("privacy/", PrivacyView.as_view(), name="privacy"),
     path("documentation/", DocumentationView.as_view(), name="documentation"),
