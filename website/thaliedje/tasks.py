@@ -24,6 +24,7 @@ def thaliedje_stop_music():
 def thaliedje_start_music():
     """Start the music."""
     if config.THALIEDJE_HOLIDAY_ACTIVE:
+        emit_metric("cron_start_music_run", skipped_reason="holiday")
         return
 
     started = 0

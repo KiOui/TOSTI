@@ -43,8 +43,8 @@ x-django-web-env: &django-web-env
 x-django-celery-env: &django-celery-env
   <<: *django-core-env
   REDIS_HOST: "redis://redis:6379/0"
-  CELERY_BROKER: "redis://redis:6379/0"
-  CELERY_BACKEND: "redis://redis:6379/0"
+  CELERY_BROKER_URL: "redis://redis:6379/0"
+  CELERY_BACKEND_URL: "redis://redis:6379/0"
 
 services:
   caddy:
@@ -144,7 +144,7 @@ services:
     # This container will run queued tasks.
     image: *tosti-image
     entrypoint: [ ]
-    command: celery --app=tosti worker --loglevel=info --uid=nobody
+    command: ["uv", "run", "celery", "--app=tosti", "worker", "--loglevel=info", "--uid=nobody"]
     restart: unless-stopped
     logging: *default-logging
     security_opt:
@@ -166,7 +166,7 @@ services:
     # This container will run celery beat (cron) tasks.
     image: *tosti-image
     entrypoint: [ ]
-    command: celery --app=tosti beat --loglevel=info --uid=nobody --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    command: ["uv", "run", "celery", "--app=tosti", "beat", "--loglevel=info", "--uid=nobody", "--scheduler", "django_celery_beat.schedulers:DatabaseScheduler"]
     restart: unless-stopped
     logging: *default-logging
     security_opt:

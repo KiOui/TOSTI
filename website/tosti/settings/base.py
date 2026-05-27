@@ -303,16 +303,6 @@ CONSTANCE_CONFIG_FIELDSETS = {
 # Sites app
 SITE_ID = 1
 
-CRON_CLASSES = [
-    "thaliedje.crons.StopMusicCronJob",
-    "thaliedje.crons.StartMusicCronJob",
-    "silvasoft.crons.SynchronizeSilvasoft",
-    "yivi.crons.CleanupSessionCronJob",
-    "tosti.crons.DataMinimisationCronJob",
-]
-
-DJANGO_CRON_DELETE_LOGS_OLDER_THAN = 14
-
 AGE_VERIFICATION_MINIMUM_AGE_MAPPING = {
     "pbdf.gemeente.personalData.over18": 18,
     "pbdf.pbdf.idin.over18": 18,
@@ -325,3 +315,7 @@ AGE_VERIFICATION_INSTITUTE_VALUE = "ru.nl"
 
 YIVI_SERVER_URL = os.environ.get("YIVI_SERVER_URL")
 YIVI_SERVER_TOKEN = os.environ.get("YIVI_SERVER_TOKEN")
+
+# Celery
+CELERY_BROKER_URL = os.environ.get("BROKER_URL", "redis://localhost:6379/0")
+CELERY_RESULT_BACKEND = os.environ.get("RESULT_BACKEND", "redis://localhost:6379/0")
