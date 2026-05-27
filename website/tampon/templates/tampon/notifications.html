@@ -1,0 +1,85 @@
+{% extends "tosti/base.html" %}
+{% block title %}T.A.M.P.O.N. notifications{% endblock %}
+{% block page %}
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">T.A.M.P.O.N. notifications</h1>
+        <a href="{% url 'tampon:index' %}" class="btn btn-secondary">Back to form</a>
+    </div>
+    {% for message in messages %}<div class="alert {{ message.tags }}" role="alert">{{ message }}</div>{% endfor %}
+    {% if notifications %}
+    <div class="card">
+        <div class="list-group list-group-flush">
+            {% for notification in notifications %}
+            <div class="list-group-item">
+                <div class="d-flex justify-content-between">
+                    <strong>room {{ notification.room }}</strong>
+                    <small class="text-muted">{{ notification.created_at }}</small>
+                </div>
+                {% if notification.notification_text %}
+                <p class="mb-0 mt-2">{{ notification.notification_text }}</p>
+                {% else %}
+                <p class="mb-0 mt-2 text-muted">No extra notification text was added.</p>
+                {% endif %}
+                {% if notification.is_resolved %}
+                <span class="badge badge-success mt-2">Resolved</span>
+                {% else %}
+                <span class="badge badge-warning mt-2">Open</span>
+                <button type="button" class="btn btn-sm btn-primary mt-2" data-bs-toggle="modal"
+                    data-bs-target="#resolveModal" data-notification-id="{{ notification.id }}">Resolve</button>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info">There are no T.A.M.P.O.N. notifications yet.</div>
+    {% endif %}
+</div>
+<div class="modal fade" id="resolveModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="notification_id" id="notificationId" value="">
+                <div class="modal-header">
+                    <h5 class="modal-title">Resolve Notification</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {% for field in resolve_form %}
+                    <div class="mb-3">
+                        <div class="d-flex gap-2">
+                            <label for="{{ field.id_for_label }}" class="form-label" style="width: 15ch;
+                                                  white-space: normal;
+                                                  word-break: break-word">{{ field.label }}</label>
+                            {{ field }}
+                            <button type="button" class="btn btn-sm btn-outline-secondary"
+                                onclick="document.getElementById('{{ field.id_for_label }}').value = 0;">
+                                Set to 0
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary"
+                                data-initial="{{ field.initial }}"
+                                onclick="document.getElementById('{{ field.id_for_label }}').value = this.dataset.initial;">
+                                Reset to default:"{{ field.initial }}"
+                            </button>
+                        </div>
+                        {% if field.errors %}<div class="invalid-feedback d-block">{{ field.errors }}</div>{% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    document.getElementById('resolveModal').addEventListener('show.bs.modal', function (event) {
+        var notificationId = event.relatedTarget.dataset.notificationId;
+        document.getElementById('notificationId').value = notificationId;
+    });
+</script>
+{% endblock %}
