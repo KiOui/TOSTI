@@ -6,39 +6,25 @@ from django.core.exceptions import ValidationError
 
 class Room(models.Model):
     BUILDING_CODES = {
-        "Huygens": "hg",
+        "hg": "Huygens",
     }
 
-    building = models.CharField(
-        max_length=10, choices=BUILDING_CODES, default="Huygens"
-    )
+    class Meta:
+        unique_together = ("building", "floor_number", "room_number")
+
+    building = models.CharField(max_length=10, choices=BUILDING_CODES, default="hg")
     floor_number = models.IntegerField()
     room_number = models.IntegerField()
     active = models.BooleanField()
     room_code = models.CharField(max_length=7, unique=True, editable=False)
 
-    def clean(self):
-        super().clean()
-        same_room = Room.objects.filter(
-            building=self.building,
-            floor_number=self.floor_number,
-            room_number=self.room_number,
-        )
-        same_room = same_room.exclude(pk=self.pk)
-        if same_room.exists():
-            raise ValidationError(
-                "A room with this building/floor/room number already exists."
-            )
-        return None
-
     def save(self, *args, **kwargs):
-        self.clean()
-        building = self.BUILDING_CODES.get(self.building, "xx")
+        building = self.building
         self.room_code = f"{building}{self.floor_number:02d}{self.room_number:03d}"
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.building} {self.floor_number:02d}.{self.room_number:03d}"
+        return f"{self.get_building_display()} {self.floor_number:02d}.{self.room_number:03d}"
 
 
 class TamponNotification(models.Model):

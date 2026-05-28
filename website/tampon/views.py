@@ -71,9 +71,9 @@ class NotificationsView(TamponCommitteeMixin, ListView):
     context_object_name = "notifications"
 
     def get_queryset(self):
-        max = timezone.now() - timedelta(weeks=2)
+        cutoff = timezone.now() - timedelta(weeks=2)
         return TamponNotification.objects.filter(
-            Q(is_resolved=False) | Q(is_resolved=True, resolved_at__gte=max)
+            Q(is_resolved=False) | Q(is_resolved=True, resolved_at__gte=cutoff)
         )
 
     def get_context_data(self, **kwargs):
@@ -88,12 +88,12 @@ class NotificationsView(TamponCommitteeMixin, ListView):
                 TamponNotification, pk=request.POST.get("notification_id")
             )
             notification.mark_resolved()
-            sum = 1
-            for notification in TamponNotification.objects.filter(
+            no_notifications = 1
+            for other_notification in TamponNotification.objects.filter(
                 room=notification.room, is_resolved=False
             ):
-                notification.mark_resolved()
-                sum += 1
+                other_notification.mark_resolved()
+                no_notifications += 1
             restock = Restock.objects.create(
                 room=notification.room,
                 restocked_by=request.user,
@@ -110,10 +110,10 @@ class NotificationsView(TamponCommitteeMixin, ListView):
                     stock_data.stock_amount -= quantity
                     stock_data.save()
 
-            if sum > 1:
+            if no_notifications > 1:
                 messages.success(
                     request,
-                    f"{sum} notifications for {notification.room} resolved and restock recorded.",
+                    f"{no_notifications} notifications for {notification.room} resolved and restock recorded.",
                 )
             else:
                 messages.success(

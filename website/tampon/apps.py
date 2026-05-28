@@ -12,6 +12,6 @@ class TamponConfig(AppConfig):
                 "title": "Tampon",
                 "url": reverse("tampon:index"),
                 "location": "start",
-                "order": 4,
+                "order": 6,
             },
         ]

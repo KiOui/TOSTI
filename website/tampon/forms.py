@@ -5,10 +5,19 @@ from tampon.models import TamponNotification, Room, Restock, StockData
 
 
 class FloorSelect(Select):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._room_cache = {}
+
+    def set_room_cache(self, queryset):
+        """Cache all Room instances from the queryset once."""
+        self._room_cache = {room.id: room for room in queryset}
+
     def create_option(self, name, value, label, selected, index, **kwargs):
         option = super().create_option(name, value, label, selected, index, **kwargs)
-        if value:
-            room = Room.objects.get(pk=int(str(value)))
+        # Use cached instance instead of DB lookup
+        if value and value in self._room_cache:
+            room = self._room_cache[value]
             option["attrs"]["data-floor_number"] = room.floor_number
         return option
 
@@ -48,11 +57,19 @@ class TamponNotificationForm(forms.ModelForm):
             )
         )
         self.fields["room"].empty_label = "Select a dispenser location"
+        # Update widget cache when queryset changes
+        room_widget = self.fields["room"].widget
+        if isinstance(room_widget, FloorSelect):
+            room_widget.set_room_cache(self.fields["room"].queryset)
 
     def __init__(self, *args, **kwargs):
-        """Only show active rooms."""
+        """Only show active rooms and cache them in the widget."""
         super().__init__(*args, **kwargs)
         self.filter_room(room_id=None)
+        # Cache the room queryset in the widget to avoid N+1 queries
+        room_widget = self.fields["room"].widget
+        if isinstance(room_widget, FloorSelect):
+            room_widget.set_room_cache(self.fields["room"].queryset)
 
 
 class ResolveForm(forms.Form):
@@ -63,6 +80,7 @@ class ResolveForm(forms.Form):
             self.fields[f"stock_{stock.id}"] = forms.IntegerField(
                 label=stock.name,
                 initial=stock.restock_default,
+                min_value=0,
                 widget=forms.NumberInput(
                     attrs={
                         "class": "form-control",
