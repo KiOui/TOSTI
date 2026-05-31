@@ -37,21 +37,21 @@ class TamponNotificationForm(forms.ModelForm):
         model = TamponNotification
         fields = (
             "room",
-            "notification_text",
+            "comment",
         )
         widgets = {
             "room": FloorSelect(attrs={"class": "form-control"}),
-            "notification_text": forms.Textarea(
+            "comment": forms.Textarea(
                 attrs={
                     "class": "form-control",
                     "rows": 3,
-                    "placeholder": "Enter notification text",
+                    "placeholder": "Enter comments or details about the issue (optional)",
                 }
             ),
         }
         labels = {
             "room": "Dispenser location",
-            "notification_text": "Notification text",
+            "comment": "Additional comments (optional)",
         }
 
     def filter_room(self, room_id):

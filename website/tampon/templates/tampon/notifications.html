@@ -16,10 +16,10 @@
                     <strong>room {{ notification.room }}</strong>
                     <small class="text-muted">{{ notification.created_at }}</small>
                 </div>
-                {% if notification.notification_text %}
-                <p class="mb-0 mt-2">{{ notification.notification_text }}</p>
+                {% if notification.comment %}
+                <p class="mb-0 mt-2">{{ notification.comment }}</p>
                 {% else %}
-                <p class="mb-0 mt-2 text-muted">No extra notification text was added.</p>
+                <p class="mb-0 mt-2 text-muted">No comment was added.</p>
                 {% endif %}
                 {% if notification.is_resolved %}
                 <span class="badge badge-success mt-2">Resolved</span>

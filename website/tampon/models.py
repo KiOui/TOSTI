@@ -16,7 +16,7 @@ class TamponNotification(models.Model):
     """Notification submitted through the tampon form."""
 
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
-    notification_text = models.TextField(
+    comment = models.TextField(
         blank=True,
         max_length=500,
     )

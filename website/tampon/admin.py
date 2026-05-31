@@ -33,7 +33,7 @@ class TamponNotificationAdmin(admin.ModelAdmin):
     list_filter = ("room__name", "is_resolved", "created_at")
     search_fields = (
         "room__name",
-        "notification_text",
+        "comment",
     )
 
 
