@@ -12,20 +12,14 @@ class RestockItemInline(admin.TabularInline):
 @admin.register(Room)
 class RoomAdmin(admin.ModelAdmin):
     list_display = (
-        "__str__",
-        "building",
-        "floor_number",
-        "room_number",
+        "name",
+        "slug",
         "active",
     )
-    list_filter = (
-        "building",
-        "floor_number",
-        "active",
-    )
+    list_filter = ("active",)
     search_fields = (
-        "building",
-        "room_number",
+        "name",
+        "slug",
     )
 
 
@@ -36,9 +30,9 @@ class TamponNotificationAdmin(admin.ModelAdmin):
         "created_at",
         "is_resolved",
     )
-    list_filter = ("room__building", "room__floor_number", "is_resolved", "created_at")
+    list_filter = ("room__name", "is_resolved", "created_at")
     search_fields = (
-        "room__room_number",
+        "room__name",
         "notification_text",
     )
 
@@ -50,9 +44,9 @@ class RestockAdmin(admin.ModelAdmin):
         "restock_time",
         "restocked_by",
     )
-    list_filter = ("room__building", "room__floor_number", "restock_time")
+    list_filter = ("room__name", "restock_time")
     search_fields = (
-        "room__room_number",
+        "room__name",
         "restocked_by__username",
     )
     inlines = [RestockItemInline]

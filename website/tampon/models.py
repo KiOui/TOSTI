@@ -1,30 +1,15 @@
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
-from django.core.exceptions import ValidationError
 
 
 class Room(models.Model):
-    BUILDING_CODES = {
-        "hg": "Huygens",
-    }
-
-    class Meta:
-        unique_together = ("building", "floor_number", "room_number")
-
-    building = models.CharField(max_length=10, choices=BUILDING_CODES, default="hg")
-    floor_number = models.IntegerField()
-    room_number = models.IntegerField()
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=255, unique=True)
     active = models.BooleanField()
-    room_code = models.CharField(max_length=7, unique=True, editable=False)
-
-    def save(self, *args, **kwargs):
-        building = self.building
-        self.room_code = f"{building}{self.floor_number:02d}{self.room_number:03d}"
-        super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.get_building_display()} {self.floor_number:02d}.{self.room_number:03d}"
+        return self.name
 
 
 class TamponNotification(models.Model):

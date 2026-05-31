@@ -28,7 +28,7 @@ class IndexView(TemplateView):
         """Add the form and committee permissions to the template context."""
         context = super().get_context_data(**kwargs)
         room_input = self.request.GET.get("room")
-        room = Room.objects.filter(room_code=room_input).first()
+        room = Room.objects.filter(slug=room_input).first()
 
         if room:
             messages.info(

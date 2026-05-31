@@ -1,7 +1,15 @@
+import re
+
 from django import forms
 from django.forms.widgets import Select
 
 from tampon.models import TamponNotification, Room, Restock, StockData
+
+
+def get_floor_number_from_slug(slug):
+    """Extract the floor number from the room slug."""
+    match = re.search(r"-\d|\d{2}", slug)
+    return int(match.group()) if match else None
 
 
 class FloorSelect(Select):
@@ -48,28 +56,26 @@ class TamponNotificationForm(forms.ModelForm):
 
     def filter_room(self, room_id):
         """Filter the room queryset based on the provided room_id."""
-        self.fields["room"].queryset = (
+        qs = (
             Room.objects.filter(id=room_id, active=True)
             if room_id
-            else Room.objects.filter(active=True).order_by(
-                "floor_number",
-                "room_number",
-            )
+            else Room.objects.filter(active=True).order_by("name")
         )
+        rooms = list(qs)
+        for room in rooms:
+            room.floor_number = get_floor_number_from_slug(room.slug)
+        rooms = sorted(rooms, key=lambda r: (r.floor_number is None, r.floor_number))
+        self.annotated_rooms = rooms
+        self.fields["room"].queryset = qs
         self.fields["room"].empty_label = "Select a dispenser location"
-        # Update widget cache when queryset changes
         room_widget = self.fields["room"].widget
         if isinstance(room_widget, FloorSelect):
-            room_widget.set_room_cache(self.fields["room"].queryset)
+            room_widget.set_room_cache(rooms)
 
     def __init__(self, *args, **kwargs):
         """Only show active rooms and cache them in the widget."""
         super().__init__(*args, **kwargs)
         self.filter_room(room_id=None)
-        # Cache the room queryset in the widget to avoid N+1 queries
-        room_widget = self.fields["room"].widget
-        if isinstance(room_widget, FloorSelect):
-            room_widget.set_room_cache(self.fields["room"].queryset)
 
 
 class ResolveForm(forms.Form):

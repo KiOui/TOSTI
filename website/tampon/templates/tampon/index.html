@@ -32,7 +32,7 @@
                                 <label for="floor-filter">Filter by Floor:</label>
                                 <select id="floor-filter" class="form-control">
                                     <option value="">All Floors</option>
-                                    {% for room in form.room.field.queryset|dictsort:"floor_number" %}
+                                    {% for room in form.annotated_rooms %}
                                         {% ifchanged room.floor_number %}
                                             <option value="{{ room.floor_number }}">{{ room.floor_number }}</option>
                                         {% endifchanged %}
