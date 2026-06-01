@@ -10,7 +10,7 @@ requires-python = ">=3.14"
 license = "MIT"
 dependencies = [
     "bleach[css]>=6.3.0",
-    "coverage>=7.14.0",
+    "coverage>=7.14.1",
     "cryptography>=43.0.3",
     "django>=6.0.5",
     "django-admin-autocomplete-filter>=0.7.1",
