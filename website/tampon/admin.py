@@ -21,6 +21,7 @@ class RoomAdmin(admin.ModelAdmin):
         "name",
         "slug",
     )
+    prepopulated_fields = {"slug": ("name",)}
 
 
 @admin.register(TamponNotification)

@@ -1,6 +1,9 @@
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 class Room(models.Model):
@@ -32,11 +35,12 @@ class TamponNotification(models.Model):
             ("manage_tamponnotification", "Can manage Tampon notifications"),
         ]
 
-    def mark_resolved(self):
-        self.is_resolved = True
-        if self.resolved_at is None:
+    def save(self, *args, **kwargs):
+        if self.is_resolved and self.resolved_at is None:
             self.resolved_at = timezone.now()
-        self.save(update_fields=["is_resolved", "resolved_at"])
+            if "update_fields" in kwargs:
+                kwargs["update_fields"] = [*kwargs["update_fields"], "resolved_at"]
+        return super().save(*args, **kwargs)
 
     def __str__(self):
         return f"Notification for {self.room} at {self.created_at}"
@@ -45,11 +49,11 @@ class TamponNotification(models.Model):
 class Restock(models.Model):
     """Restock record for menstrual products."""
 
+    """A restock record is created when a tampon notification is resolved, and contains the details of the restock that was done.
+    It is linked to the room and to multiple individual RestockItem's that were restocked."""
     room = models.ForeignKey(Room, on_delete=models.PROTECT)
     restock_time = models.DateTimeField(auto_now_add=True)
-    restocked_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True
-    )
+    restocked_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     stock_items = models.ManyToManyField(
         "StockData",
         through="RestockItem",
@@ -66,6 +70,8 @@ class Restock(models.Model):
 
 
 class StockData(models.Model):
+    """Data about a specific type of stock that can be restocked"""
+
     name = models.CharField(max_length=100)
     restock_default = models.IntegerField(default=0)
     stock_amount = models.IntegerField(default=0)
@@ -75,6 +81,8 @@ class StockData(models.Model):
 
 
 class RestockItem(models.Model):
+    """Through model for the many-to-many relationship between Restock and StockData, containing the quantity of each stock that was restocked in a Restock."""
+
     restock = models.ForeignKey(Restock, on_delete=models.CASCADE)
     stock_data = models.ForeignKey(StockData, on_delete=models.PROTECT)
     quantity = models.IntegerField()

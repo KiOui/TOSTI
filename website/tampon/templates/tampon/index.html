@@ -17,18 +17,18 @@
                     This floor does not have any
                     dispensers!
                 </div>
-                <div class="card">
+                <div class="card mb-4">
                     {% if can_view_notifications %}
                         <div class="card-header" style="background-color: var(--card-header);">
                             <a href="{% url 'tampon:notifications' %}" class="btn-ml btn-on my-2">Notifications</a>
                         </div>
                     {% endif %}
                     <div class="card-header">
-                        <h2 class="h3 text-center mb-4">Let us know what dispenser is empty</h2>
+                        <h2 class="h3 text-center">Let us know what dispenser is empty</h2>
                     </div>
                     <form method="post">
                         <div class="card-body">
-                            <div class="form-group">
+                            <div class="form-group mb-2 ">
                                 <label for="floor-filter">Filter by Floor:</label>
                                 <select id="floor-filter" class="form-control">
                                     <option value="">All Floors</option>
@@ -40,7 +40,7 @@
                                 </select>
                             </div>
                             {% csrf_token %}
-                            <div class="form-group">
+                            <div class="form-group mb-2">
                                 <label for="{{ form.room.id_for_label }}">{{ form.room.label }}</label>
                                 {{ form.room }}
                                 {{ form.room.errors }}

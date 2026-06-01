@@ -87,12 +87,14 @@ class NotificationsView(TamponCommitteeMixin, ListView):
             notification = get_object_or_404(
                 TamponNotification, pk=request.POST.get("notification_id")
             )
-            notification.mark_resolved()
+            notification.is_resolved = True
+            notification.save(update_fields=["is_resolved"])
             no_notifications = 1
             for other_notification in TamponNotification.objects.filter(
                 room=notification.room, is_resolved=False
             ):
-                other_notification.mark_resolved()
+                other_notification.is_resolved = True
+                other_notification.save(update_fields=["is_resolved"])
                 no_notifications += 1
             restock = Restock.objects.create(
                 room=notification.room,
