@@ -230,7 +230,6 @@ CONSTANCE_CONFIG = {
     "SILVASOFT_API_URL": ("https://rest-api.silvasoft.nl/rest/", "Endpoint for Silvasoft API", str),
     "SILVASOFT_USERNAME": ("", "Username for Silvasoft integration", str),
     "SILVASOFT_API_KEY": ("", "API key for Silvasoft integration", str),
-    "MAXIMUM_SYNC_PER_RUN": (15, "Maximum amount of synchronizations to run per hour", int),
     "BORREL_SEND_BORREL_RESERVATION_REQUEST_EMAILS_TO": (
         "noreply@example.com",
         "Where to send borrel reservation request notifications to (e-mail address)",
@@ -283,7 +282,6 @@ CONSTANCE_CONFIG_FIELDSETS = {
         "SILVASOFT_API_URL",
         "SILVASOFT_USERNAME",
         "SILVASOFT_API_KEY",
-        "MAXIMUM_SYNC_PER_RUN",
     ),
     "E-mail settings": (
         "BORREL_SEND_BORREL_RESERVATION_REQUEST_EMAILS_TO",
