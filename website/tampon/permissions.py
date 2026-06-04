@@ -12,6 +12,4 @@ class TamponCommitteeMixin:
 
 def is_tampon_committee_member(user):
     """Return whether the user is allowed to see tampon notifications."""
-    return user.is_authenticated and (
-        user.is_staff or user.has_perm("tampon.manage_tamponnotification")
-    )
+    return user.is_authenticated and user.has_perm("tampon.manage_tamponnotification")
