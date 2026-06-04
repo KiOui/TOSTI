@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     "django_bootstrap5",
     "tinymce",
     "fontawesomefree",
+    "django_celery_beat",
     "autocompletefilter",
     "import_export",
     "guardian",
@@ -28,7 +29,6 @@ INSTALLED_APPS = [
     "django_filters",
     "drf_spectacular",
     "rangefilter",
-    "cron",
     "announcements",
     "users",
     "qualifications",
@@ -230,7 +230,6 @@ CONSTANCE_CONFIG = {
     "SILVASOFT_API_URL": ("https://rest-api.silvasoft.nl/rest/", "Endpoint for Silvasoft API", str),
     "SILVASOFT_USERNAME": ("", "Username for Silvasoft integration", str),
     "SILVASOFT_API_KEY": ("", "API key for Silvasoft integration", str),
-    "MAXIMUM_SYNC_PER_RUN": (15, "Maximum amount of synchronizations to run per hour", int),
     "BORREL_SEND_BORREL_RESERVATION_REQUEST_EMAILS_TO": (
         "noreply@example.com",
         "Where to send borrel reservation request notifications to (e-mail address)",
@@ -283,7 +282,6 @@ CONSTANCE_CONFIG_FIELDSETS = {
         "SILVASOFT_API_URL",
         "SILVASOFT_USERNAME",
         "SILVASOFT_API_KEY",
-        "MAXIMUM_SYNC_PER_RUN",
     ),
     "E-mail settings": (
         "BORREL_SEND_BORREL_RESERVATION_REQUEST_EMAILS_TO",
@@ -303,16 +301,6 @@ CONSTANCE_CONFIG_FIELDSETS = {
 # Sites app
 SITE_ID = 1
 
-CRON_CLASSES = [
-    "thaliedje.crons.StopMusicCronJob",
-    "thaliedje.crons.StartMusicCronJob",
-    "silvasoft.crons.SynchronizeSilvasoft",
-    "yivi.crons.CleanupSessionCronJob",
-    "tosti.crons.DataMinimisationCronJob",
-]
-
-DJANGO_CRON_DELETE_LOGS_OLDER_THAN = 14
-
 AGE_VERIFICATION_MINIMUM_AGE_MAPPING = {
     "pbdf.gemeente.personalData.over18": 18,
     "pbdf.pbdf.idin.over18": 18,
@@ -325,3 +313,7 @@ AGE_VERIFICATION_INSTITUTE_VALUE = "ru.nl"
 
 YIVI_SERVER_URL = os.environ.get("YIVI_SERVER_URL")
 YIVI_SERVER_TOKEN = os.environ.get("YIVI_SERVER_TOKEN")
+
+# Celery
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0")
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379/0")

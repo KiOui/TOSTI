@@ -18,14 +18,14 @@ x-db-env: &db-env
   POSTGRES_PORT: 5432
 
 # Minimum env needed to boot Django + report errors. Used by every service
-# that imports the Django settings (web, cron).
+# that imports the Django settings (web, celery).
 x-django-core-env: &django-core-env
   <<: *db-env
   DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
   SENTRY_DSN: ${SENTRY_DSN}
 
 # Web-only env: HTTP serving, SAML login, Yivi requests, outgoing mail.
-# Cron doesn't do any of these.
+# Celery doesn't do any of these.
 x-django-web-env: &django-web-env
   <<: *django-core-env
   DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS}
@@ -39,6 +39,12 @@ x-django-web-env: &django-web-env
   EMAIL_HOST_USER: ${EMAIL_ADDRESS}
   DEFAULT_FROM_EMAIL: "TOSTI <${EMAIL_ADDRESS}>"
   SERVER_EMAIL: ${EMAIL_ADDRESS}
+
+x-django-celery-env: &django-celery-env
+  <<: *django-core-env
+  REDIS_HOST: "redis://redis:6379/0"
+  CELERY_BROKER_URL: "redis://redis:6379/0"
+  CELERY_BACKEND_URL: "redis://redis:6379/0"
 
 services:
   caddy:
@@ -134,9 +140,11 @@ services:
       # deploy doesn't fail the check while migrate is still running.
       start_period: 180s
 
-  cron:
+  celery_worker:
+    # This container will run queued tasks.
     image: *tosti-image
-    entrypoint: ["/bin/sh", "/entrypoint_cron.sh"]
+    entrypoint: [ ]
+    command: ["uv", "run", "celery", "--app=tosti", "worker", "--loglevel=info", "--uid=nobody"]
     restart: unless-stopped
     logging: *default-logging
     security_opt:
@@ -147,21 +155,47 @@ services:
     depends_on:
       database:
         condition: service_healthy
-      # Wait for web's entrypoint to finish migrations before cron starts
-      # firing `runcrons`. Otherwise the first cron tick can race the
-      # migration and crash with "relation does not exist" — which lands
-      # in Sentry on every deploy.
       web:
         condition: service_healthy
     volumes:
       - media:/media
       - cache:/app/cache
-    environment: *django-core-env
+    environment: *django-celery-env
+
+  celery_beat:
+    # This container will run celery beat (cron) tasks.
+    image: *tosti-image
+    entrypoint: [ ]
+    command: ["uv", "run", "celery", "--app=tosti", "beat", "--loglevel=info", "--uid=nobody", "--scheduler", "django_celery_beat.schedulers:DatabaseScheduler"]
+    restart: unless-stopped
+    logging: *default-logging
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - db
+      - outbound
+    depends_on:
+      database:
+        condition: service_healthy
+      web:
+        condition: service_healthy
+    volumes:
+      - media:/media
+      - cache:/app/cache
+    environment: *django-celery-env
+
+  redis:
+    image: redis:8.6
+    volumes:
+      - redis-data:/data
+    networks:
+      - db
 
 networks:
   # Public-facing (caddy, yivi) + backend HTTP (web, yivi).
   web:
   # Database-only network; no internet access, no external services.
+  #  This network also houses the redis database.
   db:
     internal: true
   # Outbound-only network for services that need to reach external APIs without being reachable from caddy.
@@ -173,6 +207,7 @@ volumes:
   cache:
   caddy-data:
   caddy-config:
+  redis-data:
 
 secrets:
   saml_private_key:
