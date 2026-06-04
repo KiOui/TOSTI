@@ -39,9 +39,6 @@ x-django-web-env: &django-web-env
   EMAIL_HOST_USER: ${EMAIL_ADDRESS}
   DEFAULT_FROM_EMAIL: "TOSTI <${EMAIL_ADDRESS}>"
   SERVER_EMAIL: ${EMAIL_ADDRESS}
-
-x-django-celery-env: &django-celery-env
-  <<: *django-core-env
   REDIS_HOST: "redis://redis:6379/0"
   CELERY_BROKER_URL: "redis://redis:6379/0"
   CELERY_BACKEND_URL: "redis://redis:6379/0"
@@ -160,7 +157,7 @@ services:
     volumes:
       - media:/media
       - cache:/app/cache
-    environment: *django-celery-env
+    environment: *django-web-env
 
   celery_beat:
     # This container will run celery beat (cron) tasks.
@@ -182,7 +179,7 @@ services:
     volumes:
       - media:/media
       - cache:/app/cache
-    environment: *django-celery-env
+    environment: *django-web-env
 
   redis:
     image: redis:8.6
