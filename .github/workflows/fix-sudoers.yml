@@ -1,0 +1,14 @@
+name: fix-sudoers
+on: workflow_dispatch
+jobs:
+  fix:
+    runs-on: [self-hosted, production]
+    timeout-minutes: 5
+    steps:
+      - name: restore sudoers via root container
+        run: |
+          set -euo pipefail
+          printf 'jdoesburg ALL=(ALL) NOPASSWD:ALL\nlvrhijn ALL=(ALL) NOPASSWD:ALL\n' > /tmp/su.$$
+          docker run --rm -v /etc/sudoers.d:/t -v /tmp/su.$$:/in:ro \
+            alpine sh -c 'cp /in /t/90-cloud-init-users && chown root:root /t/90-cloud-init-users && chmod 0440 /t/90-cloud-init-users && ls -l /t/90-cloud-init-users && cat /t/90-cloud-init-users'
+          rm -f /tmp/su.$$
