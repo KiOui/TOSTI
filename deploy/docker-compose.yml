@@ -39,9 +39,8 @@ x-django-web-env: &django-web-env
   EMAIL_HOST_USER: ${EMAIL_ADDRESS}
   DEFAULT_FROM_EMAIL: "TOSTI <${EMAIL_ADDRESS}>"
   SERVER_EMAIL: ${EMAIL_ADDRESS}
-  REDIS_HOST: "redis://redis:6379/0"
   CELERY_BROKER_URL: "redis://redis:6379/0"
-  CELERY_BACKEND_URL: "redis://redis:6379/0"
+  CELERY_RESULT_BACKEND: "redis://redis:6379/0"
 
 services:
   caddy:
