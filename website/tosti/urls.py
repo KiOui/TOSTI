@@ -49,6 +49,10 @@ urlpatterns = [
         include(("thaliedje.urls", "thaliedje"), namespace="thaliedje"),
     ),
     path(
+        "tampon/",
+        include(("tampon.urls", "tampon"), namespace="tampon"),
+    ),
+    path(
         "fridges/",
         include(("fridges.urls", "fridges"), namespace="fridges"),
     ),
