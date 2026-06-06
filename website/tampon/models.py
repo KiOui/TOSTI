@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth import get_user_model
@@ -49,7 +48,8 @@ class TamponNotification(models.Model):
 class Restock(models.Model):
     """Restock record for menstrual products."""
 
-    """A restock record is created when a tampon notification is resolved, and contains the details of the restock that was done.
+    """A restock record is created when a tampon notification is resolved,
+    and contains the details of the restock that was done.
     It is linked to the room and to multiple individual RestockItem's that were restocked."""
     room = models.ForeignKey(Room, on_delete=models.PROTECT)
     restock_time = models.DateTimeField(auto_now_add=True)
@@ -81,7 +81,9 @@ class StockData(models.Model):
 
 
 class RestockItem(models.Model):
-    """Through model for the many-to-many relationship between Restock and StockData, containing the quantity of each stock that was restocked in a Restock."""
+    """Through model for the many-to-many relationship between Restock
+    and StockData, containing the quantity of each stock that was restocked in a Restock.
+    """
 
     restock = models.ForeignKey(Restock, on_delete=models.CASCADE)
     stock_data = models.ForeignKey(StockData, on_delete=models.PROTECT)

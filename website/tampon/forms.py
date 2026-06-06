@@ -3,7 +3,7 @@ import re
 from django import forms
 from django.forms.widgets import Select
 
-from tampon.models import TamponNotification, Room, Restock, StockData
+from tampon.models import TamponNotification, Room, StockData
 
 
 def get_floor_number_from_slug(slug):

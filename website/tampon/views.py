@@ -39,7 +39,8 @@ class IndexView(TemplateView):
         elif room_input:
             messages.error(
                 self.request,
-                "Something went wrong with the room number provided. Please select a valid room from the dropdown menu.",
+                "Something went wrong with the room number provided. "
+                "Please select a valid room from the dropdown menu.",
                 extra_tags="TempMessage",
             )
         context["form"] = kwargs.get(
