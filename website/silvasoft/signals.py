@@ -61,7 +61,7 @@ def send_borrel_reservation_to_silvasoft_on_submission(
         ).exists()
     ):
         # Instance was submitted
-        task_synchronize_borrel_reservation_to_silvasoft(instance.pk).delay()
+        task_synchronize_borrel_reservation_to_silvasoft.delay(instance.pk)
 
 
 @receiver(post_save, sender=Shift)
@@ -75,4 +75,4 @@ def send_shift_to_silvasoft_on_finalization(sender, instance: Shift, created, **
         and not SilvasoftShiftSynchronization.objects.filter(shift=instance).exists()
     ):
         # Instance was submitted
-        task_synchronize_shift_to_silvasoft(instance.pk).delay()
+        task_synchronize_shift_to_silvasoft.delay(instance.pk)

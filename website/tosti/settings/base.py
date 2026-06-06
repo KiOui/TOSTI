@@ -242,12 +242,6 @@ CONSTANCE_CONFIG = {
         str,
     ),
     "SHIFTS_DEFAULT_MAX_ORDERS_TOTAL": (70, "Default maximum number of orders per shift", int),
-    "THALIEDJE_STOP_PLAYERS_AT": ("21:00", "Time to stop the players. Should be aligned on 5 minutes", str),
-    "THALIEDJE_START_PLAYERS_AT": (
-        "08:00",
-        "Time to start the players (only on weekdays). Should be aligned on 5 minutes",
-        str,
-    ),
     "THALIEDJE_HOLIDAY_ACTIVE": (
         False,
         "If enabled, the player will not start playing automatically at the start of the day",

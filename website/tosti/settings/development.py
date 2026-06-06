@@ -50,3 +50,7 @@ CACHES = {
         "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
     }
 }
+
+# Celery will execute tasks in the same process instead of sending it to a Redis server.
+CELERY_TASK_ALWAYS_EAGER = True
+CELERY_TASK_EAGER_PROPAGATES = True

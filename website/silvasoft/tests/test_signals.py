@@ -129,7 +129,7 @@ class SilvasoftSignalsTest(TestCase):
         self.assertIsNotNone(self.borrel_reservation._object_pre_save)
         self.assertIsNone(self.borrel_reservation._object_pre_save.submitted_at)
 
-    @patch("silvasoft.signals.task_synchronize_shift_to_silvasoft")
+    @patch("silvasoft.signals.task_synchronize_shift_to_silvasoft.delay")
     def test_shift_sync_job_spawned_when_finalized(
         self, task_synchronize_shift_to_silvasoft_mock: MagicMock
     ):
@@ -138,9 +138,9 @@ class SilvasoftSignalsTest(TestCase):
         self.shift.save()
         task_synchronize_shift_to_silvasoft_mock.assert_called()
         mock_call = task_synchronize_shift_to_silvasoft_mock.mock_calls.pop()
-        self.assertEqual(mock_call.args[0].pk, self.shift.pk)
+        self.assertEqual(mock_call.args[0], self.shift.pk)
 
-    @patch("silvasoft.signals.task_synchronize_borrel_reservation_to_silvasoft")
+    @patch("silvasoft.signals.task_synchronize_borrel_reservation_to_silvasoft.delay")
     def test_borrel_reservation_sync_job_spawned_when_submitted(
         self, task_synchronize_borrel_reservation_to_silvasoft: MagicMock
     ):
@@ -149,4 +149,4 @@ class SilvasoftSignalsTest(TestCase):
         self.borrel_reservation.save()
         task_synchronize_borrel_reservation_to_silvasoft.assert_called()
         mock_call = task_synchronize_borrel_reservation_to_silvasoft.mock_calls.pop()
-        self.assertEqual(mock_call.args[0].pk, self.borrel_reservation.pk)
+        self.assertEqual(mock_call.args[0], self.borrel_reservation.pk)
