@@ -44,7 +44,7 @@ dependencies = [
     "spotipy>=2.26.0",
     "tomli>=2.4.1",
     "uritemplate>=4.2.0",
-    "redis>=7.4.0",
+    "redis>=8.0.0",
     "django-celery-beat>=2.9.0",
 ]
 
