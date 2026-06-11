@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "yivi",
     "age",
     "fridges",
+    "tampon",
 ]
 
 AUTH_USER_MODEL = "users.User"

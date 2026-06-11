@@ -9,11 +9,11 @@ repository = "https://github.com/KiOui/TOSTI"
 requires-python = ">=3.14"
 license = "MIT"
 dependencies = [
-    "bleach[css]>=6.3.0",
+    "bleach[css]>=6.4.0",
     "coverage>=7.14.1",
     "celery>=5.6.3",
     "cryptography>=43.0.3",
-    "django>=6.0.5",
+    "django>=6.0.6",
     "django-admin-autocomplete-filter>=0.7.1",
     "django-admin-rangefilter>=0.13.5",
     "django-autocompletefilter>=0.0.9",
@@ -44,7 +44,7 @@ dependencies = [
     "spotipy>=2.26.0",
     "tomli>=2.4.1",
     "uritemplate>=4.2.0",
-    "redis>=7.4.0",
+    "redis>=8.0.0",
     "django-celery-beat>=2.9.0",
 ]
 
