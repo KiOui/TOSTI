@@ -182,6 +182,7 @@ services:
 
   redis:
     image: redis:8.6
+    restart: unless-stopped
     volumes:
       - redis-data:/data
     networks:
