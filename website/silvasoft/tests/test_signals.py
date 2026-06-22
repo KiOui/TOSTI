@@ -110,11 +110,6 @@ class SilvasoftSignalsTest(TestCase):
             self.reservation_item_4,
         ]
 
-    def set_amounts_used(self):
-        for reservation_item in self.reservation_items:
-            reservation_item.amount_used = reservation_item.amount_reserved
-            reservation_item.save()
-
     def test_pre_save_shift_sets_cache_property(self):
         """Test whether the `pre_save` method sets the `_object_pre_save` property."""
         self.shift.finalized = True
