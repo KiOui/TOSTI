@@ -10,7 +10,7 @@ requires-python = ">=3.14"
 license = "MIT"
 dependencies = [
     "bleach[css]>=6.4.0",
-    "coverage>=7.14.1",
+    "coverage>=7.14.2",
     "celery>=5.6.3",
     "cryptography>=43.0.3",
     "django>=6.0.6",
@@ -23,7 +23,7 @@ dependencies = [
     "django-csp>=4.0",
     "django-filter>=25.2",
     "drf-spectacular>=0.28.0",
-    "django-guardian>=3.3.1",
+    "django-guardian>=3.3.2",
     "django-ical>=1.9.2", # No official support for Django 6.0.
     "django-import-export>=4.4.1",
     "django-model-utils>=5.0.0",
