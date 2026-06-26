@@ -108,6 +108,51 @@ class WWWAuthenticateHeaderTests(TestCase):
         self.assertEqual(response["WWW-Authenticate"], 'Basic realm="admin"')
 
 
+class AuthorizeConsentScreenTests(TestCase):
+    """Custom TOSTI-branded consent screen with the right CSP loosening."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(username="consenter", password="x")
+        self.client.force_login(self.user)
+        self.application = Application.objects.create(
+            name="Test MCP client",
+            client_type=Application.CLIENT_PUBLIC,
+            authorization_grant_type=Application.GRANT_AUTHORIZATION_CODE,
+            redirect_uris="https://claude.ai/api/mcp/auth_callback",
+            user=None,
+            skip_authorization=False,
+        )
+
+    def _authorize_url(self):
+        return (
+            "/oauth/authorize/"
+            f"?client_id={self.application.client_id}"
+            "&response_type=code"
+            "&redirect_uri=https://claude.ai/api/mcp/auth_callback"
+            "&scope=read"
+            "&state=xyz"
+            "&code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM"
+            "&code_challenge_method=S256"
+        )
+
+    def test_consent_screen_renders_with_tosti_base(self):
+        response = self.client.get(self._authorize_url())
+        self.assertEqual(response.status_code, 200)
+        # Uses TOSTI's base.html (the override), not the upstream package
+        # template that pulls in bootstrapcdn.
+        self.assertContains(response, "Authorise")
+        self.assertContains(response, "Test MCP client")
+        self.assertNotContains(response, "netdna.bootstrapcdn.com")
+
+    def test_consent_screen_loosens_form_action_csp(self):
+        response = self.client.get(self._authorize_url())
+        # The csp_update decorator stamps the response so the CSP middleware
+        # merges in the override.
+        self.assertEqual(
+            response._csp_update, {"form-action": ["https:"]}
+        )
+
+
 class DynamicClientRegistrationTests(TestCase):
     """RFC 7591 dynamic client registration."""
 
