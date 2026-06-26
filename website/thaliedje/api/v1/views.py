@@ -70,7 +70,7 @@ class PlayerRequestsAPIView(ListAPIView):
 
 
 class PlayerQueueAPIView(APIView):
-    """Get the current player's queue."""
+    """Get the current player's queue, enriched with TOSTI requester data."""
 
     schema = CustomAutoSchema(
         response_schema={
@@ -86,15 +86,46 @@ class PlayerQueueAPIView(APIView):
                         "items": {"type": "string"},
                     },
                     "duration_ms": {"type": "integer"},
+                    "requested_by": {
+                        "type": "object",
+                        "nullable": True,
+                        "properties": {
+                            "id": {"type": "integer"},
+                            "display_name": {"type": "string"},
+                            "username": {"type": "string"},
+                        },
+                    },
+                    "requested_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": True,
+                    },
                 },
             },
         },
     )
 
     def get(self, request, **kwargs):
-        """Get the player's current queue."""
+        """Return the live Spotify queue with TOSTI-side request metadata.
+
+        ``requested_by`` / ``requested_at`` are populated for queue entries
+        the observer task has matched to a TOSTI ``SpotifyQueueItem``; they
+        are ``null`` for tracks added from outside TOSTI (e.g. operator
+        queued from their own Spotify app) or for entries the observer
+        hasn't matched yet. Authentication is enforced one layer up; for
+        anonymous viewers ``requested_by`` is redacted.
+        """
+        from thaliedje.services import enrich_spotify_queue
+
         player = self.kwargs.get("player")
-        return Response(player.queue)
+        enriched = enrich_spotify_queue(player)
+        if enriched is None:
+            return Response(None)
+        if not request.user.is_authenticated:
+            enriched = [
+                {**entry, "requested_by": None} for entry in enriched
+            ]
+        return Response(enriched)
 
 
 class PlayerTrackSearchAPIView(APIView):
