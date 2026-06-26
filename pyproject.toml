@@ -26,6 +26,10 @@ dependencies = [
     "django-guardian>=3.3.2",
     "django-ical>=1.9.2", # No official support for Django 6.0.
     "django-import-export>=4.4.1",
+    # Upper bound pinned because tosti/views.py:MCPToolsDocsView reads
+    # mcp_server._tool_manager and Tool.fn.class_ — both private API.
+    # Verify the docs page still renders before bumping past 0.6.
+    "django-mcp-server>=0.5.7,<0.6",
     "django-model-utils>=5.0.0",
     "django-oauth-toolkit>=3.3.0",
     "django-queryable-properties>=1.12.1",

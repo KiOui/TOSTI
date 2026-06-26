@@ -1,5 +1,6 @@
 from django.db import DatabaseError, connection
 from django.http import HttpResponse
+from django.shortcuts import render
 from django.urls import resolve, Resolver404
 
 from tosti.metrics import emit as emit_metric
@@ -102,3 +103,79 @@ class RequestMetricsMiddleware:
         if authenticated:
             return "api_internal"
         return "api_anon"
+
+
+class MCPLandingMiddleware:
+    """Serve a human-readable page when a browser visits ``/mcp``.
+
+    The MCP endpoint speaks JSON-RPC over POST and is meaningless to a
+    human pointing their browser at it. Real MCP clients announce
+    themselves with ``Accept: application/json, text/event-stream``;
+    browsers send ``Accept: text/html, ...``. We branch on that: if the
+    request is a GET that prefers HTML, serve a landing page that
+    points users at the explainer. Everything else falls through to the
+    MCP view.
+    """
+
+    MCP_PATHS = ("/mcp", "/mcp/")
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        if (
+            request.method == "GET"
+            and request.path in self.MCP_PATHS
+            and self._prefers_html(request)
+        ):
+            return render(request, "tosti/mcp_landing.html")
+        return self.get_response(request)
+
+    @staticmethod
+    def _prefers_html(request) -> bool:
+        accept = request.META.get("HTTP_ACCEPT", "")
+        if not accept:
+            return False
+        # A browser always lists text/html; MCP clients ask for
+        # application/json + text/event-stream and do not include text/html.
+        return "text/html" in accept and "text/event-stream" not in accept
+
+
+class WWWAuthenticateMiddleware:
+    """Add ``WWW-Authenticate`` to 401s on OAuth-protected paths.
+
+    RFC 9728 expects an unauthenticated request to a protected resource to
+    include a header pointing the client at the resource's metadata document,
+    so the client knows where to bootstrap its OAuth2 flow. Without this header
+    MCP clients can't auto-discover the auth server.
+
+    DRF's default 401 doesn't carry this header; we add it for /mcp and /api/.
+    """
+
+    PROTECTED_PREFIXES = ("/mcp", "/api/")
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        if response.status_code != 401:
+            return response
+        if not any(request.path.startswith(p) for p in self.PROTECTED_PREFIXES):
+            return response
+        # Don't clobber a non-Bearer challenge a downstream view set
+        # deliberately (e.g. a Basic-auth route mounted under one of these
+        # prefixes). For Bearer challenges (which DRF emits by default) we
+        # rewrite the header so the resource_metadata pointer is present —
+        # without it, MCP clients can't auto-discover the auth server.
+        existing = response.get("WWW-Authenticate", "")
+        if existing and not existing.lower().startswith("bearer"):
+            return response
+
+        resource_metadata = request.build_absolute_uri(
+            "/.well-known/oauth-protected-resource"
+        )
+        response["WWW-Authenticate"] = (
+            f'Bearer realm="tosti", resource_metadata="{resource_metadata}"'
+        )
+        return response

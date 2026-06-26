@@ -1,0 +1,150 @@
+{% extends "tosti/base.html" %}
+{% load static %}
+
+{% block title %}
+    TOSTI: OAuth integration
+{% endblock %}
+
+{% block page %}
+    <div class="container mt-5 mb-5 prose">
+        <div class="text-center mb-5">
+            <h1>OAuth 2.0 integration guide</h1>
+            <p class="lead tagline">How to authenticate against TOSTI from your own app or AI assistant</p>
+        </div>
+
+        <p>
+            TOSTI exposes its REST API at <code>/api/v1/</code> and its MCP server at <a href="/mcp"><code>/mcp</code></a>. Both speak <strong>OAuth 2.0</strong> for authorisation. This page documents which flows TOSTI supports, how to register a client, and what the conventions are. It applies whether you're building a developer integration, a third-party app, or hooking up an AI assistant.
+        </p>
+
+        <hr>
+
+        <h2>Endpoints</h2>
+        <p>
+            TOSTI advertises its OAuth configuration via the standard discovery documents. Fetch one of these and the rest of the URLs are inside it &mdash; you should not hard-code endpoint paths:
+        </p>
+        <ul>
+            <li><strong>Authorisation server metadata</strong> (<a href="https://www.rfc-editor.org/rfc/rfc8414">RFC 8414</a>): <a href="/.well-known/oauth-authorization-server"><code>/.well-known/oauth-authorization-server</code></a> &mdash; tells you the authorize, token, revoke, and registration endpoints.</li>
+            <li><strong>Protected-resource metadata</strong> (<a href="https://www.rfc-editor.org/rfc/rfc9728">RFC 9728</a>): <a href="/.well-known/oauth-protected-resource"><code>/.well-known/oauth-protected-resource</code></a> &mdash; tells you which authorisation server protects this resource.</li>
+        </ul>
+        <p>
+            For reference, the actual paths today: <code>/oauth/authorize/</code>, <code>/oauth/token/</code>, <code>/oauth/revoke_token/</code>, <code>/oauth/introspect/</code>, and <code>/oauth/register/</code> (dynamic client registration). They can move &mdash; the discovery documents are the source of truth.
+        </p>
+
+        <hr>
+
+        <h2>Supported grant types</h2>
+        <p>
+            TOSTI supports the OAuth 2.0 grant types listed below. <strong>For new clients, use authorization code with PKCE</strong> &mdash; it's the only flow that's safe for public clients (mobile apps, single-page apps, AI assistants, anything that can't keep a secret) and it's required by the MCP spec.
+        </p>
+        <h3>Authorization code with PKCE <small class="text-muted">(recommended)</small></h3>
+        <p>
+            The standard interactive flow: redirect the user to <code>/oauth/authorize/</code> with a code challenge, get a code back at your redirect URI, exchange the code (plus the code verifier) at <code>/oauth/token/</code> for an access token. PKCE (<a href="https://www.rfc-editor.org/rfc/rfc7636">RFC 7636</a>) is <strong>required</strong> for all clients; you do not get to opt out. Both <code>S256</code> and <code>plain</code> code challenge methods are supported; pick <code>S256</code>.
+        </p>
+        <h3>Refresh token</h3>
+        <p>
+            When an access token expires, exchange the refresh token at <code>/oauth/token/</code> for a new pair. <strong>Refresh tokens are rotated</strong> &mdash; the response includes a new refresh token, and the old one is invalidated. Keep only the most recent one. Access tokens last 10 hours; refresh tokens do not expire on a timer but are revoked when the user revokes the application's access.
+        </p>
+        <h3>Client credentials <small class="text-muted">(server-to-server)</small></h3>
+        <p>
+            For machine-to-machine integrations where no user is involved. Useful for backend services that need to call TOSTI on behalf of nobody in particular. Requires a confidential client (a real <code>client_secret</code>). Not allowed for clients registered via dynamic client registration.
+        </p>
+        <h3>Implicit and password grants <small class="text-muted">(legacy, do not use)</small></h3>
+        <p>
+            Technically supported because the underlying library implements them, but both are deprecated by OAuth 2.1 and should not be used in new code. The Swagger UI internally uses the implicit grant; that's the only thing it remains supported for.
+        </p>
+
+        <hr>
+
+        <h2>Client types and authentication</h2>
+        <p>
+            TOSTI distinguishes <strong>public</strong> and <strong>confidential</strong> clients, matching the OAuth 2.0 spec. Use the right one:
+        </p>
+        <h3>Public clients</h3>
+        <p>
+            Anything that can't keep a secret &mdash; native apps, mobile apps, single-page apps, AI assistants, command-line tools that ship to users. Authenticate at the token endpoint with <code>token_endpoint_auth_method=none</code>; the <code>client_id</code> alone identifies the client. PKCE is mandatory (which is why public clients work at all without a secret).
+        </p>
+        <h3>Confidential clients</h3>
+        <p>
+            Server-side apps that can store a secret. Authenticate at the token endpoint with <code>client_secret_basic</code> (HTTP Basic auth with <code>client_id</code> + <code>client_secret</code>) or <code>client_secret_post</code> (the same credentials in the form body). Both are supported.
+        </p>
+
+        <hr>
+
+        <h2>Registering a client</h2>
+        <p>
+            There are three ways to get a <code>client_id</code> + (optionally) <code>client_secret</code>, depending on who you are:
+        </p>
+        <h3>Through your account page <small class="text-muted">(developers)</small></h3>
+        <p>
+            Log in, open <a href="{% url 'users:account' %}?active=api_credentials">My account &rarr; API credentials</a> and click <em>Create new application</em>. This is the right path if you're building your own integration against the TOSTI API and want a confidential client. Your client secret is only shown once at creation time &mdash; copy it then.
+        </p>
+        <h3>Dynamic client registration <small class="text-muted">(MCP clients, AI assistants)</small></h3>
+        <p>
+            Public clients can self-register without human intervention by POSTing to <code>/oauth/register/</code> per <a href="https://www.rfc-editor.org/rfc/rfc7591">RFC 7591</a>. TOSTI always issues a public, authorization-code-only client with PKCE required; the response has no <code>client_secret</code>. Registration is rate-limited per IP (10 per hour) to protect the Application table. The client is provisioned with the intersection of the scopes you request and the scopes TOSTI publishes.
+        </p>
+        <h3>Asking a maintainer <small class="text-muted">(special cases)</small></h3>
+        <p>
+            If you need something neither of the above gives you &mdash; for example, a confidential client for client-credentials grant &mdash; ask the website committee.
+        </p>
+
+        <hr>
+
+        <h2>Redirect URIs</h2>
+        <p>
+            Redirect URIs must use one of the schemes allowed by TOSTI. Currently those are <code>https</code> and the <code>nu.thalia</code> custom scheme (for the Thalia app's deep links). HTTP is rejected; this is enforced both at static client creation and at dynamic registration. For local development you can extend the list in <code>tosti/settings/development.py</code>, never in <code>base.py</code>.
+        </p>
+        <p>
+            You may register multiple redirect URIs separated by whitespace, and the client must use one of them exactly when starting an authorisation request.
+        </p>
+
+        <hr>
+
+        <h2>Scopes</h2>
+        <p>
+            TOSTI uses fine-grained scopes so users can grant only the permissions an app actually needs. Always request the smallest scope that does the job; users see your request on the consent screen and will deny a request that seems overreaching.
+        </p>
+        <table class="table w-100 my-2">
+            <thead>
+                <tr>
+                    <th style="width: 35%;">Scope</th>
+                    <th>Meaning</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for code, description in scopes %}
+                    <tr>
+                        <td><code>{{ code }}</code></td>
+                        <td>{{ description }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p>
+            New scopes are added as new permission-gated functionality is exposed. Treat the list above as authoritative for the running deployment, but always cross-check with the live discovery document &mdash; that's the source of truth.
+        </p>
+
+        <hr>
+
+        <h2>Tokens</h2>
+        <p>
+            Send the access token as <code>Authorization: Bearer &lt;token&gt;</code> on every authenticated request to <code>/api/v1/</code> or <code>/mcp</code>. Access tokens are opaque (treat them as strings, do not parse them) and last 10 hours. When you get a <code>401 Unauthorized</code>, refresh the token if you have a refresh token, or restart the flow.
+        </p>
+        <p>
+            Unauthenticated requests to <code>/mcp</code> and <code>/api/</code> get a 401 with a <code>WWW-Authenticate</code> header pointing at the protected-resource metadata (<a href="https://www.rfc-editor.org/rfc/rfc9728">RFC 9728</a>), so a compliant client can auto-discover the authorisation server with no prior configuration.
+        </p>
+
+        <hr>
+
+        <h2>Revoking access</h2>
+        <p>
+            You can revoke a token programmatically at <code>/oauth/revoke_token/</code> (<a href="https://www.rfc-editor.org/rfc/rfc7009">RFC 7009</a>). Users can revoke an app's access entirely from <a href="{% url 'users:account' %}?active=connected_apps">My account &rarr; Connected apps</a> &mdash; that wipes all the user's tokens for that application in one click.
+        </p>
+
+        <hr>
+
+        <h2>Connecting an AI assistant</h2>
+        <p>
+            If you're an end user trying to hook up an AI assistant rather than a developer building an integration, the practical step-by-step is in the <a href="{% url 'explainers' %}#ai-assistant">Connect an AI assistant</a> explainer.
+        </p>
+    </div>
+{% endblock %}

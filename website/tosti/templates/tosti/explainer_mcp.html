@@ -1,0 +1,63 @@
+{% load static %}
+
+<div class="container mt-5 mb-5 text-center">
+    <h2>Connect an AI assistant to TOSTI</h2>
+    <p class="lead tagline">Let your AI assistant order, request songs and reserve venues for you</p>
+</div>
+<hr>
+<p>
+    TOSTI speaks the <a href="https://modelcontextprotocol.io/" target="_blank" rel="noopener">Model Context Protocol</a> (MCP) &mdash; an open standard that lets AI assistants safely use websites on your behalf.
+    Once you connect your assistant, you can ask things like <em>"order me a tosti at the canteen that's open right now"</em> or <em>"queue a song by ABBA in the Noordkantine"</em>, and the assistant will do it for you through TOSTI &mdash; using your own account, with your explicit permission for each kind of action.
+</p>
+<p>
+    You stay in control: the assistant can only do what you've approved, and you can revoke its access at any time from the <a href="{% url 'users:account' %}?active=connected_apps">Connected apps</a> tab of your account page.
+</p>
+<hr>
+<h3><i class="fa-solid fa-robot"></i><br>1. Pick an AI assistant that supports custom connectors</h3>
+<p>
+    You need an AI assistant that can talk to a remote MCP server through a connector UI. Look in your assistant's settings for "connectors", "custom integrations", or "remote MCP server" &mdash; whichever language it uses, you're after the option that lets you point it at a URL you provide.
+</p>
+<hr>
+<h3><i class="fa-solid fa-link"></i><br>2. Add TOSTI as a custom connector</h3>
+<p>
+    Open your assistant's settings, find the section for <strong>connectors</strong> (sometimes called "remote MCP servers" or "custom integrations"), and add a new one with this URL:
+</p>
+<p>
+    <code>{{ request.scheme }}://{{ request.get_host }}/mcp</code>
+</p>
+<p>
+    That's the only thing you need to copy &mdash; the assistant will figure out everything else (registration, login, permissions) automatically.
+</p>
+<p>
+    The exact menu name varies per assistant &mdash; it's commonly under <em>Settings &rarr; Connectors &rarr; Add custom connector</em> or similar.
+</p>
+<hr>
+<h3><i class="fa-solid fa-right-to-bracket"></i><br>3. Log in via your RU account</h3>
+<p>
+    The first time the assistant tries to use TOSTI, it will pop open your browser and send you to the regular login page. Log in with your Radboud account just like you would when ordering on the website yourself.
+</p>
+<hr>
+<h3><i class="fa-solid fa-shield-halved"></i><br>4. Approve the permissions the assistant asks for</h3>
+<p>
+    After logging in, TOSTI shows you a consent screen listing exactly what the assistant wants to do on your behalf. You can approve some permissions and deny others.
+</p>
+<p>
+    The common ones are <strong>read access</strong> (see venues, shifts, and what's playing &mdash; no write permission needed), <strong>place orders</strong> (<code>orders:order</code> &mdash; the assistant can submit orders in your name, which you pay for like any other order), <strong>request songs</strong> (<code>thaliedje:request</code> &mdash; the assistant can queue tracks at a venue's player), and <strong>reserve venues</strong> (<code>write</code> &mdash; the assistant can submit a reservation request, which a manager still has to accept).
+</p>
+<p>
+    Only approve what you actually want the assistant to be able to do.
+</p>
+<hr>
+<h3><i class="fa-solid fa-wand-magic-sparkles"></i><br>5. Use it</h3>
+<p>
+    Once connected, you can talk to the assistant naturally. Try things like <em>"what's playing in the Noordkantine right now?"</em>, <em>"queue something by The Killers in the canteen"</em>, <em>"order me a cheese tosti at whichever shift is open"</em>, or <em>"reserve the Noordkantine next Tuesday from 19:00 to 22:00 for a board meeting"</em>.
+</p>
+<p>
+    Each destructive action (placing an order, requesting a song, making a reservation) is something a well-behaved assistant will confirm with you first &mdash; but the safety belt is the consent screen in step 4: if you didn't approve the scope, the assistant cannot do it.
+</p>
+<hr>
+<h3><i class="fa-solid fa-circle-stop"></i><br>Revoke access at any time</h3>
+<p>
+    Changed your mind, or got a new laptop and want to clean up?
+    Go to your account's <a href="{% url 'users:account' %}?active=connected_apps">Connected apps</a> tab. Each authorised assistant is listed there with the permissions it received; one click revokes its access. The assistant will need to go through login + consent again the next time it tries to use TOSTI.
+</p>

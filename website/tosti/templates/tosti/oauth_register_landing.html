@@ -1,0 +1,25 @@
+{% extends "tosti/base.html" %}
+{% load static %}
+
+{% block title %}
+    TOSTI: Dynamic client registration
+{% endblock %}
+
+{% block page %}
+    <div class="container mt-5 mb-5 prose">
+        <div class="text-center mb-5">
+            <h1>Dynamic client registration</h1>
+            <p class="lead tagline">RFC 7591 endpoint for self-registering OAuth clients</p>
+        </div>
+
+        <p>
+            This URL is the <a href="https://www.rfc-editor.org/rfc/rfc7591" target="_blank" rel="noopener">RFC 7591</a> dynamic client registration endpoint for TOSTI. It is meant to be consumed by an OAuth-aware client that wants to register itself programmatically &mdash; not opened in a browser. Send a <code>POST</code> with a JSON payload describing your client; you'll get back a <code>client_id</code> for a public, authorization-code-only client with PKCE required.
+        </p>
+        <p>
+            If you're a regular user, you probably arrived here by accident; the only thing humans do at this URL is read this page.
+        </p>
+        <p>
+            If you're building an integration, see the <a href="{% url 'oauth-integration-docs' %}">OAuth integration guide</a> for the full details of the request shape, what the server provisions, the rate-limit, and which scopes you can ask for. Existing applications you've registered yourself appear under <a href="{% url 'users:account' %}?active=api_credentials">My account &rarr; API credentials</a>.
+        </p>
+    </div>
+{% endblock %}

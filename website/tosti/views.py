@@ -12,9 +12,81 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.generic import TemplateView, RedirectView
 from django.utils.decorators import method_decorator
 from oauth2_provider.generators import generate_client_secret
-from oauth2_provider.models import Application
+from oauth2_provider.models import (
+    AccessToken,
+    Application,
+    Grant,
+    RefreshToken,
+)
+from oauth2_provider.scopes import get_scopes_backend
 
 from tosti.forms import OAuthCredentialsForm
+
+
+def _list_authorised_apps_for_user(user):
+    """Return Applications the given user has at least one (non-expired) AccessToken for.
+
+    Used to render the "Connected AI assistants & third-party apps" tab.
+    Each entry summarises the union of scopes granted across the user's
+    currently-valid tokens for that application, so the revoke button can
+    drop them all at once.
+    """
+    token_qs = (
+        AccessToken.objects.filter(user=user)
+        .select_related("application")
+        .order_by("application_id", "-created")
+    )
+    by_app: dict[int, dict] = {}
+    all_scopes = get_scopes_backend().get_all_scopes()
+    for token in token_qs:
+        if token.application is None:
+            continue
+        if token.is_expired():
+            continue
+        entry = by_app.setdefault(
+            token.application_id,
+            {
+                "application": token.application,
+                "scopes": set(),
+                "first_granted": token.created,
+                "last_used": token.updated,
+            },
+        )
+        entry["scopes"].update(token.scope.split())
+        if token.created < entry["first_granted"]:
+            entry["first_granted"] = token.created
+        if token.updated > entry["last_used"]:
+            entry["last_used"] = token.updated
+
+    result = []
+    for entry in by_app.values():
+        scope_names = sorted(entry["scopes"])
+        result.append(
+            {
+                "application": entry["application"],
+                "scopes": [
+                    {"name": s, "description": all_scopes.get(s, s)}
+                    for s in scope_names
+                ],
+                "first_granted": entry["first_granted"],
+                "last_used": entry["last_used"],
+            }
+        )
+    result.sort(key=lambda e: e["last_used"], reverse=True)
+    return result
+
+
+def _revoke_user_app_authorisation(user, application):
+    """Delete all AccessTokens, RefreshTokens and pending Grants the user holds for ``application``.
+
+    This is the user-visible "revoke" action for the Connected apps tab.
+    We do not delete the Application itself: self-registered MCP apps have
+    ``user=None`` so deleting the row would also nuke it for any other
+    user who happens to have authorised the same DCR-issued client_id.
+    """
+    AccessToken.objects.filter(user=user, application=application).delete()
+    RefreshToken.objects.filter(user=user, application=application).delete()
+    Grant.objects.filter(user=user, application=application).delete()
 
 
 @method_decorator(csrf_protect, name="dispatch")
@@ -74,6 +146,85 @@ class DocumentationView(TemplateView):
     template_name = "tosti/documentation.html"
 
 
+class OAuthIntegrationDocsView(TemplateView):
+    """OAuth 2.0 integration guide: supported flows, scopes, and conventions.
+
+    Generic developer doc — applies to any client, not just MCP / AI assistants.
+    Linked from the documentation index and from the MCP landing page.
+    """
+
+    template_name = "tosti/oauth_integration.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Pull the scope table from the live oauth2_provider config so the doc
+        # stays in sync with what the discovery endpoint actually advertises.
+        scopes = get_scopes_backend().get_all_scopes()
+        context["scopes"] = sorted(scopes.items())
+        return context
+
+
+class MCPToolsDocsView(TemplateView):
+    """Swagger-equivalent for the MCP endpoint: lists every registered tool.
+
+    Introspects the django_mcp_server tool manager at request time so the page
+    always reflects what ``/mcp`` actually exposes. Tools are grouped by the
+    ``MCPToolset`` subclass that contributed them, with name, description, and
+    JSON Schemas for input and output.
+    """
+
+    template_name = "tosti/mcp_tools.html"
+
+    def get_context_data(self, **kwargs):
+        import json
+
+        from mcp_server import mcp_server as global_mcp_server
+
+        context = super().get_context_data(**kwargs)
+        tools = global_mcp_server._tool_manager.list_tools()
+
+        grouped: dict[str, list[dict]] = {}
+        for tool in tools:
+            # _ToolsetMethodCaller carries the originating MCPToolset class;
+            # tools that aren't backed by a toolset (e.g. the built-in
+            # get_server_instructions) get bucketed under "Server".
+            caller = getattr(tool, "fn", None)
+            toolset_cls = getattr(caller, "class_", None)
+            group_name = toolset_cls.__name__ if toolset_cls else "Server"
+            group_doc = (toolset_cls.__doc__ or "").strip() if toolset_cls else ""
+
+            if group_name not in grouped:
+                grouped[group_name] = {"doc": group_doc, "tools": []}
+
+            grouped[group_name]["tools"].append(
+                {
+                    "name": tool.name,
+                    "description": (tool.description or "").strip(),
+                    "input_schema": json.dumps(
+                        tool.parameters, indent=2, sort_keys=True
+                    ),
+                    "output_schema": (
+                        json.dumps(tool.output_schema, indent=2, sort_keys=True)
+                        if tool.output_schema
+                        else None
+                    ),
+                }
+            )
+
+        # Sort: toolset groups alphabetically, with "Server" pinned last.
+        ordered = []
+        for name in sorted(grouped, key=lambda n: (n == "Server", n)):
+            ordered.append(
+                {
+                    "name": name,
+                    "doc": grouped[name]["doc"],
+                    "tools": sorted(grouped[name]["tools"], key=lambda t: t["name"]),
+                }
+            )
+        context["toolsets"] = ordered
+        return context
+
+
 class ExplainerView(TemplateView):
     """Explainer page."""
 
@@ -122,6 +273,76 @@ class StatisticsView(LoginRequiredMixin, TemplateView):
             {
                 "statistics_blocks": statistics_blocks,
             },
+        )
+
+
+class ConnectedAppsView(LoginRequiredMixin, TemplateView):
+    """View listing third-party apps the user has authorised (incl. AI assistants).
+
+    These are applications the user has granted an OAuth2 token to — most
+    often an MCP client that self-registered via RFC 7591
+    and then went through the user's consent screen. The user can revoke
+    each app's access in one click; we drop their tokens (not the
+    Application row itself, since DCR-created Applications have
+    ``user=None`` and may be shared across users).
+    """
+
+    template_name = "users/account.html"
+
+    def get(self, request, **kwargs):
+        """Render the Connected apps tab."""
+        return render(
+            request,
+            self.template_name,
+            {
+                "active": kwargs.get("active"),
+                "tabs": kwargs.get("tabs"),
+                "rendered_tab": self._render_tab(request),
+            },
+        )
+
+    def post(self, request, **kwargs):
+        """Handle the Revoke action."""
+        action = request.POST.get("action", None)
+        if action != "revoke":
+            return HttpResponseNotFound()
+        application_id = request.POST.get("application_id")
+        try:
+            application = Application.objects.get(id=application_id)
+        except Application.DoesNotExist:
+            return HttpResponseNotFound()
+        # Only allow revoking if the user actually has a token for it.
+        if (
+            not AccessToken.objects.filter(
+                user=request.user, application=application
+            ).exists()
+            and not RefreshToken.objects.filter(
+                user=request.user, application=application
+            ).exists()
+        ):
+            return HttpResponseNotFound()
+        _revoke_user_app_authorisation(request.user, application)
+        messages.add_message(
+            request,
+            messages.SUCCESS,
+            f"Revoked access for '{application.name or application.client_id}'. "
+            "The application will need your consent again next time it tries to connect.",
+        )
+        return render(
+            request,
+            self.template_name,
+            {
+                "active": kwargs.get("active"),
+                "tabs": kwargs.get("tabs"),
+                "rendered_tab": self._render_tab(request),
+            },
+        )
+
+    def _render_tab(self, request):
+        return render_to_string(
+            "tosti/connected_apps.html",
+            context={"entries": _list_authorised_apps_for_user(request.user)},
+            request=request,
         )
 
 
@@ -369,3 +590,10 @@ def handler500(request, *args, **kwargs):
     :return: a render of the 500 page
     """
     return render(request, "tosti/500.html", status=500)
+
+
+def explainer_page_mcp_tab(request, item):
+    """Render the explainer tab for connecting an MCP client."""
+    return render_to_string(
+        "tosti/explainer_mcp.html", context={"request": request, "item": item}
+    )

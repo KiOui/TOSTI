@@ -31,13 +31,32 @@ class TostiConfig(AppConfig):
 
     def user_account_tabs(self, _):
         """Register user account tabs."""
-        from tosti.views import OAuthCredentialsRequestView
+        from tosti.views import ConnectedAppsView, OAuthCredentialsRequestView
 
         return [
             {
-                "name": "OAuth Credentials",
-                "slug": "oauth_credentials",
+                "name": "Connected apps",
+                "slug": "connected_apps",
+                "view": ConnectedAppsView.as_view(),
+                "order": 9,
+            },
+            {
+                "name": "API credentials",
+                "slug": "api_credentials",
                 "view": OAuthCredentialsRequestView.as_view(),
                 "order": 10,
+            },
+        ]
+
+    def explainer_tabs(self, _):
+        """Register explainer tabs."""
+        from tosti.views import explainer_page_mcp_tab
+
+        return [
+            {
+                "name": "Connect an AI assistant",
+                "slug": "ai-assistant",
+                "renderer": explainer_page_mcp_tab,
+                "order": 100,
             }
         ]

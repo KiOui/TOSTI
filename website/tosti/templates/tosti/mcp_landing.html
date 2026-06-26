@@ -1,0 +1,35 @@
+{% extends "tosti/base.html" %}
+{% load static %}
+
+{% block title %}
+    TOSTI: MCP server
+{% endblock %}
+
+{% block page %}
+    <div class="container mt-5 mb-5 prose">
+        <div class="text-center mb-5">
+            <h1>TOSTI MCP server</h1>
+            <p class="lead tagline">Model Context Protocol endpoint for AI assistants</p>
+        </div>
+
+        <p>
+            This URL is the Model Context Protocol endpoint for TOSTI. It is meant to be consumed by an AI assistant, not opened in a browser.
+        </p>
+        <p>
+            If you're a regular user trying to hook up your assistant, see the <a href="{% url 'explainers' %}#ai-assistant">Connect an AI assistant</a> explainer.
+        </p>
+
+        <hr>
+
+        <h2>For developers</h2>
+        <p>
+            <code>/mcp</code> implements the <a href="https://modelcontextprotocol.io/" target="_blank" rel="noopener">Model Context Protocol</a> over streamable HTTP, gated by OAuth 2.0. Send <code>POST</code> requests with <code>Accept: application/json, text/event-stream</code>; this landing page is only served for browser-style <code>GET</code>s.
+        </p>
+        <p>
+            Auth details (supported grants, scopes, dynamic client registration, PKCE, redirect URIs) are in the <a href="{% url 'oauth-integration-docs' %}">OAuth integration guide</a>. The discovery documents at <a href="/.well-known/oauth-authorization-server"><code>/.well-known/oauth-authorization-server</code></a> and <a href="/.well-known/oauth-protected-resource"><code>/.well-known/oauth-protected-resource</code></a> are the source of truth.
+        </p>
+        <p>
+            The full list of tools exposed by this server &mdash; with input/output JSON Schemas &mdash; is at <a href="{% url 'mcp-tools-docs' %}">/mcp/docs/</a>. To explore them interactively, run <a href="https://github.com/modelcontextprotocol/inspector" target="_blank" rel="noopener">MCP Inspector</a> locally with <code>npx @modelcontextprotocol/inspector</code> and point it at this URL.
+        </p>
+    </div>
+{% endblock %}

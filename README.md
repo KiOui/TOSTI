@@ -6,6 +6,18 @@
 
 TOSTI is a comprehensive web application designed for [Tartarus](https://tartarus.science.ru.nl) to manage take-away orders and various other features for student associations at Radboud University.
 
+## 🎯 Scope — what belongs in TOSTI
+
+**TOSTI is the system for the Huygens-building canteens, shared by all study associations that use them.** That's the entire scope. Before adding a feature, check that it satisfies all three of these conditions:
+
+1. **Canteen-related.** The feature exists because of, or in service of, the physical canteens (ordering, payments, music, fridges, venue reservations, age checks for the bar, …). If you can build it without TOSTI being a canteen system, it doesn't belong here.
+2. **Available to all students.** Every authenticated Radboud student can use it. Features that only serve one association, one committee, or a private subset of users belong in that group's own tooling, not in TOSTI.
+3. **Shared by all participating associations.** A feature that benefits one association but not the others is out of scope. Build it in that association's own systems.
+
+If a proposed feature fails any of these tests, it doesn't belong in TOSTI — even if it's well-built, even if it's small, even if "we already have the auth and the user accounts so it'd be easy to bolt on." Resist that. Feature creep is the single biggest risk to this project's long-term maintainability. Each added feature is a permanent maintenance burden carried by future volunteers.
+
+When in doubt, **don't**. Open an issue and let the website committee weigh in before writing code.
+
 ## 🚀 Features
 
 ### Core Features
@@ -31,14 +43,21 @@ TOSTI is a comprehensive web application designed for [Tartarus](https://tartaru
 ## 🏗️ Architecture
 
 TOSTI is built using:
-- **Backend**: Django 5.1 (Python)
+- **Backend**: Django 6 (Python)
 - **Frontend**: Django templates with Bootstrap 5
 - **Database**: PostgreSQL (production) / SQLite (development)
 - **Caching**: File-based cache (production) / In-memory (development)
 - **Authentication**: SAML2 (via djangosaml2)
-- **API**: Django REST Framework with OAuth2
+- **API**: Django REST Framework with OAuth2 + drf-spectacular for OpenAPI
+- **MCP server**: in-process (`django-mcp-server`) at `/mcp`
 - **Task Scheduling**: Custom cron implementation
 - **Containerization**: Docker & Docker Compose
+
+### Modular Django apps
+
+Each piece of TOSTI functionality lives in its own Django app, with **minimal cross-app dependencies**. The goal is that adding or removing a feature should be as simple as adding or removing a line from `INSTALLED_APPS` — no other app should break, no template should fail to render, no URL should 500.
+
+In practice this means: models, views, URLs, services, signals, API endpoints (`<app>/api/v1/`), and **MCP tools** (`<app>/mcp.py`) for a feature all live inside that feature's app. The `tosti` app contains only shared infrastructure (settings, base templates, cross-cutting helpers). When you build a new feature, build it as its own app — see `CONTRIBUTING.md` for the conventions.
 
 ## 📁 Project Structure
 
@@ -205,6 +224,33 @@ TOSTI provides a RESTful API with OAuth2 authentication.
 
 ### API Documentation
 Interactive API documentation is available at `/api/docs` when running the application.
+
+### MCP server (Model Context Protocol)
+
+TOSTI exposes a small subset of the API as LLM-callable tools at `/mcp`. This lets any MCP-compatible AI assistant read state and act on the user's behalf with the same OAuth2 / session credentials they'd use for the REST API.
+
+Each app contributes its own tools via an `<app>/mcp.py` module, auto-discovered by `django-mcp-server`. To add a tool, drop a method on a `MCPToolset` subclass in the relevant app — no central registration. Tools currently published:
+
+| Tool | Owning app | Required scope | Description |
+| --- | --- | --- | --- |
+| `list_venues` | `venues` | none | List all venues. |
+| `create_venue_reservation` | `venues` | `write` | Request (unaccepted) a venue reservation. |
+| `list_active_shifts` | `orders` | none | List shifts currently open for ordering. |
+| `place_order` | `orders` | `orders:order` | Place a single-item order in an active shift. |
+| `get_player_state` | `thaliedje` | none | Current track & playback state for a venue's player. |
+| `search_tracks` | `thaliedje` | none | Search the music catalog via a venue's player. |
+| `request_song` | `thaliedje` | `thaliedje:request` | Add a track to a player's queue. |
+
+**Auth flow** (works with any RFC-compliant MCP client):
+
+1. Client POSTs to `/mcp` without credentials → server returns `401` with `WWW-Authenticate: Bearer realm="tosti", resource_metadata="https://tosti.science.ru.nl/.well-known/oauth-protected-resource"`.
+2. Client GETs the resource metadata (RFC 9728) → discovers the authorization server.
+3. Client GETs `/.well-known/oauth-authorization-server` (RFC 8414) → discovers the `registration_endpoint`, `authorization_endpoint`, `token_endpoint`, supported scopes, etc.
+4. Client POSTs to `/oauth/register/` (RFC 7591) with its redirect URIs → server creates a public OAuth2 application on the fly and returns the `client_id`.
+5. Client runs the standard authorization-code-with-PKCE flow. User logs in via SAML → SURFconext → user lands on TOSTI's consent screen → approves the scopes the client asked for.
+6. Client receives an access token; subsequent MCP calls go to `/mcp` with `Authorization: Bearer <token>`.
+
+Authenticated MCP requests pass through `OAuth2Authentication` (or `SessionAuthentication` for the browser-flow case) — same chain as DRF.
 
 ## 🧪 Testing
 
