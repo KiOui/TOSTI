@@ -96,7 +96,7 @@ class OAuthProtectedResourceMetadataView(View):
 class DynamicClientRegistrationView(View):
     """RFC 7591 OAuth 2.0 Dynamic Client Registration.
 
-    MCP clients (Claude Desktop, Cursor, …) POST a JSON document here to
+    MCP clients POST a JSON document here to
     self-register. We always provision:
       - a public client (no client_secret returned)
       - authorization-code grant only

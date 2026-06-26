@@ -17,6 +17,8 @@ from .views import (
     handler500 as custom_handler500,
     DocumentationView,
     ExplainerView,
+    MCPToolsDocsView,
+    OAuthIntegrationDocsView,
     AfterLoginRedirectView,
     LogoutView,
     StatisticsView,
@@ -29,6 +31,7 @@ handler500 = custom_handler500
 urlpatterns = [
     path("", IndexView.as_view(), name="index"),
     path("", include("mcp_server.urls")),
+    path("mcp/docs/", MCPToolsDocsView.as_view(), name="mcp-tools-docs"),
     path(
         ".well-known/oauth-authorization-server",
         OAuthAuthorizationServerMetadataView.as_view(),
@@ -43,6 +46,11 @@ urlpatterns = [
         "oauth/register/",
         DynamicClientRegistrationView.as_view(),
         name="oauth-dynamic-client-registration",
+    ),
+    path(
+        "oauth/docs/",
+        OAuthIntegrationDocsView.as_view(),
+        name="oauth-integration-docs",
     ),
     path("oauth/", include("oauth2_provider.urls", namespace="oauth2_provider")),
     path("privacy/", PrivacyView.as_view(), name="privacy"),

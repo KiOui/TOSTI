@@ -79,6 +79,7 @@ MIDDLEWARE = [
     "announcements.middleware.ClosedAnnouncementsMiddleware",
     "announcements.middleware.AppAnnouncementMiddleware",
     "tosti.middleware.RequestMetricsMiddleware",
+    "tosti.middleware.MCPLandingMiddleware",
     "tosti.middleware.WWWAuthenticateMiddleware",
 ]
 

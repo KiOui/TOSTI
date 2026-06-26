@@ -227,7 +227,7 @@ Interactive API documentation is available at `/api/docs` when running the appli
 
 ### MCP server (Model Context Protocol)
 
-TOSTI exposes a small subset of the API as LLM-callable tools at `/mcp`. This lets clients like Claude Desktop or Cursor read state and act on the user's behalf with the same OAuth2 / session credentials they'd use for the REST API.
+TOSTI exposes a small subset of the API as LLM-callable tools at `/mcp`. This lets any MCP-compatible AI assistant read state and act on the user's behalf with the same OAuth2 / session credentials they'd use for the REST API.
 
 Each app contributes its own tools via an `<app>/mcp.py` module, auto-discovered by `django-mcp-server`. To add a tool, drop a method on a `MCPToolset` subclass in the relevant app — no central registration. Tools currently published:
 
@@ -241,7 +241,7 @@ Each app contributes its own tools via an `<app>/mcp.py` module, auto-discovered
 | `search_tracks` | `thaliedje` | none | Search the music catalog via a venue's player. |
 | `request_song` | `thaliedje` | `thaliedje:request` | Add a track to a player's queue. |
 
-**Auth flow** (works with any RFC-compliant MCP client, e.g. Claude Desktop):
+**Auth flow** (works with any RFC-compliant MCP client):
 
 1. Client POSTs to `/mcp` without credentials → server returns `401` with `WWW-Authenticate: Bearer realm="tosti", resource_metadata="https://tosti.science.ru.nl/.well-known/oauth-protected-resource"`.
 2. Client GETs the resource metadata (RFC 9728) → discovers the authorization server.

@@ -217,6 +217,34 @@ class MCPEndpointAuthTests(TestCase):
         self.assertIn("tools", payload["result"]["capabilities"])
 
 
+class MCPLandingPageTests(TestCase):
+    """Browser-style GETs to /mcp return a human-readable landing page."""
+
+    def test_browser_get_returns_html_landing(self):
+        response = self.client.get(
+            "/mcp",
+            HTTP_ACCEPT="text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"TOSTI MCP server", response.content)
+        self.assertEqual(response["Content-Type"].split(";")[0], "text/html")
+
+    def test_mcp_client_get_is_not_intercepted(self):
+        response = self.client.get(
+            "/mcp",
+            HTTP_ACCEPT="application/json, text/event-stream",
+        )
+        # Falls through to the MCP view, which requires auth.
+        self.assertIn(response.status_code, (401, 403, 405))
+        if response.status_code != 405:
+            self.assertNotIn(b"TOSTI MCP server", response.content)
+
+    def test_missing_accept_header_is_not_intercepted(self):
+        response = self.client.get("/mcp")
+        # No Accept header → cannot infer "browser"; fall through to MCP view.
+        self.assertNotIn(b"TOSTI MCP server", response.content)
+
+
 class RequireScopeTests(TestCase):
     """``require_scope`` mirrors DRF's IsAuthenticatedOrTokenHasScope semantics."""
 

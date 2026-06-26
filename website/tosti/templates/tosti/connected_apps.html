@@ -1,0 +1,73 @@
+{% load static %}
+
+<h2>Connected apps</h2>
+<p>
+    These are the third-party applications you've allowed to act on your behalf via OAuth. They can be anything that asked for access through TOSTI's consent screen &mdash; a developer's own integration, an AI assistant, a script you wrote, or any other tool.
+</p>
+<p>
+    Revoking access deletes all tokens the app holds for your account. The app will need to ask for your permission again the next time it tries to connect.
+</p>
+
+{% if entries %}
+    <table class="w-100 my-2 table align-middle">
+        <thead>
+            <tr>
+                <th>Application</th>
+                <th>Permissions</th>
+                <th>Last used</th>
+                <th style="width: 130px;">Revoke</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in entries %}
+                <tr>
+                    <td>
+                        <strong>{{ entry.application.name|default:entry.application.client_id }}</strong>
+                        <br>
+                        <small class="text-muted">Granted {{ entry.first_granted|date:"j M Y" }}</small>
+                    </td>
+                    <td>
+                        {% if entry.scopes %}
+                            <ul class="mb-0 ps-3">
+                                {% for scope in entry.scopes %}
+                                    <li><code>{{ scope.name }}</code> &mdash; {{ scope.description }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <span class="text-muted">no scopes granted</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ entry.last_used|date:"j M Y H:i" }}</td>
+                    <td>
+                        <form method="POST">
+                            {% csrf_token %}
+                            <input name="active" type="hidden" value="connected_apps"/>
+                            <input name="action" type="hidden" value="revoke"/>
+                            <input name="application_id" type="hidden" value="{{ entry.application.id }}"/>
+                            <button type="submit" class="btn btn-danger w-100 revoke-button">Revoke</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p class="alert alert-secondary">
+        You haven't authorised any apps yet. Authorisations appear here once you've granted an application access through TOSTI's consent screen.
+    </p>
+{% endif %}
+
+<script>
+    const revoke_buttons = document.getElementsByClassName('revoke-button');
+    for (let i = 0; i < revoke_buttons.length; i++) {
+        let revoke_button = revoke_buttons[i];
+        revoke_button.addEventListener("click", function (event) {
+            event.preventDefault();
+            const form = event.currentTarget.closest("form");
+            tosti_confirm(
+                "Revoking access will sign this app out of TOSTI immediately. You can always connect it again later.",
+                {title: "Revoke access", confirmLabel: "Revoke"}
+            ).then(ok => { if (ok && form) form.submit(); });
+        });
+    }
+</script>

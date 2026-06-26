@@ -1,5 +1,6 @@
 from django.db import DatabaseError, connection
 from django.http import HttpResponse
+from django.shortcuts import render
 from django.urls import resolve, Resolver404
 
 from tosti.metrics import emit as emit_metric
@@ -102,6 +103,42 @@ class RequestMetricsMiddleware:
         if authenticated:
             return "api_internal"
         return "api_anon"
+
+
+class MCPLandingMiddleware:
+    """Serve a human-readable page when a browser visits ``/mcp``.
+
+    The MCP endpoint speaks JSON-RPC over POST and is meaningless to a
+    human pointing their browser at it. Real MCP clients announce
+    themselves with ``Accept: application/json, text/event-stream``;
+    browsers send ``Accept: text/html, ...``. We branch on that: if the
+    request is a GET that prefers HTML, serve a landing page that
+    points users at the explainer. Everything else falls through to the
+    MCP view.
+    """
+
+    MCP_PATHS = ("/mcp", "/mcp/")
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        if (
+            request.method == "GET"
+            and request.path in self.MCP_PATHS
+            and self._prefers_html(request)
+        ):
+            return render(request, "tosti/mcp_landing.html")
+        return self.get_response(request)
+
+    @staticmethod
+    def _prefers_html(request) -> bool:
+        accept = request.META.get("HTTP_ACCEPT", "")
+        if not accept:
+            return False
+        # A browser always lists text/html; MCP clients ask for
+        # application/json + text/event-stream and do not include text/html.
+        return "text/html" in accept and "text/event-stream" not in accept
 
 
 class WWWAuthenticateMiddleware:

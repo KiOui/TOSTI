@@ -1,0 +1,50 @@
+{% extends "tosti/base.html" %}
+{% load static %}
+
+{% block title %}
+    TOSTI: MCP tools
+{% endblock %}
+
+{% block page %}
+    <div class="container mt-5 mb-5 prose">
+        <div class="text-center mb-5">
+            <h1>MCP tools reference</h1>
+            <p class="lead tagline">Every tool exposed by TOSTI's <a href="/mcp">MCP server</a></p>
+        </div>
+
+        <p>
+            This page is generated from the live MCP server registry, so it always matches what <code>/mcp</code> actually exposes. For each tool you'll find its name, description, and JSON Schemas for input and output &mdash; the same information returned by a <code>tools/list</code> JSON-RPC call.
+        </p>
+        <p>
+            Auth, registration and the rest of the protocol are documented in the <a href="{% url 'oauth-integration-docs' %}">OAuth integration guide</a>. To interactively try the tools rather than just read about them, point <a href="https://github.com/modelcontextprotocol/inspector" target="_blank" rel="noopener">MCP Inspector</a> at <code>{{ request.scheme }}://{{ request.get_host }}/mcp</code> (run it locally with <code>npx @modelcontextprotocol/inspector</code>).
+        </p>
+
+        {% for toolset in toolsets %}
+            <hr>
+            <h2 id="toolset-{{ toolset.name }}">{{ toolset.name }}</h2>
+            {% if toolset.doc %}
+                <p class="text-muted">{{ toolset.doc|linebreaksbr }}</p>
+            {% endif %}
+
+            {% for tool in toolset.tools %}
+                <div class="mb-4">
+                    <h3 id="tool-{{ tool.name }}"><code>{{ tool.name }}</code></h3>
+                    {% if tool.description %}
+                        <p>{{ tool.description|linebreaksbr }}</p>
+                    {% endif %}
+
+                    <details class="mb-2">
+                        <summary><strong>Input schema</strong></summary>
+                        <pre class="mt-2"><code>{{ tool.input_schema }}</code></pre>
+                    </details>
+                    {% if tool.output_schema %}
+                        <details>
+                            <summary><strong>Output schema</strong></summary>
+                            <pre class="mt-2"><code>{{ tool.output_schema }}</code></pre>
+                        </details>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+{% endblock %}
