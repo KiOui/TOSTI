@@ -1,4 +1,5 @@
 from datetime import timedelta
+from unittest.mock import MagicMock, patch
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
@@ -38,7 +39,8 @@ class VenueViewTests(TestCase):
         self.assertEqual(response.status_code, 302)
 
     @freeze_time()
-    def test_request_reservation_view_post(self):
+    @patch("tosti.tasks.send_email.delay")
+    def test_request_reservation_view_post(self, send_email_mock: MagicMock):
         self.assertTrue(
             self.client.login(username=self.user.username, password="password")
         )
@@ -64,6 +66,9 @@ class VenueViewTests(TestCase):
         self.assertEqual(len(reservations_created), 1)
         reservation_created = models.Reservation.objects.get(pk=reservations_created[0])
         self.assertEqual(reservation_created.title, "Test reservation")
+
+        # Test whether an email was sent
+        send_email_mock.assert_called()
 
     def test_request_reservation_view_post_not_logged_in(self):
         now = timezone.localtime(timezone.now())
