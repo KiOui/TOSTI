@@ -26,12 +26,26 @@
                     {% endif %}
                 {% endfor %}
 
-                <h2 class="h4 mt-4">It will be able to:</h2>
-                <ul>
-                    {% for scope in scopes_descriptions %}
-                        <li>{{ scope }}</li>
+                <h2 class="h4 mt-4">Choose what to allow</h2>
+                <p class="text-muted">
+                    {{ application.name }} is asking for these permissions. Tick the ones you want to grant; untick anything you'd rather not allow. You can revisit this from the <a href="{% url 'users:account' %}?active=connected_apps">Connected apps</a> tab any time.
+                </p>
+                <div class="my-3">
+                    {% for checkbox in form.scope %}
+                        <div class="form-check mb-2">
+                            {{ checkbox.tag }}
+                            <label for="{{ checkbox.id_for_label }}" class="form-check-label">
+                                <strong><code>{{ checkbox.data.value }}</code></strong>
+                                &mdash; {{ checkbox.choice_label }}
+                            </label>
+                        </div>
                     {% endfor %}
-                </ul>
+                </div>
+                {% if form.scope.errors %}
+                    <div class="alert alert-warning">
+                        {{ form.scope.errors }}
+                    </div>
+                {% endif %}
 
                 {% if redirect_uri %}
                     <p class="text-muted">
@@ -39,9 +53,8 @@
                     </p>
                 {% endif %}
 
-                {% if form.errors or form.non_field_errors %}
+                {% if form.non_field_errors %}
                     <div class="alert alert-danger">
-                        {{ form.errors }}
                         {{ form.non_field_errors }}
                     </div>
                 {% endif %}

@@ -4,10 +4,10 @@ from django.contrib import admin
 from django.templatetags.static import static
 from django.urls import path, include
 from django.views.generic import RedirectView
-from oauth2_provider.views import AuthorizationView
 
 from .oauth_discovery import (
     DynamicClientRegistrationView,
+    GranularAuthorizationView,
     OAuthAuthorizationServerMetadataView,
     OAuthProtectedResourceMetadataView,
 )
@@ -32,7 +32,7 @@ from .views import (
 # global ``form-action: 'self'`` would break the flow. Loosen the directive
 # for this single view, not site-wide.
 authorize_view = csp_update({"form-action": ["https:"]})(
-    AuthorizationView.as_view()
+    GranularAuthorizationView.as_view()
 )
 
 handler403 = custom_handler403
