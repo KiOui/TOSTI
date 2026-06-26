@@ -196,10 +196,22 @@ class MCPToolsDocsView(TemplateView):
             if group_name not in grouped:
                 grouped[group_name] = {"doc": group_doc, "tools": []}
 
+            annotations = tool.annotations
+            if annotations is None:
+                kind = "unclassified"
+            elif annotations.readOnlyHint:
+                kind = "read-only"
+            elif annotations.destructiveHint:
+                kind = "destructive"
+            else:
+                kind = "write"
+
             grouped[group_name]["tools"].append(
                 {
                     "name": tool.name,
+                    "title": annotations.title if annotations else None,
                     "description": (tool.description or "").strip(),
+                    "kind": kind,
                     "input_schema": json.dumps(
                         tool.parameters, indent=2, sort_keys=True
                     ),

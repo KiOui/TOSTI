@@ -15,6 +15,22 @@ class OrderTools(MCPToolset):
     the API views and the MCP tools share one implementation.
     """
 
+    # See ``tosti.mcp.stamp_tool_annotations`` for what these do.
+    tool_annotations = {
+        "list_active_shifts": {
+            "readOnlyHint": True,
+            "openWorldHint": False,
+            "title": "List active shifts",
+        },
+        "place_order": {
+            "readOnlyHint": False,
+            "destructiveHint": False,
+            "idempotentHint": False,
+            "openWorldHint": False,
+            "title": "Place an order",
+        },
+    }
+
     def list_active_shifts(self) -> list[dict]:
         """List currently active shifts where you can place an order.
 

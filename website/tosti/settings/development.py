@@ -26,6 +26,10 @@ CORS_URLS_REGEX = r"^/(?:api|user/oauth)/.*"
 # OAuth configuration
 OAUTH2_PROVIDER["ALLOWED_REDIRECT_URI_SCHEMES"] = ["http", "https", "nu.thalia"]
 
+# MCP serverInfo icons are built relative to this base — point at the local
+# dev server so a connector added in dev shows the right icons.
+TOSTI_CANONICAL_URL = "http://127.0.0.1:8000"
+
 # Email
 # https://docs.djangoproject.com/en/3.2/topics/email/
 

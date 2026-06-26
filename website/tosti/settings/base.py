@@ -6,6 +6,10 @@ from django.contrib import messages
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 INSTALLED_APPS = [
+    # ``mcp_server`` registers tools in its ``ready()``. ``tosti.ready()``
+    # stamps per-tool annotations on top of that registration, so it must
+    # run AFTER mcp_server — hence mcp_server is listed first.
+    "mcp_server",
     "tosti",
     "django.contrib.admin",
     "django.contrib.admindocs",
@@ -28,7 +32,6 @@ INSTALLED_APPS = [
     "rest_framework",
     "django_filters",
     "drf_spectacular",
-    "mcp_server",
     "rangefilter",
     "announcements",
     "users",
@@ -171,6 +174,11 @@ SPECTACULAR_SETTINGS = {
 # MCP server (Model Context Protocol) — exposes a subset of the API as
 # LLM-callable tools. Auth piggybacks on the existing OAuth2 / session stack.
 DJANGO_MCP_ENDPOINT = "mcp"
+
+# Absolute base URL used to build MCP ``serverInfo`` icon URLs so they
+# resolve directly without going through the ``/favicon.ico`` redirect.
+# Overridden per environment in production.py / development.py.
+TOSTI_CANONICAL_URL = "https://tosti.science.ru.nl"
 # OAuth2 must come first so DRF returns a 401 with a Bearer ``WWW-Authenticate``
 # header for unauthenticated requests — the standard signal for OAuth-aware
 # clients (and what RFC 9728 + the MCP spec expect). SessionAuthentication

@@ -302,6 +302,53 @@ class MCPEndpointAuthTests(TestCase):
         self.assertEqual(payload.get("jsonrpc"), "2.0")
         self.assertIn("result", payload)
         self.assertIn("tools", payload["result"]["capabilities"])
+        # MCP clients render the connector using serverInfo — name + icons
+        # decorated in TostiConfig.ready(). Without these the connector
+        # shows the generic ru.nl favicon (no longer the case).
+        server_info = payload["result"]["serverInfo"]
+        self.assertEqual(server_info["name"], "TOSTI")
+        self.assertIn("icons", server_info)
+        self.assertTrue(server_info["icons"])
+        for icon in server_info["icons"]:
+            self.assertTrue(icon["src"].startswith("http"))
+
+
+class ToolAnnotationsAndInstructionsTests(TestCase):
+    """Per-tool annotations and server instructions are wired up at startup."""
+
+    def test_read_only_tools_are_marked(self):
+        from mcp_server import mcp_server as global_mcp_server
+
+        tools = {t.name: t for t in global_mcp_server._tool_manager.list_tools()}
+        for name in ("list_venues", "list_active_shifts", "get_player_state", "search_tracks"):
+            self.assertIsNotNone(
+                tools[name].annotations, f"{name} is missing annotations"
+            )
+            self.assertTrue(
+                tools[name].annotations.readOnlyHint,
+                f"{name} should be marked read-only",
+            )
+
+    def test_write_tools_are_marked_non_destructive(self):
+        from mcp_server import mcp_server as global_mcp_server
+
+        tools = {t.name: t for t in global_mcp_server._tool_manager.list_tools()}
+        for name in ("place_order", "request_song", "create_venue_reservation"):
+            annotations = tools[name].annotations
+            self.assertIsNotNone(annotations, f"{name} is missing annotations")
+            self.assertFalse(annotations.readOnlyHint, f"{name} is not read-only")
+            self.assertFalse(
+                annotations.destructiveHint,
+                f"{name} only creates rows; should not be destructive",
+            )
+
+    def test_server_instructions_are_populated(self):
+        from mcp_server import mcp_server as global_mcp_server
+
+        instructions = global_mcp_server._mcp_server.instructions
+        self.assertTrue(instructions)
+        self.assertIn("TOSTI", instructions)
+        self.assertIn("venue", instructions.lower())
 
 
 class MCPLandingPageTests(TestCase):
