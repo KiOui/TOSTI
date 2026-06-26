@@ -152,6 +152,98 @@ class AuthorizeConsentScreenTests(TestCase):
             response._csp_update, {"form-action": ["https:"]}
         )
 
+    def _multi_scope_url(self):
+        """Authorize URL requesting three scopes."""
+        return (
+            "/oauth/authorize/"
+            f"?client_id={self.application.client_id}"
+            "&response_type=code"
+            "&redirect_uri=https://claude.ai/api/mcp/auth_callback"
+            "&scope=read+orders%3Aorder+thaliedje%3Arequest"
+            "&state=xyz"
+            "&code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM"
+            "&code_challenge_method=S256"
+        )
+
+    def test_consent_renders_one_checkbox_per_requested_scope(self):
+        response = self.client.get(self._multi_scope_url())
+        self.assertEqual(response.status_code, 200)
+        # One checkbox per requested scope, all checked by default.
+        for scope in ("read", "orders:order", "thaliedje:request"):
+            self.assertContains(response, f'value="{scope}"')
+            self.assertContains(response, f"<code>{scope}</code>")
+        # Scopes the client did NOT ask for must not appear as choices.
+        self.assertNotContains(response, 'value="thaliedje:manage"')
+
+    def test_granting_subset_issues_code_for_subset(self):
+        """User unchecks one scope → the issued grant matches the subset."""
+        from oauth2_provider.models import Grant
+
+        get_response = self.client.get(self._multi_scope_url())
+        form_initial = get_response.context["form"].initial
+        post_response = self.client.post(
+            "/oauth/authorize/",
+            {
+                "csrfmiddlewaretoken": "ignored-in-tests",
+                "client_id": form_initial["client_id"],
+                "state": form_initial["state"],
+                "redirect_uri": form_initial["redirect_uri"],
+                "response_type": form_initial["response_type"],
+                "code_challenge": form_initial["code_challenge"],
+                "code_challenge_method": form_initial["code_challenge_method"],
+                "requested_scope": "read orders:order thaliedje:request",
+                # User ticks only "read" — drops orders:order and thaliedje:request.
+                "scope": ["read"],
+                "allow": "Authorize",
+            },
+        )
+        self.assertEqual(post_response.status_code, 302)
+        grant = Grant.objects.get(user=self.user, application=self.application)
+        self.assertEqual(set(grant.scope.split()), {"read"})
+
+    def test_cannot_grant_scopes_not_originally_requested(self):
+        """Tampered POST with a scope the client never asked for is rejected."""
+        get_response = self.client.get(self._multi_scope_url())
+        form_initial = get_response.context["form"].initial
+        post_response = self.client.post(
+            "/oauth/authorize/",
+            {
+                "client_id": form_initial["client_id"],
+                "state": form_initial["state"],
+                "redirect_uri": form_initial["redirect_uri"],
+                "response_type": form_initial["response_type"],
+                "code_challenge": form_initial["code_challenge"],
+                "code_challenge_method": form_initial["code_challenge_method"],
+                "requested_scope": "read",
+                "scope": ["read", "thaliedje:manage"],  # not in choices
+                "allow": "Authorize",
+            },
+        )
+        # Re-renders the form with an invalid-choice error rather than
+        # issuing a grant for the unrequested scope.
+        self.assertEqual(post_response.status_code, 200)
+
+    def test_granting_zero_scopes_re_renders_with_required_error(self):
+        """Submitting with all boxes unticked must not produce a grant."""
+        get_response = self.client.get(self._multi_scope_url())
+        form_initial = get_response.context["form"].initial
+        post_response = self.client.post(
+            "/oauth/authorize/",
+            {
+                "client_id": form_initial["client_id"],
+                "state": form_initial["state"],
+                "redirect_uri": form_initial["redirect_uri"],
+                "response_type": form_initial["response_type"],
+                "code_challenge": form_initial["code_challenge"],
+                "code_challenge_method": form_initial["code_challenge_method"],
+                "requested_scope": "read orders:order",
+                "scope": [],
+                "allow": "Authorize",
+            },
+        )
+        self.assertEqual(post_response.status_code, 200)
+        self.assertContains(post_response, "Select at least one permission")
+
 
 class DynamicClientRegistrationTests(TestCase):
     """RFC 7591 dynamic client registration."""
