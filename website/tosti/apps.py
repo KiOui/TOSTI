@@ -10,6 +10,7 @@ class TostiConfig(AppConfig):
     def ready(self):
         """Register signals and decorate the global MCP server."""
         from tosti import signals  # noqa
+
         self._configure_mcp_server()
 
     @staticmethod

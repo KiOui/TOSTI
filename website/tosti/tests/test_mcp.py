@@ -148,9 +148,7 @@ class AuthorizeConsentScreenTests(TestCase):
         response = self.client.get(self._authorize_url())
         # The csp_update decorator stamps the response so the CSP middleware
         # merges in the override.
-        self.assertEqual(
-            response._csp_update, {"form-action": ["https:"]}
-        )
+        self.assertEqual(response._csp_update, {"form-action": ["https:"]})
 
     def _multi_scope_url(self):
         """Authorize URL requesting three scopes."""
@@ -412,7 +410,12 @@ class ToolAnnotationsAndInstructionsTests(TestCase):
         from mcp_server import mcp_server as global_mcp_server
 
         tools = {t.name: t for t in global_mcp_server._tool_manager.list_tools()}
-        for name in ("list_venues", "list_active_shifts", "get_player_state", "search_tracks"):
+        for name in (
+            "list_venues",
+            "list_active_shifts",
+            "get_player_state",
+            "search_tracks",
+        ):
             self.assertIsNotNone(
                 tools[name].annotations, f"{name} is missing annotations"
             )
