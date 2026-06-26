@@ -57,16 +57,34 @@ def get_player_state(player: Player) -> dict:
 
 
 def search_tracks(player: Player, query: str, maximum: int = 5) -> list[dict]:
-    """Search the player's catalog for tracks. Caller is responsible for permission checks."""
+    """Search the player's catalog for tracks. Caller is responsible for permission checks.
+
+    ``Player.search`` returns different shapes depending on the backend:
+    - ``SpotifyPlayer`` returns a dict keyed by query type, e.g.
+      ``{"tracks": [{...}, ...]}``.
+    - ``MarietjePlayer`` returns ``None`` (no search support).
+
+    Normalise both to the flat list of track dicts the MCP tool promises.
+    """
     maximum = max(1, min(int(maximum), 25))
-    raw = player.search(query, maximum=maximum, query_type="track") or []
+    raw = player.search(query, maximum=maximum, query_type="track")
+    if not raw:
+        return []
+    # SpotifyPlayer wraps results in {"tracks": [...]}; pull the list out.
+    # Any other shape (e.g. a future backend that returns a flat list)
+    # is passed through unchanged.
+    if isinstance(raw, dict):
+        tracks = raw.get("tracks", [])
+    else:
+        tracks = raw
     return [
         {
             "id": r.get("id"),
             "name": r.get("name"),
             "artists": r.get("artists", []),
         }
-        for r in raw
+        for r in tracks
+        if isinstance(r, dict)
     ]
 
 

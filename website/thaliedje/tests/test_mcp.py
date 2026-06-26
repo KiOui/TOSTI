@@ -7,6 +7,7 @@ from django.test import TestCase
 
 from thaliedje.mcp import ThaliedjeTools
 from thaliedje.models import MarietjePlayer
+from thaliedje.services import search_tracks as search_tracks_service
 from venues.models import Venue
 
 User = get_user_model()
@@ -89,3 +90,60 @@ class ThaliedjeToolsRequestSongTests(TestCase):
         result = tools.request_song(venue_slug="any", track_id="t")
         self.assertIn("error", result)
         self.assertIn("thaliedje:request", result["error"])
+
+
+class SearchTracksServiceTests(TestCase):
+    """``search_tracks`` normalises the per-backend search() return shape.
+
+    Regression for Sentry TOSTI-YP / TOSTI-YQ: ``SpotifyPlayer.search``
+    returns ``{"tracks": [...]}`` (a dict), but the service iterated it
+    as if it were a flat list of track dicts. Iterating a dict yields
+    its string keys, so the first ``r.get("id")`` blew up with
+    ``AttributeError: 'str' object has no attribute 'get'``.
+    """
+
+    def _player(self, raw):
+        player = MagicMock()
+        player.search.return_value = raw
+        return player
+
+    def test_unwraps_spotify_dict_shape(self):
+        raw = {
+            "tracks": [
+                {"id": "1", "name": "Song A", "artists": ["Artist"]},
+                {"id": "2", "name": "Song B", "artists": ["Artist 2"]},
+            ],
+            # other categories should be ignored by ``search_tracks``
+            "albums": [{"id": "x", "name": "Album"}],
+        }
+        result = search_tracks_service(self._player(raw), "anything")
+        self.assertEqual(
+            result,
+            [
+                {"id": "1", "name": "Song A", "artists": ["Artist"]},
+                {"id": "2", "name": "Song B", "artists": ["Artist 2"]},
+            ],
+        )
+
+    def test_passes_through_flat_list_shape(self):
+        raw = [{"id": "1", "name": "Song A", "artists": ["Artist"]}]
+        self.assertEqual(
+            search_tracks_service(self._player(raw), "anything"),
+            [{"id": "1", "name": "Song A", "artists": ["Artist"]}],
+        )
+
+    def test_none_return_is_empty_list(self):
+        self.assertEqual(search_tracks_service(self._player(None), "x"), [])
+
+    def test_missing_tracks_key_is_empty_list(self):
+        self.assertEqual(
+            search_tracks_service(self._player({"albums": [{"id": "a"}]}), "x"),
+            [],
+        )
+
+    def test_skips_non_dict_entries(self):
+        raw = {"tracks": [{"id": "1"}, "stray-string", None]}
+        result = search_tracks_service(self._player(raw), "x")
+        self.assertEqual(
+            result, [{"id": "1", "name": None, "artists": []}]
+        )
