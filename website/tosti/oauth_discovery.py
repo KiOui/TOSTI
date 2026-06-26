@@ -25,6 +25,9 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from oauth2_provider.models import Application
 from oauth2_provider.scopes import get_scopes_backend
+from oauth2_provider.views import AuthorizationView
+
+from tosti.forms import GranularAuthorizationForm
 
 # Per-IP registration cap: protects the Application table from a flood of
 # self-registered clients. Tuned generously for a normal MCP client doing one
@@ -247,3 +250,20 @@ class DynamicClientRegistrationView(View):
         if forwarded:
             return forwarded.split(",")[0].strip()
         return request.META.get("REMOTE_ADDR", "unknown")
+
+
+class GranularAuthorizationView(AuthorizationView):
+    """Consent screen that lets the user grant a subset of requested scopes.
+
+    Swaps the upstream all-or-nothing ``AllowForm`` (whose ``scope`` is a
+    hidden string) for ``GranularAuthorizationForm`` (one checkbox per
+    requested scope). RFC 6749 §3.3 explicitly allows the authorization
+    server to issue a narrower scope than requested, so this is a
+    conforming refinement.
+
+    Everything else (PKCE, ``code_challenge`` round-trip, the
+    ``approval_prompt=auto`` short-circuit, the ``state``/``nonce``
+    plumbing) is inherited unchanged from ``AuthorizationView``.
+    """
+
+    form_class = GranularAuthorizationForm

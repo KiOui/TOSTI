@@ -28,7 +28,17 @@
 
             {% for tool in toolset.tools %}
                 <div class="mb-4">
-                    <h3 id="tool-{{ tool.name }}"><code>{{ tool.name }}</code></h3>
+                    <h3 id="tool-{{ tool.name }}">
+                        <code>{{ tool.name }}</code>
+                        {% if tool.kind == "read-only" %}
+                            <span class="badge bg-success">read-only</span>
+                        {% elif tool.kind == "write" %}
+                            <span class="badge bg-warning text-dark">write</span>
+                        {% elif tool.kind == "destructive" %}
+                            <span class="badge bg-danger">destructive</span>
+                        {% endif %}
+                    </h3>
+                    {% if tool.title %}<p class="text-muted mb-1">{{ tool.title }}</p>{% endif %}
                     {% if tool.description %}
                         <p>{{ tool.description|linebreaksbr }}</p>
                     {% endif %}

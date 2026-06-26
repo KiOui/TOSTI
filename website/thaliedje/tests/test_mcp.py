@@ -29,6 +29,24 @@ class ThaliedjeToolsReadTests(TestCase):
         result = self.tools.get_player_state("does-not-exist")
         self.assertIn("error", result)
 
+    def test_get_player_state_returns_marietje_subclass_state(self):
+        """Regression: bare ``Player.objects.get`` returns the base class,
+        whose ``current_*`` properties raise ``NotImplementedError``.
+        ``get_player_for_venue`` must use ``select_subclasses()`` so the
+        MarietjePlayer-specific properties resolve.
+        """
+        venue = Venue.objects.first()
+        MarietjePlayer.objects.create(slug="marietje-noord", venue=venue)
+        with patch(
+            "thaliedje.models.MarietjePlayer._current_playback", return_value=None
+        ):
+            result = self.tools.get_player_state(venue.slug)
+        # No error key, and the keys we promise are present.
+        self.assertNotIn("error", result)
+        self.assertEqual(result["venue"], str(venue))
+        self.assertIn("is_playing", result)
+        self.assertIn("track", result)
+
 
 class ThaliedjeToolsRequestSongTests(TestCase):
     fixtures = ["venues.json"]
@@ -55,8 +73,9 @@ class ThaliedjeToolsRequestSongTests(TestCase):
 
         mock_service.assert_called_once()
         args, _ = mock_service.call_args
-        # Player.objects.get may return the base ``Player`` type even though
-        # we created a MarietjePlayer; compare by primary key.
+        # The service uses select_subclasses(), so we get a concrete
+        # MarietjePlayer back — not the base ``Player``.
+        self.assertIsInstance(args[0], MarietjePlayer)
         self.assertEqual(args[0].pk, player.pk)
         self.assertEqual(args[1], self.user)
         self.assertEqual(args[2], "track-id-42")

@@ -1,0 +1,77 @@
+{% extends "tosti/base.html" %}
+{% load static %}
+
+{% block title %}
+    TOSTI: Authorise {{ application.name }}
+{% endblock %}
+
+{% block page %}
+    <div class="container mt-5 mb-5 prose">
+        {% if not error %}
+            <div class="text-center mb-4">
+                <h1>Authorise {{ application.name }}</h1>
+                <p class="lead tagline">{{ application.name }} would like to act on your behalf in TOSTI.</p>
+            </div>
+
+            <p>
+                Before approving, make sure you trust this application &mdash; it will be able to perform the actions listed below using your account. You can revoke access at any time from the <a href="{% url 'users:account' %}?active=connected_apps">Connected apps</a> tab of your account page.
+            </p>
+
+            <form id="authorizationForm" method="post">
+                {% csrf_token %}
+
+                {% for field in form %}
+                    {% if field.is_hidden %}
+                        {{ field }}
+                    {% endif %}
+                {% endfor %}
+
+                <h2 class="h4 mt-4">Choose what to allow</h2>
+                <p class="text-muted">
+                    {{ application.name }} is asking for these permissions. Tick the ones you want to grant; untick anything you'd rather not allow. You can revisit this from the <a href="{% url 'users:account' %}?active=connected_apps">Connected apps</a> tab any time.
+                </p>
+                <div class="my-3">
+                    {% for checkbox in form.scope %}
+                        <div class="form-check mb-2">
+                            {{ checkbox.tag }}
+                            <label for="{{ checkbox.id_for_label }}" class="form-check-label">
+                                <strong><code>{{ checkbox.data.value }}</code></strong>
+                                &mdash; {{ checkbox.choice_label }}
+                            </label>
+                        </div>
+                    {% endfor %}
+                </div>
+                {% if form.scope.errors %}
+                    <div class="alert alert-warning">
+                        {{ form.scope.errors }}
+                    </div>
+                {% endif %}
+
+                {% if redirect_uri %}
+                    <p class="text-muted">
+                        After approving, you'll be sent back to <code>{{ redirect_uri }}</code>.
+                    </p>
+                {% endif %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <button type="submit" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" name="allow" value="Authorize" class="btn btn-primary">Authorise</button>
+                </div>
+            </form>
+        {% else %}
+            <div class="text-center mb-4">
+                <h1>Authorisation error</h1>
+            </div>
+            <div class="alert alert-danger">
+                <strong>{{ error.error }}</strong>
+                {% if error.description %}<br>{{ error.description }}{% endif %}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

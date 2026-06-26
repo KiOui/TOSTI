@@ -18,6 +18,22 @@ class VenueTools(MCPToolset):
     side effect.
     """
 
+    # See ``tosti.mcp.stamp_tool_annotations`` for what these do.
+    tool_annotations = {
+        "list_venues": {
+            "readOnlyHint": True,
+            "openWorldHint": False,
+            "title": "List venues",
+        },
+        "create_venue_reservation": {
+            "readOnlyHint": False,
+            "destructiveHint": False,
+            "idempotentHint": False,
+            "openWorldHint": False,
+            "title": "Create a venue reservation",
+        },
+    }
+
     def list_venues(self) -> list[dict]:
         """List all venues that can be reserved or where shifts can run.
 

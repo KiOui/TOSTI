@@ -108,6 +108,141 @@ class WWWAuthenticateHeaderTests(TestCase):
         self.assertEqual(response["WWW-Authenticate"], 'Basic realm="admin"')
 
 
+class AuthorizeConsentScreenTests(TestCase):
+    """Custom TOSTI-branded consent screen with the right CSP loosening."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(username="consenter", password="x")
+        self.client.force_login(self.user)
+        self.application = Application.objects.create(
+            name="Test MCP client",
+            client_type=Application.CLIENT_PUBLIC,
+            authorization_grant_type=Application.GRANT_AUTHORIZATION_CODE,
+            redirect_uris="https://claude.ai/api/mcp/auth_callback",
+            user=None,
+            skip_authorization=False,
+        )
+
+    def _authorize_url(self):
+        return (
+            "/oauth/authorize/"
+            f"?client_id={self.application.client_id}"
+            "&response_type=code"
+            "&redirect_uri=https://claude.ai/api/mcp/auth_callback"
+            "&scope=read"
+            "&state=xyz"
+            "&code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM"
+            "&code_challenge_method=S256"
+        )
+
+    def test_consent_screen_renders_with_tosti_base(self):
+        response = self.client.get(self._authorize_url())
+        self.assertEqual(response.status_code, 200)
+        # Uses TOSTI's base.html (the override), not the upstream package
+        # template that pulls in bootstrapcdn.
+        self.assertContains(response, "Authorise")
+        self.assertContains(response, "Test MCP client")
+        self.assertNotContains(response, "netdna.bootstrapcdn.com")
+
+    def test_consent_screen_loosens_form_action_csp(self):
+        response = self.client.get(self._authorize_url())
+        # The csp_update decorator stamps the response so the CSP middleware
+        # merges in the override.
+        self.assertEqual(response._csp_update, {"form-action": ["https:"]})
+
+    def _multi_scope_url(self):
+        """Authorize URL requesting three scopes."""
+        return (
+            "/oauth/authorize/"
+            f"?client_id={self.application.client_id}"
+            "&response_type=code"
+            "&redirect_uri=https://claude.ai/api/mcp/auth_callback"
+            "&scope=read+orders%3Aorder+thaliedje%3Arequest"
+            "&state=xyz"
+            "&code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM"
+            "&code_challenge_method=S256"
+        )
+
+    def test_consent_renders_one_checkbox_per_requested_scope(self):
+        response = self.client.get(self._multi_scope_url())
+        self.assertEqual(response.status_code, 200)
+        # One checkbox per requested scope, all checked by default.
+        for scope in ("read", "orders:order", "thaliedje:request"):
+            self.assertContains(response, f'value="{scope}"')
+            self.assertContains(response, f"<code>{scope}</code>")
+        # Scopes the client did NOT ask for must not appear as choices.
+        self.assertNotContains(response, 'value="thaliedje:manage"')
+
+    def test_granting_subset_issues_code_for_subset(self):
+        """User unchecks one scope → the issued grant matches the subset."""
+        from oauth2_provider.models import Grant
+
+        get_response = self.client.get(self._multi_scope_url())
+        form_initial = get_response.context["form"].initial
+        post_response = self.client.post(
+            "/oauth/authorize/",
+            {
+                "csrfmiddlewaretoken": "ignored-in-tests",
+                "client_id": form_initial["client_id"],
+                "state": form_initial["state"],
+                "redirect_uri": form_initial["redirect_uri"],
+                "response_type": form_initial["response_type"],
+                "code_challenge": form_initial["code_challenge"],
+                "code_challenge_method": form_initial["code_challenge_method"],
+                "requested_scope": "read orders:order thaliedje:request",
+                # User ticks only "read" — drops orders:order and thaliedje:request.
+                "scope": ["read"],
+                "allow": "Authorize",
+            },
+        )
+        self.assertEqual(post_response.status_code, 302)
+        grant = Grant.objects.get(user=self.user, application=self.application)
+        self.assertEqual(set(grant.scope.split()), {"read"})
+
+    def test_cannot_grant_scopes_not_originally_requested(self):
+        """Tampered POST with a scope the client never asked for is rejected."""
+        get_response = self.client.get(self._multi_scope_url())
+        form_initial = get_response.context["form"].initial
+        post_response = self.client.post(
+            "/oauth/authorize/",
+            {
+                "client_id": form_initial["client_id"],
+                "state": form_initial["state"],
+                "redirect_uri": form_initial["redirect_uri"],
+                "response_type": form_initial["response_type"],
+                "code_challenge": form_initial["code_challenge"],
+                "code_challenge_method": form_initial["code_challenge_method"],
+                "requested_scope": "read",
+                "scope": ["read", "thaliedje:manage"],  # not in choices
+                "allow": "Authorize",
+            },
+        )
+        # Re-renders the form with an invalid-choice error rather than
+        # issuing a grant for the unrequested scope.
+        self.assertEqual(post_response.status_code, 200)
+
+    def test_granting_zero_scopes_re_renders_with_required_error(self):
+        """Submitting with all boxes unticked must not produce a grant."""
+        get_response = self.client.get(self._multi_scope_url())
+        form_initial = get_response.context["form"].initial
+        post_response = self.client.post(
+            "/oauth/authorize/",
+            {
+                "client_id": form_initial["client_id"],
+                "state": form_initial["state"],
+                "redirect_uri": form_initial["redirect_uri"],
+                "response_type": form_initial["response_type"],
+                "code_challenge": form_initial["code_challenge"],
+                "code_challenge_method": form_initial["code_challenge_method"],
+                "requested_scope": "read orders:order",
+                "scope": [],
+                "allow": "Authorize",
+            },
+        )
+        self.assertEqual(post_response.status_code, 200)
+        self.assertContains(post_response, "Select at least one permission")
+
+
 class DynamicClientRegistrationTests(TestCase):
     """RFC 7591 dynamic client registration."""
 
@@ -257,6 +392,58 @@ class MCPEndpointAuthTests(TestCase):
         self.assertEqual(payload.get("jsonrpc"), "2.0")
         self.assertIn("result", payload)
         self.assertIn("tools", payload["result"]["capabilities"])
+        # MCP clients render the connector using serverInfo — name + icons
+        # decorated in TostiConfig.ready(). Without these the connector
+        # shows the generic ru.nl favicon (no longer the case).
+        server_info = payload["result"]["serverInfo"]
+        self.assertEqual(server_info["name"], "TOSTI")
+        self.assertIn("icons", server_info)
+        self.assertTrue(server_info["icons"])
+        for icon in server_info["icons"]:
+            self.assertTrue(icon["src"].startswith("http"))
+
+
+class ToolAnnotationsAndInstructionsTests(TestCase):
+    """Per-tool annotations and server instructions are wired up at startup."""
+
+    def test_read_only_tools_are_marked(self):
+        from mcp_server import mcp_server as global_mcp_server
+
+        tools = {t.name: t for t in global_mcp_server._tool_manager.list_tools()}
+        for name in (
+            "list_venues",
+            "list_active_shifts",
+            "get_player_state",
+            "search_tracks",
+        ):
+            self.assertIsNotNone(
+                tools[name].annotations, f"{name} is missing annotations"
+            )
+            self.assertTrue(
+                tools[name].annotations.readOnlyHint,
+                f"{name} should be marked read-only",
+            )
+
+    def test_write_tools_are_marked_non_destructive(self):
+        from mcp_server import mcp_server as global_mcp_server
+
+        tools = {t.name: t for t in global_mcp_server._tool_manager.list_tools()}
+        for name in ("place_order", "request_song", "create_venue_reservation"):
+            annotations = tools[name].annotations
+            self.assertIsNotNone(annotations, f"{name} is missing annotations")
+            self.assertFalse(annotations.readOnlyHint, f"{name} is not read-only")
+            self.assertFalse(
+                annotations.destructiveHint,
+                f"{name} only creates rows; should not be destructive",
+            )
+
+    def test_server_instructions_are_populated(self):
+        from mcp_server import mcp_server as global_mcp_server
+
+        instructions = global_mcp_server._mcp_server.instructions
+        self.assertTrue(instructions)
+        self.assertIn("TOSTI", instructions)
+        self.assertIn("venue", instructions.lower())
 
 
 class MCPLandingPageTests(TestCase):

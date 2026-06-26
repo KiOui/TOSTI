@@ -1,3 +1,4 @@
+from csp.decorators import csp_update
 from django.conf import settings
 from django.contrib import admin
 from django.templatetags.static import static
@@ -6,6 +7,7 @@ from django.views.generic import RedirectView
 
 from .oauth_discovery import (
     DynamicClientRegistrationView,
+    GranularAuthorizationView,
     OAuthAuthorizationServerMetadataView,
     OAuthProtectedResourceMetadataView,
 )
@@ -22,6 +24,15 @@ from .views import (
     AfterLoginRedirectView,
     LogoutView,
     StatisticsView,
+)
+
+# The OAuth consent screen POSTs back to /oauth/authorize/ which then 302s
+# to the client's redirect_uri (a third-party origin by design). Browsers
+# treat the post-form-submit redirect as a form-action target, so the
+# global ``form-action: 'self'`` would break the flow. Loosen the directive
+# for this single view, not site-wide.
+authorize_view = csp_update({"form-action": ["https:"]})(
+    GranularAuthorizationView.as_view()
 )
 
 handler403 = custom_handler403
@@ -51,6 +62,14 @@ urlpatterns = [
         "oauth/docs/",
         OAuthIntegrationDocsView.as_view(),
         name="oauth-integration-docs",
+    ),
+    # Must shadow the upstream pattern (defined inside the include below) so
+    # the per-view CSP override applies. Same name & namespace as upstream so
+    # ``reverse('oauth2_provider:authorize')`` still works everywhere.
+    path(
+        "oauth/authorize/",
+        authorize_view,
+        name="authorize",
     ),
     path("oauth/", include("oauth2_provider.urls", namespace="oauth2_provider")),
     path("privacy/", PrivacyView.as_view(), name="privacy"),
