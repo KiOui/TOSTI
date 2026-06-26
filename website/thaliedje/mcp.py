@@ -21,6 +21,28 @@ class ThaliedjeTools(MCPToolset):
     implementation.
     """
 
+    # See ``tosti.mcp.stamp_tool_annotations`` for what these do. ``search_tracks``
+    # is openWorld because it queries an external catalog (Spotify / Marietje).
+    tool_annotations = {
+        "get_player_state": {
+            "readOnlyHint": True,
+            "openWorldHint": False,
+            "title": "Get player state",
+        },
+        "search_tracks": {
+            "readOnlyHint": True,
+            "openWorldHint": True,
+            "title": "Search the music catalog",
+        },
+        "request_song": {
+            "readOnlyHint": False,
+            "destructiveHint": False,
+            "idempotentHint": False,
+            "openWorldHint": False,
+            "title": "Request a song",
+        },
+    }
+
     def get_player_state(self, venue_slug: str) -> dict:
         """Return what the music player at the given venue is doing right now.
 
