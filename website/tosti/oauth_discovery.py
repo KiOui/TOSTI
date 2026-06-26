@@ -55,12 +55,16 @@ class OAuthAuthorizationServerMetadataView(View):
                 request, "oauth-dynamic-client-registration"
             ),
             "scopes_supported": scopes,
-            "response_types_supported": ["code", "token"],
+            # We intentionally do NOT advertise the deprecated implicit and
+            # password grants (or the corresponding "token" response_type)
+            # even though the underlying library still serves them — RFC 8414
+            # metadata should reflect the *recommended* surface for new
+            # clients. The Swagger UI uses implicit internally; that's
+            # independent of what we tell external clients.
+            "response_types_supported": ["code"],
             "grant_types_supported": [
                 "authorization_code",
                 "client_credentials",
-                "implicit",
-                "password",
                 "refresh_token",
             ],
             "token_endpoint_auth_methods_supported": [
@@ -68,7 +72,10 @@ class OAuthAuthorizationServerMetadataView(View):
                 "client_secret_basic",
                 "none",
             ],
-            "code_challenge_methods_supported": ["S256", "plain"],
+            # Only S256 is advertised; PKCE best practice (RFC 7636 §4.2)
+            # mandates S256 whenever the client can compute it. The library
+            # still accepts ``plain`` if a client insists.
+            "code_challenge_methods_supported": ["S256"],
         }
         return JsonResponse(data)
 

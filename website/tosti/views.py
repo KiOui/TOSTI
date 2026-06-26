@@ -276,7 +276,7 @@ class StatisticsView(LoginRequiredMixin, TemplateView):
         )
 
 
-class ConnectedAppsView(TemplateView):
+class ConnectedAppsView(LoginRequiredMixin, TemplateView):
     """View listing third-party apps the user has authorised (incl. AI assistants).
 
     These are applications the user has granted an OAuth2 token to — most

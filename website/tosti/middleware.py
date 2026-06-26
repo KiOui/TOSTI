@@ -163,6 +163,14 @@ class WWWAuthenticateMiddleware:
             return response
         if not any(request.path.startswith(p) for p in self.PROTECTED_PREFIXES):
             return response
+        # Don't clobber a non-Bearer challenge a downstream view set
+        # deliberately (e.g. a Basic-auth route mounted under one of these
+        # prefixes). For Bearer challenges (which DRF emits by default) we
+        # rewrite the header so the resource_metadata pointer is present —
+        # without it, MCP clients can't auto-discover the auth server.
+        existing = response.get("WWW-Authenticate", "")
+        if existing and not existing.lower().startswith("bearer"):
+            return response
 
         resource_metadata = request.build_absolute_uri(
             "/.well-known/oauth-protected-resource"

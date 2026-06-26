@@ -14,11 +14,12 @@ from unittest.mock import MagicMock
 
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
-from django.test import TestCase
+from django.test import RequestFactory, TestCase
 from django.urls import reverse
 from oauth2_provider.models import Application
 
 from tosti.mcp import require_scope
+from tosti.middleware import WWWAuthenticateMiddleware
 
 User = get_user_model()
 
@@ -51,6 +52,17 @@ class OAuthDiscoveryTests(TestCase):
         for scope in ("read", "write", "orders:order", "thaliedje:request"):
             self.assertIn(scope, data["scopes_supported"])
 
+    def test_authorization_server_metadata_does_not_advertise_deprecated_grants(self):
+        response = self.client.get(reverse("oauth-authorization-server-metadata"))
+        data = json.loads(response.content)
+        # OAuth 2.1 deprecates implicit and password; do not advertise them
+        # even though the underlying library still serves them.
+        self.assertNotIn("implicit", data["grant_types_supported"])
+        self.assertNotIn("password", data["grant_types_supported"])
+        self.assertNotIn("token", data["response_types_supported"])
+        # PKCE best practice: only S256.
+        self.assertEqual(data["code_challenge_methods_supported"], ["S256"])
+
     def test_authorization_server_metadata_advertises_registration_endpoint(self):
         response = self.client.get(reverse("oauth-authorization-server-metadata"))
         data = json.loads(response.content)
@@ -80,6 +92,20 @@ class WWWAuthenticateHeaderTests(TestCase):
         self.assertIn("Bearer", header)
         self.assertIn('resource_metadata="', header)
         self.assertIn(".well-known/oauth-protected-resource", header)
+
+    def test_non_bearer_challenge_is_preserved(self):
+        """A non-Bearer challenge from a downstream view must not be overwritten."""
+        from django.http import HttpResponse
+
+        def view(_request):
+            r = HttpResponse(status=401)
+            r["WWW-Authenticate"] = 'Basic realm="admin"'
+            return r
+
+        middleware = WWWAuthenticateMiddleware(view)
+        request = RequestFactory().get("/api/v1/some-protected/")
+        response = middleware(request)
+        self.assertEqual(response["WWW-Authenticate"], 'Basic realm="admin"')
 
 
 class DynamicClientRegistrationTests(TestCase):
