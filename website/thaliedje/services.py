@@ -28,9 +28,15 @@ def request_song(player, user, track_id):
 
 
 def get_player_for_venue(venue_slug: str) -> Player | None:
-    """Return the ``Player`` configured for the given venue, or ``None``."""
+    """Return the concrete ``Player`` configured for the given venue, or ``None``.
+
+    Uses ``InheritanceManager.select_subclasses()`` so we get a fully-loaded
+    ``SpotifyPlayer`` or ``MarietjePlayer`` — the base ``Player.current_*``
+    properties raise ``NotImplementedError`` and the subclass-specific state
+    (auth, URL) only loads on the subclass.
+    """
     try:
-        return Player.objects.get(venue__slug=venue_slug)
+        return Player.objects.select_subclasses().get(venue__slug=venue_slug)
     except Player.DoesNotExist:
         return None
 
