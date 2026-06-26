@@ -2,7 +2,7 @@ from constance import config
 from django.contrib.sites.models import Site
 from django.template.loader import get_template
 
-from tosti.services import send_email
+from tosti.tasks import send_email
 from venues import models
 
 
@@ -19,7 +19,7 @@ def send_reservation_request_email(reservation: models.Reservation):
 
     recipients = config.VENUES_SEND_RESERVATION_REQUEST_EMAILS_TO.strip().split(",")
 
-    return send_email("TOSTI: Reservation request", html_content, recipients)
+    return send_email.delay("TOSTI: Reservation request", html_content, recipients)
 
 
 def send_reservation_status_change_email(reservation: models.Reservation):
@@ -33,7 +33,7 @@ def send_reservation_status_change_email(reservation: models.Reservation):
 
     html_content = template.render(context)
 
-    return send_email(
+    return send_email.delay(
         "TOSTI: Reservation status change",
         html_content,
         [user.email for user in reservation.users_access.all()],

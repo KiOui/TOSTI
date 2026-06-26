@@ -10,7 +10,7 @@ from django.utils import timezone
 from associations.models import Association
 from borrel import models
 from borrel.models import ReservationItem
-from tosti.services import send_email
+from tosti.tasks import send_email
 
 
 def send_borrel_reservation_request_email(borrel_reservation: models.BorrelReservation):
@@ -24,7 +24,7 @@ def send_borrel_reservation_request_email(borrel_reservation: models.BorrelReser
 
     html_content = template.render(context)
 
-    return send_email(
+    return send_email.delay(
         "TOSTI: Borrel Reservation request",
         html_content,
         [config.BORREL_SEND_BORREL_RESERVATION_REQUEST_EMAILS_TO],
@@ -44,7 +44,7 @@ def send_borrel_reservation_status_change_email(
 
     html_content = template.render(context)
 
-    return send_email(
+    return send_email.delay(
         "TOSTI: Borrel Reservation status change",
         html_content,
         [borrel_reservation.user_created.email],
