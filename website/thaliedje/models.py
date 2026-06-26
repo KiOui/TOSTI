@@ -714,7 +714,19 @@ class SpotifyPlayer(Player):
         return queue
 
     def request_song(self, track_id):
-        """Queue a track."""
+        """Queue a track.
+
+        If the player is paused (but has an active context — i.e. something
+        is loaded), auto-start playback and skip to the just-queued track
+        so the user hears it. We deliberately do NOT auto-start when there
+        is no active context: ``start_playback`` would 403 silently
+        ("Restriction violated") and the subsequent ``next()`` would then
+        consume the just-queued track from the queue, leaving the user
+        with a "scheduled" row in the DB but nothing on Spotify. That
+        confused weekend-only testing of the MCP path; the same trap
+        applied to the website. Operators can still start the player
+        explicitly via the play endpoint.
+        """
         track_info = self.do_spotify_request(self.spotify.track, track_id)
 
         self.do_spotify_request(
@@ -723,7 +735,7 @@ class SpotifyPlayer(Player):
 
         cache.delete(self._queue_cache_key)
 
-        if not self.is_playing:
+        if not self.is_playing and self._current_playback is not None:
             self.start()
             self.next()
 
