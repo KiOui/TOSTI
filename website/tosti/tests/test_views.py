@@ -142,10 +142,14 @@ class ConnectedAppsTabTests(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertFalse(
-            AccessToken.objects.filter(user=self.user, application=self.mcp_app).exists()
+            AccessToken.objects.filter(
+                user=self.user, application=self.mcp_app
+            ).exists()
         )
         self.assertFalse(
-            RefreshToken.objects.filter(user=self.user, application=self.mcp_app).exists()
+            RefreshToken.objects.filter(
+                user=self.user, application=self.mcp_app
+            ).exists()
         )
         # Application itself is preserved — it may be shared across users.
         self.assertTrue(Application.objects.filter(id=self.mcp_app.id).exists())
@@ -169,7 +173,9 @@ class ConnectedAppsTabTests(TestCase):
         self.assertEqual(response.status_code, 404)
         # The user's existing tokens for their own app are untouched.
         self.assertTrue(
-            AccessToken.objects.filter(user=self.user, application=self.mcp_app).exists()
+            AccessToken.objects.filter(
+                user=self.user, application=self.mcp_app
+            ).exists()
         )
 
     def test_expired_tokens_do_not_appear(self):

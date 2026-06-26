@@ -200,7 +200,9 @@ class MCPToolsDocsView(TemplateView):
                 {
                     "name": tool.name,
                     "description": (tool.description or "").strip(),
-                    "input_schema": json.dumps(tool.parameters, indent=2, sort_keys=True),
+                    "input_schema": json.dumps(
+                        tool.parameters, indent=2, sort_keys=True
+                    ),
                     "output_schema": (
                         json.dumps(tool.output_schema, indent=2, sort_keys=True)
                         if tool.output_schema
@@ -310,11 +312,14 @@ class ConnectedAppsView(TemplateView):
         except Application.DoesNotExist:
             return HttpResponseNotFound()
         # Only allow revoking if the user actually has a token for it.
-        if not AccessToken.objects.filter(
-            user=request.user, application=application
-        ).exists() and not RefreshToken.objects.filter(
-            user=request.user, application=application
-        ).exists():
+        if (
+            not AccessToken.objects.filter(
+                user=request.user, application=application
+            ).exists()
+            and not RefreshToken.objects.filter(
+                user=request.user, application=application
+            ).exists()
+        ):
             return HttpResponseNotFound()
         _revoke_user_app_authorisation(request.user, application)
         messages.add_message(
