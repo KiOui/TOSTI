@@ -144,6 +144,4 @@ class SearchTracksServiceTests(TestCase):
     def test_skips_non_dict_entries(self):
         raw = {"tracks": [{"id": "1"}, "stray-string", None]}
         result = search_tracks_service(self._player(raw), "x")
-        self.assertEqual(
-            result, [{"id": "1", "name": None, "artists": []}]
-        )
+        self.assertEqual(result, [{"id": "1", "name": None, "artists": []}])
