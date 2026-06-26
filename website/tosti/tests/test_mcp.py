@@ -146,6 +146,22 @@ class DynamicClientRegistrationTests(TestCase):
         app = Application.objects.get(client_id=body["client_id"])
         self.assertEqual(app.name, "Claude Desktop test")
 
+    def test_browser_get_returns_html_landing(self):
+        response = self.client.get(
+            reverse("oauth-dynamic-client-registration"),
+            HTTP_ACCEPT="text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"Dynamic client registration", response.content)
+        self.assertEqual(response["Content-Type"].split(";")[0], "text/html")
+
+    def test_non_browser_get_returns_405(self):
+        response = self.client.get(
+            reverse("oauth-dynamic-client-registration"),
+            HTTP_ACCEPT="application/json",
+        )
+        self.assertEqual(response.status_code, 405)
+
     def test_invalid_json_is_rejected(self):
         response = self.client.post(
             reverse("oauth-dynamic-client-registration"),

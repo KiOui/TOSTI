@@ -42,7 +42,7 @@ class TostiConfig(AppConfig):
             },
             {
                 "name": "API credentials",
-                "slug": "oauth_credentials",
+                "slug": "api_credentials",
                 "view": OAuthCredentialsRequestView.as_view(),
                 "order": 10,
             },
@@ -55,7 +55,7 @@ class TostiConfig(AppConfig):
         return [
             {
                 "name": "Connect an AI assistant",
-                "slug": "connect-ai-assistant",
+                "slug": "ai-assistant",
                 "renderer": explainer_page_mcp_tab,
                 "order": 100,
             }

@@ -76,7 +76,7 @@
         </p>
         <h3>Through your account page <small class="text-muted">(developers)</small></h3>
         <p>
-            Log in, open <a href="{% url 'users:account' %}?active=oauth_credentials">My account &rarr; API credentials</a> and click <em>Create new application</em>. This is the right path if you're building your own integration against the TOSTI API and want a confidential client. Your client secret is only shown once at creation time &mdash; copy it then.
+            Log in, open <a href="{% url 'users:account' %}?active=api_credentials">My account &rarr; API credentials</a> and click <em>Create new application</em>. This is the right path if you're building your own integration against the TOSTI API and want a confidential client. Your client secret is only shown once at creation time &mdash; copy it then.
         </p>
         <h3>Dynamic client registration <small class="text-muted">(MCP clients, AI assistants)</small></h3>
         <p>
@@ -144,7 +144,7 @@
 
         <h2>Connecting an AI assistant</h2>
         <p>
-            If you're an end user trying to hook up an AI assistant rather than a developer building an integration, the practical step-by-step is in the <a href="{% url 'explainers' %}#nav-connect-ai-assistant">Connect an AI assistant</a> explainer.
+            If you're an end user trying to hook up an AI assistant rather than a developer building an integration, the practical step-by-step is in the <a href="{% url 'explainers' %}#ai-assistant">Connect an AI assistant</a> explainer.
         </p>
     </div>
 {% endblock %}

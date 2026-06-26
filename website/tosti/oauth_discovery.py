@@ -17,7 +17,8 @@ import json
 
 from django.conf import settings
 from django.core.cache import cache
-from django.http import HttpResponseBadRequest, JsonResponse
+from django.http import HttpResponseBadRequest, HttpResponseNotAllowed, JsonResponse
+from django.shortcuts import render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -107,7 +108,21 @@ class DynamicClientRegistrationView(View):
     Per-IP rate limit prevents flooding the Application table.
     """
 
-    http_method_names = ["post"]
+    http_method_names = ["get", "post"]
+
+    def get(self, request, *args, **kwargs):
+        """Serve a human-readable landing page for browser visits.
+
+        The actual DCR happens over POST; humans who paste the URL into
+        their browser get a friendly explainer pointing at the docs
+        instead of a 405. Non-browser GETs (which don't ask for HTML)
+        get the conventional 405 so RFC 7591 clients see expected
+        behaviour.
+        """
+        accept = request.META.get("HTTP_ACCEPT", "")
+        if "text/html" not in accept:
+            return HttpResponseNotAllowed(["POST"])
+        return render(request, "tosti/oauth_register_landing.html")
 
     def post(self, request, *args, **kwargs):
         ip = self._client_ip(request)
