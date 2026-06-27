@@ -4,9 +4,16 @@
 {% endblock title %}
 {% block page %}
     <div class="container mt-5">
-        <div class="mb-5 text-center">
+        <div class="mb-4 text-center">
             <h1>T.A.M.P.O.N.</h1>
-            <p class="lead tagline">Tracker for Availability of Menstrual Products & Out-of-stock Notifications</p>
+            <p class="lead tagline">Tracker for Availability of Menstrual Products &amp; Out-of-stock Notifications</p>
+        </div>
+        <div class="row justify-content-center mb-3">
+            <div class="col-12 col-md-10 col-lg-7 prose text-center">
+                <p>
+                    Empty dispenser? Broken one? Tell us in 10 seconds and the MenstruaCie will sort it out. Period products are stocked across Huygens for anyone who needs them &mdash; we just need to know where to head next.
+                </p>
+            </div>
         </div>
         {% if messages %}
             {% for message in messages %}<div class="alert {{ message.tags }}" role="alert">{{ message }}</div>{% endfor %}
@@ -14,8 +21,7 @@
         <div class="row justify-content-center">
             <div class="col-12 col-md-8 col-lg-5">
                 <div id="no-rooms-alert" class="alert alert-warning d-none" role="alert">
-                    This floor does not have any
-                    dispensers!
+                    This floor doesn't have any dispensers.
                 </div>
                 <div class="card mb-4">
                     {% if can_view_notifications %}
@@ -24,49 +30,61 @@
                         </div>
                     {% endif %}
                     <div class="card-header">
-                        <h2 class="h3 text-center">Let us know what dispenser is empty</h2>
+                        <h2 class="h3 text-center mb-0">Report a dispenser</h2>
                     </div>
                     <form method="post">
                         <div class="card-body">
-                            <div class="form-group mb-2 ">
-                                <label for="floor-filter">Filter by Floor:</label>
+                            <div class="form-group mb-3">
+                                <label for="floor-filter" class="form-label">Floor</label>
                                 <select id="floor-filter" class="form-control">
-                                    <option value="">All Floors</option>
+                                    <option value="">All floors</option>
                                     {% for room in form.annotated_rooms %}
                                         {% ifchanged room.floor_number %}
                                             <option value="{{ room.floor_number }}">{{ room.floor_number }}</option>
                                         {% endifchanged %}
                                     {% endfor %}
                                 </select>
+                                <small class="form-text text-muted">Filter the dispenser list below.</small>
                             </div>
                             {% csrf_token %}
-                            <div class="form-group mb-2">
-                                <label for="{{ form.room.id_for_label }}">{{ form.room.label }}</label>
+                            <div class="form-group mb-3">
+                                <label for="{{ form.room.id_for_label }}" class="form-label">{{ form.room.label }}</label>
                                 {{ form.room }}
                                 {{ form.room.errors }}
                             </div>
                             <div class="form-group">
-                                <label for="{{ form.comment.id_for_label }}">Additional comments (Optional)</label>
+                                <label for="{{ form.comment.id_for_label }}" class="form-label">What's going on? <span class="text-muted">(optional)</span></label>
                                 {{ form.comment }}
                                 {{ form.comment.errors }}
+                                <small class="form-text text-muted">Empty, jammed, missing a specific product&hellip; whatever helps us fix it faster.</small>
                             </div>
                         </div>
                         <div class="card-footer">
-                            <button type="submit" class="btn-ml btn-on my-2">Send</button>
+                            <button type="submit" class="btn-ml btn-on my-2">Send notification</button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-    <div class="prose">
-        <p class="mt-1 mb-4">
-            The MenstruaCie is made for all people that have their period, this committee has placed dispensers over the
-            Huygens building and also regularly fills them up. We need your help knowing what dispensers are empty, so we
-            can make sure the stock is there for everyone that needs it. So please fill in the top form to let the committee
-            know, what dispenser we should fill next! You can also let us know via the form if a dispenser is
-            malfunctioning!
-        </p>
+    <div class="container mt-3 mb-5">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-10 col-lg-8 prose">
+                <h2 class="h4 mt-4">About the MenstruaCie</h2>
+                <p>
+                    The MenstruaCie keeps the Huygens building stocked with free menstrual products. They've placed dispensers across the building and top them up on a rotating schedule.
+                </p>
+                <p>
+                    The catch: nobody can be everywhere at once. A dispenser that ran out yesterday may not be on the next round unless someone flags it. That's where you come in &mdash; a 10-second notification means the committee can prioritise wisely instead of guessing, and the next person who needs that dispenser actually finds it stocked.
+                </p>
+                <p>
+                    Same goes for malfunctions: stuck handle, missing labels, anything that makes a dispenser unusable. Drop a comment and we'll take a look.
+                </p>
+                <p>
+                    Thanks for looking out for each other.
+                </p>
+            </div>
+        </div>
     </div>
     <script>
     const floorFilter = document.getElementById('floor-filter');
