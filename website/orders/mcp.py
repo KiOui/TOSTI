@@ -60,7 +60,7 @@ class OrderTools(MCPToolset):
 
     def list_available_products(self, shift_id: int) -> dict:
         """Retrieve the available products in a Shift.
-        
+
         ``shift_id`` matches the ID of an active shift returned by ``list_active_shifts`.
         The result includes products available for ordering in the shift.
         """
