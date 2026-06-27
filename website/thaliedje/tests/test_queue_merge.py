@@ -39,9 +39,7 @@ def _queue_entry(track_id, name=None):
 
 def _patched_player_state(player, queue_snapshot, currently_playing_id=None):
     """Mock ``player.queue`` and ``_current_playback`` for one call."""
-    playback = (
-        {"item": {"id": currently_playing_id}} if currently_playing_id else None
-    )
+    playback = {"item": {"id": currently_playing_id}} if currently_playing_id else None
     return patch.multiple(
         SpotifyPlayer,
         queue=PropertyMock(return_value=queue_snapshot),
@@ -128,9 +126,7 @@ class ObservePlayerStateTests(_PlayerSetupMixin, TestCase):
         with _patched_player_state(self.player, [_queue_entry("aaa")]):
             observe_player_state(self.player)
         # Now queue empty, but the track IS currently playing.
-        with _patched_player_state(
-            self.player, [], currently_playing_id="aaa"
-        ):
+        with _patched_player_state(self.player, [], currently_playing_id="aaa"):
             observe_player_state(self.player)
         row.refresh_from_db()
         self.assertIsNone(row.played_at)

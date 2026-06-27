@@ -122,9 +122,7 @@ class PlayerQueueAPIView(APIView):
         if enriched is None:
             return Response(None)
         if not request.user.is_authenticated:
-            enriched = [
-                {**entry, "requested_by": None} for entry in enriched
-            ]
+            enriched = [{**entry, "requested_by": None} for entry in enriched]
         return Response(enriched)
 
 

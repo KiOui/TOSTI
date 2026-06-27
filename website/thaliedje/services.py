@@ -77,8 +77,7 @@ def observe_player_state(player) -> dict:
     # in practice anything still unplayed from yesterday is noise.
     today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
     open_rows = list(
-        SpotifyQueueItem.objects
-        .select_related("track")
+        SpotifyQueueItem.objects.select_related("track")
         .filter(player=player, added__gte=today, played_at__isnull=True)
         .order_by("added")
     )
@@ -169,8 +168,7 @@ def enrich_spotify_queue(player) -> list[dict] | None:
 
     today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
     open_rows = list(
-        SpotifyQueueItem.objects
-        .select_related("track", "requested_by")
+        SpotifyQueueItem.objects.select_related("track", "requested_by")
         .filter(player=player, added__gte=today, played_at__isnull=True)
         .order_by("added")
     )
