@@ -211,7 +211,7 @@ Specific configuration is managed through Django Constance for runtime settings:
 
 ## 📡 API
 
-TOSTI provides a RESTful API with OAuth2 authentication.
+TOSTI provides a RESTful API with OAuth 2.0 authentication. **For any integration with TOSTI you should use the authorization-code grant with PKCE** — see the [OAuth integration guide](/oauth/docs/) on a running deployment for the full flow, scopes, registration, and tokens.
 
 ### Available Scopes
 - `read`: Read access to the API

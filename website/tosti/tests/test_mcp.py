@@ -52,14 +52,26 @@ class OAuthDiscoveryTests(TestCase):
         for scope in ("read", "write", "orders:order", "thaliedje:request"):
             self.assertIn(scope, data["scopes_supported"])
 
-    def test_authorization_server_metadata_does_not_advertise_deprecated_grants(self):
+    def test_authorization_server_metadata_only_advertises_recommended_flow(self):
+        """Discovery metadata reflects what we support for *new* integrations,
+        not the full library surface.
+
+        Authorization-code (with refresh) is the public flow. Implicit and
+        password are OAuth 2.1-deprecated. Client credentials is a
+        maintainer-issued exception (confidential client out of band) —
+        not a public capability we want third parties to discover.
+        """
         response = self.client.get(reverse("oauth-authorization-server-metadata"))
         data = json.loads(response.content)
-        # OAuth 2.1 deprecates implicit and password; do not advertise them
-        # even though the underlying library still serves them.
-        self.assertNotIn("implicit", data["grant_types_supported"])
-        self.assertNotIn("password", data["grant_types_supported"])
-        self.assertNotIn("token", data["response_types_supported"])
+        self.assertEqual(
+            sorted(data["grant_types_supported"]),
+            ["authorization_code", "refresh_token"],
+        )
+        self.assertEqual(data["response_types_supported"], ["code"])
+        # Public-client-only auth at the token endpoint (PKCE-gated). Confidential
+        # client_secret methods are still accepted by the library for
+        # maintainer-issued clients but not advertised.
+        self.assertEqual(data["token_endpoint_auth_methods_supported"], ["none"])
         # PKCE best practice: only S256.
         self.assertEqual(data["code_challenge_methods_supported"], ["S256"])
 
