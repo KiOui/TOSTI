@@ -22,15 +22,6 @@
                 </div>
             </div>
         {% endif %}
-        {% if can_view_notifications %}
-            <div class="row justify-content-center mb-2">
-                <div class="col-12 col-md-8 col-lg-6 text-center">
-                    <a href="{% url 'tampon:notifications' %}" class="btn btn-sm btn-outline-secondary">
-                        <i class="fa-solid fa-clipboard-list me-2"></i>View notifications
-                    </a>
-                </div>
-            </div>
-        {% endif %}
         <div class="row justify-content-center">
             <div class="col-12 col-md-8 col-lg-6">
                 <div class="card mb-4 shadow-sm">
@@ -70,10 +61,15 @@
                                 </label>
                                 {{ form.comment }}
                                 {{ form.comment.errors }}
-                                <small class="form-text text-muted">Empty, jammed, missing a specific product&hellip; whatever helps us fix it faster.</small>
+                                <small class="form-text text-muted">Out of stock, broken, missing a specific product&hellip; whatever helps us fix it faster.</small>
                             </div>
                         </div>
-                        <div class="card-footer text-end bg-transparent">
+                        <div class="card-footer d-flex justify-content-end gap-2 flex-wrap bg-transparent">
+                            {% if can_view_notifications %}
+                                <a href="{% url 'tampon:notifications' %}" class="btn btn-outline-secondary">
+                                    <i class="fa-solid fa-clipboard-list me-2"></i>View notifications
+                                </a>
+                            {% endif %}
                             <button type="submit" class="btn btn-primary">
                                 <i class="fa-solid fa-paper-plane me-2"></i>Send notification
                             </button>

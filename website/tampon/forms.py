@@ -41,7 +41,7 @@ class TamponNotificationForm(forms.ModelForm):
         )
         widgets = {
             "room": FloorSelect(
-                attrs={"class": "form-select", "aria-label": "Dispenser location"}
+                attrs={"class": "form-select", "aria-label": "Box location"}
             ),
             "comment": forms.Textarea(
                 attrs={
@@ -52,7 +52,7 @@ class TamponNotificationForm(forms.ModelForm):
             ),
         }
         labels = {
-            "room": "Dispenser location",
+            "room": "Box location",
             "comment": "Additional comments (optional)",
         }
 
@@ -69,7 +69,7 @@ class TamponNotificationForm(forms.ModelForm):
         rooms = sorted(rooms, key=lambda r: (r.floor_number is None, r.floor_number))
         self.annotated_rooms = rooms
         self.fields["room"].queryset = qs
-        self.fields["room"].empty_label = "Select a dispenser location"
+        self.fields["room"].empty_label = "Select a box location"
         room_widget = self.fields["room"].widget
         if isinstance(room_widget, FloorSelect):
             room_widget.set_room_cache(rooms)
