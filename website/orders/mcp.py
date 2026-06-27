@@ -6,6 +6,7 @@ from orders import services as orders_services
 from orders.exceptions import OrderException
 from orders.models import Order, Product, Shift
 from tosti.mcp import require_scope
+from django.utils import timezone
 
 
 class OrderTools(MCPToolset):
@@ -22,6 +23,11 @@ class OrderTools(MCPToolset):
             "openWorldHint": False,
             "title": "List active shifts",
         },
+        "list_available_products": {
+            "readOnlyHint": True,
+            "openWorldHint": False,
+            "title": "List available products in a shift",
+        },
         "place_order": {
             "readOnlyHint": False,
             "destructiveHint": False,
@@ -37,7 +43,42 @@ class OrderTools(MCPToolset):
         A shift is "active" when the current time is between its start and end
         and it has not been finalized.
         """
-        return orders_services.list_active_shifts()
+        current_time = timezone.now()
+
+        return [
+            {
+                "id": s.id,
+                "venue": str(s.venue),
+                "start": s.start.isoformat() if s.start else None,
+                "end": s.end.isoformat() if s.end else None,
+                "can_order": s.can_order,
+            }
+            for s in Shift.objects.filter(
+                start__lte=current_time, end__gte=current_time, finalized=False
+            )
+        ]
+
+    def list_available_products(self, shift_id: int) -> dict:
+        """Retrieve the available products in a Shift.
+        
+        ``shift_id`` matches the ID of an active shift returned by ``list_active_shifts`.
+        The result includes products available for ordering in the shift.
+        """
+        try:
+            shift = Shift.objects.get(pk=shift_id)
+        except Shift.DoesNotExist:
+            return {"error": f"Shift {shift_id} not found."}
+
+        return [
+            {
+                "id": p.id,
+                "name": p.name,
+                "current_price": p.current_price,
+            }
+            for p in Product.objects.filter(
+                available_at=shift.venue, orderable=True, available=True
+            )
+        ]
 
     def place_order(self, shift_id: int, product_id: int) -> dict:
         """Place a single-item order on the user's behalf in an active shift.

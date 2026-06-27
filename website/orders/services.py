@@ -13,26 +13,6 @@ from users.models import User
 logger = logging.getLogger(__name__)
 
 
-def list_active_shifts() -> list[dict]:
-    """Return JSON-friendly summaries of all currently-active shifts.
-
-    A shift is "active" when it has not been finalized and the current time is
-    within its start/end window. Used by the MCP tool and any other consumer
-    that wants a quick listing without having to know the model API.
-    """
-    return [
-        {
-            "id": s.id,
-            "venue": str(s.venue),
-            "start": s.start.isoformat() if s.start else None,
-            "end": s.end.isoformat() if s.end else None,
-            "can_order": s.can_order,
-        }
-        for s in Shift.objects.filter(finalized=False)
-        if s.is_active
-    ]
-
-
 def user_can_manage_shifts_in_venue(user, venue):
     """Return if the user can manage this shift."""
     return user.has_perm("orders.can_manage_shift_in_venue", venue)
