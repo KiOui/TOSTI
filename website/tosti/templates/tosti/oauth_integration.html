@@ -34,9 +34,9 @@
 
         <h2>Supported grant types</h2>
         <p>
-            TOSTI supports the OAuth 2.0 grant types listed below. <strong>For new clients, use authorization code with PKCE</strong> &mdash; it's the only flow that's safe for public clients (mobile apps, single-page apps, AI assistants, anything that can't keep a secret) and it's required by the MCP spec.
+            TOSTI only supports the Authorization code grant type with PKCE.
         </p>
-        <h3>Authorization code with PKCE <small class="text-muted">(recommended)</small></h3>
+        <h3>Authorization code with PKCE</h3>
         <p>
             The standard interactive flow: redirect the user to <code>/oauth/authorize/</code> with a code challenge, get a code back at your redirect URI, exchange the code (plus the code verifier) at <code>/oauth/token/</code> for an access token. PKCE (<a href="https://www.rfc-editor.org/rfc/rfc7636">RFC 7636</a>) is <strong>required</strong> for all clients; you do not get to opt out. Both <code>S256</code> and <code>plain</code> code challenge methods are supported; pick <code>S256</code>.
         </p>
@@ -44,28 +44,12 @@
         <p>
             When an access token expires, exchange the refresh token at <code>/oauth/token/</code> for a new pair. <strong>Refresh tokens are rotated</strong> &mdash; the response includes a new refresh token, and the old one is invalidated. Keep only the most recent one. Access tokens last 10 hours; refresh tokens do not expire on a timer but are revoked when the user revokes the application's access.
         </p>
-        <h3>Client credentials <small class="text-muted">(server-to-server)</small></h3>
-        <p>
-            For machine-to-machine integrations where no user is involved. Useful for backend services that need to call TOSTI on behalf of nobody in particular. Requires a confidential client (a real <code>client_secret</code>). Not allowed for clients registered via dynamic client registration.
-        </p>
-        <h3>Implicit and password grants <small class="text-muted">(legacy, do not use)</small></h3>
-        <p>
-            Technically supported because the underlying library implements them, but both are deprecated by OAuth 2.1 and should not be used in new code. The Swagger UI internally uses the implicit grant; that's the only thing it remains supported for.
-        </p>
 
         <hr>
 
         <h2>Client types and authentication</h2>
         <p>
-            TOSTI distinguishes <strong>public</strong> and <strong>confidential</strong> clients, matching the OAuth 2.0 spec. Use the right one:
-        </p>
-        <h3>Public clients</h3>
-        <p>
-            Anything that can't keep a secret &mdash; native apps, mobile apps, single-page apps, AI assistants, command-line tools that ship to users. Authenticate at the token endpoint with <code>token_endpoint_auth_method=none</code>; the <code>client_id</code> alone identifies the client. PKCE is mandatory (which is why public clients work at all without a secret).
-        </p>
-        <h3>Confidential clients</h3>
-        <p>
-            Server-side apps that can store a secret. Authenticate at the token endpoint with <code>client_secret_basic</code> (HTTP Basic auth with <code>client_id</code> + <code>client_secret</code>) or <code>client_secret_post</code> (the same credentials in the form body). Both are supported.
+            All clients you create within TOSTI are public clients, following the OAuth 2.0 spec.
         </p>
 
         <hr>
