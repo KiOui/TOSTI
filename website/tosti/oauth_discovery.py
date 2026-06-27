@@ -58,23 +58,29 @@ class OAuthAuthorizationServerMetadataView(View):
                 request, "oauth-dynamic-client-registration"
             ),
             "scopes_supported": scopes,
-            # We intentionally do NOT advertise the deprecated implicit and
-            # password grants (or the corresponding "token" response_type)
-            # even though the underlying library still serves them — RFC 8414
-            # metadata should reflect the *recommended* surface for new
-            # clients. The Swagger UI uses implicit internally; that's
-            # independent of what we tell external clients.
+            # RFC 8414 metadata reflects the *recommended* surface for new
+            # clients, not everything the underlying library can serve:
+            # - implicit / password are deprecated by OAuth 2.1 — never
+            #   advertised, even though django-oauth-toolkit still accepts
+            #   them. (Swagger UI uses implicit internally; that's
+            #   independent of what we tell external clients.)
+            # - client_credentials is intentionally NOT advertised either:
+            #   server-to-server access is a maintainer-issued exception
+            #   (confidential client provisioned out of band), not a path
+            #   we want third parties to discover and try. Discovery only
+            #   advertises the authorization_code + refresh_token flow.
             "response_types_supported": ["code"],
             "grant_types_supported": [
                 "authorization_code",
-                "client_credentials",
                 "refresh_token",
             ],
-            "token_endpoint_auth_methods_supported": [
-                "client_secret_post",
-                "client_secret_basic",
-                "none",
-            ],
+            # Only token-endpoint methods relevant to the public flow:
+            # public clients (DCR, account-page registration) authenticate
+            # with ``none`` + PKCE. ``client_secret_basic`` /
+            # ``client_secret_post`` are still accepted by the library for
+            # maintainer-issued confidential clients but aren't advertised
+            # — see the grant_types_supported comment above.
+            "token_endpoint_auth_methods_supported": ["none"],
             # Only S256 is advertised; PKCE best practice (RFC 7636 §4.2)
             # mandates S256 whenever the client can compute it. The library
             # still accepts ``plain`` if a client insists.

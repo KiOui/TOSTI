@@ -32,43 +32,35 @@
 
         <hr>
 
-        <h2>Supported grant types</h2>
+        <h2>Which flow to use</h2>
         <p>
-            TOSTI only supports the Authorization code grant type with PKCE.
+            <strong>For any integration with TOSTI you should use the authorization-code grant with PKCE.</strong> It's the flow our documentation, tooling and examples are written for, and the only one we'd recommend planning around. Refresh tokens are part of the same flow so long-running clients don't have to keep prompting the user.
         </p>
         <h3>Authorization code with PKCE</h3>
         <p>
-            The standard interactive flow: redirect the user to <code>/oauth/authorize/</code> with a code challenge, get a code back at your redirect URI, exchange the code (plus the code verifier) at <code>/oauth/token/</code> for an access token. PKCE (<a href="https://www.rfc-editor.org/rfc/rfc7636">RFC 7636</a>) is <strong>required</strong> for all clients; you do not get to opt out. Both <code>S256</code> and <code>plain</code> code challenge methods are supported; pick <code>S256</code>.
+            The standard interactive flow: redirect the user to <code>/oauth/authorize/</code> with a code challenge, get a code back at your redirect URI, exchange the code (plus the code verifier) at <code>/oauth/token/</code> for an access token. PKCE (<a href="https://www.rfc-editor.org/rfc/rfc7636">RFC 7636</a>) is <strong>required</strong> for every client. Use the <code>S256</code> code-challenge method.
         </p>
         <h3>Refresh token</h3>
         <p>
             When an access token expires, exchange the refresh token at <code>/oauth/token/</code> for a new pair. <strong>Refresh tokens are rotated</strong> &mdash; the response includes a new refresh token, and the old one is invalidated. Keep only the most recent one. Access tokens last 10 hours; refresh tokens do not expire on a timer but are revoked when the user revokes the application's access.
         </p>
-
-        <hr>
-
-        <h2>Client types and authentication</h2>
-        <p>
-            All clients you create within TOSTI are public clients, following the OAuth 2.0 spec.
+        <p class="text-muted">
+            If authorization code + PKCE genuinely can't cover your use case, get in touch with the website committee before building something else.
         </p>
 
         <hr>
 
         <h2>Registering a client</h2>
         <p>
-            There are three ways to get a <code>client_id</code> + (optionally) <code>client_secret</code>, depending on who you are:
+            Two ways to get a <code>client_id</code>, depending on who you are. Both produce a public client &mdash; no client secret, PKCE mandatory.
         </p>
         <h3>Through your account page <small class="text-muted">(developers)</small></h3>
         <p>
-            Log in, open <a href="{% url 'users:account' %}?active=api_credentials">My account &rarr; API credentials</a> and click <em>Create new application</em>. This is the right path if you're building your own integration against the TOSTI API and want a confidential client. Your client secret is only shown once at creation time &mdash; copy it then.
+            Log in, open <a href="{% url 'users:account' %}?active=api_credentials">My account &rarr; API credentials</a> and click <em>Create new application</em>. You'll get a <code>client_id</code> &mdash; the public-client setup means there's no secret to copy.
         </p>
         <h3>Dynamic client registration <small class="text-muted">(MCP clients, AI assistants)</small></h3>
         <p>
-            Public clients can self-register without human intervention by POSTing to <code>/oauth/register/</code> per <a href="https://www.rfc-editor.org/rfc/rfc7591">RFC 7591</a>. TOSTI always issues a public, authorization-code-only client with PKCE required; the response has no <code>client_secret</code>. Registration is rate-limited per IP (10 per hour) to protect the Application table. The client is provisioned with the intersection of the scopes you request and the scopes TOSTI publishes.
-        </p>
-        <h3>Asking a maintainer <small class="text-muted">(special cases)</small></h3>
-        <p>
-            If you need something neither of the above gives you &mdash; for example, a confidential client for client-credentials grant &mdash; ask the website committee.
+            Clients can self-register without human intervention by POSTing to <code>/oauth/register/</code> per <a href="https://www.rfc-editor.org/rfc/rfc7591">RFC 7591</a>. Registration is rate-limited per IP (10 per hour) to protect the Application table. The issued client is provisioned with the intersection of the scopes you request and the scopes TOSTI publishes.
         </p>
 
         <hr>
