@@ -1,9 +1,9 @@
-from datetime import datetime
 import logging
 from datetime import timedelta
 
 from django.contrib.auth import get_user_model
 from django.urls import reverse
+from django.utils import timezone
 
 from rest_framework.test import APITestCase
 
@@ -27,8 +27,8 @@ class VenuesAPITests(APITestCase):
         cls.reservation = Reservation.objects.create(
             title="Test reservation",
             association=cls.association,
-            start=datetime.now() + timedelta(days=1),
-            end=datetime.now() + timedelta(days=1, hours=4),
+            start=timezone.now() + timedelta(days=1),
+            end=timezone.now() + timedelta(days=1, hours=4),
             venue=cls.venue,
             user_created=cls.normal_user,
             comments="Test comments",

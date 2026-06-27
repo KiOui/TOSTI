@@ -5,12 +5,56 @@ from django.core.exceptions import PermissionDenied
 from mcp_server import MCPToolset
 
 from thaliedje.services import (
-    get_player_for_venue,
-    get_player_state,
     request_song,
-    search_tracks,
 )
+from thaliedje.models import Player
 from tosti.mcp import require_scope
+
+
+def get_player_for_venue(venue_slug: str) -> Player | None:
+    """Return the concrete ``Player`` configured for the given venue, or ``None``.
+
+    Uses ``InheritanceManager.select_subclasses()`` so we get a fully-loaded
+    ``SpotifyPlayer`` or ``MarietjePlayer`` — the base ``Player.current_*``
+    properties raise ``NotImplementedError`` and the subclass-specific state
+    (auth, URL) only loads on the subclass.
+    """
+    try:
+        return Player.objects.select_subclasses().get(venue__slug=venue_slug)
+    except Player.DoesNotExist:
+        return None
+
+
+def search_tracks(player: Player, query: str, maximum: int = 5) -> list[dict]:
+    """Search the player's catalog for tracks. Caller is responsible for permission checks.
+
+    ``Player.search`` returns different shapes depending on the backend:
+    - ``SpotifyPlayer`` returns a dict keyed by query type, e.g.
+      ``{"tracks": [{...}, ...]}``.
+    - ``MarietjePlayer`` returns ``None`` (no search support).
+
+    Normalise both to the flat list of track dicts the MCP tool promises.
+    """
+    maximum = max(1, min(int(maximum), 25))
+    raw = player.search(query, maximum=maximum, query_type="track")
+    if not raw:
+        return []
+    # SpotifyPlayer wraps results in {"tracks": [...]}; pull the list out.
+    # Any other shape (e.g. a future backend that returns a flat list)
+    # is passed through unchanged.
+    if isinstance(raw, dict):
+        tracks = raw.get("tracks", [])
+    else:
+        tracks = raw
+    return [
+        {
+            "id": r.get("id"),
+            "name": r.get("name"),
+            "artists": r.get("artists", []),
+        }
+        for r in tracks
+        if isinstance(r, dict)
+    ]
 
 
 class ThaliedjeTools(MCPToolset):
@@ -52,7 +96,18 @@ class ThaliedjeTools(MCPToolset):
         player = get_player_for_venue(venue_slug)
         if player is None:
             return {"error": f"No player configured for venue '{venue_slug}'."}
-        return get_player_state(player)
+
+        return {
+            "venue": str(player.venue),
+            "is_playing": bool(getattr(player, "is_playing", False)),
+            "shuffle": getattr(player, "shuffle", None),
+            "repeat": getattr(player, "repeat", None),
+            "track": {
+                "name": player.current_track_name,
+                "artists": player.current_artists,
+                "image": player.current_image,
+            },
+        }
 
     def search_tracks(self, venue_slug: str, query: str, maximum: int = 5) -> dict:
         """Search the music catalog for tracks via a venue's player.

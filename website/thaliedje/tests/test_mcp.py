@@ -5,9 +5,8 @@ from unittest.mock import MagicMock, patch
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from thaliedje.mcp import ThaliedjeTools
+from thaliedje.mcp import ThaliedjeTools, search_tracks as search_tracks_service
 from thaliedje.models import MarietjePlayer
-from thaliedje.services import search_tracks as search_tracks_service
 from venues.models import Venue
 
 User = get_user_model()
