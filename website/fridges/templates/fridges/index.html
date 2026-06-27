@@ -3,22 +3,25 @@
 
 {% block page %}
     <div class="container mt-5">
-        <div class="mb-5 text-center">
+        <div class="mb-4 text-center">
             <h1><i class="fa-solid fa-beer-mug-empty me-4" aria-hidden="true"></i>F.r.i.d.g.e.s.</h1>
             <p class="lead tagline">Framework Restricting Inventory of Drinks for Guaranteed Enjoyment to Students</p>
         </div>
-        <div class="prose">
-            <p class="mt-1 mb-2">Fancy a beer? Perhaps, the beer fridge is open!</p>
-            {% if user.is_authenticated %}
-            <p class="mt-1 mb-4">
-                Use your personal QR code at the top to identify yourself and open the fridge (only during opening hours).
-                Don't forget to proof your age via <a href="{% url 'users:account' %}?active=age">your profile page</a> first!
-            </p>
-            {% else %}
-            <p class="mt-1 mb-4">
-                Login and use your personal QR code to identify yourself and open the fridge (only during opening hours).
-            </p>
-            {% endif %}
+        <div class="row justify-content-center mb-4">
+            <div class="col-12 col-md-10 col-lg-8 prose text-center">
+                <p class="mb-2">
+                    Fancy a beer? Hold the personal QR code at the top of this page up to the fridge during opening hours and it'll let you in. The status below tells you which fridge is open right now.
+                </p>
+                {% if user.is_authenticated %}
+                    <p class="text-muted small mb-0">
+                        First time? Make sure you've verified your age on <a href="{% url 'users:account' %}?active=age">your profile page</a> &mdash; the fridge won't open without it.
+                    </p>
+                {% else %}
+                    <p class="text-muted small mb-0">
+                        Sign in with your Radboud account to get a personal QR code, and verify your age on your profile page before the fridge will open for you.
+                    </p>
+                {% endif %}
+            </div>
         </div>
         <div class="row-cols-1 row-cols-lg-3 justify-content-center d-flex flex-wrap">
             {% for fridge in fridges %}
