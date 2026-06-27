@@ -3,13 +3,19 @@
 
 {% block page %}
     <div class="container mt-5">
-        <div class="mb-5 text-center">
+        <div class="mb-4 text-center">
             <h1><i class="fa-brands fa-spotify me-4" aria-hidden="true"></i>T.h.a.l.i.e.d.j.e.</h1>
             <p class="lead tagline">Thalia's Harmonized Application for Listening to Instrumental Entertainment as a Digital Jukebox Experience</p>
         </div>
-        <div class="prose">
-            <p class="my-1">Thaliedje is the music control system for the student canteens in the Huygens building.</p>
-            <p class="mt-1 mb-5">You can add songs to the queue of the canteens by selecting a canteen below and adding your song.</p>
+        <div class="row justify-content-center mb-4">
+            <div class="col-12 col-md-10 col-lg-8 prose text-center">
+                <p class="mb-2">
+                    Thaliedje is the shared jukebox for the student canteens in the Huygens building. Pick a canteen below, search for a song, and queue it up &mdash; everyone hearing the music in that canteen gets to hear what you picked next.
+                </p>
+                <p class="text-muted small mb-0">
+                    Sign in with your Radboud account to request songs. You can see what's playing without signing in.
+                </p>
+            </div>
         </div>
         <div class="row-cols-1 row-cols-lg-3 justify-content-center d-flex flex-wrap">
             {% render_players %}
