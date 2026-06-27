@@ -11,7 +11,7 @@
         <div class="row justify-content-center mb-3">
             <div class="col-12 col-md-10 col-lg-7 prose text-center">
                 <p>
-                    Found a dispenser in the Huygens building that's out of pads or tampons, or one that's jammed? Let us know which one and we'll get it restocked or fixed. The dispensers are free to use for anyone who needs them &mdash; we just need to know where to head next.
+                    Spotted a menstrual-products box in the Huygens building that's empty or damaged? Let us know which one and we'll get it restocked or fixed. The boxes are free to use for anyone who needs them &mdash; we just need to know where to head next.
                 </p>
             </div>
         </div>
@@ -36,7 +36,7 @@
                 <div class="card mb-4 shadow-sm">
                     <div class="card-header text-center">
                         <h2 class="h4 mb-0">
-                            <i class="fa-solid fa-triangle-exclamation me-2"></i>Report a dispenser
+                            <i class="fa-solid fa-triangle-exclamation me-2"></i>Report a box
                         </h2>
                     </div>
                     <form method="post">
@@ -46,7 +46,7 @@
                                 <legend class="form-label mb-2">Where?</legend>
                                 <div class="row g-2">
                                     <div class="col-12 col-sm-4">
-                                        <select id="floor-filter" class="form-select" aria-label="Filter dispensers by floor">
+                                        <select id="floor-filter" class="form-select" aria-label="Filter boxes by floor">
                                             <option value="">All floors</option>
                                             {% for room in form.annotated_rooms %}
                                                 {% ifchanged room.floor_number %}
@@ -61,7 +61,7 @@
                                     </div>
                                 </div>
                                 <div id="no-rooms-alert" class="alert alert-warning mt-2 mb-0 py-2 small d-none" role="alert">
-                                    This floor doesn't have any dispensers.
+                                    This floor doesn't have any boxes.
                                 </div>
                             </fieldset>
                             <div class="form-group">
@@ -88,13 +88,13 @@
             <div class="col-12 col-md-10 col-lg-8 prose">
                 <h2 class="h4 mt-4">About the MenstruaCie</h2>
                 <p>
-                    The MenstruaCie keeps the Huygens building stocked with free menstrual products. They've placed dispensers across the building and top them up on a rotating schedule.
+                    The MenstruaCie keeps the Huygens building stocked with free menstrual products. They've placed boxes across the building and top them up on a rotating schedule.
                 </p>
                 <p>
-                    The catch: nobody can be everywhere at once. A dispenser that ran out yesterday may not be on the next round unless someone flags it. That's where you come in &mdash; a 10-second notification means the committee can prioritise wisely instead of guessing, and the next person who needs that dispenser actually finds it stocked.
+                    The catch: nobody can be everywhere at once. A box that ran out yesterday may not be on the next round unless someone flags it. That's where you come in &mdash; a quick notification means the committee can prioritise wisely instead of guessing, and the next person who needs that box actually finds it stocked.
                 </p>
                 <p>
-                    Same goes for malfunctions: stuck handle, missing labels, anything that makes a dispenser unusable. Drop a comment and we'll take a look.
+                    Same goes for damage: a broken lid, missing labels, anything that makes a box unusable. Drop a comment and we'll take a look.
                 </p>
                 <p>
                     Thanks for looking out for each other.
