@@ -40,7 +40,9 @@ class TamponNotificationForm(forms.ModelForm):
             "comment",
         )
         widgets = {
-            "room": FloorSelect(attrs={"class": "form-control"}),
+            "room": FloorSelect(
+                attrs={"class": "form-select", "aria-label": "Dispenser location"}
+            ),
             "comment": forms.Textarea(
                 attrs={
                     "class": "form-control",
