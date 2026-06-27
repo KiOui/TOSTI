@@ -16,51 +16,67 @@
             </div>
         </div>
         {% if messages %}
-            {% for message in messages %}<div class="alert {{ message.tags }}" role="alert">{{ message }}</div>{% endfor %}
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-8 col-lg-6">
+                    {% for message in messages %}<div class="alert {{ message.tags }}" role="alert">{{ message }}</div>{% endfor %}
+                </div>
+            </div>
+        {% endif %}
+        {% if can_view_notifications %}
+            <div class="row justify-content-center mb-2">
+                <div class="col-12 col-md-8 col-lg-6 text-end">
+                    <a href="{% url 'tampon:notifications' %}" class="btn btn-sm btn-outline-secondary">
+                        <i class="fa-solid fa-clipboard-list me-2"></i>View notifications
+                    </a>
+                </div>
+            </div>
         {% endif %}
         <div class="row justify-content-center">
-            <div class="col-12 col-md-8 col-lg-5">
-                <div id="no-rooms-alert" class="alert alert-warning d-none" role="alert">
-                    This floor doesn't have any dispensers.
-                </div>
-                <div class="card mb-4">
-                    {% if can_view_notifications %}
-                        <div class="card-header" style="background-color: var(--card-header);">
-                            <a href="{% url 'tampon:notifications' %}" class="btn-ml btn-on my-2">Notifications</a>
-                        </div>
-                    {% endif %}
-                    <div class="card-header">
-                        <h2 class="h3 text-center mb-0">Report a dispenser</h2>
+            <div class="col-12 col-md-8 col-lg-6">
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header text-center">
+                        <h2 class="h4 mb-0">
+                            <i class="fa-solid fa-triangle-exclamation me-2"></i>Report a dispenser
+                        </h2>
                     </div>
                     <form method="post">
                         <div class="card-body">
-                            <div class="form-group mb-3">
-                                <label for="floor-filter" class="form-label">Floor</label>
-                                <select id="floor-filter" class="form-control">
-                                    <option value="">All floors</option>
-                                    {% for room in form.annotated_rooms %}
-                                        {% ifchanged room.floor_number %}
-                                            <option value="{{ room.floor_number }}">{{ room.floor_number }}</option>
-                                        {% endifchanged %}
-                                    {% endfor %}
-                                </select>
-                                <small class="form-text text-muted">Filter the dispenser list below.</small>
-                            </div>
                             {% csrf_token %}
-                            <div class="form-group mb-3">
-                                <label for="{{ form.room.id_for_label }}" class="form-label">{{ form.room.label }}</label>
-                                {{ form.room }}
-                                {{ form.room.errors }}
-                            </div>
+                            <fieldset class="mb-3">
+                                <legend class="form-label mb-2">Where?</legend>
+                                <div class="row g-2">
+                                    <div class="col-12 col-sm-4">
+                                        <select id="floor-filter" class="form-select" aria-label="Filter dispensers by floor">
+                                            <option value="">All floors</option>
+                                            {% for room in form.annotated_rooms %}
+                                                {% ifchanged room.floor_number %}
+                                                    <option value="{{ room.floor_number }}">Floor {{ room.floor_number }}</option>
+                                                {% endifchanged %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-12 col-sm-8">
+                                        {{ form.room }}
+                                        {{ form.room.errors }}
+                                    </div>
+                                </div>
+                                <div id="no-rooms-alert" class="alert alert-warning mt-2 mb-0 py-2 small d-none" role="alert">
+                                    This floor doesn't have any dispensers.
+                                </div>
+                            </fieldset>
                             <div class="form-group">
-                                <label for="{{ form.comment.id_for_label }}" class="form-label">What's going on? <span class="text-muted">(optional)</span></label>
+                                <label for="{{ form.comment.id_for_label }}" class="form-label">
+                                    What's going on? <span class="text-muted fw-normal">(optional)</span>
+                                </label>
                                 {{ form.comment }}
                                 {{ form.comment.errors }}
                                 <small class="form-text text-muted">Empty, jammed, missing a specific product&hellip; whatever helps us fix it faster.</small>
                             </div>
                         </div>
-                        <div class="card-footer">
-                            <button type="submit" class="btn-ml btn-on my-2">Send notification</button>
+                        <div class="card-footer text-end bg-transparent">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa-solid fa-paper-plane me-2"></i>Send notification
+                            </button>
                         </div>
                     </form>
                 </div>
