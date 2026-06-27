@@ -3,52 +3,40 @@
 <link rel="stylesheet" href="{% static 'orders/css/item-list.css' %}"/>
 
 <div class="container mt-5 mb-5 text-center">
-    <h2>How to order via TOSTI?</h2>
-    <p class="lead tagline">Enjoy your meal in 5 simple steps</p>
+    <h2>How to order via TOSTI</h2>
+    <p class="lead tagline">From hungry to fed in five steps.</p>
 </div>
 <hr>
 <h3><i class="fa-solid fa-sign-in-alt"></i><br>1. Log in</h3>
 <p>
-    Before you can start ordering, first <a href="{% url "login" %}?next={{request.path}}">login using your
-    RU account</a>.
+    <a href="{% url "login" %}?next={{request.path}}">Sign in with your Radboud account</a> &mdash; orders are tied to your name so the bakers know who to call when your food's ready.
 </p>
 <hr>
-<h3><i class="fa-solid fa-map-marker-alt"></i><br>2. Choose your venue</h3>
+<h3><i class="fa-solid fa-map-marker-alt"></i><br>2. Pick a venue</h3>
 <p>
-    On the <a href="{% url "index" %}">home page</a>, there is an overview of all venues where you can place
-    orders. Is your favourite venue not available to order? Too bad, you can only wait...
+    The <a href="{% url "index" %}">home page</a> lists every venue currently taking orders. If yours isn't there, no bakers are running a shift right now &mdash; come back later.
 </p>
 <hr>
 <h3><i class="fa-solid fa-cart-plus"></i><br>3. Place your order</h3>
 <p>
-    Check out the queue of orders and decide whether you want to place an order. Hit the 'place your order'
-    button and pick the products you want to order. After placing your order, you will be added to the queue
-    and your orders will be prepared with love.
+    Click <strong>Place your order</strong>, pick what you want, and submit. You'll see your items appear in the venue's queue alongside everyone else's.
 </p>
 <p>
-    Note that you can not order an unlimited amount of products, there are restrictions on how many items you
-    can order in total and of a specific kind of product.
+    There are caps on how many items you can order in one go &mdash; both an overall limit per shift and a per-product limit. If you hit a cap, the form will tell you.
 </p>
 <hr>
-<h3><i class="fa-solid fa-clock"></i><br>4. Wait...</h3>
+<h3><i class="fa-solid fa-clock"></i><br>4. Wait</h3>
 <p>
-    After placing your order, all you can do is wait. In the queue of the venue, you can see how things are
-    going. Orders with a <i class="fa-solid fa-user"></i>-icon are your own orders. You can see the status of your order by looking at the label behind it.
-    This will initially be <i class="status-button bg-warning text-white" style="font-style: normal; font-size: 1rem;">Processing</i>.
+    Your orders sit in the queue with a <i class="fa-solid fa-user"></i> next to them so you can spot them. The label on the right tracks progress, starting at <i class="status-button bg-warning text-white" style="font-style: normal; font-size: 1rem;">Processing</i>.
 </p>
-<p>You may notice that your orders are displaying a
-    <span class="badge rounded-pill bg-danger" style="max-height: fit-content;">Not paid</span>
-    label. If you pay for your order, this label will dissappear.
-    It is not required to pay upfront, you can also pay when your order is ready.
+<p>
+    A <span class="badge rounded-pill bg-danger" style="max-height: fit-content;">Not paid</span> tag just means you haven't paid yet &mdash; it'll disappear once you do. You can pay upfront or when you pick up; whatever's easier.
 </p>
 <hr>
-<h3><i class="fa-solid fa-check-circle"></i><br>5. Ready!</h3>
+<h3><i class="fa-solid fa-check-circle"></i><br>5. Pick it up</h3>
 <p>
-    When your order is finally ready, the label will turn into
-    <i class="status-button bg-success text-white" style="font-style: normal; font-size: 1rem;">Done</i>.
-    Make sure to be present in the venue, because this is the time your name will be called and you can pick up
-    your order! If you do not pay or pick up your order, you will be blacklisted and will not be able to order anymore.
+    When the label flips to <i class="status-button bg-success text-white" style="font-style: normal; font-size: 1rem;">Done</i>, head to the counter &mdash; your name will be called. Don't forget to pay if you haven't already.
 </p>
 <p>
-    Bon appetit!
+    Heads up: skipping out on payment or leaving your order uncollected gets you blacklisted, and a blacklisted account can't order anymore. Be kind to the bakers and they'll be kind to you.
 </p>

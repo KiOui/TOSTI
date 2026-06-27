@@ -3,118 +3,82 @@
 <link rel="stylesheet" href="{% static 'orders/css/item-list.css' %}"/>
 
 <div class="container mt-5 mb-5 text-center">
-    <h2>How to manage and create shifts?</h2>
-    <p class="lead tagline">Everything you need to know as a baker.</p>
+    <h2>How to run a shift</h2>
+    <p class="lead tagline">The full baker's guide, start to finish.</p>
 </div>
 <hr>
 <h3><i class="fa-solid fa-sign-in-alt"></i><br>1. Log in</h3>
 <p>
-    Before you can start managing shifts, first <a href="{% url "login" %}?next={{request.path}}">login using your
-    RU account</a>.
+    <a href="{% url "login" %}?next={{request.path}}">Sign in with your Radboud account</a>. You can only manage shifts in venues you have permissions for &mdash; if a venue you expect doesn't show up, that's why.
 </p>
 <hr>
 <h3><i class="fa-solid fa-plus-square"></i><br>2. Start or join a shift</h3>
 <p>
-    After you are logged in, you can either start a new shift or join a shift in a venue you are authorized for,
-    via the buttons on the <a href="{% url "index" %}">the home page</a>.
+    From the <a href="{% url "index" %}">home page</a>, either start a new shift or join one that's already running. Two shifts can't run in the same venue at the same time.
 </p>
 <p>
-    When starting a new shift, you can set the begin and end time of the shift. After creating the shift,
-    it will appear on the site. Note that there cannot be 2 shifts for the same venue at the same time.
+    Starting a new shift: pick a start and end time, hit create, and it shows up on the home page. Joining an existing one: click <strong>Join shift</strong>.
 </p>
 <p>
-    If you want to join an already existing shift, you can simply click 'join shift'.
-</p>
-<p>
-    When you have joined a shift as a shift admin, you will see the shift admin page. This is where all orders
-    will come in and where you can register which orders are paid or ready. Via the footer menu, you have access
-    to some quick actions, like increasing the number of orders you accept.
+    Either way you land on the baker view: a live queue of orders plus a footer with the quick actions you'll use most often (capacity, time, payments, etc.).
 </p>
 <hr>
-<h3><i class="fa-solid fa-hand"></i><br>3. Allow orders</h3>
+<h3><i class="fa-solid fa-hand"></i><br>3. Open the shift for orders</h3>
 <p>
-    A new shift won't directly accept new orders. You need to allow (or disallow) orders via the
-    <i class="fa-solid fa-hand"></i>-button in the footer menu. Only when orders are allowed, people can place
-    orders. Otherwise, a message will be shown that ordering products is currently not possible for this shift.
+    A new shift doesn't accept orders until you flip it open. Use the <i class="fa-solid fa-hand"></i> button in the footer to toggle. Until you do, anyone trying to order sees a "not currently possible" message.
 </p>
 <p>
-    Note that even when orders are allowed, the maximum order-capacity for the shift or the end-time constraints
-    are in place.
+    The shift's max capacity and end-time still apply even after you open it &mdash; opening just means you're accepting orders within those limits.
 </p>
 <hr>
-<h3><i class="fa-solid fa-clock"></i><br>4. Wait...</h3>
+<h3><i class="fa-solid fa-clock"></i><br>4. Wait for orders</h3>
 <p>
-    Wait for orders to come in. New orders will automatically appear in the queue.
-</p>
-<p>Of course, you can place
-    orders yourself as well. Those will automatically move to the top of the queue. Via the
-    <i class="fa-solid fa-users" aria-hidden="true"></i>-button in the footer menu, you can easily go to the order
-    page to place an order yourself.
+    Orders pop into the queue automatically &mdash; no refreshing needed. Your own orders jump to the top; use the <i class="fa-solid fa-users" aria-hidden="true"></i> button in the footer to switch to the user order page if you want to add one for yourself.
 </p>
 <hr>
 <h3><i class="fa-solid fa-cogs"></i><br>5. Process orders</h3>
 <p>
-    When orders start coming in, you can start preparing them.
-</p>
-<p>
-    If an order is paid, you can hit the
+    When something gets paid, hit the
     <i class="status-button bg-danger text-white" style="font-style: normal; font-size: 1rem;">Paid</i>
-    button to turn it into <i class="status-button bg-success text-white" style="font-style: normal; font-size: 1rem;">Paid</i>.
-</p>
-<p>
-    When an order is ready, hit the
+    button to mark it
+    <i class="status-button bg-success text-white" style="font-style: normal; font-size: 1rem;">Paid</i>.
+    When an order's ready, hit
     <i class="status-button bg-danger text-white" style="font-style: normal; font-size: 1rem;">Ready</i>
-    button to mark it as <i class="status-button bg-success text-white" style="font-style: normal; font-size: 1rem;">Ready</i>. You can now call
-    out the person's name who placed the order to pick it up.
+    to mark it
+    <i class="status-button bg-success text-white" style="font-style: normal; font-size: 1rem;">Ready</i>
+    and call the customer's name.
 </p>
 <p>
-    Via the <i class="fa-solid fa-binoculars" aria-hidden="true"></i>-button in the footer menu, you can get an
-    overview of all products you still have to make.
+    The <i class="fa-solid fa-binoculars" aria-hidden="true"></i> button in the footer gives you a summary of everything still to make &mdash; useful when the queue is busy and you want a clean checklist.
 </p>
 <hr>
-<h3><i class="fa-solid fa-barcode"></i><br>6. Scan products</h3>
+<h3><i class="fa-solid fa-barcode"></i><br>6. Scan products at the counter</h3>
 <p>
-    There are also products that do not have to be prepared but rather can be scanned.
+    Some products don't need to be prepared, just sold &mdash; cans, snacks, anything pre-packaged. For those, use the <i class="fa-solid fa-qrcode"></i> Scanner button in the footer.
 </p>
 <p>
-    You can start scanning a product with a barcode by pressing the
-    <i class="fa-solid fa-qrcode"></i> Scanner button on the admin footer.
+    Your browser will ask for camera permission. Accept, point the camera at the barcode, and the product gets added to the queue automatically. Scanned items are marked with <i class="item-username fa-solid fa-desktop"></i> instead of a user icon.
 </p>
 <p>
-    A screen will popup asking for permission to use the camera of your device. Press accept to start the
-    barcode scanner. You can now scan a product with a barcode, if the barcode is scanned it will be
-    automatically added to the queue. Scanned orders will appear with the user marked as
-    <i class="item-username fa-solid fa-desktop"></i>.
+    No barcode? The search bar above the scanner lets you add a product by name. Misclicked something? The <i class="status-button bg-danger text-white" style="font-style: normal; font-size: 1rem;">Remove</i> button on the right of a scanned order takes it back out.
+</p>
+<hr>
+<h3><i class="fa-solid fa-sign-out-alt"></i><br>7. Wrap up</h3>
+<p>
+    Orders stop coming in automatically when the end time hits or the max capacity is reached. Need more time or more headroom? Use <i class="fa-solid fa-list" aria-hidden="true"></i>+5 to bump the cap or <i class="fa-solid fa-clock" aria-hidden="true"></i>+5 to push the end time.
 </p>
 <p>
-    You can also search for product to add manually via the search bar above the scanner.
-</p>
-<p>
-    If you want to remove a scanned order you can press the
-    <i class="status-button bg-danger text-white" style="font-style: normal; font-size: 1rem;">Remove</i> button on the right of a scanned order.
-    Accept the popup and the order will be deleted from the queue.
-</p>
-<h3><i class="fa-solid fa-sign-out-alt"></i><br>7. End of your shift</h3>
-<p>
-    When the end-time of your shift has passed, orders will automatically stop coming in. Also, when the
-    maximum capacity is reached, orders will stop coming in. If you want to increase the maximum capacity or
-    postpone the end-time, you can do so via the <i class="fa-solid fa-list" aria-hidden="true"></i> + 5 or
-    <i class="fa-solid fa-clock" aria-hidden="true"></i> + 5 buttons.
-</p>
-<h3><i class="fa-solid fa-times-circle"></i><br>8. Closing your shift</h3>
-<p>
-    After all the orders are processed and the shift has come to an end, you must finalize the shift. Finalizing
-    makes a shift uneditable and closes it permanently. Make sure that all orders are
-    <i class="status-button bg-success text-white" style="font-style: normal; font-size: 1rem;">Paid</i> and
-    <i class="status-button bg-success text-white" style="font-style: normal; font-size: 1rem;">Ready</i> first. Click the
+    Once everything's paid and picked up, finalize the shift with the
     <span class="status-button bg-danger text-white" style="font-style: normal; font-size: 1rem;">
-    <i class="fa-solid fa-times-circle"></i> Finalize</span> button in the footer to finalize a shift.
-    Thanks for baking!
+    <i class="fa-solid fa-times-circle"></i> Finalize</span>
+    button in the footer. That closes it permanently &mdash; you can't edit it after. Make sure every order is
+    <i class="status-button bg-success text-white" style="font-style: normal; font-size: 1rem;">Paid</i> and
+    <i class="status-button bg-success text-white" style="font-style: normal; font-size: 1rem;">Ready</i>
+    before you do.
 </p>
 <p>
-    If you want to change more advanced details, use the <i class="fa-solid fa-cog" aria-hidden="true"></i>-button
-    to go to the detailed admin view. This button is only visible if you are authorized for this.
+    For deeper edits (advanced settings, retroactive fixes) use the <i class="fa-solid fa-cog" aria-hidden="true"></i> button in the footer &mdash; only shown if you have the extra permissions.
 </p>
 <p>
-    Have fun baking!
+    Thanks for baking.
 </p>
