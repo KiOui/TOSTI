@@ -300,7 +300,7 @@ TOSTI is small but it touches a handful of external systems. If something breaks
 | Service | What it does | Where to look |
 | --- | --- | --- |
 | **Sentry** | Captures unhandled exceptions, performance traces, and selected log messages from the production deployment. First stop for any "something blew up" investigation. | <https://tosti.sentry.io> |
-| **SURFconext** | The Dutch research-and-education SAML federation. TOSTI is registered as a service provider so any Radboud student can sign in with their RU account. The integration is configured in `tosti/settings/production.py:SAML_CONFIG`. | <https://serviceregistry.surfconext.nl> |
+| **SURFconext** | The Dutch research-and-education SAML federation. TOSTI is registered as a service provider (entity `spd_ru_tosti`) so any Radboud student can sign in with their RU account. The integration is configured in `tosti/settings/production.py:SAML_CONFIG`. | SP dashboard <https://sp.surfconext.nl/> · managed through <https://welcome.surfconext.nl/> |
 | **Yivi server** | Backs age verification for the beer fridge. TOSTI asks Yivi for two attributes (over-18 proof + student number); Yivi delivers them if the user discloses them through the app. | <https://yivi.app> · TOSTI side in [`age/`](website/age/) and [`yivi/`](website/yivi/) |
 | **Spotify Web API** | Backs the Noordkantine music player. The OAuth token for the canteen account is stored encrypted in the DB. Rotation is manual. | TOSTI side in [`thaliedje/`](website/thaliedje/) |
 | **Marietje** | Backs the Zuidkantine music player. Read-only from TOSTI's side. | TOSTI side in [`thaliedje/marietje.py`](website/thaliedje/marietje.py) |
@@ -353,8 +353,7 @@ For a security issue, see [`SECURITY.md`](SECURITY.md).
 ## 📧 Contact
 
 - **Maintainers**: Website committee of Tartarus.
-- **General**: <tartaruswebsite@science.ru.nl>.
-- **Security**: <www-tosti@science.ru.nl> (see [`SECURITY.md`](SECURITY.md)).
+- **Email**: <www-tosti@science.ru.nl> (use the same address for security issues; see [`SECURITY.md`](SECURITY.md)).
 
 ## 📄 License
 
