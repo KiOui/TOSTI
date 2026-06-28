@@ -21,7 +21,7 @@ Please include:
 
 You should hear back from the website committee within **7 days** with an acknowledgement. We'll work with you to confirm the issue, agree on a fix timeline, and credit you in the release notes if you'd like.
 
-If you do not get a response within 14 days, escalate by emailing <tartaruswebsite@science.ru.nl> and asking them to chase it up.
+If you do not get a response within 14 days, the report has likely been missed — please re-send the email and consider also reaching out to the Tartarus board directly.
 
 ## What counts as a security issue
 
@@ -51,9 +51,8 @@ Generally out of scope (open a regular GitHub issue for these):
 
 ## Maintainer contact
 
-- Website committee &mdash; <www-tosti@science.ru.nl> (security)
-- General &mdash; <tartaruswebsite@science.ru.nl>
+- Website committee &mdash; <www-tosti@science.ru.nl>
 
-Both addresses reach the same Tartarus website committee. The first is reserved for security-sensitive correspondence.
+This is the same address that handles general project correspondence; flag your message clearly as a security issue in the subject line so it gets routed appropriately.
 </content>
 </invoke>

@@ -1,6 +1,6 @@
 # How to contribute
 
-This repository is maintained by the website committee of [Tartarus](https://tartarus.science.ru.nl/), reachable at <tartaruswebsite@science.ru.nl>. The project is open source; issues and pull requests are welcome.
+This repository is maintained by the website committee of [Tartarus](https://tartarus.science.ru.nl/), reachable at <www-tosti@science.ru.nl>. The project is open source; issues and pull requests are welcome.
 
 If you're an AI coding agent (Claude Code, Cursor, Aider, …), read [`AGENTS.md`](AGENTS.md) instead — it carries the same conventions but is condensed to what an agent needs to make safe edits. Humans should keep reading here.
 
@@ -161,7 +161,7 @@ Once merged, the change ships to <https://tosti.science.ru.nl> automatically. Tr
 If you're stuck:
 
 - Open a draft PR and tag the website committee — early feedback beats a long-running branch.
-- Email <tartaruswebsite@science.ru.nl>.
+- Email <www-tosti@science.ru.nl>.
 - For security-sensitive questions, see [`SECURITY.md`](SECURITY.md).
 </content>
 </invoke>
