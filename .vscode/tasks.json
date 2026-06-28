@@ -1,0 +1,49 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run Django",
+            "type": "shell",
+            "command": "uv run website/manage.py runserver",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "isBackground": false,
+            "problemMatcher": []
+        },
+        {
+            "label": "Run tests",
+            "type": "shell",
+            "command": "uv run website/manage.py test website/",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "isBackground": false,
+            "problemMatcher": []
+        },
+        {
+            "label": "Run black",
+            "type": "shell",
+            "command": "uv run black website",
+            "group": {
+                "kind": "test",
+                "isDefault": false
+            },
+            "isBackground": false,
+            "problemMatcher": []
+        },
+        {
+            "label": "Run flake8",
+            "type": "shell",
+            "command": "uv run flake8 --exclude=\"migrations,website/tosti/settings/*.py\" --max-line-length=119 website",
+            "group": {
+                "kind": "test",
+                "isDefault": false
+            },
+            "isBackground": false,
+            "problemMatcher": []
+        }
+    ]
+}
