@@ -7,13 +7,16 @@ A "venue" in TOSTI is a physical room or area (canteen, meeting room, brew room,
 ```mermaid
 classDiagram
     direction LR
-    Venue --> "0..*" Reservation
-    Reservation --> User : created by
-    Reservation --> "0..1" User : accepted by
+    Reservation --> Venue
+    Reservation --> Association
+    Reservation --> User : user_created
+    Reservation --> User : user_updated
+    Reservation "1" <--> "0..*" User : users_access (M2M)
 ```
 
-- **`Venue`** &mdash; name, slug, opening hours, can-it-be-reserved flag, color shown in the calendar.
-- **`Reservation`** &mdash; user-created request to use a venue for some time window. Has a title, optional comments, an `accepted` flag (false by default; a manager flips it true), start and end times.
+- **`Venue`** &mdash; `name`, `slug`, `active`, `color_in_calendar`, `can_be_reserved`, `automatically_accept_first_reservation`. No FKs out &mdash; other apps point at it (`orders.OrderVenue.venue` OneToOne, `thaliedje.Player.venue` OneToOne, etc.).
+- **`Reservation`** &mdash; `title`, `start`, `end`, `comments`, `needs_music_keys`, and the tri-state `accepted` (`None` = pending, `True` = approved, `False` = rejected). Bookkeeping fields: `user_created`, `user_updated`, the `users_access` M2M, and a one-shot `join_code` (auto-generated on first save) so the organisers can share the reservation with people who weren't on the original list.
+- **`Reservation.active`** is a queryable property (`RangeCheckProperty` on `start`/`end`); usable in `.filter()` / `.annotate()`. `can_be_changed` is a regular `@property` that's true when the reservation is still pending and hasn't started yet.
 
 Other apps refer to `Venue` as a foreign key (`orders.OrderVenue.venue`, `thaliedje.Player.venue`, etc.) but they don't extend the venue itself. If you need venue-related config for your app, follow that pattern.
 
@@ -23,9 +26,9 @@ Other apps refer to `Venue` as a foreign key (`orders.OrderVenue.venue`, `thalie
 
 ## Approval workflow
 
-New reservations are created with `accepted=False`. The user gets an email confirming the request was received; a notification email goes to the venue manager. The manager reviews and either accepts (flips the flag, optional email back to the user) or rejects (deletes / leaves unaccepted, depending on convention).
+New reservations are created with `accepted=None` (pending). The user gets an email confirming the request was received; a notification email goes to the venue manager. The manager reviews and either accepts (`accepted=True`) or rejects (`accepted=False`). Reservations are never auto-deleted on rejection &mdash; rejected ones still show up in the admin so the audit trail is intact.
 
-There's an `automatically_accept_first_reservation` venue-level flag that lets specific venues short-circuit this for the first booking. Use carefully.
+There's an `automatically_accept_first_reservation` venue-level flag that lets specific venues short-circuit this for the first booking (subject to no overlap). Use carefully.
 
 ## Services
 

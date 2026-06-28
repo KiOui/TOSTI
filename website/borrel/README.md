@@ -9,17 +9,22 @@ It's distinct from `orders/` &mdash; orders are individual transactions during a
 ```mermaid
 classDiagram
     direction LR
-    BorrelReservation --> Venue
-    BorrelReservation --> User : organisers
-    BorrelReservation --> "0..*" ReservationItem
+    BorrelReservation --> Reservation : venue_reservation (0..1, OneToOne)
+    BorrelReservation --> Association
+    BorrelReservation --> User : user_created
+    BorrelReservation --> User : user_updated
+    BorrelReservation --> User : user_submitted
+    BorrelReservation "1" <--> "0..*" User : users_access (M2M)
+    ReservationItem --> BorrelReservation : items
     ReservationItem --> Product
     Product --> ProductCategory
 ```
 
-- **`BorrelReservation`** &mdash; the booking itself: title, venue, start/end time, organising association, organisers, comments, an accepted flag like a regular venue reservation, plus borrel-specific fields (expected number of attendees, etc.).
-- **`Product`** &mdash; an item that can be consumed at a borrel. Has price, VAT rate, category, an `is_active` flag.
-- **`ProductCategory`** &mdash; grouping for the product list (beer, soda, snacks, …) and for the Silvasoft sync.
-- **`ReservationItem`** &mdash; line item linking a `BorrelReservation` to a `Product` with both a planned quantity (declared in advance) and an actual quantity (filled in after the event).
+- **`BorrelReservation`** &mdash; the booking itself. Owns its own `start`/`end`/`title`/`comments`/`association`, the tri-state `accepted` (None / True / False) approval flag, the three role users (`user_created`, `user_updated`, `user_submitted`) plus the `users_access` M2M, and a `join_code`. The optional OneToOne `venue_reservation -> venues.Reservation` ties the borrel to the underlying venue booking when one exists.
+- **Queryable properties:** `active` (`RangeCheckProperty` on `start`/`end`) and `submitted` (`AnnotationProperty` derived from `submitted_at`). Both usable in `.filter()` / `.annotate()`. Regular properties `can_be_changed` and `can_be_submitted` gate UI actions.
+- **`Product`** &mdash; an item that can be consumed at a borrel, grouped by `ProductCategory`.
+- **`ProductCategory`** &mdash; product grouping (beer, soda, snacks, …); also relevant for the Silvasoft sync.
+- **`ReservationItem`** &mdash; line item with `amount_reserved` (planned) and `amount_used` (settled). **Snapshots** `product_name`, `product_description`, `product_price_per_unit` at the time the item was added; the FK to `Product` is `SET_NULL`-on-delete so settlements remain stable when products are removed or repriced. `unique_together = (reservation, product_name)`.
 
 ## Lifecycle
 

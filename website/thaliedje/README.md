@@ -56,22 +56,23 @@ classDiagram
 ```mermaid
 classDiagram
     direction LR
-    Player --> Venue : one per venue
+    Player --> Venue : OneToOne
     SpotifyQueueItem --> Player
     SpotifyQueueItem --> SpotifyTrack
-    SpotifyQueueItem --> User : requested by
-    SpotifyTrack --> "0..*" SpotifyArtist
-    ThaliedjeBlacklistedUser --> User
-    ThaliedjeControlEvent --> Venue : event-time perms
+    SpotifyQueueItem --> User : requested_by
+    SpotifyTrack "1" <--> "0..*" SpotifyArtist : track_artists (M2M)
+    ThaliedjeBlacklistedUser --> User : OneToOne
+    ThaliedjeControlEvent --> Reservation : event (OneToOne)
+    ThaliedjeControlEvent "1" <--> "0..*" User : selected_users (M2M)
     PlayerLogEntry --> Player
     PlayerLogEntry --> User
 ```
 
-- **`Player`** is the polymorphic base (slug, venue). `SpotifyPlayer` and `MarietjePlayer` are the concrete subclasses.
-- **`SpotifyQueueItem`** is the TOSTI-side request log: which user requested which track at which time on which player.
-- **`SpotifyTrack` / `SpotifyArtist`** are denormalised caches so the request log keeps making sense after a track is removed from Spotify.
+- **`Player`** is the polymorphic base (`slug`, OneToOne to `venues.Venue`). `SpotifyPlayer` and `MarietjePlayer` are the concrete subclasses; both store backend-specific credentials (`client_id`/`client_secret` and a per-player `cache_path`).
+- **`SpotifyQueueItem`** is the TOSTI-side request log: which user requested which track at which time on which player. Note this is created for Spotify-backed players only (Marietje can't accept requests).
+- **`SpotifyTrack` / `SpotifyArtist`** are denormalised caches so the request log keeps making sense after a track is removed from Spotify. `SpotifyTrack.track_artists` is the M2M between them.
 - **`ThaliedjeBlacklistedUser`** &mdash; same idea as `OrderBlacklistedUser` but for song-request abuse.
-- **`ThaliedjeControlEvent`** lets a reservation event override the default request/control permissions for the duration of the booking (e.g. a private borrel where only the organisers can queue).
+- **`ThaliedjeControlEvent`** has a OneToOne to `venues.Reservation` and lets that reservation override the default request/control permissions for the duration of the booking. Permissions are split three ways: `association_*` (anyone in the organising association), `selected_users_*` (the M2M-linked users), and `everyone_*`. Also has `respect_blacklist` and `check_throttling` toggles. Queryable properties `start` / `end` / `active` lift the parent reservation's range so you can filter `ThaliedjeControlEvent.objects.filter(active=True)`; `player` resolves to `event.venue.player` for convenience.
 - **`PlayerLogEntry`** is the audit log for control-plane actions (start, pause, next, etc.).
 
 ## Always use `select_subclasses()`

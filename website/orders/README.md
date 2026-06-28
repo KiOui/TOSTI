@@ -9,25 +9,27 @@ It's the biggest app in the project. Treat changes here as production-affecting 
 ```mermaid
 classDiagram
     direction LR
-    OrderVenue --> "1..*" Shift
-    Shift --> "0..*" Order
-    Shift --> "0..*" Product : products available
-    OrderVenue --> "0..*" Product
+    OrderVenue --> Venue : OneToOne
+    OrderVenue "1" <--> "0..*" Product : available_at (M2M)
+    Shift --> OrderVenue : venue
+    Shift "1" <--> "0..*" User : assignees (M2M)
+    Order --> Shift
     Order --> Product
-    Order --> User : placed by
-    OrderBlacklistedUser --> User : flag
+    Order --> User : user
+    Order --> Association : user_association
+    OrderBlacklistedUser --> User : OneToOne
 ```
 
-- **`OrderVenue`** wraps a `venues.Venue` with ordering-specific config (e.g. whether ordering is enabled there).
-- **`Product`** lives in an OrderVenue's catalogue: name, price, availability, max-per-shift, max-per-user, whether it needs preparation or just a barcode scan.
-- **`Shift`** is a time window during which a baker accepts orders. It has start/end times, a max-orders cap, an "accepting orders" toggle (the hand button in the baker view), and a `finalized` flag once it's closed permanently.
-- **`Order`** ties a user to a product within a shift. Status fields are `paid` and `ready`; both must be true before the customer picks it up. Has a `priority` field so baker-placed orders jump to the top of the queue.
-- **`OrderBlacklistedUser`** flags users who didn't pay or pick up. Blacklisted users can't place new orders.
+- **`OrderVenue`** &mdash; OneToOne wrapper around `venues.Venue`. Holds ordering-specific config (whether ordering is enabled, scanner settings, etc.). `Product.available_at` is the M2M that pins each product to one or more venues.
+- **`Product`** &mdash; the catalogue item: `name`, `icon`, `current_price`, `available`, `orderable`, `ignore_shift_restrictions`, and `barcode` (for the scanner flow).
+- **`Shift`** &mdash; a time window (`start`, `end`) during which a baker accepts orders. `can_order` is the operator-toggleable "currently taking orders" flag; `finalized` permanently locks the shift once it's closed. Bakers are tracked through the `assignees` M2M to `User`.
+- **`Order`** &mdash; ties a `user` (and their `user_association`) to a `product` within a `shift`. Lifecycle is tracked by three boolean+timestamp pairs: `ready` / `ready_at`, `paid` / `paid_at`, `picked_up` / `picked_up_at`. `type` distinguishes a normal counter order from a scanned (pre-packaged) one; `prioritize` / `deprioritize` lets bakers reorder the queue.
+- **`OrderBlacklistedUser`** &mdash; OneToOne flag with an `explanation` field. Blacklisted users can't place new orders.
 
 ## Where the logic lives
 
 - **`services.py`** &mdash; `add_user_order`, `list_active_shifts`. Permission checks, capacity checks, blacklist checks all happen here. View and MCP tool both call into the same service.
-- **`models.py`** &mdash; the data and its invariants. `Shift.is_active`, `Shift.can_order`, `Product.is_available` are queryable properties (django-queryable-properties) so they work in `.filter()` and `.annotate()` without an N+1.
+- **`models.py`** &mdash; the data and its invariants. `Shift.is_active`, `Shift.number_of_orders` are regular `@property`s; they hit the database on access, so when you need them in bulk for a queryset, annotate explicitly rather than looping.
 - **`mcp.py`** &mdash; `list_active_shifts` (read), `place_order` (scope-gated by `orders:order`).
 - **`api/v1/`** &mdash; the REST endpoints powering the baker view's live queue, the user order page, the scanner.
 
