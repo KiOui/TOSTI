@@ -4,7 +4,7 @@
 [![Deploy](https://github.com/KiOui/TOSTI/actions/workflows/deploy.yaml/badge.svg)](https://github.com/KiOui/TOSTI/actions/workflows/deploy.yaml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-TOSTI is the order system that runs the canteens in the Huygens building at Radboud University. Originally built for [Tartarus](https://tartarus.science.ru.nl) and now shared across study associations that operate canteens there, it covers ordering, payments, music, age-gated beer fridges, venue reservations, borrels, and a handful of adjacent things that the canteens need.
+TOSTI is the order system for the canteens in the Huygens building at Radboud University. Built by and for [Tartarus](https://tartarus.science.ru.nl), it covers ordering, payments, music, age-gated beer fridges, venue reservations, borrels, and a handful of adjacent things that the canteens need.
 
 It lives at <https://tosti.science.ru.nl> and is maintained by the website committee of Tartarus.
 
@@ -52,47 +52,51 @@ graph LR
     Silvasoft[Silvasoft accounting]
     FridgeClient[TOSTI fridge client]
 
-    subgraph "TOSTI Django apps"
-        users[users]
-        tosti[tosti]
-        orders[orders]
-        thaliedje[thaliedje]
-        venues[venues]
-        borrel[borrel]
-        fridges[fridges]
-        age[age]
-        yivi_app[yivi]
-        tampon[tampon]
-        transactions[transactions]
-        silvasoft_app[silvasoft]
-    end
+    tosti[tosti]
+    associations[associations]
+    users[users]
+    venues[venues]
+    orders[orders]
+    transactions[transactions]
+    thaliedje[thaliedje]
+    qualifications[qualifications]
+    borrel[borrel]
+    yivi_app[yivi]
+    age[age]
+    fridges[fridges]
+    silvasoft_app[silvasoft]
 
     SURFconext -. SAML .-> users
-    users --> tosti
+    users --> associations
+    venues --> associations
+    venues --> users
+    orders --> associations
     orders --> users
     orders --> venues
-    orders --> transactions
+    transactions --> users
     thaliedje --> users
     thaliedje --> venues
     thaliedje -. requests .-> Spotify
     thaliedje -. requests .-> Marietje
-    venues --> users
+    borrel --> associations
     borrel --> venues
-    borrel --> users
-    borrel --> transactions
-    fridges --> users
-    fridges --> age
-    fridges -. unlock .-> FridgeClient
+    borrel --> qualifications
+    age --> users
     age --> yivi_app
     yivi_app -. attribute disclosure .-> Yivi
-    tampon --> users
-    transactions --> users
-    silvasoft_app --> transactions
+    fridges --> users
+    fridges --> venues
+    fridges --> age
+    fridges -. unlock .-> FridgeClient
+    silvasoft_app --> associations
+    silvasoft_app --> venues
+    silvasoft_app --> orders
+    silvasoft_app --> borrel
     silvasoft_app -. invoices .-> Silvasoft
     tosti -. errors .-> Sentry
 ```
 
-The graph isn't a hard import dependency — it's the natural data-flow story. Each app keeps its concerns local; cross-app coupling is meant to stay minimal (see [Modular Django apps](#modular-django-apps)).
+Solid arrows are real import / FK dependencies between apps; dashed arrows are calls to external services. Each app keeps its concerns local; cross-app coupling is meant to stay minimal (see [Modular Django apps](#modular-django-apps)). A handful of small apps (`tampon`, `announcements`, `status_screen`, …) are omitted to keep the graph readable.
 
 ### Tech stack
 
