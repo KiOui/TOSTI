@@ -44,15 +44,13 @@ Cross-cutting:
 
 ```mermaid
 graph LR
-    subgraph "External services"
-        SURFconext[SURFconext SAML]
-        Sentry[Sentry]
-        Spotify[Spotify API]
-        Marietje[Marietje]
-        Yivi[Yivi server]
-        Silvasoft[Silvasoft accounting]
-        FridgeClient[TOSTI fridge client]
-    end
+    SURFconext[SURFconext SAML]
+    Sentry[Sentry]
+    Spotify[Spotify API]
+    Marietje[Marietje]
+    Yivi[Yivi server]
+    Silvasoft[Silvasoft accounting]
+    FridgeClient[TOSTI fridge client]
 
     subgraph "TOSTI Django apps"
         users[users]
@@ -120,7 +118,6 @@ sequenceDiagram
     participant Client as Client (browser / app / MCP)
     participant TOSTI
     participant SURF as SURFconext (SAML IdP)
-    participant Yivi as Yivi server
 
     Client->>TOSTI: GET protected resource
     TOSTI-->>Client: 401 + WWW-Authenticate (RFC 9728 metadata)
@@ -142,13 +139,6 @@ sequenceDiagram
     TOSTI-->>Client: access_token (+ refresh_token)
 
     Client->>TOSTI: API/MCP call with Authorization: Bearer …
-
-    opt If the resource needs age-verified user (beer fridge)
-        TOSTI->>User: show "verify your age" QR
-        User->>Yivi: scan, disclose "over 18" + student-number attributes
-        Yivi-->>TOSTI: verified disclosure
-        TOSTI-->>User: age verified, fridge will open during opening hours
-    end
 ```
 
 The `/oauth/docs/` page on a running deployment goes into detail on the OAuth flow specifically (which grant type, where to register, what scopes exist).
