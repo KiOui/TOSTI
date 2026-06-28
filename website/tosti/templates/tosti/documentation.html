@@ -12,26 +12,30 @@
             </p>
         </div>
     </div>
-    <div class="container prose d-flex justify-content-center flex-wrap">
-        <a class="documentation-container text-center" style="width: 200px;" href="https://github.com/KiOui/TOSTI">
-            <i class="fa-brands fa-github" style="font-size: 2rem;"></i>
-            <p class="mb-0">Source code</p>
-            <small class="text-muted">The full repository on GitHub.</small>
-        </a>
-        <a class="documentation-container text-center" style="width: 200px;" href="{% url 'swagger' %}">
-            <i class="fa-solid fa-plug" style="font-size: 2rem;"></i>
-            <p class="mb-0">API reference</p>
-            <small class="text-muted">Interactive Swagger UI for the REST API.</small>
-        </a>
-        <a class="documentation-container text-center" style="width: 200px;" href="{% url 'oauth-integration-docs' %}">
-            <i class="fa-solid fa-key" style="font-size: 2rem;"></i>
-            <p class="mb-0">OAuth integration</p>
-            <small class="text-muted">How to authenticate your client against TOSTI.</small>
-        </a>
-        <a class="documentation-container text-center" style="width: 200px;" href="{% url 'mcp-tools-docs' %}">
-            <i class="fa-solid fa-robot" style="font-size: 2rem;"></i>
-            <p class="mb-0">MCP tools</p>
-            <small class="text-muted">Every tool TOSTI exposes to AI assistants.</small>
-        </a>
+    <div class="container prose">
+        <div class="d-flex justify-content-center flex-wrap mb-3">
+            <a class="documentation-container text-center" style="width: 200px;" href="https://github.com/KiOui/TOSTI">
+                <i class="fa-brands fa-github" style="font-size: 2rem;"></i>
+                <p class="mb-0">Source code</p>
+                <small class="text-muted">The full repository on GitHub.</small>
+            </a>
+        </div>
+        <div class="d-flex justify-content-center flex-wrap">
+            <a class="documentation-container text-center" style="width: 200px;" href="{% url 'swagger' %}">
+                <i class="fa-solid fa-plug" style="font-size: 2rem;"></i>
+                <p class="mb-0">API reference</p>
+                <small class="text-muted">Interactive Swagger UI for the REST API.</small>
+            </a>
+            <a class="documentation-container text-center" style="width: 200px;" href="{% url 'oauth-integration-docs' %}">
+                <i class="fa-solid fa-key" style="font-size: 2rem;"></i>
+                <p class="mb-0">OAuth integration</p>
+                <small class="text-muted">How to authenticate your client against TOSTI.</small>
+            </a>
+            <a class="documentation-container text-center" style="width: 200px;" href="{% url 'mcp-tools-docs' %}">
+                <i class="fa-solid fa-robot" style="font-size: 2rem;"></i>
+                <p class="mb-0">MCP tools</p>
+                <small class="text-muted">Every tool TOSTI exposes to AI assistants.</small>
+            </a>
+        </div>
     </div>
 {% endblock %}
