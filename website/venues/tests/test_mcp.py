@@ -1,9 +1,11 @@
 """Tests for the venues app's MCP toolset."""
 
 from unittest.mock import MagicMock
+from datetime import timedelta
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
+from django.utils import timezone
 
 from venues.mcp import VenueTools
 from venues.models import Reservation, Venue
@@ -43,8 +45,21 @@ class VenueToolsCreateReservationTests(TestCase):
         result = tools.create_venue_reservation(
             venue_slug="nonexistent",
             title="Foo",
-            start="2030-01-01T10:00:00+00:00",
-            end="2030-01-01T11:00:00+00:00",
+            start=(timezone.now() + timedelta(hours=5)).isoformat(),
+            end=(timezone.now() + timedelta(hours=12)).isoformat(),
+        )
+        self.assertIn("error", result)
+
+    def test_non_reservable_venue_returns_error(self):
+        self.venue.can_be_reserved = False
+        self.venue.save()
+
+        tools = VenueTools(request=_StubRequest(self.user))
+        result = tools.create_venue_reservation(
+            venue_slug=self.venue.slug,
+            title="Foo",
+            start=(timezone.now() + timedelta(hours=5)).isoformat(),
+            end=(timezone.now() + timedelta(hours=12)).isoformat(),
         )
         self.assertIn("error", result)
 
@@ -63,8 +78,8 @@ class VenueToolsCreateReservationTests(TestCase):
         result = tools.create_venue_reservation(
             venue_slug=self.venue.slug,
             title="Foo",
-            start="2030-01-01T11:00:00+00:00",
-            end="2030-01-01T10:00:00+00:00",
+            start=(timezone.now() + timedelta(hours=12)).isoformat(),
+            end=(timezone.now() + timedelta(hours=5)).isoformat(),
         )
         self.assertIn("error", result)
 
@@ -73,8 +88,8 @@ class VenueToolsCreateReservationTests(TestCase):
         result = tools.create_venue_reservation(
             venue_slug=self.venue.slug,
             title="Birthday party",
-            start="2030-01-01T10:00:00+00:00",
-            end="2030-01-01T12:00:00+00:00",
+            start=(timezone.now() + timedelta(hours=5)).isoformat(),
+            end=(timezone.now() + timedelta(hours=12)).isoformat(),
             comments="cake",
         )
         self.assertNotIn("error", result)
@@ -91,8 +106,8 @@ class VenueToolsCreateReservationTests(TestCase):
         result = tools.create_venue_reservation(
             venue_slug=self.venue.slug,
             title="Blocked",
-            start="2030-01-01T10:00:00+00:00",
-            end="2030-01-01T11:00:00+00:00",
+            start=(timezone.now() + timedelta(hours=5)).isoformat(),
+            end=(timezone.now() + timedelta(hours=12)).isoformat(),
         )
         self.assertIn("error", result)
         self.assertIn("write", result["error"])

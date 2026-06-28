@@ -4,6 +4,7 @@ from datetime import timedelta
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.utils import timezone
+from freezegun import freeze_time
 
 from rest_framework.test import APITestCase
 
@@ -53,12 +54,15 @@ class VenuesAPITests(APITestCase):
 
     def test_add_reservation_not_logged_in(self):
         """Non-logged in users should not be able to add a reservation."""
+
+        now = timezone.now()
+
         response = self.client.post(
             reverse("v1:reservations_listcreate"),
             {
                 "venue": self.venue.pk,
-                "start": "2023-03-09T10:00:00.000Z",
-                "end": "2023-03-09T12:00:00.000Z",
+                "start": (now + timedelta(hours=5)).isoformat(),
+                "end": (now + timedelta(hours=12)).isoformat(),
                 "title": "Test title",
                 "association": 1,
             },
@@ -69,12 +73,15 @@ class VenuesAPITests(APITestCase):
         """Non-logged in users should not be able to add a reservation."""
         self.client.login(username=self.normal_user.username, password="password")
         Reservation.objects.all().delete()
+
+        now = timezone.now()
+
         response = self.client.post(
             reverse("v1:reservations_listcreate"),
             {
                 "venue": self.venue.pk,
-                "start": "2023-03-09T10:00:00.000Z",
-                "end": "2023-03-09T12:00:00.000Z",
+                "start": (now + timedelta(hours=5)).isoformat(),
+                "end": (now + timedelta(hours=12)).isoformat(),
                 "title": "Test title",
                 "association": 1,
             },
@@ -90,14 +97,123 @@ class VenuesAPITests(APITestCase):
         """Non-logged in users should not be able to add a reservation."""
         self.client.login(username=self.normal_user.username, password="password")
         Reservation.objects.all().delete()
+
+        now = timezone.now()
+
         response = self.client.post(
             reverse("v1:reservations_listcreate"),
             {
                 "venue": self.venue.pk,
-                "start": "2023-03-09T12:00:00.000Z",
-                "end": "2023-03-09T09:00:00.000Z",
+                "start": (now + timedelta(hours=12)).isoformat(),
+                "end": (now + timedelta(hours=5)).isoformat(),
                 "title": "Test title",
                 "association": 1,
             },
         )
         self.assertEqual(response.status_code, 400)
+
+    def test_add_reservation_venue_not_reservable(self):
+        """Non-logged in users should not be able to add a reservation."""
+        self.client.login(username=self.normal_user.username, password="password")
+        Reservation.objects.all().delete()
+
+        now = timezone.now()
+
+        self.venue.can_be_reserved = False
+        self.venue.save()
+
+        response = self.client.post(
+            reverse("v1:reservations_listcreate"),
+            {
+                "venue": self.venue.pk,
+                "start": (now + timedelta(hours=5)).isoformat(),
+                "end": (now + timedelta(hours=12)).isoformat(),
+                "title": "Test title",
+                "association": 1,
+            },
+        )
+        self.assertEqual(response.status_code, 400)
+
+    @freeze_time()
+    def test_reservation_start_before_now(self):
+        self.client.login(username=self.normal_user.username, password="password")
+        now = timezone.now()
+        response = self.client.post(
+            reverse("v1:reservations_listcreate"),
+            {
+                "venue": self.venue.pk,
+                "start": (now - timedelta(hours=5)).isoformat(),
+                "end": (now + timedelta(hours=1)).isoformat(),
+                "title": "Test title",
+                "association": 1,
+            },
+        )
+        self.assertEqual(response.status_code, 400)
+
+    @freeze_time()
+    def test_reservation_overlapping_accepted_reservation(self):
+        self.client.login(username=self.normal_user.username, password="password")
+        Reservation.objects.all().delete()
+
+        now = timezone.now()
+        Reservation.objects.create(
+            title="Test reservation",
+            start=now + timedelta(hours=5),
+            end=now + timedelta(hours=11),
+            venue=self.venue,
+            accepted=True,
+        )
+
+        with self.subTest("Overlapping end"):
+            response = self.client.post(
+                reverse("v1:reservations_listcreate"),
+                {
+                    "venue": self.venue,
+                    "association": self.association,
+                    "start": (now + timedelta(hours=3)).isoformat(),
+                    "end": (now + timedelta(hours=7)).isoformat(),
+                    "title": "Test reservation overlapping end",
+                },
+            )
+            self.assertEqual(response.status_code, 400)
+
+        with self.subTest("Overlapping start"):
+            response = self.client.post(
+                reverse("v1:reservations_listcreate"),
+                {
+                    "venue": self.venue,
+                    "association": self.association,
+                    "start": (now + timedelta(hours=8)).isoformat(),
+                    "end": (now + timedelta(hours=15)).isoformat(),
+                    "title": "Test reservation overlapping end",
+                },
+            )
+            self.assertEqual(response.status_code, 400)
+
+        with self.subTest("Reservation inside already created reservation"):
+            response = self.client.post(
+                reverse("v1:reservations_listcreate"),
+                {
+                    "venue": self.venue,
+                    "association": self.association,
+                    "start": (now + timedelta(hours=6)).isoformat(),
+                    "end": (now + timedelta(hours=10)).isoformat(),
+                    "title": "Test reservation overlapping end",
+                },
+            )
+            self.assertEqual(response.status_code, 400)
+
+        with self.subTest(
+            "Reservation completely overlapping already created reservation"
+        ):
+            response = self.client.post(
+                reverse("v1:reservations_listcreate"),
+                {
+                    "venue": self.venue,
+                    "association": self.association,
+                    "start": (now + timedelta(hours=3)).isoformat(),
+                    "end": (now + timedelta(hours=13)).isoformat(),
+                    "title": "Test reservation overlapping end",
+                },
+            )
+            self.assertEqual(response.status_code, 400)

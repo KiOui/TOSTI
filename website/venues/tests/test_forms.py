@@ -45,6 +45,20 @@ class VenuesFormsTests(TestCase):
         form_2 = forms.ReservationForm(form_data_2)
         self.assertTrue(form_2.is_valid())
 
+    def test_reservation_on_venue_that_can_not_be_reserved(self):
+        self.venue.can_be_reserved = False
+        self.venue.save()
+        now = timezone.now()
+        form_data = {
+            "venue": self.venue,
+            "association": self.association,
+            "start": now + timedelta(hours=1),
+            "end": now + timedelta(hours=5),
+            "title": "Test reservation",
+        }
+        form = forms.ReservationForm(form_data)
+        self.assertFalse(form.is_valid())
+
     @freeze_time()
     def test_reservation_end_before_start(self):
         now = timezone.now()

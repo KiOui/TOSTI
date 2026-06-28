@@ -1,47 +1,9 @@
-from datetime import datetime
-
 from constance import config
 from django.contrib.sites.models import Site
-from django.core.exceptions import ValidationError
 from django.template.loader import get_template
 
 from tosti.tasks import send_email
 from venues import models
-
-
-def create_reservation(
-    *,
-    venue: models.Venue,
-    user,
-    title: str,
-    start: datetime,
-    end: datetime,
-    comments: str = "",
-) -> models.Reservation:
-    """Create an unaccepted reservation for ``venue`` on the user's behalf.
-
-    Raises :class:`django.core.exceptions.ValidationError` if the venue
-    doesn't accept reservations, the time window is invalid, or model-level
-    validation fails. Sends the same notification email as the regular form
-    flow on success.
-    """
-    if not venue.can_be_reserved:
-        raise ValidationError(f"Venue '{venue}' does not accept reservations.")
-    if end <= start:
-        raise ValidationError("end must be after start.")
-
-    reservation = models.Reservation(
-        venue=venue,
-        user_created=user,
-        title=title,
-        start=start,
-        end=end,
-        comments=comments,
-    )
-    reservation.full_clean()
-    reservation.save()
-    send_reservation_request_email(reservation)
-    return reservation
 
 
 def send_reservation_request_email(reservation: models.Reservation):
