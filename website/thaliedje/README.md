@@ -4,13 +4,58 @@ Thaliedje runs the shared jukebox in the Huygens canteens. Anyone with a Radboud
 
 There are two backends: **Spotify** (Noordkantine) and **Marietje** (Zuidkantine, read-only). They share a base `Player` model and a polymorphism layer (`InheritanceManager`), so most code paths can treat them uniformly.
 
+## Player inheritance &mdash; SpotifyPlayer vs MarietjePlayer
+
+```mermaid
+classDiagram
+    direction TB
+    class Player {
+        +slug
+        +venue
+        +current_track_name
+        +current_artists
+        +current_image
+        +is_playing
+        +queue
+        +request_song() *
+        +search() *
+        +start() *
+        +pause() *
+        +next() / previous() *
+        +volume / shuffle / repeat *
+    }
+    class SpotifyPlayer {
+        +client_id / client_secret
+        +cache_path
+        +request_song()
+        +search()
+        +start() / pause()
+        +next() / previous()
+        +volume / shuffle / repeat
+        +do_spotify_request()
+    }
+    class MarietjePlayer {
+        +marietje_url
+        +current_track_name (read-only)
+        +current_artists (read-only)
+        +queue (read-only)
+        +request_song() = no-op
+        +search() = no-op
+        +start() / pause() = no-op
+        +can_control() = False
+        +can_request_song() = False
+    }
+    Player <|-- SpotifyPlayer
+    Player <|-- MarietjePlayer
+```
+
+`SpotifyPlayer` is the full-featured backend &mdash; queueing, searching, transport control, volume/shuffle/repeat, all backed by the Spotify Web API. `MarietjePlayer` is read-only: it can report what's currently playing in the Zuidkantine by polling Marietje's HTTP API, but all the control-plane methods are explicit no-ops and `can_control` / `can_request_song` return `False` so the UI hides the buttons. New player features should expect to be Spotify-only unless there's a concrete reason to extend Marietje.
+
 ## Data model
 
 ```mermaid
 classDiagram
     direction LR
-    Player <|-- SpotifyPlayer
-    Player <|-- MarietjePlayer
     Player --> Venue : one per venue
     SpotifyQueueItem --> Player
     SpotifyQueueItem --> SpotifyTrack
@@ -22,9 +67,7 @@ classDiagram
     PlayerLogEntry --> User
 ```
 
-- **`Player`** is the abstract base (slug, venue). Concrete subclasses `SpotifyPlayer` and `MarietjePlayer` implement `request_song`, `queue`, `current_track_name`, etc.
-- **`SpotifyPlayer`** holds the OAuth credentials for the Spotify account that powers a venue. It's also where playback state (current track, queue, shuffle, repeat) is read from.
-- **`MarietjePlayer`** wraps the (read-only) Marietje API for Zuidkantine. It can report what's playing but not queue, search, or control.
+- **`Player`** is the polymorphic base (slug, venue). `SpotifyPlayer` and `MarietjePlayer` are the concrete subclasses.
 - **`SpotifyQueueItem`** is the TOSTI-side request log: which user requested which track at which time on which player.
 - **`SpotifyTrack` / `SpotifyArtist`** are denormalised caches so the request log keeps making sense after a track is removed from Spotify.
 - **`ThaliedjeBlacklistedUser`** &mdash; same idea as `OrderBlacklistedUser` but for song-request abuse.
