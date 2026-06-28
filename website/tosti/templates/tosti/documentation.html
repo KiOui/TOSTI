@@ -13,36 +13,55 @@
         </div>
     </div>
     <div class="container prose">
-        <div class="row g-4 justify-content-center">
-            <div class="col-6 col-md-4 col-lg">
+        <h2 class="h5 text-center mt-3 mb-3">The project</h2>
+        <div class="row g-4 justify-content-center mb-5">
+            <div class="col-6 col-md-3">
                 <a class="documentation-container text-center d-block h-100" href="https://github.com/KiOui/TOSTI">
                     <i class="fa-brands fa-github" style="font-size: 2rem;"></i>
                     <p class="mb-0">Source code</p>
                     <small class="text-muted">The full repository on GitHub.</small>
                 </a>
             </div>
-            <div class="col-6 col-md-4 col-lg">
+            <div class="col-6 col-md-3">
                 <a class="documentation-container text-center d-block h-100" href="https://github.com/KiOui/TOSTI/blob/master/CONTRIBUTING.md">
                     <i class="fa-solid fa-code-pull-request" style="font-size: 2rem;"></i>
                     <p class="mb-0">Contributing</p>
                     <small class="text-muted">Conventions and how to send a pull request.</small>
                 </a>
             </div>
-            <div class="col-6 col-md-4 col-lg">
+            <div class="col-6 col-md-3">
+                <a class="documentation-container text-center d-block h-100" href="https://github.com/KiOui/TOSTI/issues/new/choose">
+                    <i class="fa-solid fa-bug" style="font-size: 2rem;"></i>
+                    <p class="mb-0">Report an issue</p>
+                    <small class="text-muted">Bugs, regressions, feature requests.</small>
+                </a>
+            </div>
+            <div class="col-6 col-md-3">
+                <a class="documentation-container text-center d-block h-100" href="https://github.com/KiOui/TOSTI/security/policy">
+                    <i class="fa-solid fa-shield-halved" style="font-size: 2rem;"></i>
+                    <p class="mb-0">Security</p>
+                    <small class="text-muted">Report a vulnerability responsibly.</small>
+                </a>
+            </div>
+        </div>
+
+        <h2 class="h5 text-center mt-3 mb-3">Building on top</h2>
+        <div class="row g-4 justify-content-center">
+            <div class="col-6 col-md-4">
                 <a class="documentation-container text-center d-block h-100" href="{% url 'swagger' %}">
                     <i class="fa-solid fa-plug" style="font-size: 2rem;"></i>
                     <p class="mb-0">API reference</p>
                     <small class="text-muted">Interactive Swagger UI for the REST API.</small>
                 </a>
             </div>
-            <div class="col-6 col-md-4 col-lg">
+            <div class="col-6 col-md-4">
                 <a class="documentation-container text-center d-block h-100" href="{% url 'oauth-integration-docs' %}">
                     <i class="fa-solid fa-key" style="font-size: 2rem;"></i>
                     <p class="mb-0">OAuth integration</p>
                     <small class="text-muted">How to authenticate your client against TOSTI.</small>
                 </a>
             </div>
-            <div class="col-6 col-md-4 col-lg">
+            <div class="col-6 col-md-4">
                 <a class="documentation-container text-center d-block h-100" href="{% url 'mcp-tools-docs' %}">
                     <i class="fa-solid fa-robot" style="font-size: 2rem;"></i>
                     <p class="mb-0">MCP tools</p>
