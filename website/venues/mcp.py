@@ -1,12 +1,10 @@
 """MCP tools exposed by the venues app."""
 
-from django.core.exceptions import ValidationError
-from django.utils.dateparse import parse_datetime
-
 from mcp_server import MCPToolset
 
 from tosti.mcp import require_scope
 from venues import services
+from venues.forms import ReservationForm
 from venues.models import Venue
 
 
@@ -75,29 +73,34 @@ class VenueTools(MCPToolset):
         except Venue.DoesNotExist:
             return {"error": f"Venue '{venue_slug}' not found."}
 
-        start_dt = parse_datetime(start)
-        end_dt = parse_datetime(end)
-        if start_dt is None or end_dt is None:
-            return {"error": "start/end must be ISO-8601 timestamps."}
+        form = ReservationForm(
+            data={
+                "venue": venue.pk,
+                "start": start,
+                "end": end,
+                "title": title,
+                "comments": comments,
+            }
+        )
 
-        try:
-            reservation = services.create_reservation(
-                venue=venue,
-                user=self.request.user,
-                title=title,
-                start=start_dt,
-                end=end_dt,
-                comments=comments,
-            )
-        except ValidationError as e:
-            messages = e.messages if hasattr(e, "messages") else [str(e)]
-            return {"error": "; ".join(str(m) for m in messages)}
+        if not form.is_valid():
+            e = form.errors.get_json_data()
+            if "venue" in e.keys():
+                e["venue_slug"] = e["venue"]
+                del e["venue"]
+            return {"error": e}
+
+        instance = form.save(commit=False)
+        instance.user_created = self.request.user
+        instance.save()
+
+        services.send_reservation_request_email(instance)
 
         return {
-            "reservation_id": reservation.id,
+            "reservation_id": instance.id,
             "venue": str(venue),
             "title": title,
-            "start": reservation.start.isoformat(),
-            "end": reservation.end.isoformat(),
-            "accepted": reservation.accepted,
+            "start": instance.start.isoformat(),
+            "end": instance.end.isoformat(),
+            "accepted": instance.accepted,
         }

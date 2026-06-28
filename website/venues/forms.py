@@ -55,12 +55,8 @@ class ReservationForm(forms.ModelForm):
             and self.cleaned_data.get("end", None) is not None
             and venue is not None
         ):
-            start = self.cleaned_data.get("start").astimezone(
-                timezone.get_current_timezone()
-            )
-            end = self.cleaned_data.get("end").astimezone(
-                timezone.get_current_timezone()
-            )
+            start = self.cleaned_data.get("start")
+            end = self.cleaned_data.get("end")
 
             if (
                 Reservation.objects.filter(venue=venue)

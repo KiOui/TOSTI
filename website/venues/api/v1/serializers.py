@@ -1,5 +1,8 @@
 from rest_framework import serializers
 
+from django.utils import timezone
+from django.db.models import Q
+
 from tosti.api.serializers import WritableModelSerializer
 from users.api.v1.serializers import UserSerializer
 from venues import models
@@ -24,13 +27,37 @@ class ReservationSerializer(WritableModelSerializer):
     venue = VenueSerializer(many=False, read_only=False)
     association = AssociationSerializer(many=False, read_only=False)
 
+    def validate_start(self, value):
+        now = timezone.now()
+        if value <= now:
+            raise DRFValidationError("Reservation should be in the future")
+        return value
+
     def validate(self, attrs):
         """Make sure start is not after end."""
-        start = attrs.get("start", None)
-        end = attrs.get("end", None)
+        start = attrs.get("start")
+        end = attrs.get("end")
 
-        if start is not None and end is not None and end <= start:
+        if end <= start:
             raise DRFValidationError("Start can not be before end.")
+
+        venue = attrs.get("venue")
+        if not venue.can_be_reserved:
+            raise DRFValidationError(f"Venue {venue} is not reservable")
+
+        if (
+            models.Reservation.objects.filter(venue=venue)
+            .filter(accepted=True)
+            .filter(
+                Q(start__lte=start, end__gt=start)
+                | Q(start__lt=end, end__gte=end)
+                | Q(start__gte=start, end__lte=end)
+            )
+            .exists()
+        ):
+            raise DRFValidationError(
+                "An overlapping reservation for this venue already exists."
+            )
 
         return attrs
 
