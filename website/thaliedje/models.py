@@ -874,6 +874,28 @@ class SpotifyPlayer(Player):
         except KeyError:
             return []
 
+    def _project_track(self, raw):
+        """Trim a raw Spotify track payload to the shape ``search`` returns.
+
+        Covers the case Spotify occasionally hands back a track with no
+        album art (``album.images`` is ``[]``) — fall back to ``None``
+        instead of raising. Existing callers already render ``image``
+        conditionally.
+        """
+        album = raw.get("album") or {}
+        images = album.get("images") or []
+        return {
+            "type": raw["type"],
+            "name": raw["name"],
+            "artists": self.get_artists_for_spotify_track(raw),
+            "id": raw["id"],
+            "uri": raw["uri"],
+            "image": images[0]["url"] if images else None,
+            "album": album.get("name"),
+            "album_release_date": album.get("release_date"),
+            "duration_ms": raw.get("duration_ms"),
+        }
+
     @volume.setter
     def volume(self, volume_percent):
         """Set the volume of the playback device of a Player."""
@@ -924,8 +946,14 @@ class SpotifyPlayer(Player):
         :param query: the search query
         :param maximum: the maximum number of results to search for
         :param query_type: the type of the spotify instance to search
-        :return: a list of tracks [{"name": the trackname, "artists": [a list of artist names],
-         "id": the Spotify track id}]
+        :return: a list of tracks. Each track dict contains ``type``,
+         ``name``, ``artists``, ``id`` (the Spotify track id), ``uri``,
+         ``image`` (album cover URL or None when Spotify omits it),
+         ``album`` (album name), ``album_release_date`` (Spotify's
+         ``YYYY``/``YYYY-MM``/``YYYY-MM-DD`` string), and ``duration_ms``.
+         The album/duration fields exist so non-visual consumers (MCP
+         agents, headless tooling) can tell two same-name results apart
+         when the website normally relies on the album cover.
         """
         results = self.do_spotify_request(
             self.spotify.search, q=query, limit=maximum, type=query_type
@@ -944,15 +972,7 @@ class SpotifyPlayer(Player):
                     trimmed_result_for_key, key=lambda x: -x["popularity"]
                 )
                 trimmed_result_for_key = [
-                    {
-                        "type": x["type"],
-                        "name": x["name"],
-                        "artists": self.get_artists_for_spotify_track(x),
-                        "id": x["id"],
-                        "uri": x["uri"],
-                        "image": x["album"]["images"][0]["url"],
-                    }
-                    for x in trimmed_result_for_key
+                    self._project_track(x) for x in trimmed_result_for_key
                 ]
                 trimmed_result["tracks"] = trimmed_result_for_key
             elif key == "albums":
