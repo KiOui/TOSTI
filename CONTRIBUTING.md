@@ -1,6 +1,13 @@
 # How to contribute
 
-This repository is maintained by the website committee of [Tartarus](https://tartarus.science.ru.nl/), reachable at [tartaruswebsite@science.ru.nl](mailto:tartaruswebsite@science.ru.nl). The project is open-source — issues and pull requests are welcome.
+This repository is maintained by the website committee of [Tartarus](https://tartarus.science.ru.nl/), reachable at <www-tosti@science.ru.nl>. The project is open source; issues and pull requests are welcome.
+
+If you're an AI coding agent (Claude Code, Cursor, Aider, …), read [`AGENTS.md`](AGENTS.md) instead — it carries the same conventions but is condensed to what an agent needs to make safe edits. Humans should keep reading here.
+
+> [!IMPORTANT]
+> Before you build something, read the next section. The scope check is the single load-bearing rule in this project.
+
+---
 
 ## Before you build something: does it belong in TOSTI?
 
@@ -14,9 +21,23 @@ If a proposed feature fails any of these tests, it does not belong in TOSTI. The
 
 **When in doubt, open an issue first** so the website committee can weigh in before code is written.
 
-## Getting set up
+---
 
-The README's "🛠️ Development Setup" section has the canonical instructions. Briefly: clone, `uv sync`, `uv run python website/manage.py migrate`, `uv run python website/manage.py runserver`. SAML is disabled in development; use `/admin-login` to sign in as a Django superuser.
+## Quick start
+
+1. **Set up locally.** Follow the [Local development](README.md#-local-development) section in the README — clone, `uv sync`, `migrate`, `runserver`. SAML is disabled in development; use `/admin-login` to sign in as a Django superuser.
+2. **Branch off `master`.** Pick a short, descriptive branch name (e.g. `fix-spotify-auto-start`, `add-tampon-form`).
+3. **Make your change.** Keep the diff focused — one feature or fix per PR.
+4. **Run the checks locally** before opening the PR:
+   ```bash
+   cd website
+   uv run python manage.py test                      # tests
+   uv run black website                              # format
+   uv run flake8 --exclude="migrations,website/tosti/settings/*.py" \
+     --max-line-length=119 website                   # lint
+   uv run python manage.py spectacular --validate --api-version v1 > /dev/null
+   ```
+5. **Open the PR** against `master`. CI must pass (test + lint + image build). Merging to `master` triggers an automatic deploy to <https://tosti.science.ru.nl> via the self-hosted runner. See [`deploy/README.md`](deploy/README.md).
 
 ## Project conventions
 
@@ -79,6 +100,8 @@ The site runs under a strict Content Security Policy (`tosti/settings/base.py`).
 
 The `yivi/` and `age/` apps implement legally-loaded age verification for the beer fridge. A bug here can result in underage students opening the fridge. Treat these apps as critical: changes need close review, no shortcuts, and any modification of the verification path should come with a corresponding test demonstrating the legal-compliance behaviour still holds. Don't refactor opportunistically; if a change isn't strictly necessary, don't make it.
 
+If you spot a security-sensitive bug in these (or anywhere else), see [`SECURITY.md`](SECURITY.md) — don't open a public issue for it.
+
 ### Privacy and PII
 
 TOSTI handles personal data: names, emails, age verifications, transactions, song requests. New features that touch user data must:
@@ -92,11 +115,12 @@ TOSTI handles personal data: names, emails, age verifications, transactions, son
 - Each app keeps its own tests under `<app>/tests/test_*.py`. We use a `tests/` package per app — single-file `tests.py` is being phased out.
 - Cross-cutting tests live in `tosti/tests/`. For example, the MCP transport / auth-gate / discovery tests are there, while individual MCP tool behaviour is tested in the owning app's test module.
 - Use existing fixtures (e.g. `venues.json`) when your test needs venues; don't reinvent setup logic in every test class.
-- Run the full suite: `uv run python website/manage.py test website/`.
+- Don't delete or `@skip` failing tests to make CI pass — fix the underlying bug (or, if the test was wrong, restate the expected behaviour explicitly).
+- Run the full suite locally before you push: `uv run python website/manage.py test website/`.
 
 ### Code style
 
-- `black` for formatting, `flake8` for linting (line length 119). CI runs both.
+- `black` for formatting, `flake8` for linting (line length 119), `pydocstyle` for docstring style. CI runs them all.
 - The site is in **English**. Don't introduce Dutch strings into UI text — the canteens are used by international students. The handful of existing Dutch fragments are scoped to legacy or external integrations; don't grow that footprint.
 - Heading hierarchy: pages should have one `<h1>` and use `<h2>`/`<h3>` for sections. Use `<p class="lead tagline">` for branding subtitles, not `<h6>`.
 - For dropping shared reading-width on text-heavy pages, use the project's `.prose` utility class.
@@ -105,8 +129,39 @@ TOSTI handles personal data: names, emails, age verifications, transactions, son
 
 Vendored under `website/<app>/static/<app>/` or `website/tosti/static/tosti/`. See the README's "Vendored frontend libraries" section for the upgrade procedure. Don't pull in new CDN dependencies — keep CSP tight.
 
-## Workflow
+## Opening a pull request
 
-1. Branch off `master`.
-2. Open a PR. CI must pass (test + lint + image build).
-3. Merging to `master` triggers a deploy to `tosti.science.ru.nl` via the self-hosted runner. See `deploy/README.md`.
+A good PR is short, focused, and self-explanatory:
+
+- **One feature or fix per PR.** Bundling unrelated changes makes review slow and rollbacks risky.
+- **PR description.** Say what changed and *why*. Link the issue if there is one. If the change touches an external system (Sentry, Yivi, Spotify, Silvasoft, SURFconext), call that out — it's the kind of thing reviewers can miss.
+- **Tests.** If you fix a bug, add a regression test that fails on master and passes on your branch. If you add a feature, cover the happy path plus at least one edge case.
+- **Migrations.** If you touched a model, run `makemigrations` and commit the file in the same PR. Flag destructive migrations in the description.
+- **Don't squash other people's commits.** Rebases are fine for your own branch; rewriting shared history is not.
+- **Don't `--force-push` master or `--no-verify` past hooks.** Ever.
+
+CI runs tests + flake8 + black + image build. All must pass before merge.
+
+## Reviewer checklist
+
+If you're reviewing a PR (whether you're a fellow committee member or a maintainer):
+
+- [ ] Does the change satisfy the scope check at the top of this document?
+- [ ] Is it isolated to one app where possible? Cross-app imports justified?
+- [ ] If a model changed, is there a migration?
+- [ ] If a sensitive app (`age`, `yivi`, `fridges`, `silvasoft`) changed, is there a test that proves the contract still holds?
+- [ ] Is there new PII being logged or stored? If stored, is the privacy policy updated?
+- [ ] Are new frontend assets vendored, not CDN-loaded?
+- [ ] CI green?
+
+Once merged, the change ships to <https://tosti.science.ru.nl> automatically. Treat every merge as a deploy.
+
+## Getting help
+
+If you're stuck:
+
+- Open a draft PR and tag the website committee — early feedback beats a long-running branch.
+- Email <www-tosti@science.ru.nl>.
+- For security-sensitive questions, see [`SECURITY.md`](SECURITY.md).
+</content>
+</invoke>
