@@ -120,18 +120,42 @@ class PlayerTrackSearchAPIView(APIView):
             "properties": {
                 "query": {"type": "string", "example": "string"},
                 "results": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "name": {"type": "string", "example": "string"},
-                            "artists": {
-                                "type": "array",
-                                "items": {"type": "string", "example": "string"},
-                            },
-                            "id": {
-                                "type": "string",
-                                "example": "6tcCTgpI1JWsgReB9ttSUD",
+                    "type": "object",
+                    "description": (
+                        "Spotify ``search`` response, keyed by category "
+                        "(``tracks``, ``albums``, ``playlists``). Each "
+                        "category is a list of result dicts."
+                    ),
+                    "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "type": {"type": "string"},
+                                "name": {"type": "string"},
+                                "artists": {
+                                    "type": "array",
+                                    "items": {"type": "string"},
+                                },
+                                "id": {
+                                    "type": "string",
+                                    "example": "6tcCTgpI1JWsgReB9ttSUD",
+                                },
+                                "uri": {"type": "string"},
+                                "image": {"type": "string", "nullable": True},
+                                "album": {"type": "string", "nullable": True},
+                                "album_release_date": {
+                                    "type": "string",
+                                    "nullable": True,
+                                    "description": (
+                                        "Spotify's release-date string "
+                                        "(YYYY, YYYY-MM, or YYYY-MM-DD)."
+                                    ),
+                                },
+                                "duration_ms": {
+                                    "type": "integer",
+                                    "nullable": True,
+                                },
                             },
                         },
                     },
