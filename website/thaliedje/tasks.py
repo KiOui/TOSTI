@@ -2,6 +2,7 @@ from celery import shared_task
 from constance import config
 
 from thaliedje.models import SpotifyPlayer
+from thaliedje.services import observe_player_state
 from tosti.metrics import emit as emit_metric
 
 
@@ -46,3 +47,28 @@ def thaliedje_start_music():
             # Ignore errors when starting the music
             failed += 1
     emit_metric("cron_start_music_run", started=started, failed=failed)
+
+
+@shared_task
+def thaliedje_observe_queue_state():
+    """Poll every Spotify player and update its request log.
+
+    Drives the ``observed_at_position`` / ``played_at`` state machine on
+    ``SpotifyQueueItem`` so the merged-queue read path has a stable join
+    key (track_id + position) rather than guessing FIFO. Register via
+    django_celery_beat to run every ~30s during venue hours; the function
+    is idempotent and safe to call concurrently with itself.
+
+    Failures (Spotify rate-limit, transient HTTP error) are swallowed
+    per-player so one bad player doesn't poison the rest. The cost of a
+    missed poll is a slightly stale merged view, not a broken one.
+    """
+    polled = 0
+    failed = 0
+    for player in SpotifyPlayer.objects.all():
+        try:
+            observe_player_state(player)
+            polled += 1
+        except Exception:
+            failed += 1
+    emit_metric("cron_observe_queue_state_run", polled=polled, failed=failed)
