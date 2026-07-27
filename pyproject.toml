@@ -23,7 +23,7 @@ dependencies = [
     "django-csp>=4.0",
     "django-filter>=26.1",
     "drf-spectacular>=0.30.0",
-    "django-guardian>=3.3.2",
+    "django-guardian>=3.3.3",
     "django-ical>=1.9.2", # No official support for Django 6.0.
     "django-import-export>=4.4.1",
     # Upper bound pinned because tosti/views.py:MCPToolsDocsView reads
