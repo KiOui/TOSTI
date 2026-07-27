@@ -5,12 +5,15 @@ from django.templatetags.static import static
 from django.urls import path, include
 from django.views.generic import RedirectView
 
-from .oauth_discovery import (
-    DynamicClientRegistrationView,
-    GranularAuthorizationView,
-    OAuthAuthorizationServerMetadataView,
-    OAuthProtectedResourceMetadataView,
+from oauth2_provider.urls import (
+    base_urlpatterns as oauth2_base_urlpatterns,
+    dcr_urlpatterns as oauth2_dcr_urlpatterns,
+    management_urlpatterns as oauth2_management_urlpatterns,
+    metadata_urlpatterns as oauth2_metadata_urlpatterns,
+    oidc_urlpatterns as oauth2_oidc_urlpatterns,
 )
+
+from .oauth_discovery import DCRLandingView, GranularAuthorizationView
 from .views import (
     IndexView,
     PrivacyView,
@@ -24,6 +27,19 @@ from .views import (
     AfterLoginRedirectView,
     LogoutView,
     StatisticsView,
+)
+
+# Compose the /oauth/ subpatterns from the library's parts, excluding
+# ``metadata_urlpatterns`` which we mount separately at the server root (RFC
+# 8414 requires the well-known URI at the origin root). Keeping the metadata
+# names *only* in the root mount ensures the library's
+# ``oauth2_authorization_server_issuer`` reverse (used by RFC 9207) produces
+# the correct issuer (``https://host``, not ``https://host/oauth``).
+oauth2_prefixed_urlpatterns = (
+    oauth2_base_urlpatterns
+    + oauth2_management_urlpatterns
+    + oauth2_oidc_urlpatterns
+    + oauth2_dcr_urlpatterns
 )
 
 # The OAuth consent screen POSTs back to /oauth/authorize/ which then 302s
@@ -43,21 +59,15 @@ urlpatterns = [
     path("", IndexView.as_view(), name="index"),
     path("", include("mcp_server.urls")),
     path("mcp/docs/", MCPToolsDocsView.as_view(), name="mcp-tools-docs"),
-    path(
-        ".well-known/oauth-authorization-server",
-        OAuthAuthorizationServerMetadataView.as_view(),
-        name="oauth-authorization-server-metadata",
-    ),
-    path(
-        ".well-known/oauth-protected-resource",
-        OAuthProtectedResourceMetadataView.as_view(),
-        name="oauth-protected-resource-metadata",
-    ),
-    path(
-        "oauth/register/",
-        DynamicClientRegistrationView.as_view(),
-        name="oauth-dynamic-client-registration",
-    ),
+    # RFC 8414 / RFC 9728 well-known documents MUST live at the origin root, not
+    # under the /oauth/ prefix. Mounted as an anonymous list so the
+    # ``oauth2_provider:oauth-server-metadata`` namespace remains associated
+    # exclusively with the /oauth/ include below (a duplicate namespace would
+    # break reverse-with-namespace). The library defers to ``OIDC_ISS_ENDPOINT``
+    # for its issuer/authorization_servers derivation (set in settings), so
+    # nothing else needs to reverse these names — the concrete /.well-known/…
+    # URLs are all that clients need.
+    path("", include(oauth2_metadata_urlpatterns)),
     path(
         "oauth/docs/",
         OAuthIntegrationDocsView.as_view(),
@@ -71,7 +81,25 @@ urlpatterns = [
         authorize_view,
         name="authorize",
     ),
-    path("oauth/", include("oauth2_provider.urls", namespace="oauth2_provider")),
+    # Shadow the upstream /register/ pattern with our HTML-branching wrapper so
+    # browser GETs get a friendly landing page. The wrapper delegates to the
+    # library view for POSTs and JSON GETs.
+    path(
+        "oauth/register/",
+        DCRLandingView.as_view(),
+        name="oauth2_provider_dcr_register_landing",
+    ),
+    # Mount the non-metadata OAuth2 URL groups under /oauth/. Metadata is
+    # already published at the origin root above; splitting the groups keeps
+    # the ``oauth2_provider`` namespace populated with every name the library
+    # expects to reverse.
+    path(
+        "oauth/",
+        include(
+            (oauth2_prefixed_urlpatterns, "oauth2_provider"),
+            namespace="oauth2_provider",
+        ),
+    ),
     path("privacy/", PrivacyView.as_view(), name="privacy"),
     path("documentation/", DocumentationView.as_view(), name="documentation"),
     path("explainers/", ExplainerView.as_view(), name="explainers"),

@@ -14,12 +14,10 @@ from unittest.mock import MagicMock
 
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
-from django.test import RequestFactory, TestCase
-from django.urls import reverse
+from django.test import TestCase
 from oauth2_provider.models import Application
 
 from tosti.mcp import require_scope
-from tosti.middleware import WWWAuthenticateMiddleware
 
 User = get_user_model()
 
@@ -33,10 +31,13 @@ class _StubRequest:
 
 
 class OAuthDiscoveryTests(TestCase):
-    """RFC 8414 / RFC 9728 discovery endpoints."""
+    """RFC 8414 / RFC 9728 discovery endpoints (served by django-oauth-toolkit)."""
+
+    AUTH_SERVER_METADATA_URL = "/.well-known/oauth-authorization-server"
+    RESOURCE_METADATA_URL = "/.well-known/oauth-protected-resource"
 
     def test_authorization_server_metadata_has_required_fields(self):
-        response = self.client.get(reverse("oauth-authorization-server-metadata"))
+        response = self.client.get(self.AUTH_SERVER_METADATA_URL)
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
         for field in (
@@ -49,39 +50,66 @@ class OAuthDiscoveryTests(TestCase):
             "grant_types_supported",
         ):
             self.assertIn(field, data)
-        for scope in ("read", "write", "orders:order", "thaliedje:request"):
+        # Public scopes any DCR client may request.
+        for scope in ("read", "orders:order", "thaliedje:request"):
             self.assertIn(scope, data["scopes_supported"])
 
-    def test_authorization_server_metadata_only_advertises_recommended_flow(self):
-        """Discovery metadata reflects what we support for *new* integrations,
-        not the full library surface.
+    def test_authorization_server_metadata_hides_restricted_scopes(self):
+        """Restricted scopes are reserved for maintainer-issued confidential
+        clients and must not appear in the public discovery document."""
+        response = self.client.get(self.AUTH_SERVER_METADATA_URL)
+        data = json.loads(response.content)
+        for scope in (
+            "write",
+            "orders:manage",
+            "thaliedje:manage",
+            "transactions:write",
+        ):
+            self.assertNotIn(scope, data["scopes_supported"])
 
-        Authorization-code (with refresh) is the public flow. Implicit and
-        password are OAuth 2.1-deprecated. Client credentials is a
-        maintainer-issued exception (confidential client out of band) —
-        not a public capability we want third parties to discover.
+    def test_authorization_server_metadata_only_advertises_recommended_flow(self):
+        """Discovery metadata reflects what we support for *new* integrations.
+
+        Authorization-code + refresh is the public flow. Implicit and password
+        are OAuth 2.1-deprecated (and gated off via
+        ``COMPLIANT_BCP_RFC9700_{IMPLICIT,PASSWORD}_GRANT``). Client
+        credentials is a maintainer-issued exception (confidential client
+        provisioned out of band) — not a public capability we want third
+        parties to discover.
         """
-        response = self.client.get(reverse("oauth-authorization-server-metadata"))
+        response = self.client.get(self.AUTH_SERVER_METADATA_URL)
         data = json.loads(response.content)
         self.assertEqual(
             sorted(data["grant_types_supported"]),
             ["authorization_code", "refresh_token"],
         )
         self.assertEqual(data["response_types_supported"], ["code"])
-        # Public-client-only auth at the token endpoint (PKCE-gated). Confidential
-        # client_secret methods are still accepted by the library for
-        # maintainer-issued clients but not advertised.
-        self.assertEqual(data["token_endpoint_auth_methods_supported"], ["none"])
-        # PKCE best practice: only S256.
+        # PKCE best practice (COMPLIANT_BCP_RFC9700_PKCE_METHOD): only S256.
         self.assertEqual(data["code_challenge_methods_supported"], ["S256"])
+        # RFC 9207 mix-up defense advertised once the AUTHZ_RESPONSE_ISS gate
+        # is on.
+        self.assertTrue(data["authorization_response_iss_parameter_supported"])
+
+    def test_authorization_server_metadata_issuer_is_root_origin(self):
+        """The published issuer must be the origin root, not the /oauth/ mount.
+
+        RFC 9207 uses this exact string as the ``iss`` value in authorization
+        responses; a /oauth/-prefixed issuer would fail the mix-up defense.
+        """
+        response = self.client.get(self.AUTH_SERVER_METADATA_URL)
+        data = json.loads(response.content)
+        # Depending on OIDC_ISS_ENDPOINT the value is either the canonical URL
+        # or the request origin — but never contains ``/oauth`` or ``.well-known``.
+        self.assertNotIn("/oauth", data["issuer"])
+        self.assertNotIn(".well-known", data["issuer"])
 
     def test_authorization_server_metadata_advertises_registration_endpoint(self):
-        response = self.client.get(reverse("oauth-authorization-server-metadata"))
+        response = self.client.get(self.AUTH_SERVER_METADATA_URL)
         data = json.loads(response.content)
         self.assertTrue(data["registration_endpoint"].endswith("/oauth/register/"))
 
     def test_protected_resource_metadata_returns_required_fields(self):
-        response = self.client.get(reverse("oauth-protected-resource-metadata"))
+        response = self.client.get(self.RESOURCE_METADATA_URL)
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
         self.assertIn("resource", data)
@@ -91,7 +119,12 @@ class OAuthDiscoveryTests(TestCase):
 
 
 class WWWAuthenticateHeaderTests(TestCase):
-    """Unauthenticated requests to /mcp and /api/ point at the resource metadata."""
+    """Unauthenticated requests to /mcp point at the resource metadata.
+
+    ``TostiOAuth2Authentication`` extends django-oauth-toolkit's RFC 9728
+    variant so the ``WWW-Authenticate`` challenge already carries the
+    ``resource_metadata`` pointer — no middleware rewrite needed.
+    """
 
     def test_mcp_401_includes_resource_metadata(self):
         response = self.client.post(
@@ -104,20 +137,6 @@ class WWWAuthenticateHeaderTests(TestCase):
         self.assertIn("Bearer", header)
         self.assertIn('resource_metadata="', header)
         self.assertIn(".well-known/oauth-protected-resource", header)
-
-    def test_non_bearer_challenge_is_preserved(self):
-        """A non-Bearer challenge from a downstream view must not be overwritten."""
-        from django.http import HttpResponse
-
-        def view(_request):
-            r = HttpResponse(status=401)
-            r["WWW-Authenticate"] = 'Basic realm="admin"'
-            return r
-
-        middleware = WWWAuthenticateMiddleware(view)
-        request = RequestFactory().get("/api/v1/some-protected/")
-        response = middleware(request)
-        self.assertEqual(response["WWW-Authenticate"], 'Basic realm="admin"')
 
 
 class AuthorizeConsentScreenTests(TestCase):
@@ -233,6 +252,55 @@ class AuthorizeConsentScreenTests(TestCase):
         # issuing a grant for the unrequested scope.
         self.assertEqual(post_response.status_code, 200)
 
+    def test_dcr_application_cannot_request_restricted_scope(self):
+        """A DCR-registered client cannot request maintainer-only scopes.
+
+        The scopes backend (``TostiScopes``) filters ``RESTRICTED_SCOPES`` out
+        of ``get_available_scopes`` for any application with
+        ``registration_source="dcr"``. Requesting one should trip the library's
+        ``validate_scopes`` and produce an ``invalid_scope`` error response.
+        """
+        dcr_app = Application.objects.create(
+            name="Rogue MCP client",
+            client_type=Application.CLIENT_PUBLIC,
+            authorization_grant_type=Application.GRANT_AUTHORIZATION_CODE,
+            redirect_uris="https://claude.ai/api/mcp/auth_callback",
+            registration_source=Application.RegistrationSource.DCR,
+            user=None,
+            skip_authorization=False,
+        )
+        response = self.client.get(
+            "/oauth/authorize/"
+            f"?client_id={dcr_app.client_id}"
+            "&response_type=code"
+            "&redirect_uri=https://claude.ai/api/mcp/auth_callback"
+            "&scope=read+orders%3Amanage"
+            "&state=xyz"
+            "&code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM"
+            "&code_challenge_method=S256"
+        )
+        # oauthlib bounces invalid-scope requests back to the client via the
+        # redirect_uri (query string) rather than rendering the consent screen.
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("error=invalid_scope", response["Location"])
+
+    def test_manually_provisioned_application_may_request_restricted_scope(self):
+        """A confidential app provisioned by a maintainer keeps full access."""
+        # self.application above defaults to registration_source="manual".
+        response = self.client.get(
+            "/oauth/authorize/"
+            f"?client_id={self.application.client_id}"
+            "&response_type=code"
+            "&redirect_uri=https://claude.ai/api/mcp/auth_callback"
+            "&scope=read+orders%3Amanage"
+            "&state=xyz"
+            "&code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM"
+            "&code_challenge_method=S256"
+        )
+        # Consent screen renders — the scope is legal for this application.
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "orders:manage")
+
     def test_granting_zero_scopes_re_renders_with_required_error(self):
         """Submitting with all boxes unticked must not produce a grant."""
         get_response = self.client.get(self._multi_scope_url())
@@ -256,15 +324,26 @@ class AuthorizeConsentScreenTests(TestCase):
 
 
 class DynamicClientRegistrationTests(TestCase):
-    """RFC 7591 dynamic client registration."""
+    """RFC 7591 dynamic client registration.
+
+    The endpoint itself is django-oauth-toolkit's. TOSTI configures it via
+    ``RateLimitedAnonymousDCRPermission`` (anonymous access + per-IP cap) and
+    wraps it with ``DCRLandingView`` to serve an HTML explainer to browsers.
+    """
+
+    DCR_URL = "/oauth/register/"
 
     def setUp(self):
         cache.clear()
 
-    def _post(self, payload):
+    def _post(self, payload, token_endpoint_auth_method="none"):
+        # Every real MCP client registers as a public + PKCE + none client;
+        # bake that default in so each test focuses on its own variation.
+        body = {"token_endpoint_auth_method": token_endpoint_auth_method}
+        body.update(payload)
         return self.client.post(
-            reverse("oauth-dynamic-client-registration"),
-            data=json.dumps(payload),
+            self.DCR_URL,
+            data=json.dumps(body),
             content_type="application/json",
         )
 
@@ -273,40 +352,39 @@ class DynamicClientRegistrationTests(TestCase):
         self.assertEqual(response.status_code, 201)
         body = json.loads(response.content)
         self.assertIn("client_id", body)
-        self.assertIsNone(body["client_secret"])
         self.assertEqual(body["token_endpoint_auth_method"], "none")
         self.assertEqual(body["redirect_uris"], ["https://example.com/callback"])
-        self.assertIn("scope", body)
-        # The application is persisted as a public auth-code client.
+        # RFC 7592 management: the response includes a registration access token
+        # + a client-configuration URI. The client uses these to later
+        # update/delete its own registration.
+        self.assertIn("registration_access_token", body)
+        self.assertTrue(body["registration_access_token"])
+        self.assertIn("registration_client_uri", body)
+        self.assertIn(
+            f"/oauth/register/{body['client_id']}/", body["registration_client_uri"]
+        )
+        # The application is persisted as a public auth-code client sourced
+        # from DCR.
         app = Application.objects.get(client_id=body["client_id"])
         self.assertEqual(app.client_type, Application.CLIENT_PUBLIC)
         self.assertEqual(
             app.authorization_grant_type, Application.GRANT_AUTHORIZATION_CODE
         )
+        self.assertEqual(app.registration_source, Application.RegistrationSource.DCR)
 
     def test_disallowed_redirect_scheme_is_rejected(self):
         response = self._post({"redirect_uris": ["javascript:alert(1)"]})
         self.assertEqual(response.status_code, 400)
         body = json.loads(response.content)
-        self.assertEqual(body["error"], "invalid_redirect_uri")
+        # The library reports failures from Application.full_clean() (which
+        # enforces ALLOWED_REDIRECT_URI_SCHEMES) as invalid_client_metadata.
+        self.assertEqual(body["error"], "invalid_client_metadata")
 
     def test_missing_redirect_uris_is_rejected(self):
         response = self._post({})
         self.assertEqual(response.status_code, 400)
         body = json.loads(response.content)
-        self.assertEqual(body["error"], "invalid_redirect_uri")
-
-    def test_unknown_scopes_are_filtered_out(self):
-        response = self._post(
-            {
-                "redirect_uris": ["https://example.com/cb"],
-                "scope": "read thaliedje:request not-a-scope",
-            }
-        )
-        self.assertEqual(response.status_code, 201)
-        body = json.loads(response.content)
-        granted = set(body["scope"].split())
-        self.assertEqual(granted, {"read", "thaliedje:request"})
+        self.assertEqual(body["error"], "invalid_client_metadata")
 
     def test_client_name_is_stored(self):
         response = self._post(
@@ -321,7 +399,7 @@ class DynamicClientRegistrationTests(TestCase):
 
     def test_browser_get_returns_html_landing(self):
         response = self.client.get(
-            reverse("oauth-dynamic-client-registration"),
+            self.DCR_URL,
             HTTP_ACCEPT="text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
         )
         self.assertEqual(response.status_code, 200)
@@ -330,14 +408,14 @@ class DynamicClientRegistrationTests(TestCase):
 
     def test_non_browser_get_returns_405(self):
         response = self.client.get(
-            reverse("oauth-dynamic-client-registration"),
+            self.DCR_URL,
             HTTP_ACCEPT="application/json",
         )
         self.assertEqual(response.status_code, 405)
 
     def test_invalid_json_is_rejected(self):
         response = self.client.post(
-            reverse("oauth-dynamic-client-registration"),
+            self.DCR_URL,
             data="this is not json",
             content_type="application/json",
         )
@@ -348,9 +426,11 @@ class DynamicClientRegistrationTests(TestCase):
             response = self._post({"redirect_uris": ["https://example.com/cb"]})
             self.assertEqual(response.status_code, 201)
         response = self._post({"redirect_uris": ["https://example.com/cb"]})
-        self.assertEqual(response.status_code, 429)
+        # RateLimitedAnonymousDCRPermission returns False past the cap, and the
+        # library converts a failed permission check into a 401 access_denied.
+        self.assertEqual(response.status_code, 401)
         body = json.loads(response.content)
-        self.assertEqual(body["error"], "rate_limited")
+        self.assertEqual(body["error"], "access_denied")
 
 
 class MCPEndpointAuthTests(TestCase):
