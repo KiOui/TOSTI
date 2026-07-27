@@ -83,7 +83,6 @@ MIDDLEWARE = [
     "announcements.middleware.AppAnnouncementMiddleware",
     "tosti.middleware.RequestMetricsMiddleware",
     "tosti.middleware.MCPLandingMiddleware",
-    "tosti.middleware.WWWAuthenticateMiddleware",
 ]
 
 ROOT_URLCONF = "tosti.urls"
@@ -149,7 +148,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.TokenAuthentication",
-        "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
+        "tosti.api.authentication.TostiOAuth2Authentication",
     ),
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.URLPathVersioning",
@@ -181,10 +180,13 @@ DJANGO_MCP_ENDPOINT = "mcp"
 TOSTI_CANONICAL_URL = "https://tosti.science.ru.nl"
 # OAuth2 must come first so DRF returns a 401 with a Bearer ``WWW-Authenticate``
 # header for unauthenticated requests — the standard signal for OAuth-aware
-# clients (and what RFC 9728 + the MCP spec expect). SessionAuthentication
-# handles browser-flow access for users who arrive via a normal Django login.
+# clients (and what RFC 9728 + the MCP spec expect). ``TostiOAuth2Authentication``
+# extends the library's RFC 9728 variant so the challenge already carries the
+# ``resource_metadata`` pointer, no middleware rewrite needed.
+# SessionAuthentication handles browser-flow access for users who arrive via a
+# normal Django login.
 DJANGO_MCP_AUTHENTICATION_CLASSES = [
-    "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
+    "tosti.api.authentication.TostiOAuth2Authentication",
     "rest_framework.authentication.SessionAuthentication",
 ]
 
@@ -197,6 +199,11 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 100000
 # OAUTH
 OAUTH2_PROVIDER = {
     "ALLOWED_REDIRECT_URI_SCHEMES": ["https", "nu.thalia"],
+    # Route scope discovery/authorization through TOSTI's scopes backend so
+    # dynamically-registered MCP clients can only request the public subset of
+    # ``SCOPES``. Restricted scopes stay available for maintainer-provisioned
+    # confidential clients. See ``tosti.scopes``.
+    "SCOPES_BACKEND_CLASS": "tosti.scopes.TostiScopes",
     "SCOPES": {
         "read": "Authenticated read access to the website",
         "write": "Authenticated write access to the website",
@@ -206,6 +213,65 @@ OAUTH2_PROVIDER = {
         "thaliedje:manage": "Manage music players on your behalf",
         "transactions:write": "Create transactions",
     },
+    # Scopes reserved for applications a maintainer provisioned by hand in the
+    # admin (``registration_source="manual"``). DCR-registered MCP clients
+    # can't request these and they are omitted from RFC 8414 discovery — the
+    # authorization server still knows about them (see ``SCOPES``), but only
+    # trusted confidential clients get to ask for them.
+    "RESTRICTED_SCOPES": [
+        "write",
+        "orders:manage",
+        "thaliedje:manage",
+        "transactions:write",
+    ],
+    # RFC 8414 issuer identifier. Also feeds the RFC 9207 ``iss`` authorization-
+    # response parameter and the RFC 9728 ``authorization_servers`` list, so
+    # setting it once here keeps every discovery surface consistent regardless
+    # of the request URL (X-Forwarded-Host quirks, dev vs prod, etc.).
+    "OIDC_ISS_ENDPOINT": TOSTI_CANONICAL_URL,
+    # RFC 7591/7592 Dynamic Client Registration. Kept anonymous so MCP clients
+    # (Claude Desktop, etc.) can self-register on first connect, with a per-IP
+    # rate limit to protect the Application table.
+    "DCR_ENABLED": True,
+    "DCR_REGISTRATION_PERMISSION_CLASSES": (
+        "tosti.oauth_discovery.RateLimitedAnonymousDCRPermission",
+    ),
+    # Advertise every token-endpoint auth method the library accepts. DCR
+    # clients pick one per registration (public MCP clients pick ``none`` +
+    # PKCE; maintainer-issued confidential clients use ``client_secret_basic``).
+    "OAUTH2_TOKEN_ENDPOINT_AUTH_METHODS_SUPPORTED": [
+        "none",
+        "client_secret_basic",
+        "client_secret_post",
+    ],
+    # Only advertise the flow we actually support publicly. Implicit and
+    # password are deprecated by OAuth 2.1 / RFC 9700 (also gated below);
+    # client_credentials is a maintainer-issued exception provisioned out of
+    # band, not a public capability.
+    "OAUTH2_GRANT_TYPES_SUPPORTED": ["authorization_code", "refresh_token"],
+    "OAUTH2_RESPONSE_TYPES_SUPPORTED": ["code"],
+    # Human-readable fields advertised in the RFC 9728 protected-resource
+    # metadata document.
+    "OAUTH2_PROTECTED_RESOURCE_NAME": "TOSTI",
+    # RFC 9700 (OAuth 2.0 Security Best Current Practice) compliance gates.
+    # Enabling these enforces the RFC 9700 recommendations; they all default to
+    # False in the library and will flip to True in 4.0. Turning them on now
+    # silences the deprecation warnings and matches what discovery advertises.
+    "COMPLIANT_BCP_RFC9700_IMPLICIT_GRANT": True,
+    "COMPLIANT_BCP_RFC9700_PASSWORD_GRANT": True,
+    "COMPLIANT_BCP_RFC9700_PKCE_METHOD": True,
+    "COMPLIANT_BCP_RFC9700_ACCESS_TOKEN_TRANSPORT": True,
+    "COMPLIANT_BCP_RFC9700_AUTHZ_RESPONSE_ISS": True,
+    "COMPLIANT_BCP_RFC9700_TOKEN_STORAGE": True,
+    # Revoke the whole refresh-token family on replay of any member of it (RFC
+    # 9700 §4.14.2). Guards against a stolen refresh token being usable.
+    "REFRESH_TOKEN_REUSE_PROTECTION": True,
+    # Config-validation gates: promote non-compliant deploy-check messages
+    # from Warning to Error so bad configs can't ship.
+    "COMPLIANT_BCP_RFC9700_REFRESH_TOKEN": True,
+    "COMPLIANT_BCP_RFC9700_REDIRECT_URI_SCHEME": True,
+    "COMPLIANT_BCP_RFC9700_REDIRECT_URI_MATCHING": True,
+    "COMPLIANT_BCP_RFC9700_PKCE_REQUIRED": True,
 }
 OAUTH2_PROVIDER_APPLICATION_MODEL = "oauth2_provider.Application"
 

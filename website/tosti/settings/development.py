@@ -25,10 +25,21 @@ CORS_URLS_REGEX = r"^/(?:api|user/oauth)/.*"
 
 # OAuth configuration
 OAUTH2_PROVIDER["ALLOWED_REDIRECT_URI_SCHEMES"] = ["http", "https", "nu.thalia"]
+# Allow http://localhost redirect URIs so MCP clients bootstrapped in dev can
+# come back via the standard OAuth 2.1 loopback exemption.
+OAUTH2_PROVIDER["ALLOW_LOCALHOST_LOOPBACK"] = True
+# Dev intentionally allows plaintext http redirect URIs for native-app loopback
+# testing (per RFC 8252). Downgrade the RFC 9700 §2.1 deploy-check gate back to
+# a warning so ``manage.py check --deploy`` doesn't fail with an error the
+# override is already handling correctly.
+OAUTH2_PROVIDER["COMPLIANT_BCP_RFC9700_REDIRECT_URI_SCHEME"] = False
 
 # MCP serverInfo icons are built relative to this base — point at the local
 # dev server so a connector added in dev shows the right icons.
 TOSTI_CANONICAL_URL = "http://127.0.0.1:8000"
+# Keep the OAuth2 discovery issuer aligned with the dev-server URL so metadata,
+# RFC 9207 ``iss`` values, and the RFC 9728 authorization_servers list agree.
+OAUTH2_PROVIDER["OIDC_ISS_ENDPOINT"] = TOSTI_CANONICAL_URL
 
 # Email
 # https://docs.djangoproject.com/en/3.2/topics/email/
