@@ -50,21 +50,17 @@ class OAuthDiscoveryTests(TestCase):
             "grant_types_supported",
         ):
             self.assertIn(field, data)
-        # Public scopes any DCR client may request.
-        for scope in ("read", "orders:order", "thaliedje:request"):
+        # Public scopes let a user act on their own behalf via a DCR client.
+        for scope in ("read", "write", "orders:order", "thaliedje:request"):
             self.assertIn(scope, data["scopes_supported"])
 
     def test_authorization_server_metadata_hides_restricted_scopes(self):
         """Restricted scopes are reserved for maintainer-issued confidential
-        clients and must not appear in the public discovery document."""
+        clients (staff shift management, POS transaction creation, music-player
+        admin) and must not appear in the public discovery document."""
         response = self.client.get(self.AUTH_SERVER_METADATA_URL)
         data = json.loads(response.content)
-        for scope in (
-            "write",
-            "orders:manage",
-            "thaliedje:manage",
-            "transactions:write",
-        ):
+        for scope in ("orders:manage", "thaliedje:manage", "transactions:write"):
             self.assertNotIn(scope, data["scopes_supported"])
 
     def test_authorization_server_metadata_only_advertises_recommended_flow(self):

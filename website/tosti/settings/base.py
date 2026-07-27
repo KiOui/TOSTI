@@ -217,9 +217,12 @@ OAUTH2_PROVIDER = {
     # admin (``registration_source="manual"``). DCR-registered MCP clients
     # can't request these and they are omitted from RFC 8414 discovery — the
     # authorization server still knows about them (see ``SCOPES``), but only
-    # trusted confidential clients get to ask for them.
+    # trusted confidential clients get to ask for them. The public counterparts
+    # (``read``, ``write``, ``orders:order``, ``thaliedje:request``) let a user
+    # act on their own behalf; the restricted ones are for administrative /
+    # back-office integrations (staff shift management, POS transaction
+    # creation, music-player admin).
     "RESTRICTED_SCOPES": [
-        "write",
         "orders:manage",
         "thaliedje:manage",
         "transactions:write",
