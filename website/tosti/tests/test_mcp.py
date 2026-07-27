@@ -59,7 +59,12 @@ class OAuthDiscoveryTests(TestCase):
         clients and must not appear in the public discovery document."""
         response = self.client.get(self.AUTH_SERVER_METADATA_URL)
         data = json.loads(response.content)
-        for scope in ("write", "orders:manage", "thaliedje:manage", "transactions:write"):
+        for scope in (
+            "write",
+            "orders:manage",
+            "thaliedje:manage",
+            "transactions:write",
+        ):
             self.assertNotIn(scope, data["scopes_supported"])
 
     def test_authorization_server_metadata_only_advertises_recommended_flow(self):
@@ -355,7 +360,9 @@ class DynamicClientRegistrationTests(TestCase):
         self.assertIn("registration_access_token", body)
         self.assertTrue(body["registration_access_token"])
         self.assertIn("registration_client_uri", body)
-        self.assertIn(f"/oauth/register/{body['client_id']}/", body["registration_client_uri"])
+        self.assertIn(
+            f"/oauth/register/{body['client_id']}/", body["registration_client_uri"]
+        )
         # The application is persisted as a public auth-code client sourced
         # from DCR.
         app = Application.objects.get(client_id=body["client_id"])

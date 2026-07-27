@@ -139,5 +139,3 @@ class MCPLandingMiddleware:
         # A browser always lists text/html; MCP clients ask for
         # application/json + text/event-stream and do not include text/html.
         return "text/html" in accept and "text/event-stream" not in accept
-
-
