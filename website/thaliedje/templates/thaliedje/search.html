@@ -19,13 +19,17 @@
                                         <img height="50" v-if="track.image !== null" :src="track.image" :alt="'Album art for ' + track.name"/>
                                     </div>
                                     <div class="flex-equal-width d-flex flex-column">
-                                        <div>
-                                            ${ track.name }$
+                                        <div class="d-flex justify-content-between">
+                                            <span>${ track.name }$</span>
+                                            <span v-if="track.duration_ms" class="text-muted small ms-2">${ formatDuration(track.duration_ms) }$</span>
                                         </div>
                                         <div style="font-style: italic;">
                                             <template v-for="(artist, art_index) in track.artists">
                                                 ${ artist }$<template v-if="art_index !== track.artists.length - 1">, </template>
                                             </template>
+                                        </div>
+                                        <div v-if="track.album" class="text-muted small text-truncate">
+                                            ${ track.album }$<template v-if="track.album_release_date"> (${ track.album_release_date.slice(0, 4) }$)</template>
                                         </div>
                                     </div>
                                     <button class="btn btn-primary" style="height: 40px" v-on:click="add_to_queue(track.id)"><i class="fa-solid fa-plus"></i></button>
@@ -121,6 +125,13 @@
             }
         },
         methods: {
+            formatDuration(ms) {
+                if (typeof ms !== 'number') return '';
+                const totalSeconds = Math.floor(ms / 1000);
+                const minutes = Math.floor(totalSeconds / 60);
+                const seconds = String(totalSeconds % 60).padStart(2, '0');
+                return `${minutes}:${seconds}`;
+            },
             tryUrl() {
                 let urlToTry = null;
                 try {
