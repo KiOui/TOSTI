@@ -566,15 +566,15 @@ wheels = [
 
 [[package]]
 name = "django-queryable-properties"
-version = "1.12.1"
+version = "1.13.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
     { name = "six" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/cd/60/664da145295fef2d7597617317a5264ba4861b99180e3501d3fcb34415ce/django_queryable_properties-1.12.1.tar.gz", hash = "sha256:94b4063430a4fa461f6077421968f910e7f7d2b5167a307bedb2bfca6762b6c8", size = 94980, upload-time = "2025-12-04T08:01:28.603Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/4a/11/a6002742b8c6ed3b228c8d05f903aa0c090516265c1f8b88722be347c3f4/django_queryable_properties-1.13.0.tar.gz", hash = "sha256:dc9051d54e2eb54081df51702bffaf08078f5a7de76b3324d482312b31a8e420", size = 96226, upload-time = "2026-08-06T08:17:41.438Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/3a/d0/67dabdfddd477a334904a8e4b89def8da544914280c3917d2873d82d42c7/django_queryable_properties-1.12.1-py2.py3-none-any.whl", hash = "sha256:c8577540157ffe85450caa335524f7af1a72882719a19c79a5e84f1de97d0b39", size = 121996, upload-time = "2025-12-04T08:01:27.146Z" },
+    { url = "https://files.pythonhosted.org/packages/d8/d8/94091bd9efb4eae12ab41a7dca7d9769fc13dec7e6335860e42d57505088/django_queryable_properties-1.13.0-py2.py3-none-any.whl", hash = "sha256:8d4d67a9206593f477a91d5a4a862ef117c6dfc1132250e5f05b11544f26fd22", size = 123459, upload-time = "2026-08-06T08:17:40.168Z" },
 ]
 
 [[package]]
@@ -1515,7 +1515,7 @@ requires-dist = [
     { name = "django-mcp-server", specifier = ">=0.5.7,<0.6" },
     { name = "django-model-utils", specifier = ">=5.0.0" },
     { name = "django-oauth-toolkit", specifier = ">=3.4.0" },
-    { name = "django-queryable-properties", specifier = ">=1.12.1" },
+    { name = "django-queryable-properties", specifier = ">=1.13.0" },
     { name = "django-tinymce", specifier = ">=5.0.0" },
     { name = "djangorestframework", specifier = ">=3.17.1" },
     { name = "djangosaml2", specifier = ">=1.12.0" },
