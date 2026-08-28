@@ -1060,11 +1060,25 @@ class SpotifyTrack(models.Model):
 
 
 class SpotifyQueueItem(models.Model):
-    """
-    Spotify Queue Item model.
+    """Spotify Queue Item — a song request, optionally observed on Spotify.
 
-    SpotifyQueueItems are tracks that are added to the queue of the playback
-    device for a Player, requested by a certain user.
+    A row is created the moment a user requests a song through TOSTI; at that
+    point we know ``track``, ``player``, ``requested_by`` and ``added``. The
+    other two fields are populated by ``thaliedje.services.observe_player_state``
+    as the Spotify-side state evolves:
+
+    * ``observed_at_position`` — the queue position we last saw this request
+      occupy. ``None`` means we haven't matched it to a live Spotify queue
+      entry yet (the poll hasn't run, or the operator queued the same track
+      from outside TOSTI and absorbed our row's slot).
+    * ``played_at`` — the moment we observed this request leave the queue.
+      ``None`` means "still queued, or status unknown". Set by the poller
+      when the track stops appearing in ``currently_playing``/``queue``.
+
+    Both fields are intentionally observational and may lag reality between
+    polls. They exist so the merged-queue read path has a stable join key
+    (``track_id + observed_at_position``) instead of having to guess which
+    DB row corresponds to which Spotify queue entry from FIFO alone.
     """
 
     track = models.ForeignKey(
@@ -1080,6 +1094,25 @@ class SpotifyQueueItem(models.Model):
     added = models.DateTimeField(auto_now_add=True)
     requested_by = models.ForeignKey(
         User, related_name="requests", null=True, on_delete=models.SET_NULL, blank=True
+    )
+    observed_at_position = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        help_text=(
+            "Queue position this request was last seen at, or NULL if we have "
+            "not matched it to a live Spotify queue entry. Set by the queue "
+            "observer task."
+        ),
+    )
+    played_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        db_index=True,
+        help_text=(
+            "Moment this request was observed to leave the Spotify queue "
+            "(either played through or skipped). NULL means still queued, or "
+            "status unknown if the observer hasn't run lately."
+        ),
     )
 
     @classmethod

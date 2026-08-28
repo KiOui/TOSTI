@@ -11,10 +11,20 @@ def render_requests(player, show_requestor=True):
     return {"player": player, "show_requestor": show_requestor}
 
 
-@register.inclusion_tag("thaliedje/queue.html")
-def render_queue(player):
-    """Render queue."""
-    return {"player": player}
+@register.inclusion_tag("thaliedje/queue.html", takes_context=True)
+def render_queue(context, player):
+    """Render the (enriched) queue.
+
+    ``show_requestor`` is gated on authentication: the public queue view
+    deliberately redacts requestor identity for anonymous viewers (the
+    API view mirrors this), matching the privacy policy and the existing
+    ``AnonymousRequestedQueueItemSerializer`` behaviour.
+    """
+    user = context["request"].user if "request" in context else None
+    return {
+        "player": player,
+        "show_requestor": bool(user and user.is_authenticated),
+    }
 
 
 @register.inclusion_tag("thaliedje/player.html", takes_context=True)
