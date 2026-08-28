@@ -106,10 +106,34 @@ class SearchTracksServiceTests(TestCase):
         player.search.return_value = raw
         return player
 
+    def _expected(self, **fields):
+        """Build the full per-track shape ``search_tracks`` returns, with
+        every disambiguator defaulting to None — the test only has to
+        specify the fields that vary.
+        """
+        return {
+            "id": None,
+            "name": None,
+            "artists": [],
+            "album": None,
+            "album_release_date": None,
+            "duration_ms": None,
+            "image": None,
+            **fields,
+        }
+
     def test_unwraps_spotify_dict_shape(self):
         raw = {
             "tracks": [
-                {"id": "1", "name": "Song A", "artists": ["Artist"]},
+                {
+                    "id": "1",
+                    "name": "Song A",
+                    "artists": ["Artist"],
+                    "album": "Album X",
+                    "album_release_date": "2005-01-01",
+                    "duration_ms": 222000,
+                    "image": "https://i.scdn.co/x.jpg",
+                },
                 {"id": "2", "name": "Song B", "artists": ["Artist 2"]},
             ],
             # other categories should be ignored by ``search_tracks``
@@ -119,8 +143,16 @@ class SearchTracksServiceTests(TestCase):
         self.assertEqual(
             result,
             [
-                {"id": "1", "name": "Song A", "artists": ["Artist"]},
-                {"id": "2", "name": "Song B", "artists": ["Artist 2"]},
+                self._expected(
+                    id="1",
+                    name="Song A",
+                    artists=["Artist"],
+                    album="Album X",
+                    album_release_date="2005-01-01",
+                    duration_ms=222000,
+                    image="https://i.scdn.co/x.jpg",
+                ),
+                self._expected(id="2", name="Song B", artists=["Artist 2"]),
             ],
         )
 
@@ -128,7 +160,7 @@ class SearchTracksServiceTests(TestCase):
         raw = [{"id": "1", "name": "Song A", "artists": ["Artist"]}]
         self.assertEqual(
             search_tracks_service(self._player(raw), "anything"),
-            [{"id": "1", "name": "Song A", "artists": ["Artist"]}],
+            [self._expected(id="1", name="Song A", artists=["Artist"])],
         )
 
     def test_none_return_is_empty_list(self):
@@ -143,4 +175,4 @@ class SearchTracksServiceTests(TestCase):
     def test_skips_non_dict_entries(self):
         raw = {"tracks": [{"id": "1"}, "stray-string", None]}
         result = search_tracks_service(self._player(raw), "x")
-        self.assertEqual(result, [{"id": "1", "name": None, "artists": []}])
+        self.assertEqual(result, [self._expected(id="1")])

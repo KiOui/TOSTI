@@ -94,3 +94,101 @@ class SpotifyPlayerRequestSongTests(TestCase):
         )
         self.assertNotIn(spotify.start_playback, called_funcs)
         self.assertNotIn(spotify.next_track, called_funcs)
+
+
+class SpotifyPlayerSearchProjectionTests(TestCase):
+    """``SpotifyPlayer.search`` exposes album/duration disambiguators.
+
+    The REST API and the MCP both consume this — keeping the two surfaces
+    in sync is the whole point. If you remove a field here, expect
+    callers on both sides to break.
+    """
+
+    _RAW = {
+        "tracks": {
+            "items": [
+                {
+                    "type": "track",
+                    "name": "Sterrenstof",
+                    "id": "7D5vAulNfrQV6xEwzgH0OF",
+                    "uri": "spotify:track:7D5vAulNfrQV6xEwzgH0OF",
+                    "popularity": 70,
+                    "duration_ms": 222000,
+                    "artists": [{"name": "De Jeugd Van Tegenwoordig"}],
+                    "album": {
+                        "name": "Parels Voor De Zwijnen",
+                        "release_date": "2005-09-26",
+                        "images": [{"url": "https://i.scdn.co/cover.jpg"}],
+                    },
+                },
+            ]
+        }
+    }
+
+    def _player(self):
+        return SpotifyPlayer(
+            client_id="ci",
+            client_secret="cs",
+            redirect_uri="https://example.com/cb",
+            playback_device_id="dev-1",
+        )
+
+    def test_projection_includes_disambiguators(self):
+        player = self._player()
+        player.do_spotify_request = MagicMock(return_value=self._RAW)
+        with patch.object(
+            SpotifyPlayer,
+            "spotify",
+            new_callable=PropertyMock,
+            return_value=MagicMock(),
+        ):
+            track = player.search("sterrenstof", maximum=1)["tracks"][0]
+        self.assertEqual(
+            set(track),
+            {
+                "type",
+                "name",
+                "artists",
+                "id",
+                "uri",
+                "image",
+                "album",
+                "album_release_date",
+                "duration_ms",
+            },
+        )
+        self.assertEqual(track["album"], "Parels Voor De Zwijnen")
+        self.assertEqual(track["album_release_date"], "2005-09-26")
+        self.assertEqual(track["duration_ms"], 222000)
+
+    def test_empty_album_images_does_not_crash(self):
+        """Spotify occasionally returns a track with no album art."""
+        raw = {
+            "tracks": {
+                "items": [
+                    {
+                        "type": "track",
+                        "name": "Obscurity",
+                        "id": "abc",
+                        "uri": "spotify:track:abc",
+                        "popularity": 1,
+                        "artists": [],
+                        "album": {
+                            "name": "Unknown",
+                            "release_date": "1999",
+                            "images": [],
+                        },
+                    },
+                ]
+            }
+        }
+        player = self._player()
+        player.do_spotify_request = MagicMock(return_value=raw)
+        with patch.object(
+            SpotifyPlayer,
+            "spotify",
+            new_callable=PropertyMock,
+            return_value=MagicMock(),
+        ):
+            track = player.search("x", maximum=1)["tracks"][0]
+        self.assertIsNone(track["image"])

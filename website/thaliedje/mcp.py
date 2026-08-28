@@ -34,6 +34,11 @@ def search_tracks(player: Player, query: str, maximum: int = 5) -> list[dict]:
     - ``MarietjePlayer`` returns ``None`` (no search support).
 
     Normalise both to the flat list of track dicts the MCP tool promises.
+    The shape mirrors what the REST API returns so the MCP surface is a
+    strict subset of the REST surface (no MCP-only data leaks). Per-track
+    fields: ``id`` (Spotify track ID), ``name``, ``artists``, ``album``,
+    ``album_release_date``, ``duration_ms``, ``image`` (album cover URL,
+    or None).
     """
     maximum = max(1, min(int(maximum), 25))
     raw = player.search(query, maximum=maximum, query_type="track")
@@ -51,6 +56,10 @@ def search_tracks(player: Player, query: str, maximum: int = 5) -> list[dict]:
             "id": r.get("id"),
             "name": r.get("name"),
             "artists": r.get("artists", []),
+            "album": r.get("album"),
+            "album_release_date": r.get("album_release_date"),
+            "duration_ms": r.get("duration_ms"),
+            "image": r.get("image"),
         }
         for r in tracks
         if isinstance(r, dict)
@@ -110,11 +119,51 @@ class ThaliedjeTools(MCPToolset):
         }
 
     def search_tracks(self, venue_slug: str, query: str, maximum: int = 5) -> dict:
-        """Search the music catalog for tracks via a venue's player.
+        """Search the Spotify catalog for tracks playable on a venue's player.
 
-        ``venue_slug`` selects the player (each venue has its own backend —
-        Spotify or Marietje). ``query`` is a free-text search. ``maximum``
-        caps the number of results (default 5, hard ceiling 25).
+        The catalog is **Spotify's** — results are real Spotify tracks and
+        the ``id`` field on each result is a **Spotify track ID** (an
+        opaque base62 string, e.g. ``"7D5vAulNfrQV6xEwzgH0OF"``). Pass it
+        through verbatim to ``request_song``; do not parse, hash, or
+        invent it.
+
+        ``venue_slug`` selects the player. Search currently works only
+        for Spotify-backed venues; Marietje-backed venues return an
+        empty list (Marietje does not expose a catalog search). The
+        agent should not interpret an empty result on a Marietje venue
+        as "no songs match" — say so explicitly to the user.
+        ``query`` is a free-text search — Spotify will accept
+        ``track:name artist:artistname`` for more precise matching if you
+        already know both. ``maximum`` caps the number of results
+        (default 5, hard ceiling 25).
+
+        **Result order is Spotify's relevance/popularity ranking** — the
+        first entry is the best match Spotify could find, the last is the
+        weakest. A few important consequences:
+
+        - Lower-position entries may not be exact name matches; Spotify
+          sometimes surfaces other songs by the same artist. Trust
+          ``name`` + ``artists`` for relevance, not just position.
+        - The same song often exists under multiple Spotify IDs (album
+          version, single, live recording, remaster, regional release).
+          Use ``album``, ``album_release_date`` and ``duration_ms`` to
+          tell them apart when ``name`` and ``artists`` match. If the
+          user said "the original" prefer the earliest
+          ``album_release_date``; if they said "the album version"
+          prefer the entry whose ``album`` is the studio album rather
+          than a compilation or single.
+        - ``image`` is the album cover URL — surface it to the user if
+          your client renders inline images so they can confirm by sight.
+          You can also point the user at
+          ``https://open.spotify.com/track/{id}`` for a visual confirm.
+        - When in doubt with multiple plausible matches, ask the user
+          rather than guessing — every result here is genuinely a
+          distinct Spotify recording.
+
+        Per-track fields: ``id`` (Spotify track ID), ``name``,
+        ``artists`` (list of names), ``album`` (album name),
+        ``album_release_date``, ``duration_ms``, ``image`` (album cover
+        URL or ``null``).
         """
         player = get_player_for_venue(venue_slug)
         if player is None:
@@ -132,8 +181,15 @@ class ThaliedjeTools(MCPToolset):
     def request_song(self, venue_slug: str, track_id: str) -> dict:
         """Request a song to be added to a venue's player queue.
 
-        ``track_id`` is the ``id`` returned by ``search_tracks``.
+        ``track_id`` is a **Spotify track ID** (the opaque ``id`` field
+        returned by ``search_tracks``) — pass it through verbatim.
+        Do not pass a URI (``spotify:track:...``), URL, ISRC, or made-up
+        identifier; only the bare ID Spotify returned in the search.
         Requires the ``thaliedje:request`` OAuth2 scope.
+
+        Confirm with the user which specific result they want before
+        calling this — two search hits with the same ``name`` and
+        ``artists`` can be entirely different recordings.
         """
         scope_error = require_scope(self.request, "thaliedje:request")
         if scope_error:
