@@ -195,7 +195,9 @@
                 }).then(data => {
                     this.player_data = data;
                 }).catch(error => {
-                    if (error.status && error.status !== 403) {
+                    if (error.status === 503) {
+                        tata.error('', "The music player is currently unavailable, please try again later.");
+                    } else if (error.status && error.status !== 403) {
                         tata.error('', "Failed to communicate with the Spotify device, make sure the device is available.");
                     } else {
                         show_error_from_api(error);
@@ -228,7 +230,9 @@
                 }).then(data => {
                     this.player_data = data;
                 }).catch(error => {
-                    if (error.status && error.status !== 403) {
+                    if (error.status === 503) {
+                        tata.error('', "The music player is currently unavailable, please try again later.");
+                    } else if (error.status && error.status !== 403) {
                         tata.error('', "Failed to communicate with the Spotify device, make sure the device is available.");
                     } else {
                         show_error_from_api(error);
@@ -261,7 +265,9 @@
                 }).then(data => {
                     this.player_data = data;
                 }).catch(error => {
-                    if (error.status && error.status !== 403) {
+                    if (error.status === 503) {
+                        tata.error('', "The music player is currently unavailable, please try again later.");
+                    } else if (error.status && error.status !== 403) {
                         tata.error('', "Failed to communicate with the Spotify device, make sure the device is available.");
                     } else {
                         show_error_from_api(error);
@@ -294,7 +300,9 @@
                 }).then(data => {
                     this.player_data = data;
                 }).catch(error => {
-                    if (error.status && error.status !== 403) {
+                    if (error.status === 503) {
+                        tata.error('', "The music player is currently unavailable, please try again later.");
+                    } else if (error.status && error.status !== 403) {
                         tata.error('', "Failed to communicate with the Spotify device, make sure the device is available.");
                     } else {
                         show_error_from_api(error);
@@ -330,7 +338,9 @@
                 }).then(data => {
                     this.player_data = data;
                 }).catch(error => {
-                    if (error.status && error.status !== 403) {
+                    if (error.status === 503) {
+                        tata.error('', "The music player is currently unavailable, please try again later.");
+                    } else if (error.status && error.status !== 403) {
                         tata.error('', "Failed to communicate with the Spotify device, make sure the device is available.");
                     } else {
                         show_error_from_api(error);
@@ -366,7 +376,9 @@
                 }).then(data => {
                     this.player_data = data;
                 }).catch(error => {
-                    if (error.status && error.status !== 403) {
+                    if (error.status === 503) {
+                        tata.error('', "The music player is currently unavailable, please try again later.");
+                    } else if (error.status && error.status !== 403) {
                         tata.error('', "Failed to communicate with the Spotify device, make sure the device is available.");
                     } else {
                         show_error_from_api(error);
@@ -406,7 +418,9 @@
                         self.player_data = data;
                     }
                 }).catch(error => {
-                    if (error.status && error.status !== 403) {
+                    if (error.status === 503) {
+                        tata.error('', "The music player is currently unavailable, please try again later.");
+                    } else if (error.status && error.status !== 403) {
                         tata.error('', "Failed to communicate with the Spotify device, make sure the device is available.");
                     } else {
                         show_error_from_api(error);
