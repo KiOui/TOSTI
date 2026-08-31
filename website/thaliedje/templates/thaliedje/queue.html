@@ -51,9 +51,18 @@
         methods: {
             refresh_player_queue() {
                 fetch('{% url "v1:player_queue" player=player %}')
-                    .then(response => response.json())
+                    .then(response => {
+                        if (!response.ok) {
+                            throw response;
+                        }
+                        return response.json();
+                    })
                     .then(json => {
-                        this.queue = json;
+                        // The endpoint returns null when the player is unavailable.
+                        this.queue = json !== null ? json : [];
+                    })
+                    .catch(() => {
+                        // Keep the last known queue; the timer below retries.
                     })
                     .finally(() => {
                         this.lastRefresh = (new Date()).getTime();

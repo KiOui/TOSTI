@@ -700,6 +700,9 @@ class SpotifyPlayer(Player):
             return cached_result
 
         queue = self.do_spotify_request(self.spotify.queue)
+        if queue is None:
+            cache.set(self._queue_cache_key, "unavailable", 10)
+            return None
 
         queue = [
             {
@@ -710,10 +713,6 @@ class SpotifyPlayer(Player):
             }
             for item in queue["queue"]
         ]
-
-        if queue is None:
-            cache.set(self._queue_cache_key, "unavailable", 10)
-            return None
 
         cache.set(self._queue_cache_key, queue, 10)
         return queue
@@ -733,6 +732,10 @@ class SpotifyPlayer(Player):
         explicitly via the play endpoint.
         """
         track_info = self.do_spotify_request(self.spotify.track, track_id)
+        if track_info is None:
+            # Spotify is unreachable or unauthorized; the API view maps this
+            # to a 503 and the MCP layer to an error payload.
+            raise SpotifyException(503, -1, "Spotify player is unavailable")
 
         self.do_spotify_request(
             self.spotify.add_to_queue, track_id, device_id=self.playback_device_id
