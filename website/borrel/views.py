@@ -127,21 +127,25 @@ class BorrelReservationBaseView(FormView):
                 if isinstance(form.initial["product"], int):
                     form.initial["product"] = products_by_id[form.initial["product"]]
 
-        # Do the actual sorting
-        formset.forms.sort(
-            key=lambda x: (
-                (
-                    x.initial["product"].category.id
-                    if x.initial["product"].category
-                    else (
-                        ProductCategory.objects.latest("pk").pk + 1
-                        if ProductCategory.objects.count() > 0
-                        else 1
-                    )
-                ),
-                x.initial["product"].name,
-            )
+        # Do the actual sorting. Products without a category sort after all
+        # categories; items whose product was deleted (product is None) sort
+        # last, by their stored product name.
+        no_category = (
+            ProductCategory.objects.latest("pk").pk + 1
+            if ProductCategory.objects.exists()
+            else 1
         )
+
+        def sort_key(form):
+            product = form.initial["product"]
+            if product is None:
+                return (no_category + 1, form.initial.get("product_name") or "")
+            return (
+                product.category.id if product.category else no_category,
+                product.name,
+            )
+
+        formset.forms.sort(key=sort_key)
 
     def get_queryset(self):
         """Only allow access to reservations users have access to."""

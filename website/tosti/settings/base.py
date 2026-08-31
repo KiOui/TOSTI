@@ -402,3 +402,7 @@ YIVI_SERVER_TOKEN = os.environ.get("YIVI_SERVER_TOKEN")
 # Celery
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0")
 CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379/0")
+# Keep retrying the broker connection if redis isn't up yet when the worker
+# starts (e.g. during a deploy); also silences the celery 6.0 deprecation
+# warning about this default changing.
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True

@@ -23,6 +23,7 @@ from queryable_properties.properties import (
 from requests import ReadTimeout, RequestException
 from spotipy import SpotifyOAuth, SpotifyException
 from spotipy.client import Spotify
+from spotipy.oauth2 import SpotifyOauthError
 
 from thaliedje.marietje import Marietje, MarietjeClientCredentials, MarietjeException
 from users.models import User
@@ -628,6 +629,10 @@ class SpotifyPlayer(Player):
             return func(*args, **kwargs)
         except SpotifyException as e:
             logging.warning("Spotify error: %s", e)
+        except SpotifyOauthError as e:
+            # Happens when the refresh token is revoked; requires re-authorization
+            # via the admin, so treat it as an unavailable player instead of a 500.
+            logging.warning("Spotify authorization error: %s", e)
         except ReadTimeout:
             logging.warning("Spotify request timed out.")
 

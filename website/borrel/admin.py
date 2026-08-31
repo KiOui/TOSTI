@@ -175,8 +175,18 @@ class BorrelReservationAdmin(AutocompleteFilterMixin, ExportMixin, admin.ModelAd
             )
         )
 
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        """Select related associations so rendering user widgets avoids per-user queries."""
+        if db_field.name == "users_access":
+            kwargs["queryset"] = db_field.remote_field.model.objects.select_related(
+                "association"
+            )
+        return super().formfield_for_manytomany(db_field, request, **kwargs)
+
     def submitted(self, obj):
         """Reservation is submitted."""
-        return obj.submitted if obj else None
+        # Use the concrete field instead of the queryable property, which runs
+        # a query per row on the changelist.
+        return obj.submitted_at is not None if obj else None
 
     submitted.boolean = True

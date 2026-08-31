@@ -42,9 +42,14 @@ x-django-web-env: &django-web-env
   CELERY_BROKER_URL: "redis://redis:6379/0"
   CELERY_RESULT_BACKEND: "redis://redis:6379/0"
 
+# Image tags are pinned to exact versions (dependabot keeps them fresh via
+# PRs). Mutable tags like `postgres:17-alpine` get re-pulled on every deploy,
+# silently recreating the container mid-deploy whenever upstream publishes a
+# new digest — running containers then lose DNS for `database`/`redis` and
+# error until everything settles. Pinning makes those recreations deliberate.
 services:
   caddy:
-    image: caddy:2-alpine
+    image: caddy:2.11.4-alpine
     restart: unless-stopped
     logging: *default-logging
     security_opt:
@@ -89,7 +94,7 @@ services:
       YIVI_TOKEN: ${YIVI_TOKEN}
 
   database:
-    image: postgres:17-alpine
+    image: postgres:17.11-alpine
     restart: unless-stopped
     logging: *default-logging
     security_opt:
@@ -115,9 +120,16 @@ services:
     networks:
       - web
       - db
+    # `restart: true`: when compose recreates database/redis (image bump),
+    # restart this service too instead of leaving it running against a DNS
+    # name that no longer resolves.
     depends_on:
       database:
         condition: service_healthy
+        restart: true
+      redis:
+        condition: service_healthy
+        restart: true
     volumes:
       - media:/media
       - cache:/app/cache
@@ -151,6 +163,10 @@ services:
     depends_on:
       database:
         condition: service_healthy
+        restart: true
+      redis:
+        condition: service_healthy
+        restart: true
       web:
         condition: service_healthy
     volumes:
@@ -173,6 +189,10 @@ services:
     depends_on:
       database:
         condition: service_healthy
+        restart: true
+      redis:
+        condition: service_healthy
+        restart: true
       web:
         condition: service_healthy
     volumes:
@@ -181,12 +201,21 @@ services:
     environment: *django-web-env
 
   redis:
-    image: redis:8.6
+    image: redis:8.6.6
     restart: unless-stopped
+    logging: *default-logging
+    security_opt:
+      - no-new-privileges:true
     volumes:
       - redis-data:/data
     networks:
       - db
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
 networks:
   # Public-facing (caddy, yivi) + backend HTTP (web, yivi).
