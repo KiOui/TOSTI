@@ -611,14 +611,16 @@ class SpotifyPlayer(Player):
         """
         return Spotify(oauth_manager=self.auth)
 
-    def do_spotify_request(self, func, *args, **kwargs):
+    def do_spotify_request(self, func, *args, raise_unavailable=False, **kwargs):
         """
         Perform a Spotify request with error handling.
 
         :param func: the function to call
         :param args: the arguments to pass to the function
+        :param raise_unavailable: raise a SpotifyException on failure instead of
+            returning None, for control actions that must fail loudly
         :param kwargs: the keyword arguments to pass to the function
-        :return: the result of the function call
+        :return: the result of the function call, or None on failure
         """
         if not self.configured:
             raise RuntimeError("This Spotify account is not configured yet.")
@@ -629,12 +631,18 @@ class SpotifyPlayer(Player):
             return func(*args, **kwargs)
         except SpotifyException as e:
             logging.warning("Spotify error: %s", e)
+            if raise_unavailable:
+                raise
         except SpotifyOauthError as e:
             # Happens when the refresh token is revoked; requires re-authorization
             # via the admin, so treat it as an unavailable player instead of a 500.
             logging.warning("Spotify authorization error: %s", e)
+            if raise_unavailable:
+                raise SpotifyException(503, -1, "Spotify player is unavailable") from e
         except ReadTimeout:
             logging.warning("Spotify request timed out.")
+            if raise_unavailable:
+                raise SpotifyException(503, -1, "Spotify player is unavailable")
 
     @property
     def get_display_name(self):
@@ -731,21 +739,26 @@ class SpotifyPlayer(Player):
         applied to the website. Operators can still start the player
         explicitly via the play endpoint.
         """
-        track_info = self.do_spotify_request(self.spotify.track, track_id)
-        if track_info is None:
-            # Spotify is unreachable or unauthorized; the API view maps this
-            # to a 503 and the MCP layer to an error payload.
-            raise SpotifyException(503, -1, "Spotify player is unavailable")
+        track_info = self.do_spotify_request(
+            self.spotify.track, track_id, raise_unavailable=True
+        )
 
         self.do_spotify_request(
-            self.spotify.add_to_queue, track_id, device_id=self.playback_device_id
+            self.spotify.add_to_queue,
+            track_id,
+            device_id=self.playback_device_id,
+            raise_unavailable=True,
         )
 
         cache.delete(self._queue_cache_key)
 
         if not self.is_playing and self._current_playback is not None:
-            self.start()
-            self.next()
+            try:
+                self.start()
+                self.next()
+            except SpotifyException:
+                # Auto-start is best-effort; the track is already queued.
+                pass
 
         return track_info
 
@@ -754,13 +767,16 @@ class SpotifyPlayer(Player):
         if self._current_playback is None:
             # If the playback device is not active, make it active
             self.do_spotify_request(
-                self.spotify.transfer_playback, device_id=self.playback_device_id
+                self.spotify.transfer_playback,
+                device_id=self.playback_device_id,
+                raise_unavailable=True,
             )
 
         self.do_spotify_request(
             self.spotify.start_playback,
             device_id=self.playback_device_id,
             context_uri=context_uri,
+            raise_unavailable=True,
         )
 
         cache.delete(self._current_playback_cache_key)
@@ -770,25 +786,33 @@ class SpotifyPlayer(Player):
         if self._current_playback is None:
             # If the playback device is not active, make it active
             self.do_spotify_request(
-                self.spotify.transfer_playback, device_id=self.playback_device_id
+                self.spotify.transfer_playback,
+                device_id=self.playback_device_id,
+                raise_unavailable=True,
             )
 
         self.do_spotify_request(
-            self.spotify.start_playback, device_id=self.playback_device_id
+            self.spotify.start_playback,
+            device_id=self.playback_device_id,
+            raise_unavailable=True,
         )
         cache.delete(self._current_playback_cache_key)
 
     def pause(self):
         """Pause the playback device of a Player."""
         self.do_spotify_request(
-            self.spotify.pause_playback, device_id=self.playback_device_id
+            self.spotify.pause_playback,
+            device_id=self.playback_device_id,
+            raise_unavailable=True,
         )
         cache.delete(self._current_playback_cache_key)
 
     def next(self):
         """Skip to the next track on the playback device of a Player."""
         self.do_spotify_request(
-            self.spotify.next_track, device_id=self.playback_device_id
+            self.spotify.next_track,
+            device_id=self.playback_device_id,
+            raise_unavailable=True,
         )
         cache.delete(self._current_playback_cache_key)
         cache.delete(self._queue_cache_key)
@@ -796,7 +820,9 @@ class SpotifyPlayer(Player):
     def previous(self):
         """Skip to the next track on the playback device of a Player."""
         self.do_spotify_request(
-            self.spotify.previous_track, device_id=self.playback_device_id
+            self.spotify.previous_track,
+            device_id=self.playback_device_id,
+            raise_unavailable=True,
         )
         cache.delete(self._current_playback_cache_key)
         cache.delete(self._queue_cache_key)
@@ -886,7 +912,10 @@ class SpotifyPlayer(Player):
     def volume(self, volume_percent):
         """Set the volume of the playback device of a Player."""
         self.do_spotify_request(
-            self.spotify.volume, volume_percent, device_id=self.playback_device_id
+            self.spotify.volume,
+            volume_percent,
+            device_id=self.playback_device_id,
+            raise_unavailable=True,
         )
         cache.delete(self._current_playback_cache_key)
 
@@ -902,7 +931,10 @@ class SpotifyPlayer(Player):
     def shuffle(self, shuffle_state: bool):
         """Set the shuffle state of the playback device of a Player."""
         self.do_spotify_request(
-            self.spotify.shuffle, shuffle_state, device_id=self.playback_device_id
+            self.spotify.shuffle,
+            shuffle_state,
+            device_id=self.playback_device_id,
+            raise_unavailable=True,
         )
         cache.delete(self._current_playback_cache_key)
         cache.delete(self._queue_cache_key)
@@ -921,7 +953,10 @@ class SpotifyPlayer(Player):
         if repeat_state not in ["off", "track", "context"]:
             raise ValueError("Repeat state must be one of 'off', 'track', or 'context'")
         self.do_spotify_request(
-            self.spotify.repeat, repeat_state, device_id=self.playback_device_id
+            self.spotify.repeat,
+            repeat_state,
+            device_id=self.playback_device_id,
+            raise_unavailable=True,
         )
         cache.delete(self._current_playback_cache_key)
 
