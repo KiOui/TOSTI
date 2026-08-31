@@ -53,7 +53,12 @@
         methods: {
             refresh_player_requests() {
                 fetch('{% url "v1:player_requests" player=player %}')
-                    .then(response => response.json())
+                    .then(response => {
+                        if (!response.ok) {
+                            throw response;
+                        }
+                        return response.json();
+                    })
                     .then(json => json.results)
                     .then(json => {
                         json.forEach(track => {
@@ -61,6 +66,8 @@
                             track.added = `${date.toLocaleDateString()}, ${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
                         });
                         this.requests = json;
+                    }).catch(() => {
+                        // Keep the last known requests; the timer below retries.
                     }).finally(() => {
                         this.lastRefresh = (new Date()).getTime();
                         this.refreshTimer = setTimeout(this.refresh_player_requests, 5000);
