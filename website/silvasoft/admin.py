@@ -1,4 +1,5 @@
 from django.contrib import admin, messages
+from django.db.models import Exists, OuterRef
 from django.http import HttpResponseRedirect
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
@@ -413,15 +414,30 @@ class SilvasoftBorrelReservationAdmin(BorrelReservationAdmin):
         SilvasoftBorrelReservationInvoiceInline,
     ]
 
+    def get_queryset(self, request):
+        """Annotate synchronization status to avoid per-row queries on the changelist."""
+        return (
+            super()
+            .get_queryset(request)
+            .annotate(
+                _silvasoft_sync_succeeded=Exists(
+                    SilvasoftBorrelReservationSynchronization.objects.filter(
+                        borrel_reservation=OuterRef("pk"), succeeded=True
+                    )
+                ),
+                _silvasoft_sync_failed=Exists(
+                    SilvasoftBorrelReservationSynchronization.objects.filter(
+                        borrel_reservation=OuterRef("pk"), succeeded=False
+                    )
+                ),
+            )
+        )
+
     def pushed_to_silvasoft(self, obj):
         """Reservation is pushed to Silvasoft."""
-        if SilvasoftBorrelReservationSynchronization.objects.filter(
-            borrel_reservation=obj, succeeded=True
-        ).exists():
+        if obj._silvasoft_sync_succeeded:
             return True
-        elif SilvasoftBorrelReservationSynchronization.objects.filter(
-            borrel_reservation=obj, succeeded=False
-        ).exists():
+        elif obj._silvasoft_sync_failed:
             return False
         else:
             return None
