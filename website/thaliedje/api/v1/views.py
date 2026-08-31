@@ -207,7 +207,10 @@ class PlayerTrackAddAPIView(APIView):
                 'Requested song "{}"'.format(requested.track.track_name),
             )
         except spotipy.SpotifyException:
-            return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+            return Response(
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+                data={"detail": "The music player is currently unavailable."},
+            )
         return Response(status=status.HTTP_200_OK)
 
 
@@ -252,7 +255,10 @@ class PlayerPlayAPIView(APIView):
             if e.http_status == 403:
                 return Response(status=status.HTTP_403_FORBIDDEN)
             else:
-                return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+                return Response(
+                    status=status.HTTP_503_SERVICE_UNAVAILABLE,
+                    data={"detail": "The music player is currently unavailable."},
+                )
         return Response(
             status=status.HTTP_200_OK,
             data=self.serializer_class(player, context={"request": request}).data,
@@ -281,7 +287,10 @@ class PlayerPauseAPIView(APIView):
             if e.http_status == 403:
                 return Response(status=status.HTTP_403_FORBIDDEN)
             else:
-                return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+                return Response(
+                    status=status.HTTP_503_SERVICE_UNAVAILABLE,
+                    data={"detail": "The music player is currently unavailable."},
+                )
         return Response(
             status=status.HTTP_200_OK,
             data=self.serializer_class(player, context={"request": request}).data,
@@ -325,7 +334,10 @@ class PlayerVolumeAPIView(APIView):
             if e.http_status == 403:
                 return Response(status=status.HTTP_403_FORBIDDEN)
             else:
-                return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+                return Response(
+                    status=status.HTTP_503_SERVICE_UNAVAILABLE,
+                    data={"detail": "The music player is currently unavailable."},
+                )
         return Response(
             status=status.HTTP_200_OK,
             data=self.serializer_class(player, context={"request": request}).data,
@@ -355,7 +367,10 @@ class PlayerNextAPIView(APIView):
             if e.http_status == 403:
                 return Response(status=status.HTTP_403_FORBIDDEN)
             else:
-                return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+                return Response(
+                    status=status.HTTP_503_SERVICE_UNAVAILABLE,
+                    data={"detail": "The music player is currently unavailable."},
+                )
         return Response(
             status=status.HTTP_200_OK,
             data=self.serializer_class(player, context={"request": request}).data,
@@ -384,7 +399,10 @@ class PlayerPreviousAPIView(APIView):
             if e.http_status == 403:
                 return Response(status=status.HTTP_403_FORBIDDEN)
             else:
-                return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+                return Response(
+                    status=status.HTTP_503_SERVICE_UNAVAILABLE,
+                    data={"detail": "The music player is currently unavailable."},
+                )
         return Response(
             status=status.HTTP_200_OK,
             data=self.serializer_class(player, context={"request": request}).data,
@@ -433,7 +451,10 @@ class PlayerShuffleAPIView(APIView):
             if e.http_status == 403:
                 return Response(status=status.HTTP_403_FORBIDDEN)
             else:
-                return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+                return Response(
+                    status=status.HTTP_503_SERVICE_UNAVAILABLE,
+                    data={"detail": "The music player is currently unavailable."},
+                )
         return Response(
             status=status.HTTP_200_OK,
             data=self.serializer_class(player, context={"request": request}).data,
@@ -484,7 +505,10 @@ class PlayerRepeatAPIView(APIView):
             if e.http_status == 403:
                 return Response(status=status.HTTP_403_FORBIDDEN)
             else:
-                return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+                return Response(
+                    status=status.HTTP_503_SERVICE_UNAVAILABLE,
+                    data={"detail": "The music player is currently unavailable."},
+                )
         return Response(
             status=status.HTTP_200_OK,
             data=self.serializer_class(player, context={"request": request}).data,

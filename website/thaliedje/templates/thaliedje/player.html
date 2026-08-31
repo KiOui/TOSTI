@@ -172,21 +172,28 @@
                     this.track_ms_left = this.player_data.duration_ms - this.track_progress_ms;
                 }
             },
-            play(event) {
-                event.preventDefault();
+            showPlayerError(error) {
+                if (error.status === 503) {
+                    tata.error('', "The music player is currently unavailable, please try again later.");
+                } else {
+                    show_error_from_api(error);
+                }
+            },
+            controlCall(url, body = null) {
                 this.doing_call = true;
                 clearTimeout(this.refresh_timer);
-                fetch(
-                    '{% url "v1:player_play" player=player %}',
-                    {
-                        method: "PATCH",
-                        headers: {
-                            "X-CSRFToken": get_csrf_token(),
-                            "Content-Type": 'application/json',
-                            "Accept": 'application/json',
-                        }
-                    }
-                ).then(response => {
+                const options = {
+                    method: "PATCH",
+                    headers: {
+                        "X-CSRFToken": get_csrf_token(),
+                        "Content-Type": 'application/json',
+                        "Accept": 'application/json',
+                    },
+                };
+                if (body !== null) {
+                    options.body = JSON.stringify(body);
+                }
+                return fetch(url, options).then(response => {
                     if (response.status === 200) {
                         return response.json();
                     } else {
@@ -195,186 +202,35 @@
                 }).then(data => {
                     this.player_data = data;
                 }).catch(error => {
-                    if (error.status && error.status !== 403) {
-                        tata.error('', "Failed to communicate with the Spotify device, make sure the device is available.");
-                    } else {
-                        show_error_from_api(error);
-                    }
+                    this.showPlayerError(error);
                 }).finally(() => {
                     this.doing_call = false;
                     this.refresh_timer = setTimeout(this.refresh, this.track_progress_percentage === 100 ? 1000 : 5000);
                 });
+            },
+            play(event) {
+                event.preventDefault();
+                this.controlCall('{% url "v1:player_play" player=player %}');
             },
             pause(event) {
                 event.preventDefault();
-                this.doing_call = true;
-                clearTimeout(this.refresh_timer);
-                fetch(
-                    '{% url "v1:player_pause" player=player %}',
-                    {
-                        method: "PATCH",
-                        headers: {
-                            "X-CSRFToken": get_csrf_token(),
-                            "Content-Type": 'application/json',
-                            "Accept": 'application/json',
-                        }
-                    }
-                ).then(response => {
-                    if (response.status === 200) {
-                        return response.json();
-                    } else {
-                        throw response;
-                    }
-                }).then(data => {
-                    this.player_data = data;
-                }).catch(error => {
-                    if (error.status && error.status !== 403) {
-                        tata.error('', "Failed to communicate with the Spotify device, make sure the device is available.");
-                    } else {
-                        show_error_from_api(error);
-                    }
-                }).finally(() => {
-                    this.doing_call = false;
-                    this.refresh_timer = setTimeout(this.refresh, this.track_progress_percentage === 100 ? 1000 : 5000);
-                });
+                this.controlCall('{% url "v1:player_pause" player=player %}');
             },
             forward(event) {
                 event.preventDefault();
-                this.doing_call = true;
-                clearTimeout(this.refresh_timer);
-                fetch(
-                    '{% url "v1:player_next" player=player %}',
-                    {
-                        method: "PATCH",
-                        headers: {
-                            "X-CSRFToken": get_csrf_token(),
-                            "Content-Type": 'application/json',
-                            "Accept": 'application/json',
-                        }
-                    }
-                ).then(response => {
-                    if (response.status === 200) {
-                        return response.json();
-                    } else {
-                        throw response;
-                    }
-                }).then(data => {
-                    this.player_data = data;
-                }).catch(error => {
-                    if (error.status && error.status !== 403) {
-                        tata.error('', "Failed to communicate with the Spotify device, make sure the device is available.");
-                    } else {
-                        show_error_from_api(error);
-                    }
-                }).finally(() => {
-                    this.doing_call = false;
-                    this.refresh_timer = setTimeout(this.refresh, this.track_progress_percentage === 100 ? 1000 : 5000);
-                });
+                this.controlCall('{% url "v1:player_next" player=player %}');
             },
             backward(event) {
                 event.preventDefault();
-                this.doing_call = true;
-                clearTimeout(this.refresh_timer);
-                fetch(
-                    '{% url "v1:player_previous" player=player %}',
-                    {
-                        method: "PATCH",
-                        headers: {
-                            "X-CSRFToken": get_csrf_token(),
-                            "Content-Type": 'application/json',
-                            "Accept": 'application/json',
-                        }
-                    }
-                ).then(response => {
-                    if (response.status === 200) {
-                        return response.json();
-                    } else {
-                        throw response;
-                    }
-                }).then(data => {
-                    this.player_data = data;
-                }).catch(error => {
-                    if (error.status && error.status !== 403) {
-                        tata.error('', "Failed to communicate with the Spotify device, make sure the device is available.");
-                    } else {
-                        show_error_from_api(error);
-                    }
-                }).finally(() => {
-                    this.doing_call = false;
-                    this.refresh_timer = setTimeout(this.refresh, this.track_progress_percentage === 100 ? 1000 : 5000);
-                });
+                this.controlCall('{% url "v1:player_previous" player=player %}');
             },
             toggleShuffle(value, event) {
                 event.preventDefault();
-                this.doing_call = true;
-                clearTimeout(this.refresh_timer);
-                fetch(
-                    '{% url "v1:player_shuffle" player=player %}',
-                    {
-                        method: "PATCH",
-                        headers: {
-                            "X-CSRFToken": get_csrf_token(),
-                            "Content-Type": 'application/json',
-                            "Accept": 'application/json',
-                        },
-                        body: JSON.stringify({
-                            state: value,
-                        }),
-                    }
-                ).then(response => {
-                    if (response.status === 200) {
-                        return response.json();
-                    } else {
-                        throw response;
-                    }
-                }).then(data => {
-                    this.player_data = data;
-                }).catch(error => {
-                    if (error.status && error.status !== 403) {
-                        tata.error('', "Failed to communicate with the Spotify device, make sure the device is available.");
-                    } else {
-                        show_error_from_api(error);
-                    }
-                }).finally(() => {
-                    this.doing_call = false;
-                    this.refresh_timer = setTimeout(this.refresh, this.track_progress_percentage === 100 ? 1000 : 5000);
-                });
+                this.controlCall('{% url "v1:player_shuffle" player=player %}', {state: value});
             },
             toggleRepeat(value, event) {
                 event.preventDefault();
-                this.doing_call = true;
-                clearTimeout(this.refresh_timer);
-                fetch(
-                    '{% url "v1:player_repeat" player=player %}',
-                    {
-                        method: "PATCH",
-                        headers: {
-                            "X-CSRFToken": get_csrf_token(),
-                            "Content-Type": 'application/json',
-                            "Accept": 'application/json',
-                        },
-                        body: JSON.stringify({
-                            state: value,
-                        }),
-                    }
-                ).then(response => {
-                    if (response.status === 200) {
-                        return response.json();
-                    } else {
-                        throw response;
-                    }
-                }).then(data => {
-                    this.player_data = data;
-                }).catch(error => {
-                    if (error.status && error.status !== 403) {
-                        tata.error('', "Failed to communicate with the Spotify device, make sure the device is available.");
-                    } else {
-                        show_error_from_api(error);
-                    }
-                }).finally(() => {
-                    this.doing_call = false;
-                    this.refresh_timer = setTimeout(this.refresh, this.track_progress_percentage === 100 ? 1000 : 5000);
-                });
+                this.controlCall('{% url "v1:player_repeat" player=player %}', {state: value});
             },
             setVolume: debounce(function(self, value, event) {
                 event.preventDefault();
@@ -406,13 +262,9 @@
                         self.player_data = data;
                     }
                 }).catch(error => {
-                    if (error.status && error.status !== 403) {
-                        tata.error('', "Failed to communicate with the Spotify device, make sure the device is available.");
-                    } else {
-                        show_error_from_api(error);
-                    }
+                    self.showPlayerError(error);
                 }).finally(() => {
-                    self.refresh_timer = setTimeout(self.refresh, this.track_progress_percentage === 100 ? 1000 : 5000);
+                    self.refresh_timer = setTimeout(self.refresh, self.track_progress_percentage === 100 ? 1000 : 5000);
                 });
             }),
             refresh() {

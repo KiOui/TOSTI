@@ -139,7 +139,6 @@ CACHES = {
 
 # SAML SP SETTINGS
 SAML_SESSION_COOKIE_NAME = "saml_session"
-SESSION_COOKIE_SECURE = False
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SAML_USE_NAME_ID_AS_USERNAME = False
 # SURFconext only advertises HTTP-Redirect for SSO; declaring it as the
