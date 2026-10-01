@@ -307,7 +307,8 @@ CONTENT_SECURITY_POLICY = {
         "connect-src": ["'self'"],
         "frame-ancestors": ["'none'"],
         "base-uri": ["'self'"],
-        "form-action": ["'self'"],
+        # Spotify is necessary for the redirect in the admin view where we retrieve OAuth credentials.
+        "form-action": ["'self'", "https://accounts.spotify.com"],
     },
 }
 
