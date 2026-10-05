@@ -129,7 +129,7 @@ class PlayerLogEntryAdmin(admin.ModelAdmin):
 
     list_display = [
         "timestamp",
-        "player",
+        "player_name",
         "action",
         "user",
         "description",
