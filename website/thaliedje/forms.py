@@ -77,9 +77,7 @@ class PlayerAdminForm(forms.ModelForm):
             and self.__original_playback_device_id != obj.playback_device_id
         ):
             try:
-                devices = {
-                    x["id"]: x["name"] for x in obj.spotify.devices()["devices"]
-                }
+                devices = {x["id"]: x["name"] for x in obj.spotify.devices()["devices"]}
                 if obj.playback_device_id not in devices.keys():
                     raise forms.ValidationError(
                         "{} is not a valid device (it might have gone offline).".format(
