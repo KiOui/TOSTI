@@ -1,4 +1,6 @@
 from django import forms
+from spotipy.oauth2 import SpotifyOauthError
+
 from .models import Player, ThaliedjeControlEvent
 
 
@@ -74,15 +76,17 @@ class PlayerAdminForm(forms.ModelForm):
             obj.playback_device_id != ""
             and self.__original_playback_device_id != obj.playback_device_id
         ):
-            devices = {x["id"]: x["name"] for x in obj.spotify.devices()["devices"]}
-            if obj.playback_device_id not in devices.keys():
-                raise forms.ValidationError(
-                    "{} is not a valid device (it might have gone offline).".format(
-                        obj.playback_device_id
+            try:
+                devices = {x["id"]: x["name"] for x in obj.spotify.devices()["devices"]}
+                if obj.playback_device_id not in devices.keys():
+                    raise forms.ValidationError(
+                        "{} is not a valid device (it might have gone offline).".format(
+                            obj.playback_device_id
+                        )
                     )
-                )
-            else:
                 obj.playback_device_name = devices[obj.playback_device_id]
+            except SpotifyOauthError:
+                pass
         elif obj.playback_device_id == "":
             obj.playback_device_name = ""
         if commit:

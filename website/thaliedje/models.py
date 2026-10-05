@@ -182,6 +182,7 @@ class Player(models.Model):
         """
         PlayerLogEntry.objects.create(
             player=self,
+            player_name=str(self),
             user=user,
             action=action,
             description=description,
@@ -1336,7 +1337,10 @@ class ThaliedjeControlEvent(models.Model):
 class PlayerLogEntry(models.Model):
     """Model for logging player events."""
 
-    player = models.ForeignKey(Player, on_delete=models.CASCADE, related_name="logs")
+    player = models.ForeignKey(
+        Player, on_delete=models.SET_NULL, null=True, blank=True, related_name="logs"
+    )
+    player_name = models.CharField(max_length=255, blank=True, default="")
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     action = models.CharField(max_length=255)
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -1344,7 +1348,7 @@ class PlayerLogEntry(models.Model):
 
     def __str__(self):
         """Print object as a string."""
-        return f"{self.player} {self.action} by {self.user} at {self.timestamp}"
+        return f"{self.player_name} {self.action} by {self.user} at {self.timestamp}"
 
     class Meta:
         """Meta class for PlayerLogEntry."""
