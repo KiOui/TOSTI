@@ -985,7 +985,7 @@ class SpotifyPlayer(Player):
             trimmed_result_for_key = [x for x in results[key]["items"] if x is not None]
             if key == "tracks":
                 trimmed_result_for_key = sorted(
-                    trimmed_result_for_key, key=lambda x: -x["popularity"]
+                    trimmed_result_for_key, key=lambda x: -x.get("popularity", 0)
                 )
                 trimmed_result_for_key = [
                     {

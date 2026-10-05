@@ -94,3 +94,50 @@ class SpotifyPlayerRequestSongTests(TestCase):
         )
         self.assertNotIn(spotify.start_playback, called_funcs)
         self.assertNotIn(spotify.next_track, called_funcs)
+
+
+class SpotifyPlayerSearchTests(TestCase):
+    def test_search_handles_tracks_without_popularity(self):
+        player = SpotifyPlayer(
+            client_id="ci",
+            client_secret="cs",
+            redirect_uri="https://example.com/cb",
+        )
+        tracks = [
+            {
+                "type": "track",
+                "name": "First result",
+                "id": "first",
+                "uri": "spotify:track:first",
+                "album": {"images": [{"url": "https://example.com/first.jpg"}]},
+            },
+            {
+                "type": "track",
+                "name": "Second result",
+                "id": "second",
+                "uri": "spotify:track:second",
+                "album": {"images": [{"url": "https://example.com/second.jpg"}]},
+            },
+        ]
+        spotify_stub = MagicMock()
+        with (
+            patch.object(
+                SpotifyPlayer,
+                "spotify",
+                new_callable=PropertyMock,
+                return_value=spotify_stub,
+            ),
+            patch.object(
+                player,
+                "do_spotify_request",
+                return_value={"tracks": {"items": tracks}},
+            ),
+            patch.object(
+                player, "get_artists_for_spotify_track", return_value=["Artist"]
+            ),
+        ):
+            result = player.search("test")
+
+        self.assertEqual(
+            [track["id"] for track in result["tracks"]], ["first", "second"]
+        )
