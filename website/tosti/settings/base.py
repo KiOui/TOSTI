@@ -361,12 +361,12 @@ CONSTANCE_CONFIG = {
         bool,
     ),
     "WRAPPED_SHOW_FROM": (
-        datetime.date(2026, 12, 1),
+        datetime.date(2026, 12, 7),
         "First day TOSTI Wrapped is shown. It looks back at the year (see below) this day falls in.",
         datetime.date,
     ),
     "WRAPPED_SHOW_UNTIL": (
-        datetime.date(2026, 12, 31),
+        datetime.date(2027, 1, 1),
         "Last day TOSTI Wrapped is shown.",
         datetime.date,
     ),

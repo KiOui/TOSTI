@@ -14,7 +14,7 @@ from wrapped import services
 
 User = get_user_model()
 
-DECEMBER = timezone.make_aware(datetime.datetime(2026, 12, 3, 12))
+DECEMBER = timezone.make_aware(datetime.datetime(2026, 12, 8, 12))
 OCTOBER = timezone.make_aware(datetime.datetime(2026, 10, 3, 12))
 SLIDES = [
     {"order": 20, "kicker": "Orders", "value": 1234, "text": "items were ordered."}

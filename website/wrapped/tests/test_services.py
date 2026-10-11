@@ -58,14 +58,13 @@ class PeriodTests(TestCase):
         )
 
     def test_current_period(self):
-        with mock.patch(
-            "django.utils.timezone.now", return_value=aware(2026, 12, 3, 12)
-        ):
-            self.assertEqual(current_period(), Period.starting_in(2026))
-        with mock.patch(
-            "django.utils.timezone.now", return_value=aware(2026, 10, 3, 12)
-        ):
-            self.assertIsNone(current_period())
+        for now in (aware(2026, 12, 8, 12), aware(2027, 1, 1, 12)):
+            with mock.patch("django.utils.timezone.now", return_value=now):
+                # Also on New Year's Day, it looks back at the year it started in.
+                self.assertEqual(current_period(), Period.starting_in(2026))
+        for now in (aware(2026, 12, 3, 12), aware(2027, 1, 2, 12)):
+            with mock.patch("django.utils.timezone.now", return_value=now):
+                self.assertIsNone(current_period())
 
     @override_config(
         WRAPPED_YEAR_START_MONTH=9,
@@ -89,7 +88,7 @@ class PeriodTests(TestCase):
             self.assertTrue(services.is_available(Period.starting_in(2025)))
             self.assertFalse(services.is_available(Period.starting_in(2026)))
         with mock.patch(
-            "django.utils.timezone.now", return_value=aware(2026, 12, 3, 12)
+            "django.utils.timezone.now", return_value=aware(2026, 12, 8, 12)
         ):
             self.assertTrue(services.is_available(Period.starting_in(2026)))
 
