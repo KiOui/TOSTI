@@ -38,13 +38,21 @@ def user_gets_prioritized_orders(user, shift):
 
 def execute_data_minimisation(dry_run=False):
     """
-    Remove order history from users that is more than 31 days old.
+    Anonymise paid orders that are more than 3 years old.
+
+    Paid orders of users that have been inactive for over a year are anonymised as well, so that
+    ``users.services.execute_data_minimisation`` is not blocked by the protected ``Order.user`` relation
+    and can remove those accounts as promised in the privacy policy.
 
     :param dry_run: does not really remove data if True
     :return: list of users from who data is removed
     """
-    delete_before = timezone.now() - datetime.timedelta(days=31)
-    orders = Order.objects.filter(created__lte=delete_before).exclude(paid=False)
+    now = timezone.now()
+    delete_before = now - datetime.timedelta(days=3 * 365)
+    inactive_before = now - datetime.timedelta(days=365)
+    orders = Order.objects.filter(
+        Q(created__lte=delete_before) | Q(user__last_login__lte=inactive_before)
+    ).exclude(paid=False)
 
     users = orders.values_list("user", flat=True).distinct()
     if not dry_run:

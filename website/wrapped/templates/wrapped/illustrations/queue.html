@@ -1,0 +1,9 @@
+<div class="wrapped-queue" aria-hidden="true">
+    <i class="fa-solid fa-fire-burner wrapped-queue-counter"></i>
+    {% for person in data.people %}
+        <span class="wrapped-queue-person{% if person.you %} is-you{% endif %}" style="--i: {{ forloop.counter0 }}">
+            <i class="fa-solid fa-person"></i>
+            {% if person.you %}<span class="wrapped-queue-you">You</span>{% endif %}
+        </span>
+    {% endfor %}
+</div>

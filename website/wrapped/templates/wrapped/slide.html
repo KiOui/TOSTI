@@ -1,0 +1,59 @@
+<section class="wrapped-slide wrapped-theme-{{ theme }}{% if slide.calendar %} wrapped-slide-compact{% endif %}" aria-roledescription="slide" hidden>
+    {% if slide.illustration %}
+        {% with "wrapped/illustrations/"|add:slide.illustration.type|add:".html" as illustration %}
+            {% include illustration with data=slide.illustration %}
+        {% endwith %}
+    {% elif slide.icon %}
+        <i class="fa-solid {{ slide.icon }} wrapped-icon wrapped-icon-{{ slide.icon_animation }}" aria-hidden="true"></i>
+    {% endif %}
+    <h3 class="wrapped-kicker">{{ slide.kicker }}</h3>
+    <div class="wrapped-value{% if slide.count_to is None %} wrapped-value-text{% endif %}"
+         {% if slide.count_to is not None %}data-count-to="{{ slide.count_to }}"{% endif %}>{{ slide.value }}</div>
+    {% if slide.bars %}
+        <div class="wrapped-bars" aria-hidden="true">
+            {% for bar in slide.bars %}
+                <div class="wrapped-bar{% if bar.top %} is-top{% endif %}">
+                    <span class="wrapped-bar-fill" style="--height: {{ bar.height }}%"></span>
+                    <span class="wrapped-bar-label">{{ bar.label }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% if slide.tags %}
+        <ul class="wrapped-tags">
+            {% for tag in slide.tags %}<li>{{ tag }}</li>{% endfor %}
+        </ul>
+    {% endif %}
+    {% if slide.calendar %}
+        {% with first=slide.calendar|first last=slide.calendar|last %}
+            <div class="wrapped-calendar" role="img"
+                 style="--columns: {{ slide.calendar_columns }}; --columns-large: {{ slide.calendar_columns_large }}"
+                 aria-label="Calendar of the days you came by, from {{ first.name }} to {{ last.name }}">
+                {% for month in slide.calendar %}
+                    <div class="wrapped-month">
+                        <div class="wrapped-month-name">{{ month.name|slice:":3" }}</div>
+                        <div class="wrapped-month-days">
+                            {% for blank in month.blanks %}<span class="is-outside"></span>{% endfor %}
+                            {% for day in month.days %}<span class="is-{{ day.state }}"></span>{% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="wrapped-calendar-legend" aria-hidden="true">
+                <span><span class="is-visited"></span> You came by</span>
+                <span><span class="is-open"></span> Canteen open</span>
+            </div>
+        {% endwith %}
+    {% endif %}
+    <p class="wrapped-text">{{ slide.text }}</p>
+    {% if slide.ranking %}
+        <ol class="wrapped-items">
+            {% for item in slide.ranking %}
+                <li>
+                    <span class="wrapped-item-label">{{ item.label }}</span>
+                    <span class="wrapped-item-value">{{ item.value }}</span>
+                </li>
+            {% endfor %}
+        </ol>
+    {% endif %}
+</section>

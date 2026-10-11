@@ -47,10 +47,15 @@ class OrderServicesTests(TestCase):
         order_not_paid = models.Order.objects.create(
             shift=self.shift, product=self.product, user=self.normal_user
         )
-        order_do_delete.created = timezone.now() - timedelta(days=60)
+        order_recent_month = models.Order.objects.create(
+            shift=self.shift, product=self.product, user=self.normal_user, paid=True
+        )
+        order_do_delete.created = timezone.now() - timedelta(days=3 * 365 + 1)
         order_do_delete.save()
-        order_not_paid.created = timezone.now() - timedelta(days=60)
+        order_not_paid.created = timezone.now() - timedelta(days=3 * 365 + 1)
         order_not_paid.save()
+        order_recent_month.created = timezone.now() - timedelta(days=60)
+        order_recent_month.save()
 
         with self.subTest("Data minimisation dry run"):
             services.execute_data_minimisation(dry_run=True)
@@ -87,6 +92,34 @@ class OrderServicesTests(TestCase):
                     id=order_not_paid.id, user=self.normal_user
                 ).exists()
             )
+            self.assertTrue(
+                models.Order.objects.filter(
+                    id=order_recent_month.id, user=self.normal_user
+                ).exists()
+            )
+
+    def test_execute_data_minimisation_inactive_user(self):
+        inactive_user = User.objects.create(
+            username="inactive",
+            last_login=timezone.now() - timedelta(days=366),
+        )
+        order_paid = models.Order.objects.create(
+            shift=self.shift, product=self.product, user=inactive_user, paid=True
+        )
+        order_not_paid = models.Order.objects.create(
+            shift=self.shift, product=self.product, user=inactive_user
+        )
+
+        services.execute_data_minimisation()
+
+        self.assertFalse(
+            models.Order.objects.filter(id=order_paid.id, user=inactive_user).exists()
+        )
+        self.assertTrue(
+            models.Order.objects.filter(
+                id=order_not_paid.id, user=inactive_user
+            ).exists()
+        )
 
     def test_add_user_to_assignees_of_shift(self):
         start = timezone.make_aware(

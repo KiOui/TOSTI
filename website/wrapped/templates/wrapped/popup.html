@@ -1,0 +1,33 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'wrapped/css/wrapped.css' %}" type="text/css">
+<div class="modal fade wrapped-modal wrapped-large" id="wrapped-popup" tabindex="-1" aria-labelledby="wrapped-popup-label"
+     aria-hidden="true" data-wrapped-popup data-seen-cookie="{{ seen_cookie }}" data-seen-value="{{ period.start|date:'Y-m-d' }}"
+     data-story-url="{% url 'wrapped:story' period.start.year %}" data-invite="{{ invite|yesno:'true,false' }}">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content wrapped-modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h2 class="modal-title visually-hidden" id="wrapped-popup-label">TOSTI Wrapped</h2>
+                <button type="button" class="btn wrapped-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="modal-body p-0" data-wrapped-body>
+                <div class="wrapped-loading">
+                    <span class="loader" role="status" aria-label="Loading your Wrapped"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="wrapped-invite" role="dialog" aria-labelledby="wrapped-invite-title" data-wrapped-invite hidden>
+    <i class="fa-solid fa-gift wrapped-invite-icon wrapped-icon-wave" aria-hidden="true"></i>
+    <h2 class="wrapped-invite-title" id="wrapped-invite-title">Your TOSTI Wrapped is here!</h2>
+    <p>Your year in the canteens, in a few slides. You can always open it later from your account menu.</p>
+    <div class="wrapped-share-actions">
+        <button type="button" class="btn wrapped-button" data-wrapped-invite-open>Show me</button>
+        <button type="button" class="btn wrapped-button wrapped-button-secondary" data-wrapped-invite-dismiss>
+            Not now
+        </button>
+    </div>
+</div>
+<script src="{% static 'wrapped/js/wrapped.js' %}"></script>
