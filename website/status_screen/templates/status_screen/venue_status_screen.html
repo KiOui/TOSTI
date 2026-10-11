@@ -273,3 +273,6 @@
         }).mount(`#${STATUS_SCREEN_CONTAINER_ID}`);
     </script>
 {% endblock %}
+
+{# Status screens run unattended on displays: no site-wide popups. #}
+{% block page_extras %}{% endblock %}

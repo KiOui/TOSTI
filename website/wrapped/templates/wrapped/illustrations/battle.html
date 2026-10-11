@@ -1,0 +1,8 @@
+<div class="wrapped-battle" aria-hidden="true">
+    {% for side in data.sides %}
+        <div class="wrapped-battle-side" style="--share: {{ side.share }}">
+            <span class="wrapped-battle-label">{{ side.label }}</span>
+            <span class="wrapped-battle-share">{{ side.share }}%</span>
+        </div>
+    {% endfor %}
+</div>

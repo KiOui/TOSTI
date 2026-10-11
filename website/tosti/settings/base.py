@@ -1,3 +1,4 @@
+import datetime
 import os
 from pathlib import Path
 
@@ -51,6 +52,7 @@ INSTALLED_APPS = [
     "age",
     "fridges",
     "tampon",
+    "wrapped",
 ]
 
 AUTH_USER_MODEL = "users.User"
@@ -358,6 +360,22 @@ CONSTANCE_CONFIG = {
         "to be able to open it again.",
         bool,
     ),
+    "WRAPPED_SHOW_FROM": (
+        datetime.date(2026, 12, 1),
+        "First day TOSTI Wrapped is shown. It looks back at the year (see below) this day falls in.",
+        datetime.date,
+    ),
+    "WRAPPED_SHOW_UNTIL": (
+        datetime.date(2026, 12, 31),
+        "Last day TOSTI Wrapped is shown.",
+        datetime.date,
+    ),
+    "WRAPPED_YEAR_START_MONTH": (
+        1,
+        "Month the year TOSTI Wrapped looks back at starts in: 1 for calendar years (e.g. 2026), 9 for lecture years "
+        "(e.g. 2026/2027, from September until August).",
+        int,
+    ),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = {
@@ -382,6 +400,11 @@ CONSTANCE_CONFIG_FIELDSETS = {
         "THALIEDJE_MAX_SONG_REQUESTS_PER_HOUR",
     ),
     "Fridge settings": ("FRIDGE_REQUIRE_DAILY_OPENING",),
+    "TOSTI Wrapped settings": (
+        "WRAPPED_SHOW_FROM",
+        "WRAPPED_SHOW_UNTIL",
+        "WRAPPED_YEAR_START_MONTH",
+    ),
 }
 
 # Sites app

@@ -28,13 +28,15 @@ def request_song(player, user, track_id):
 
 def execute_data_minimisation(dry_run=False):
     """
-    Remove song-request history from users that is more than 31 days old.
+    Remove song-request history from users that is more than 3 years old.
 
     :param dry_run: does not really remove data if True
     :return: list of users from who data is removed
     """
-    delete_before = timezone.now() - timedelta(days=31)
-    requests = SpotifyQueueItem.objects.filter(added__lte=delete_before)
+    delete_before = timezone.now() - timedelta(days=3 * 365)
+    requests = SpotifyQueueItem.objects.filter(
+        added__lte=delete_before, requested_by__isnull=False
+    )
 
     users = []
     for request in requests:

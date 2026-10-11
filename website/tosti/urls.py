@@ -133,6 +133,10 @@ urlpatterns = [
         include(("fridges.urls", "fridges"), namespace="fridges"),
     ),
     path(
+        "wrapped/",
+        include(("wrapped.urls", "wrapped"), namespace="wrapped"),
+    ),
+    path(
         "status/",
         include(("status_screen.urls", "status_screen"), namespace="status_screen"),
     ),

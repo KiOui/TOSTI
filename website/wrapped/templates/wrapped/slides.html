@@ -1,0 +1,68 @@
+{% load static %}
+<div class="wrapped-story" data-wrapped-story tabindex="0" aria-roledescription="carousel"
+     aria-label="TOSTI Wrapped">
+    <div class="wrapped-progress" data-wrapped-progress aria-hidden="true"></div>
+    <div class="wrapped-slides" data-wrapped-slides aria-live="polite">
+        <section class="wrapped-slide wrapped-theme-intro" aria-roledescription="slide">
+            <img src="{% static 'tosti/svg/TOSTI-logo.svg' %}" alt="" class="wrapped-logo">
+            <h3 class="wrapped-kicker">TOSTI Wrapped</h3>
+            {% if period.start.year == period.end.year %}
+                <div class="wrapped-value" data-count-to="{{ period.label }}" data-count-from="{{ period.start.year|add:-25 }}"
+                     data-count-plain>{{ period.label }}</div>
+            {% else %}
+                <div class="wrapped-value wrapped-value-text">{{ period.label }}</div>
+            {% endif %}
+            <p class="wrapped-text">
+                What a year it has been in the canteens. Let's look back at it together!
+                {% if personal_slides %}
+                    The green slides are about you, and only you can see them.
+                    {% if personal_partial %}
+                        TOSTI only remembers who ordered what since {{ personal_since|date:"F" }}, so that's where
+                        your own stats start this year.
+                    {% endif %}
+                {% endif %}
+            </p>
+        </section>
+
+        {% for slide in slides %}
+            {% include "wrapped/slide.html" with theme=slide.theme %}
+        {% endfor %}
+
+        <section class="wrapped-slide wrapped-theme-night" aria-roledescription="slide" data-wrapped-share hidden>
+            <h3 class="wrapped-kicker">Share your Wrapped</h3>
+            <canvas class="wrapped-share-preview" data-wrapped-share-canvas
+                    role="img" aria-label="{{ share.title }} {{ period.label }}, an image to share"></canvas>
+            <div class="wrapped-share-actions">
+                <button type="button" class="btn wrapped-button" data-wrapped-download>
+                    <i class="fa-solid fa-download me-1" aria-hidden="true"></i> Download
+                </button>
+                <button type="button" class="btn wrapped-button" data-wrapped-native-share hidden>
+                    <i class="fa-solid fa-share-nodes me-1" aria-hidden="true"></i> Share
+                </button>
+            </div>
+            {{ share|json_script }}
+        </section>
+
+        <section class="wrapped-slide wrapped-theme-intro" aria-roledescription="slide" hidden>
+            <h3 class="wrapped-kicker">That's a wrap!</h3>
+            <div class="wrapped-value wrapped-value-text">See you next year!</div>
+            <p class="wrapped-text">
+                Thanks to everyone who ordered a tosti, requested a song or held a borrel, and most of all to every
+                volunteer behind the counter.
+            </p>
+            <div class="wrapped-share-actions">
+                <button type="button" class="btn wrapped-button" data-bs-dismiss="modal">Close</button>
+                <a class="btn wrapped-button wrapped-button-secondary" href="{% url 'statistics' %}">More statistics</a>
+            </div>
+        </section>
+    </div>
+    <div class="wrapped-controls">
+        <button type="button" class="btn wrapped-nav" data-wrapped-prev aria-label="Previous slide">
+            <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+        </button>
+        <span class="wrapped-counter" data-wrapped-counter></span>
+        <button type="button" class="btn wrapped-nav" data-wrapped-next aria-label="Next slide">
+            <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+        </button>
+    </div>
+</div>
