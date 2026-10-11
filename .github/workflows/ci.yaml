@@ -4,15 +4,15 @@ name: "CI"
 
 on:
   push:
-    branches: ["master"]
+    branches: ["main"]
   pull_request:
-    branches: ["master"]
+    branches: ["main"]
   release:
     types: [published]
 
 concurrency:
   group: ci-${{ github.ref }}
-  # Cancel superseded PR runs; never cancel master or release runs (they publish images).
+  # Cancel superseded PR runs; never cancel main or release runs (they publish images).
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
@@ -92,7 +92,7 @@ jobs:
   build-image:
     name: "Build & push image"
     needs: [test, lint]
-    # Build+push on master pushes and on published releases; skip on PRs.
+    # Build+push on main pushes and on published releases; skip on PRs.
     if: github.event_name == 'push' || github.event_name == 'release'
     runs-on: ubuntu-latest
     steps:
@@ -112,7 +112,7 @@ jobs:
         with:
           images: ghcr.io/kioui/tosti
           # Tag strategy:
-          #   master push   → sha-<sha>, latest
+          #   main push     → sha-<sha>, latest
           #   release vX.Y.Z → sha-<sha>, X.Y.Z, X.Y, X (and "latest" only on non-prerelease)
           tags: |
             type=sha,format=long

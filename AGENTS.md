@@ -118,7 +118,7 @@ uv run python website/manage.py makemigrations
 
 Read the migration file before committing it. Do **not** generate migrations the user didn't expect — flag them in your response so the human can review. Migrations are deployment-affecting and cannot be undone after they're applied.
 
-Do not edit migration files that already exist on `master`. Do not "rebase to clean up" a migration history. Destructive migrations (column/table drops, irreversible data transforms) need explicit human sign-off — surface them, don't just create them.
+Do not edit migration files that already exist on `main`. Do not "rebase to clean up" a migration history. Destructive migrations (column/table drops, irreversible data transforms) need explicit human sign-off — surface them, don't just create them.
 
 ## Privacy and personal data
 
@@ -136,7 +136,7 @@ The following systems have external state that's expensive or impossible to fix 
 - **Yivi** and **age verification** (`yivi/`, `age/`, anything talking to a Yivi server). These implement legally-loaded age verification for the beer fridge; a bug here can let underage students open the fridge. Treat these apps as critical. Don't refactor them opportunistically. If a change isn't strictly required by the task, don't touch them. Any change to the verification path must come with a test that demonstrates the compliance behaviour still holds.
 - **Spotify / Marietje** (`thaliedje/yivi.py` is unrelated; the player code in `thaliedje/models.py` and `thaliedje/services.py`). These hold OAuth refresh tokens for shared accounts; rotating them is manual.
 - **Silvasoft** (`silvasoft/`). It books real invoices in a real accounting system.
-- **GHCR / deploy** (`.github/workflows/deploy.yaml`, `deploy/docker-compose.yml`). The deploy is push-based and runs immediately on master. Never alter deploy steps without coordinating.
+- **GHCR / deploy** (`.github/workflows/deploy.yaml`, `deploy/docker-compose.yml`). The deploy is push-based and runs immediately on main. Never alter deploy steps without coordinating.
 
 If the user asks you to change one of these, do the read/explore work, surface what you'd do, and let the human confirm before you edit.
 
@@ -172,7 +172,7 @@ If the user asks you to change one of these, do the read/explore work, surface w
 
 ## Git etiquette
 
-- **Never `git push --force` to `master` or `main`.** Period. Surface the situation to the human.
+- **Never `git push --force` to `main`.** Period. Surface the situation to the human.
 - **Don't amend commits the user has already seen.** Commits become part of the shared history once they're discussed; treat them as immutable. Fix issues with new commits.
 - **Don't run destructive git commands** (`git reset --hard`, `git checkout .`, `git clean -fd`, `git branch -D`) without explicit human instruction. They can destroy uncommitted work.
 - **Don't squash other contributors' commits** to "clean up" history. The deploy workflow runs off the merge commit; rewriting landed history is dangerous.
