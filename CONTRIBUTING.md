@@ -26,7 +26,7 @@ If a proposed feature fails any of these tests, it does not belong in TOSTI. The
 ## Quick start
 
 1. **Set up locally.** Follow the [Local development](README.md#-local-development) section in the README — clone, `uv sync`, `migrate`, `runserver`. SAML is disabled in development; use `/admin-login` to sign in as a Django superuser.
-2. **Branch off `master`.** Pick a short, descriptive branch name (e.g. `fix-spotify-auto-start`, `add-tampon-form`).
+2. **Branch off `main`.** Pick a short, descriptive branch name (e.g. `fix-spotify-auto-start`, `add-tampon-form`).
 3. **Make your change.** Keep the diff focused — one feature or fix per PR.
 4. **Run the checks locally** before opening the PR:
    ```bash
@@ -37,7 +37,7 @@ If a proposed feature fails any of these tests, it does not belong in TOSTI. The
      --max-line-length=119 website                   # lint
    uv run python manage.py spectacular --validate --api-version v1 > /dev/null
    ```
-5. **Open the PR** against `master`. CI must pass (test + lint + image build). Merging to `master` triggers an automatic deploy to <https://tosti.science.ru.nl> via the self-hosted runner. See [`deploy/README.md`](deploy/README.md).
+5. **Open the PR** against `main`. CI must pass (test + lint + image build). Merging to `main` triggers an automatic deploy to <https://tosti.science.ru.nl> via the self-hosted runner. See [`deploy/README.md`](deploy/README.md).
 
 ## Project conventions
 
@@ -67,7 +67,7 @@ If you change a model, generate the migration in the same commit that introduces
 uv run python website/manage.py makemigrations
 ```
 
-Never edit a migration file that's already on `master`. If you need to fix a bad migration after merging, write a new one. Don't squash other contributors' migrations or rebase to "clean up" the history; deployments rely on the migrations applied in the order they landed.
+Never edit a migration file that's already on `main`. If you need to fix a bad migration after merging, write a new one. Don't squash other contributors' migrations or rebase to "clean up" the history; deployments rely on the migrations applied in the order they landed.
 
 Avoid destructive migrations (column drops, table drops) without coordinating with the committee — these can lose production data and need to be planned with downtime in mind.
 
@@ -135,10 +135,10 @@ A good PR is short, focused, and self-explanatory:
 
 - **One feature or fix per PR.** Bundling unrelated changes makes review slow and rollbacks risky.
 - **PR description.** Say what changed and *why*. Link the issue if there is one. If the change touches an external system (Sentry, Yivi, Spotify, Silvasoft, SURFconext), call that out — it's the kind of thing reviewers can miss.
-- **Tests.** If you fix a bug, add a regression test that fails on master and passes on your branch. If you add a feature, cover the happy path plus at least one edge case.
+- **Tests.** If you fix a bug, add a regression test that fails on main and passes on your branch. If you add a feature, cover the happy path plus at least one edge case.
 - **Migrations.** If you touched a model, run `makemigrations` and commit the file in the same PR. Flag destructive migrations in the description.
 - **Don't squash other people's commits.** Rebases are fine for your own branch; rewriting shared history is not.
-- **Don't `--force-push` master or `--no-verify` past hooks.** Ever.
+- **Don't `--force-push` main or `--no-verify` past hooks.** Ever.
 
 CI runs tests + flake8 + black + image build. All must pass before merge.
 
