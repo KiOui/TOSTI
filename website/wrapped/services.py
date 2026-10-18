@@ -97,6 +97,7 @@ def get_story(user, period):
             "title": share_title,
             "year": period.label,
             "lines": _format_share(share_lines),
+            "art": static(personal["art"]) if personal.get("art") else None,
             "logo": static("tosti/favicon/android-chrome-512x512.png"),
             "footer": urlparse(
                 getattr(settings, "TOSTI_CANONICAL_URL", "https://tosti.science.ru.nl")

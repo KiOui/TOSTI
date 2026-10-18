@@ -239,6 +239,12 @@
     margin-top: 0.75rem;
 }
 
+/* The personality's illustration shares its slide with the calendar, so keep it smaller. */
+.wrapped-personality-art {
+    height: min(20vh, 150px);
+    animation: wrapped-pop 0.6s ease-out backwards;
+}
+
 /* What a personality means, right below its name. */
 .wrapped-story p.wrapped-meaning {
     max-width: 34ch;
@@ -698,6 +704,10 @@
 
     .wrapped-large .wrapped-slide-compact .wrapped-text {
         font-size: clamp(1.1rem, 2.4vh, 1.5rem);
+    }
+
+    .wrapped-large .wrapped-personality-art {
+        height: min(24vh, 220px);
     }
 
     .wrapped-large .wrapped-meaning {

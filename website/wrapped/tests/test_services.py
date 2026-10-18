@@ -3,6 +3,7 @@ from collections import Counter
 from unittest import mock
 
 from django.contrib.auth import get_user_model
+from django.contrib.staticfiles import finders
 from django.core.cache import cache
 from django.template.loader import render_to_string
 from constance.test import override_config
@@ -368,6 +369,10 @@ class PersonalWrappedTests(WrappedDataTestCase):
                 )
             ],
         )
+        self.assertTrue(
+            personality_slide["art"].startswith("wrapped/img/personalities/")
+        )
+        self.assertEqual(personal["art"], personality_slide["art"])
         self.assertIn("Cheese lover", personality_slide["tags"])
         self.assertIn("Team North", personality_slide["tags"])
         self.assertEqual(
@@ -727,10 +732,12 @@ class PersonalWrappedTests(WrappedDataTestCase):
         self.assertEqual(
             story["share"]["lines"][0], {"label": "Tostis grilled", "value": "1"}
         )
+        self.assertIsNone(story["share"]["art"])
 
         story = services.get_story(self.user, Period.starting_in(2025))
         self.assertEqual(story["share"]["title"], "My TOSTI Wrapped")
         self.assertEqual(story["share"]["lines"][0]["label"], "TOSTI personality")
+        self.assertRegex(story["share"]["art"], r"wrapped/img/personalities/\w+\.svg$")
         self.assertIn(
             {"label": "Days in the canteen since March", "value": "1"},
             story["share"]["lines"],
@@ -767,6 +774,12 @@ class PersonalityTests(TestCase):
 
     def test_every_personality_has_a_meaning(self):
         self.assertEqual(set(MEANINGS), set(PERSONALITIES))
+
+    def test_every_personality_has_an_illustration(self):
+        for key in PERSONALITIES:
+            self.assertIsNotNone(
+                finders.find(f"wrapped/img/personalities/{key}.svg"), key
+            )
 
     def test_product_flavour(self):
         self.assertEqual(product_flavour("Tosti Ham-Cheese"), "ham-cheese")

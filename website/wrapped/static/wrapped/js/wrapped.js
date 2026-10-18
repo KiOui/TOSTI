@@ -105,10 +105,15 @@
             });
         context.globalAlpha = 1;
 
-        const logo = await loadImage(data.logo);
-        if (logo) {
+        // With a personality, its illustration takes the place of the logo; the logo then goes next to the footer.
+        const [logo, art] = await Promise.all([loadImage(data.logo), data.art ? loadImage(data.art) : null]);
+        if (art) {
+            context.drawImage(art, (SHARE_WIDTH - 340) / 2, 60, 340, 340);
+        } else if (logo) {
             context.drawImage(logo, (SHARE_WIDTH - 220) / 2, 120, 220, 220);
         }
+        // The illustration is taller than the logo, so move everything below it down.
+        const offset = art ? 40 : 0;
 
         context.textAlign = "center";
         context.textBaseline = "alphabetic";
@@ -117,7 +122,7 @@
         if ("letterSpacing" in context) {
             context.letterSpacing = "10px";
         }
-        context.fillText(data.title.toUpperCase(), SHARE_WIDTH / 2, 430);
+        context.fillText(data.title.toUpperCase(), SHARE_WIDTH / 2, 430 + offset);
         if ("letterSpacing" in context) {
             context.letterSpacing = "0px";
         }
@@ -128,10 +133,10 @@
             context.font = `bold ${yearSize}px ${SHARE_FONT}`;
             yearSize -= 10;
         } while (context.measureText(String(data.year)).width > SHARE_WIDTH - 2 * SHARE_MARGIN && yearSize > 80);
-        context.fillText(String(data.year), SHARE_WIDTH / 2, 640);
+        context.fillText(String(data.year), SHARE_WIDTH / 2, 640 + offset);
 
         context.textAlign = "left";
-        let y = 790;
+        let y = 790 + offset;
         const maxWidth = SHARE_WIDTH - 2 * SHARE_MARGIN;
         const available = SHARE_HEIGHT - 200 - y;
         const perLine = Math.min(220, available / Math.max(data.lines.length, 1));
@@ -150,7 +155,17 @@
         context.textAlign = "center";
         context.fillStyle = muted;
         context.font = `44px ${SHARE_FONT}`;
-        context.fillText(data.footer, SHARE_WIDTH / 2, SHARE_HEIGHT - 110);
+        if (art && logo) {
+            const footerWidth = context.measureText(data.footer).width;
+            const logoSize = 64;
+            const gap = 20;
+            const left = (SHARE_WIDTH - footerWidth - logoSize - gap) / 2;
+            context.drawImage(logo, left, SHARE_HEIGHT - 110 - 48, logoSize, logoSize);
+            context.textAlign = "left";
+            context.fillText(data.footer, left + logoSize + gap, SHARE_HEIGHT - 110);
+        } else {
+            context.fillText(data.footer, SHARE_WIDTH / 2, SHARE_HEIGHT - 110);
+        }
     }
 
     function canvasToFile(canvas, name) {

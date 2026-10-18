@@ -111,6 +111,7 @@ class StoryViewTests(TestCase):
         self.assertContains(response, "Your TOSTI personality")
         self.assertContains(response, "since 2 December only")
         self.assertContains(response, 'class="wrapped-meaning"')
+        self.assertContains(response, "wrapped/img/personalities/")
         self.assertNotContains(response, "Your visits")
 
 

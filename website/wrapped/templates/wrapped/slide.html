@@ -1,8 +1,11 @@
+{% load static %}
 <section class="wrapped-slide wrapped-theme-{{ theme }}{% if slide.calendar %} wrapped-slide-compact{% endif %}" aria-roledescription="slide" hidden>
     {% if slide.illustration %}
         {% with "wrapped/illustrations/"|add:slide.illustration.type|add:".html" as illustration %}
             {% include illustration with data=slide.illustration %}
         {% endwith %}
+    {% elif slide.art %}
+        <img src="{% static slide.art %}" alt="" class="wrapped-illustration wrapped-personality-art">
     {% elif slide.icon %}
         <i class="fa-solid {{ slide.icon }} wrapped-icon wrapped-icon-{{ slide.icon_animation }}" aria-hidden="true"></i>
     {% endif %}

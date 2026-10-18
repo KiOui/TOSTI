@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" width="400" height="400">
+  <defs>
+    <g id="tosti">
+      <rect x="0" y="9" width="120" height="7" rx="3" fill="#e2b56a" stroke="#7a4a14" stroke-width="2"/>
+      <path d="M4 8h112v3c-3 0-3 4-7 4s-4-4-7-4H52c-3 0-3 5-6 5s-3-5-6-5H4z" fill="#f6d743"/>
+      <rect x="0" y="0" width="120" height="9" rx="4" fill="#ecc47e" stroke="#7a4a14" stroke-width="2"/>
+      <path d="M24 2.5l9 4M52 2.5l9 4M80 2.5l9 4" fill="none" stroke="#7a4a14" stroke-width="2" stroke-linecap="round"/>
+    </g>
+  </defs>
+  <circle cx="100" cy="100" r="94" fill="#ffffff" fill-opacity="0.1"/>
+  <rect x="44" y="48" width="112" height="82" rx="24" fill="#b5562f" stroke="#2b1906" stroke-width="3"/>
+  <rect x="58" y="60" width="84" height="56" rx="16" fill="#c96a3e"/>
+  <rect x="50" y="118" width="100" height="32" rx="10" fill="#d4784a" stroke="#2b1906" stroke-width="3"/>
+  <rect x="26" y="96" width="34" height="62" rx="15" fill="#9c4424" stroke="#2b1906" stroke-width="3"/>
+  <rect x="140" y="96" width="34" height="62" rx="15" fill="#9c4424" stroke="#2b1906" stroke-width="3"/>
+  <rect x="40" y="156" width="10" height="20" rx="3" fill="#2b1906"/>
+  <rect x="150" y="156" width="10" height="20" rx="3" fill="#2b1906"/>
+  <use href="#tosti" xlink:href="#tosti" transform="translate(64 104) rotate(0) scale(0.6 1.02)"/>
+  <path d="M82 96c-4-6 4-8 0-14M100 94c-4-6 4-8 0-14M118 96c-4-6 4-8 0-14" fill="none" stroke="#ffffff" stroke-opacity="0.7" stroke-width="3" stroke-linecap="round"/>
+</svg>
