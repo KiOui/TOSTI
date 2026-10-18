@@ -358,7 +358,16 @@ class PersonalWrappedTests(WrappedDataTestCase):
         self.assertIn(
             personality_slide["value"], {name for name, _ in PERSONALITIES.values()}
         )
-        self.assertIn("You get this personality when", personality_slide["meaning"])
+        self.assertEqual(
+            personality_slide["meaning"],
+            MEANINGS[
+                next(
+                    key
+                    for key, (name, _) in PERSONALITIES.items()
+                    if name == personality_slide["value"]
+                )
+            ],
+        )
         self.assertIn("Cheese lover", personality_slide["tags"])
         self.assertIn("Team North", personality_slide["tags"])
         self.assertEqual(
