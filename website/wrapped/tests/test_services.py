@@ -372,7 +372,9 @@ class PersonalWrappedTests(WrappedDataTestCase):
         self.assertTrue(
             personality_slide["art"].startswith("wrapped/img/personalities/")
         )
-        self.assertEqual(personal["art"], personality_slide["art"])
+        self.assertEqual(
+            personal["share_art"], personality_slide["art"].replace(".svg", ".png")
+        )
         self.assertIn("Cheese lover", personality_slide["tags"])
         self.assertIn("Team North", personality_slide["tags"])
         self.assertEqual(
@@ -737,7 +739,7 @@ class PersonalWrappedTests(WrappedDataTestCase):
         story = services.get_story(self.user, Period.starting_in(2025))
         self.assertEqual(story["share"]["title"], "My TOSTI Wrapped")
         self.assertEqual(story["share"]["lines"][0]["label"], "TOSTI personality")
-        self.assertRegex(story["share"]["art"], r"wrapped/img/personalities/\w+\.svg$")
+        self.assertRegex(story["share"]["art"], r"wrapped/img/personalities/\w+\.png$")
         self.assertIn(
             {"label": "Days in the canteen since March", "value": "1"},
             story["share"]["lines"],
@@ -776,10 +778,13 @@ class PersonalityTests(TestCase):
         self.assertEqual(set(MEANINGS), set(PERSONALITIES))
 
     def test_every_personality_has_an_illustration(self):
+        # An SVG for the slide, and a PNG of it for the share image.
         for key in PERSONALITIES:
-            self.assertIsNotNone(
-                finders.find(f"wrapped/img/personalities/{key}.svg"), key
-            )
+            for extension in ("svg", "png"):
+                self.assertIsNotNone(
+                    finders.find(f"wrapped/img/personalities/{key}.{extension}"),
+                    f"{key}.{extension}",
+                )
 
     def test_product_flavour(self):
         self.assertEqual(product_flavour("Tosti Ham-Cheese"), "ham-cheese")

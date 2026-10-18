@@ -188,9 +188,9 @@ def personal_wrapped(user, period):
     """
     Return the personal Wrapped of a user for a period.
 
-    :return: dict with ``slides``, ``share`` (lines for the share image, the personality comes first), ``art`` (the
-    static path of the personality's illustration, if they have one) and ``partial`` (whether only part of the period
-    is known, in which case every number says since when).
+    :return: dict with ``slides``, ``share`` (lines for the share image, the personality comes first),
+    ``share_art`` (the static path of the personality's illustration for the share image, if they have one) and
+    ``partial`` (whether only part of the period is known, in which case every number says since when).
     """
     personality_only = period.start < config.WRAPPED_PERSONAL_FROM
     since = tracked_since(period)
@@ -257,6 +257,8 @@ def personal_wrapped(user, period):
         "text": you["description"],
         "meaning": you["means"],
         "art": f"wrapped/img/personalities/{you['key']}.svg",
+        # Safari can't draw SVGs on the canvas of the share image, so that uses a PNG of the same illustration.
+        "share_art": f"wrapped/img/personalities/{you['key']}.png",
         "tags": you["tags"],
         "calendar": calendar,
         # Months per row on small and large screens.
@@ -277,7 +279,7 @@ def personal_wrapped(user, period):
         return {
             "slides": slides,
             "share": share + [slide["share"] for slide in bakers],
-            "art": personality_slide["art"],
+            "share_art": personality_slide["share_art"],
             "partial": False,
         }
 
@@ -487,6 +489,6 @@ def personal_wrapped(user, period):
     return {
         "slides": slides,
         "share": share + [slide["share"] for slide in slides if "share" in slide],
-        "art": personality_slide["art"],
+        "share_art": personality_slide["share_art"],
         "partial": partial,
     }
