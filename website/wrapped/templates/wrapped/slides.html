@@ -14,16 +14,9 @@
             {% endif %}
             <p class="wrapped-text">
                 What a year it has been in the canteens. Let's look back at it together!
-                {% if personal_slides %}
-                    {% if personal_slides|length == 1 %}
-                        The green slide is about you, and only you can see it.
-                    {% else %}
-                        The green slides are about you, and only you can see them.
-                    {% endif %}
-                    {% if personal_partial %}
-                        TOSTI only remembers who ordered what since {{ personal_since|date:"F" }}, so that's where
-                        your own stats start this year.
-                    {% endif %}
+                {% if personal_slides and personal_partial %}
+                    TOSTI only remembers who ordered what since {{ personal_since|date:"F" }}, so that's where
+                    your own stats start this year.
                 {% endif %}
             </p>
         </section>
