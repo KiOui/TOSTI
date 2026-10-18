@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" width="400" height="400">
+  <defs>
+    <g id="tosti">
+      <rect x="0" y="9" width="120" height="7" rx="3" fill="#e2b56a" stroke="#7a4a14" stroke-width="2"/>
+      <path d="M4 8h112v3c-3 0-3 4-7 4s-4-4-7-4H52c-3 0-3 5-6 5s-3-5-6-5H4z" fill="#f6d743"/>
+      <rect x="0" y="0" width="120" height="9" rx="4" fill="#ecc47e" stroke="#7a4a14" stroke-width="2"/>
+      <path d="M24 2.5l9 4M52 2.5l9 4M80 2.5l9 4" fill="none" stroke="#7a4a14" stroke-width="2" stroke-linecap="round"/>
+    </g>
+  </defs>
+  <circle cx="100" cy="100" r="94" fill="#ffffff" fill-opacity="0.1"/>
+  <circle cx="58" cy="50" r="17" fill="#e8b365" stroke="#2b1906" stroke-width="3"/>
+  <circle cx="142" cy="50" r="17" fill="#e8b365" stroke="#2b1906" stroke-width="3"/>
+  <line x1="68" y1="160" x2="56" y2="176" stroke="#2b1906" stroke-width="6" stroke-linecap="round"/>
+  <line x1="132" y1="160" x2="144" y2="176" stroke="#2b1906" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="100" cy="108" r="62" fill="#fff7e6" stroke="#7a4a14" stroke-width="7"/>
+  <line x1="100" y1="54" x2="100" y2="66" transform="rotate(0 100 108)" stroke="#7a4a14" stroke-width="4" stroke-linecap="round"/><line x1="100" y1="54" x2="100" y2="62" transform="rotate(30 100 108)" stroke="#7a4a14" stroke-width="2.5" stroke-linecap="round"/><line x1="100" y1="54" x2="100" y2="62" transform="rotate(60 100 108)" stroke="#7a4a14" stroke-width="2.5" stroke-linecap="round"/><line x1="100" y1="54" x2="100" y2="66" transform="rotate(90 100 108)" stroke="#7a4a14" stroke-width="4" stroke-linecap="round"/><line x1="100" y1="54" x2="100" y2="62" transform="rotate(120 100 108)" stroke="#7a4a14" stroke-width="2.5" stroke-linecap="round"/><line x1="100" y1="54" x2="100" y2="62" transform="rotate(150 100 108)" stroke="#7a4a14" stroke-width="2.5" stroke-linecap="round"/><line x1="100" y1="54" x2="100" y2="66" transform="rotate(180 100 108)" stroke="#7a4a14" stroke-width="4" stroke-linecap="round"/><line x1="100" y1="54" x2="100" y2="62" transform="rotate(210 100 108)" stroke="#7a4a14" stroke-width="2.5" stroke-linecap="round"/><line x1="100" y1="54" x2="100" y2="62" transform="rotate(240 100 108)" stroke="#7a4a14" stroke-width="2.5" stroke-linecap="round"/><line x1="100" y1="54" x2="100" y2="66" transform="rotate(270 100 108)" stroke="#7a4a14" stroke-width="4" stroke-linecap="round"/><line x1="100" y1="54" x2="100" y2="62" transform="rotate(300 100 108)" stroke="#7a4a14" stroke-width="2.5" stroke-linecap="round"/><line x1="100" y1="54" x2="100" y2="62" transform="rotate(330 100 108)" stroke="#7a4a14" stroke-width="2.5" stroke-linecap="round"/>
+  <use href="#tosti" xlink:href="#tosti" transform="translate(78 124) rotate(0) scale(0.37 0.629)"/>
+  <line x1="100" y1="108" x2="100" y2="68" stroke="#2b1906" stroke-width="6" stroke-linecap="round"/>
+  <line x1="100" y1="108" x2="130" y2="96" stroke="#2b1906" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="100" cy="108" r="6" fill="#2b1906"/>
+</svg>

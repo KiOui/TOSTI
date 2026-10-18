@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" width="400" height="400">
+  <defs>
+    <g id="tosti">
+      <rect x="0" y="9" width="120" height="7" rx="3" fill="#e2b56a" stroke="#7a4a14" stroke-width="2"/>
+      <path d="M4 8h112v3c-3 0-3 4-7 4s-4-4-7-4H52c-3 0-3 5-6 5s-3-5-6-5H4z" fill="#f6d743"/>
+      <rect x="0" y="0" width="120" height="9" rx="4" fill="#ecc47e" stroke="#7a4a14" stroke-width="2"/>
+      <path d="M24 2.5l9 4M52 2.5l9 4M80 2.5l9 4" fill="none" stroke="#7a4a14" stroke-width="2" stroke-linecap="round"/>
+    </g>
+  </defs>
+  <circle cx="100" cy="100" r="94" fill="#ffffff" fill-opacity="0.1"/>
+  <ellipse cx="100" cy="172" rx="82" ry="8" fill="#ffffff" fill-opacity="0.15"/>
+  <use href="#tosti" xlink:href="#tosti" transform="translate(18.0 150) rotate(-4) scale(0.433333 0.737)"/>
+  <use href="#tosti" xlink:href="#tosti" transform="translate(74.0 150) rotate(3) scale(0.433333 0.737)"/>
+  <use href="#tosti" xlink:href="#tosti" transform="translate(130.0 150) rotate(-2) scale(0.433333 0.737)"/>
+  <use href="#tosti" xlink:href="#tosti" transform="translate(46.0 128) rotate(3) scale(0.433333 0.737)"/>
+  <use href="#tosti" xlink:href="#tosti" transform="translate(102.0 128) rotate(-2) scale(0.433333 0.737)"/>
+  <use href="#tosti" xlink:href="#tosti" transform="translate(74.0 106) rotate(-2) scale(0.433333 0.737)"/>
+  <path d="M100 66v-16M74 76l-10-12M126 76l10-12" stroke="#f6d743" stroke-width="5" stroke-linecap="round"/>
+</svg>

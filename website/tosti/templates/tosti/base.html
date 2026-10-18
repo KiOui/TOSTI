@@ -1,4 +1,4 @@
-{% load static django_bootstrap5 announcements menu %}
+{% load static django_bootstrap5 announcements menu page_extras %}
 <!DOCTYPE html>
 <html lang="en" class="h-100">
 <head>
@@ -327,6 +327,7 @@
 {% endblock %}
 
 <script src="{% static "tosti/js/bootstrap.bundle.min.js" %}"></script>
+{% block page_extras %}{% render_page_extras %}{% endblock %}
 {% block js %}{% endblock %}
 </body>
 </html>

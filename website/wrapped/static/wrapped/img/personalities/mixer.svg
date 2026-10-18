@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" width="400" height="400">
+  <defs>
+    <g id="tosti">
+      <rect x="0" y="9" width="120" height="7" rx="3" fill="#e2b56a" stroke="#7a4a14" stroke-width="2"/>
+      <path d="M4 8h112v3c-3 0-3 4-7 4s-4-4-7-4H52c-3 0-3 5-6 5s-3-5-6-5H4z" fill="#f6d743"/>
+      <rect x="0" y="0" width="120" height="9" rx="4" fill="#ecc47e" stroke="#7a4a14" stroke-width="2"/>
+      <path d="M24 2.5l9 4M52 2.5l9 4M80 2.5l9 4" fill="none" stroke="#7a4a14" stroke-width="2" stroke-linecap="round"/>
+    </g>
+  </defs>
+  <circle cx="100" cy="100" r="94" fill="#ffffff" fill-opacity="0.1"/>
+  <g transform="translate(-6 0)">
+    <path d="M40 52h84L40 150z" fill="#ecc47e" stroke="#7a4a14" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M118 60L46 144" stroke="#f6d743" stroke-width="9" stroke-linecap="round"/>
+    <path d="M60 70l10 6M60 92l10 6M82 70l10 6" stroke="#7a4a14" stroke-width="3" stroke-linecap="round"/>
+  </g>
+  <g transform="translate(6 0)">
+    <path d="M160 150H76l84-98z" fill="#ecc47e" stroke="#7a4a14" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M82 142L154 58" stroke="#e58a8a" stroke-width="9" stroke-linecap="round"/>
+    <path d="M130 124l10 6M130 102l10 6M108 124l10 6" stroke="#7a4a14" stroke-width="3" stroke-linecap="round"/>
+  </g>
+</svg>

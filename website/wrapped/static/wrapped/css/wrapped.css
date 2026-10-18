@@ -1,0 +1,864 @@
+/*
+ * TOSTI Wrapped.
+ *
+ * Slides always use a dark, warm palette (independent of the light/dark theme) so the brand colour pops.
+ * The only colours not taken from variables.css are the slide backgrounds, defined once below.
+ */
+.wrapped-story,
+.wrapped-modal,
+.wrapped-invite {
+    --wrapped-text: var(--primary-contrast);
+    --wrapped-accent: var(--primary);
+    --wrapped-muted: rgba(255, 255, 255, 0.75);
+    --wrapped-surface: rgba(255, 255, 255, 0.12);
+    /* Dark text on light pills and buttons, in both themes. */
+    --wrapped-ink: #2b1906;
+
+    /* Illustration colours. */
+    --wrapped-bread: #e2b56a;
+    --wrapped-bread-top: #ecc47e;
+    --wrapped-crust: #7a4a14;
+    --wrapped-cheese: #f6d743;
+
+    --wrapped-bg-intro: radial-gradient(circle at 30% 20%, var(--primary-hover), #3a2208 70%);
+    --wrapped-bg-toast: linear-gradient(160deg, var(--primary-active), #2b1906);
+    --wrapped-bg-night: linear-gradient(160deg, #1f2a44, #0d1220);
+    --wrapped-bg-cheese: linear-gradient(160deg, #c99a1e, #4a3305);
+    --wrapped-bg-berry: linear-gradient(160deg, #7a2a4a, #22091a);
+    --wrapped-bg-personal: linear-gradient(200deg, #1d5c4a, #081f19);
+}
+
+.wrapped-story {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: min(78vh, 720px);
+    overflow: hidden;
+    border-radius: 1.25rem;
+    color: var(--wrapped-text);
+    outline: none;
+}
+
+.wrapped-story:focus-visible {
+    box-shadow: 0 0 0 0.25rem var(--wrapped-accent);
+}
+
+/* -------------------- Progress -------------------- */
+.wrapped-progress {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    right: 0.75rem;
+    z-index: 2;
+    display: flex;
+    gap: 0.25rem;
+}
+
+.wrapped-progress span {
+    flex: 1;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--wrapped-surface);
+    transition: background-color 0.3s ease;
+}
+
+.wrapped-progress span.is-done {
+    background: var(--wrapped-text);
+}
+
+/* -------------------- Slides -------------------- */
+.wrapped-slides {
+    flex: 1;
+    min-height: 0;
+    cursor: pointer;
+    user-select: none;
+}
+
+.wrapped-slide {
+    display: flex;
+    flex-direction: column;
+    /* "safe": when a slide is taller than the screen, it scrolls instead of losing its top. */
+    justify-content: safe center;
+    align-items: center;
+    height: 100%;
+    /* Room for the progress bar at the top and the controls at the bottom. */
+    padding: 2.5rem 1.5rem 4rem;
+    overflow-y: auto;
+    text-align: center;
+    animation: wrapped-slide-in 0.45s ease-out;
+}
+
+.wrapped-slide[hidden] {
+    display: none;
+}
+
+.wrapped-theme-intro { background: var(--wrapped-bg-intro); }
+.wrapped-theme-toast { background: var(--wrapped-bg-toast); }
+.wrapped-theme-night { background: var(--wrapped-bg-night); }
+.wrapped-theme-cheese { background: var(--wrapped-bg-cheese); }
+.wrapped-theme-berry { background: var(--wrapped-bg-berry); }
+.wrapped-theme-personal { background: var(--wrapped-bg-personal); }
+
+.wrapped-logo {
+    height: 96px;
+    margin-bottom: 1rem;
+    animation: wrapped-wobble 2.5s ease-in-out infinite;
+}
+
+.wrapped-story h3.wrapped-kicker {
+    color: var(--wrapped-accent);
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+}
+
+.wrapped-theme-cheese h3.wrapped-kicker,
+.wrapped-theme-intro h3.wrapped-kicker {
+    color: var(--wrapped-text);
+}
+
+.wrapped-value {
+    font-size: clamp(3rem, 14vw, 5.5rem);
+    line-height: 1;
+    font-weight: bold;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+}
+
+.wrapped-value-text {
+    font-size: clamp(2rem, 8vw, 3rem);
+}
+
+.wrapped-story p.wrapped-text {
+    color: var(--wrapped-muted);
+    font-size: 1.25rem;
+    margin: 1rem 0 0;
+    max-width: 30ch;
+}
+
+.wrapped-tags {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 1.25rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.wrapped-tags li {
+    padding: 0.3rem 0.9rem;
+    border-radius: 2rem;
+    background: var(--wrapped-accent);
+    color: var(--wrapped-ink);
+    font-size: 1.1rem;
+    animation: wrapped-slide-in 0.45s ease-out backwards;
+}
+
+.wrapped-tags li:nth-child(2) { animation-delay: 0.15s; }
+.wrapped-tags li:nth-child(3) { animation-delay: 0.3s; }
+
+/* Weekday bar chart. */
+.wrapped-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.5rem;
+    height: 9rem;
+    margin-top: 1.5rem;
+}
+
+.wrapped-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    width: 2.5rem;
+    height: 100%;
+}
+
+.wrapped-bar-fill {
+    width: 100%;
+    height: var(--height);
+    min-height: 3px;
+    border-radius: 0.4rem 0.4rem 0 0;
+    background: var(--wrapped-surface);
+    transform-origin: bottom;
+    animation: wrapped-grow 0.6s ease-out backwards;
+}
+
+.wrapped-bar.is-top .wrapped-bar-fill {
+    background: var(--wrapped-accent);
+}
+
+.wrapped-bar-label {
+    margin-top: 0.35rem;
+    color: var(--wrapped-muted);
+    font-size: 0.95rem;
+}
+
+.wrapped-bar.is-top .wrapped-bar-label {
+    color: var(--wrapped-text);
+}
+
+/* Calendar of visits. */
+.wrapped-calendar {
+    display: grid;
+    grid-template-columns: repeat(var(--columns), 1fr);
+    gap: 0.4rem 0.6rem;
+    width: 100%;
+    max-width: calc(var(--columns) * 5.5rem);
+    margin-top: 1rem;
+}
+
+.wrapped-month-name {
+    color: var(--wrapped-muted);
+    font-size: 0.75rem;
+    line-height: 1.2;
+    text-align: start;
+}
+
+.wrapped-month-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+}
+
+.wrapped-month-days span,
+.wrapped-calendar-legend span span {
+    aspect-ratio: 1;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* The personality slide also holds the calendar, so keep its text smaller. */
+.wrapped-slide-compact .wrapped-value-text {
+    font-size: clamp(1.75rem, 7vw, 2.5rem);
+}
+
+.wrapped-story .wrapped-slide-compact p.wrapped-text {
+    font-size: 1.15rem;
+    margin-top: 0.75rem;
+}
+
+/* The personality's illustration shares its slide with the calendar, so keep it smaller. */
+.wrapped-personality-art {
+    height: min(20vh, 150px);
+    animation: wrapped-pop 0.6s ease-out backwards;
+}
+
+/* What a personality means, right below its name. */
+.wrapped-story p.wrapped-meaning {
+    max-width: 34ch;
+    margin: 1rem 0 0;
+    padding: 0.75rem 1rem;
+    border-radius: 1rem;
+    background: var(--wrapped-surface);
+    font-size: 1.2rem;
+    line-height: 1.4;
+}
+
+.wrapped-story p.wrapped-footnote {
+    color: var(--wrapped-muted);
+    font-size: 0.8rem;
+    margin: 0.75rem 0 0;
+    max-width: 40ch;
+    opacity: 0.8;
+}
+
+.wrapped-calendar .is-outside {
+    visibility: hidden;
+}
+
+.wrapped-calendar .is-open,
+.wrapped-calendar-legend .is-open {
+    background: var(--wrapped-surface);
+}
+
+.wrapped-calendar .is-visited,
+.wrapped-calendar-legend .is-visited {
+    background: var(--wrapped-accent);
+}
+
+.wrapped-calendar-legend {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    color: var(--wrapped-muted);
+    font-size: 0.75rem;
+}
+
+.wrapped-calendar-legend > span {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.wrapped-calendar-legend span span {
+    display: inline-block;
+    width: 0.75rem;
+}
+
+.wrapped-items {
+    width: 100%;
+    max-width: 360px;
+    margin: 1.5rem 0 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: wrapped-items;
+}
+
+.wrapped-items li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.4rem 0.75rem;
+    margin-bottom: 0.4rem;
+    border-radius: 0.5rem;
+    background: var(--wrapped-surface);
+    font-size: 1.1rem;
+    text-align: start;
+    counter-increment: wrapped-items;
+    animation: wrapped-slide-in 0.45s ease-out backwards;
+}
+
+.wrapped-items li::before {
+    content: counter(wrapped-items);
+    color: var(--wrapped-accent);
+    font-weight: bold;
+}
+
+.wrapped-theme-cheese .wrapped-items li::before {
+    color: var(--wrapped-text);
+}
+
+.wrapped-items li:nth-child(2) { animation-delay: 0.1s; }
+.wrapped-items li:nth-child(3) { animation-delay: 0.2s; }
+.wrapped-items li:nth-child(4) { animation-delay: 0.3s; }
+.wrapped-items li:nth-child(5) { animation-delay: 0.4s; }
+
+.wrapped-item-label {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.wrapped-item-value {
+    font-variant-numeric: tabular-nums;
+}
+
+.wrapped-button {
+    margin-top: 1.5rem;
+    background: var(--wrapped-text);
+    color: var(--wrapped-ink);
+    border-radius: 2rem;
+    padding: 0.5rem 1.5rem;
+}
+
+.wrapped-button-secondary {
+    background: var(--wrapped-surface);
+    color: var(--wrapped-text);
+}
+
+.wrapped-button:hover {
+    background: var(--wrapped-accent);
+    color: var(--wrapped-text);
+}
+
+/* -------------------- Illustrations -------------------- */
+.wrapped-icon {
+    color: var(--wrapped-accent);
+    font-size: 3.25rem;
+    margin-bottom: 1rem;
+}
+
+.wrapped-theme-cheese .wrapped-icon {
+    color: var(--wrapped-text);
+}
+
+.wrapped-icon-pop { animation: wrapped-pop 0.5s ease-out backwards; }
+.wrapped-icon-wave { animation: wrapped-wave 2s ease-in-out infinite; transform-origin: 70% 90%; }
+.wrapped-icon-bounce { animation: wrapped-bounce 1.6s ease-in-out infinite; }
+.wrapped-icon-spin { animation: wrapped-spin 4s linear infinite; }
+.wrapped-icon-pulse { animation: wrapped-pulse 1s ease-in-out infinite; }
+.wrapped-icon-flicker { animation: wrapped-flicker 1.2s ease-in-out infinite; transform-origin: bottom; }
+
+.wrapped-illustration {
+    width: auto;
+    height: min(28vh, 200px);
+    margin-bottom: 0.5rem;
+    overflow: visible;
+}
+
+/* Tosti tower. */
+.wrapped-plate {
+    fill: var(--wrapped-surface);
+}
+
+.wrapped-bread {
+    fill: var(--wrapped-bread);
+    stroke: var(--wrapped-crust);
+    stroke-width: 1.5;
+}
+
+.wrapped-bread-top {
+    fill: var(--wrapped-bread-top);
+}
+
+.wrapped-cheese {
+    fill: var(--wrapped-cheese);
+}
+
+.wrapped-grill {
+    fill: none;
+    stroke: var(--wrapped-crust);
+    stroke-width: 2;
+    stroke-linecap: round;
+}
+
+.wrapped-tosti {
+    animation: wrapped-drop 0.55s cubic-bezier(0.3, 1.4, 0.6, 1) backwards;
+    animation-delay: calc(var(--i) * 0.15s);
+}
+
+.wrapped-tower-continues {
+    stroke: var(--wrapped-text);
+    stroke-width: 3;
+    stroke-dasharray: 2 5;
+    stroke-linecap: round;
+}
+
+.wrapped-cloud {
+    fill: var(--wrapped-text);
+    animation: wrapped-float 3s ease-in-out infinite;
+}
+
+/* Canteen battle. */
+.wrapped-battle {
+    display: flex;
+    gap: 3px;
+    width: 100%;
+    max-width: 420px;
+    height: 4.5rem;
+    margin-bottom: 1.25rem;
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+.wrapped-battle-side {
+    flex: var(--share) 1 0;
+    min-width: 4rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: var(--wrapped-surface);
+    line-height: 1.2;
+    animation: wrapped-pop 0.6s ease-out backwards;
+}
+
+.wrapped-battle-side:first-child {
+    background: var(--wrapped-accent);
+    color: var(--wrapped-ink);
+}
+
+.wrapped-battle-side:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.wrapped-battle-label {
+    font-size: 1.1rem;
+}
+
+.wrapped-battle-share {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+/* Spot in the queue. */
+.wrapped-queue {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.5rem;
+    /* Leaves room for the "You" label under your spot. */
+    margin-bottom: 2.25rem;
+    color: var(--wrapped-muted);
+    font-size: 2rem;
+}
+
+.wrapped-queue-counter {
+    color: var(--wrapped-accent);
+    margin-right: 0.5rem;
+}
+
+.wrapped-queue-person {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: wrapped-slide-in 0.4s ease-out backwards;
+    animation-delay: calc(var(--i) * 0.08s);
+}
+
+.wrapped-queue-person.is-you {
+    color: var(--wrapped-accent);
+    font-size: 2.75rem;
+}
+
+.wrapped-queue-you {
+    position: absolute;
+    top: 100%;
+    font-size: 0.85rem;
+    color: var(--wrapped-text);
+}
+
+/* -------------------- Share -------------------- */
+.wrapped-share-preview {
+    height: min(46vh, 400px);
+    aspect-ratio: 9 / 16;
+    margin-top: 0.5rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.45);
+}
+
+.wrapped-share-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.wrapped-share-actions .wrapped-button[hidden] {
+    display: none;
+}
+
+/* -------------------- Controls -------------------- */
+.wrapped-controls {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 0.75rem;
+    pointer-events: none;
+}
+
+.wrapped-nav {
+    pointer-events: auto;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: var(--wrapped-surface);
+    color: var(--wrapped-text);
+    border: none;
+}
+
+.wrapped-nav:hover,
+.wrapped-nav:focus-visible {
+    background: var(--wrapped-accent);
+    color: var(--wrapped-text);
+}
+
+.wrapped-nav:disabled {
+    visibility: hidden;
+}
+
+.wrapped-counter {
+    color: var(--wrapped-muted);
+    font-size: 0.9rem;
+}
+
+/* -------------------- Containers -------------------- */
+.wrapped-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    margin: 0;
+    padding: 1.5rem;
+    background: var(--wrapped-bg-intro);
+    color: var(--wrapped-text);
+}
+
+.wrapped-modal-content {
+    background: transparent;
+    border: none;
+}
+
+.wrapped-modal .modal-header {
+    position: absolute;
+    top: 1.5rem;
+    right: 0.75rem;
+    z-index: 3;
+    padding: 0;
+    /* base.css shades modal headers; here only the close button should show. */
+    background: transparent;
+}
+
+/* A big, always visible close button. */
+.wrapped-close {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    border: none;
+    background: var(--wrapped-surface);
+    color: var(--wrapped-text);
+    font-size: 1.4rem;
+    line-height: 1;
+}
+
+.wrapped-close:hover,
+.wrapped-close:focus-visible {
+    background: var(--wrapped-accent);
+    color: var(--wrapped-ink);
+}
+
+/* In the popup, the story fills the whole screen, also on laptops. */
+.wrapped-modal .modal-body {
+    height: 100%;
+}
+
+.wrapped-modal .wrapped-story {
+    height: 100%;
+    border-radius: 0;
+}
+
+.wrapped-modal .wrapped-progress {
+    left: 1.25rem;
+    /* Leaves room for the close button. */
+    right: 4.25rem;
+    top: 1rem;
+}
+
+/* On laptops, the popup and the Wrapped page fill (almost) the whole screen, with everything scaled up. */
+@media (min-width: 768px) {
+    .wrapped-large .wrapped-calendar {
+        grid-template-columns: repeat(var(--columns-large), 1fr);
+        max-width: calc(var(--columns-large) * 6rem);
+    }
+
+    .wrapped-modal .wrapped-close {
+        width: 3.5rem;
+        height: 3.5rem;
+        font-size: 1.75rem;
+    }
+
+    .wrapped-modal .wrapped-progress {
+        right: 5rem;
+    }
+
+    .wrapped-large .wrapped-icon {
+        font-size: clamp(3.5rem, 9vh, 6rem);
+    }
+
+    .wrapped-large .wrapped-illustration {
+        height: min(34vh, 320px);
+    }
+
+    .wrapped-large .wrapped-queue {
+        font-size: clamp(2rem, 5vh, 3.25rem);
+    }
+
+    .wrapped-large .wrapped-queue-person.is-you {
+        font-size: clamp(2.75rem, 7vh, 4.5rem);
+    }
+
+    .wrapped-large .wrapped-battle {
+        max-width: 640px;
+        height: clamp(4.5rem, 10vh, 7rem);
+    }
+
+    .wrapped-large .wrapped-logo {
+        height: min(22vh, 180px);
+    }
+
+    .wrapped-large h3.wrapped-kicker {
+        font-size: clamp(1.25rem, 2.5vh, 2rem);
+    }
+
+    .wrapped-large .wrapped-value {
+        font-size: clamp(4rem, min(10vw, 16vh), 10rem);
+    }
+
+    .wrapped-large .wrapped-value-text {
+        font-size: clamp(2.5rem, min(6vw, 9vh), 6rem);
+        max-width: 18ch;
+    }
+
+    .wrapped-large .wrapped-text {
+        font-size: clamp(1.25rem, 3vh, 2rem);
+        max-width: 36ch;
+    }
+
+    .wrapped-large .wrapped-items {
+        max-width: 640px;
+    }
+
+    .wrapped-large .wrapped-items li {
+        font-size: clamp(1.1rem, 2.6vh, 1.6rem);
+        padding: 0.6rem 1rem;
+    }
+
+    .wrapped-large .wrapped-slide-compact .wrapped-value-text {
+        font-size: clamp(2rem, min(4vw, 6vh), 3.5rem);
+    }
+
+    .wrapped-large .wrapped-slide-compact .wrapped-text {
+        font-size: clamp(1.1rem, 2.4vh, 1.5rem);
+    }
+
+    .wrapped-large .wrapped-personality-art {
+        height: min(24vh, 220px);
+    }
+
+    .wrapped-large .wrapped-meaning {
+        max-width: 40ch;
+        font-size: clamp(1.15rem, 2.6vh, 1.6rem);
+    }
+
+    .wrapped-large .wrapped-share-preview {
+        height: min(62vh, 720px);
+    }
+
+    /* Big previous/next arrows on the sides of the screen, like stories on desktop. */
+    .wrapped-large .wrapped-controls {
+        top: 0;
+        bottom: 0;
+        padding: 0 2rem;
+    }
+
+    .wrapped-large .wrapped-nav {
+        width: 3.5rem;
+        height: 3.5rem;
+        font-size: 1.25rem;
+    }
+
+    .wrapped-large .wrapped-counter {
+        position: absolute;
+        left: 50%;
+        bottom: 1.25rem;
+        transform: translateX(-50%);
+    }
+}
+
+/* -------------------- Invitation -------------------- */
+/* A small card asking whether to open Wrapped, before taking over the whole screen. */
+.wrapped-invite {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 1040;
+    width: min(22rem, calc(100vw - 2rem));
+    padding: 1.25rem;
+    border-radius: 1rem;
+    background: var(--wrapped-bg-intro);
+    color: var(--wrapped-text);
+    box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.4);
+    text-align: center;
+    animation: wrapped-slide-in 0.4s ease-out;
+}
+
+.wrapped-invite[hidden] {
+    display: none;
+}
+
+.wrapped-invite-icon {
+    font-size: 2rem;
+    color: var(--wrapped-accent);
+}
+
+.wrapped-invite h2.wrapped-invite-title {
+    margin: 0.5rem 0 0.25rem;
+    font-size: 1.4rem;
+    letter-spacing: 1px;
+    text-transform: none;
+}
+
+.wrapped-invite p {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--wrapped-muted);
+}
+
+.wrapped-invite .wrapped-share-actions {
+    justify-content: center;
+}
+
+@media (max-width: 575.98px) {
+    .wrapped-invite {
+        right: 1rem;
+        left: 1rem;
+        width: auto;
+    }
+}
+
+/* -------------------- Animation -------------------- */
+@keyframes wrapped-slide-in {
+    from { opacity: 0; transform: translateY(1rem); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes wrapped-pop {
+    from { opacity: 0; transform: scale(0.6); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes wrapped-wave {
+    0%, 100% { transform: rotate(-10deg); }
+    50% { transform: rotate(12deg); }
+}
+
+@keyframes wrapped-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-0.4rem); }
+}
+
+@keyframes wrapped-spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes wrapped-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+}
+
+@keyframes wrapped-flicker {
+    0%, 100% { transform: scale(1, 1); opacity: 1; }
+    50% { transform: scale(0.95, 1.08); opacity: 0.85; }
+}
+
+@keyframes wrapped-drop {
+    from { opacity: 0; transform: translateY(-220px); }
+    40% { opacity: 1; }
+    to { transform: none; }
+}
+
+@keyframes wrapped-float {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(4px); }
+}
+
+@keyframes wrapped-grow {
+    from { transform: scaleY(0); }
+    to { transform: none; }
+}
+
+@keyframes wrapped-wobble {
+    0%, 100% { transform: rotate(-4deg); }
+    50% { transform: rotate(4deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .wrapped-slide,
+    .wrapped-invite,
+    .wrapped-icon,
+    .wrapped-tosti,
+    .wrapped-cloud,
+    .wrapped-battle-side,
+    .wrapped-queue-person,
+    .wrapped-bar-fill,
+    .wrapped-tags li,
+    .wrapped-items li,
+    .wrapped-logo {
+        animation: none;
+    }
+}
