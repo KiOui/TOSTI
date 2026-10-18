@@ -212,6 +212,7 @@ class CollectSlidesTests(WrappedDataTestCase):
         self.assertNotIn(self.user.get_full_name() or self.user.username, rendered)
 
 
+@override_config(WRAPPED_PERSONAL_FROM=datetime.date(2025, 1, 1))
 class PersonalWrappedTests(WrappedDataTestCase):
     def setUp(self):
         super().setUp()
@@ -437,6 +438,68 @@ class PersonalWrappedTests(WrappedDataTestCase):
         self.assertEqual(
             community["The canteen battle"]["ranking"][1],
             {"label": "South", "value": "1 order"},
+        )
+
+    @override_config(WRAPPED_PERSONAL_FROM=datetime.date(2026, 1, 1))
+    def test_only_personality_before_personal_from(self):
+        self._visits(9)
+        self._user_request(self.user, aware(2025, 9, 6, 12, 30))
+
+        personal = personal_wrapped(self.user, Period.starting_in(2025))
+        self.assertEqual(
+            [slide["kicker"] for slide in personal["slides"]],
+            ["Your TOSTI personality"],
+        )
+        personality_slide = personal["slides"][0]
+        self.assertIn(
+            personality_slide["value"], {name for name, _ in PERSONALITIES.values()}
+        )
+        self.assertIn("since 6 September only", personality_slide["footnote"])
+        self.assertIn("data minimisation", personality_slide["footnote"])
+        self.assertFalse(personal["partial"])
+        self.assertEqual(
+            personal["share"][0],
+            {"label": "TOSTI personality", "value": personality_slide["value"]},
+        )
+        self.assertTrue(
+            all(
+                line["label"] in {"TOSTI personality", "Known for"}
+                for line in personal["share"]
+            )
+        )
+
+        story = services.get_story(self.user, Period.starting_in(2025))
+        self.assertEqual(len(story["personal_slides"]), 1)
+        self.assertFalse(story["personal_partial"])
+        self.assertEqual(story["share"]["title"], "My TOSTI Wrapped")
+
+    @override_config(WRAPPED_PERSONAL_FROM=datetime.date(2026, 1, 1))
+    def test_no_footnote_when_the_whole_year_is_known(self):
+        self._visits(1)
+        personal = personal_wrapped(self.user, Period.starting_in(2025))
+        self.assertEqual(
+            [slide["kicker"] for slide in personal["slides"]],
+            ["Your TOSTI personality"],
+        )
+        self.assertNotIn("footnote", personal["slides"][0])
+
+    @override_config(
+        WRAPPED_YEAR_START_MONTH=9, WRAPPED_PERSONAL_FROM=datetime.date(2025, 9, 1)
+    )
+    def test_personal_from_in_lecture_years(self):
+        self._visits(1)
+        self.assertEqual(
+            [
+                slide["kicker"]
+                for slide in personal_wrapped(self.user, Period.starting_in(2024))[
+                    "slides"
+                ]
+            ],
+            ["Your TOSTI personality"],
+        )
+        self._visits(10)
+        self.assertGreater(
+            len(personal_wrapped(self.user, Period.starting_in(2025))["slides"]), 1
         )
 
     def test_personal_slides_only_about_the_user(self):

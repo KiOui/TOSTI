@@ -5,13 +5,15 @@ These are only ever shown to the user they are about. They use the same slide fo
 ``tags`` (a list of short strings) on the personality slide.
 
 When only part of the period is still linked to users (see ``tracked_since``), every personal number says from when
-it counts (e.g. "since September"), so it isn't mistaken for a total of the whole period.
+it counts (e.g. "since September"), so it isn't mistaken for a total of the whole period. Periods starting before
+``WRAPPED_PERSONAL_FROM`` only get the personality slide, with a footnote saying since when it counts.
 """
 
 import datetime
 import math
 from collections import Counter
 
+from constance import config
 from django.db.models import Count
 from django.template.defaultfilters import pluralize
 from django.utils import timezone
@@ -147,6 +149,7 @@ def personal_wrapped(user, period):
     :return: dict with ``slides``, ``share`` (lines for the share image, the personality comes first) and
     ``partial`` (whether only part of the period is known, in which case every number says since when).
     """
+    personality_only = period.start < config.WRAPPED_PERSONAL_FROM
     since = tracked_since(period)
     orders = period.filter(Order.objects.filter(user=user), "created")
     requests = period.filter(
@@ -162,7 +165,11 @@ def personal_wrapped(user, period):
     # A visit is a day you ordered something or requested a song (or both).
     visits = order_days | song_days
     if not visits:
-        return {"slides": [], "share": [], "partial": since is not None}
+        return {
+            "slides": [],
+            "share": [],
+            "partial": since is not None and not personality_only,
+        }
 
     context = period_context(period, since)
     days_open = context["open_days"]
@@ -202,6 +209,14 @@ def personal_wrapped(user, period):
     share = [{"label": "TOSTI personality", "value": you["name"]}]
     if you["tags"]:
         share.append({"label": "Known for", "value": " · ".join(you["tags"])})
+
+    if personality_only:
+        if since is not None:
+            personality_slide["footnote"] = (
+                f"Based on your visits since {since.day} {since:%B} only: due to data minimisation, TOSTI no "
+                "longer knows who ordered what before then, so we can't look back at your whole year."
+            )
+        return {"slides": [personality_slide], "share": share, "partial": False}
 
     partial = since is not None
     slides = [

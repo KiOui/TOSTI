@@ -376,6 +376,12 @@ CONSTANCE_CONFIG = {
         "(e.g. 2026/2027, from September until August).",
         int,
     ),
+    "WRAPPED_PERSONAL_FROM": (
+        datetime.date(2027, 1, 1),
+        "TOSTI Wrapped only shows all personal slides for years starting on or after this day. Earlier years only get "
+        "the TOSTI personality, as there isn't enough personal data of them.",
+        datetime.date,
+    ),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = {
@@ -404,6 +410,7 @@ CONSTANCE_CONFIG_FIELDSETS = {
         "WRAPPED_SHOW_FROM",
         "WRAPPED_SHOW_UNTIL",
         "WRAPPED_YEAR_START_MONTH",
+        "WRAPPED_PERSONAL_FROM",
     ),
 }
 

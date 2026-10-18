@@ -70,6 +70,7 @@ class StoryViewTests(TestCase):
         # The next lecture year isn't available yet.
         self.assertEqual(self._get(story_url(2027), july).status_code, 404)
 
+    @override_config(WRAPPED_PERSONAL_FROM=datetime.date(2026, 1, 1))
     def test_personal_stats_only_for_the_user(self):
         start = timezone.make_aware(datetime.datetime(2026, 12, 2, 12))
         shift = Shift.objects.create(
@@ -91,6 +92,25 @@ class StoryViewTests(TestCase):
             self._get(story_url(2026), DECEMBER, user=User.objects.get(pk=1)),
             "Your TOSTI personality",
         )
+
+    def test_only_personality_with_footnote_this_year(self):
+        start = timezone.make_aware(datetime.datetime(2026, 12, 2, 12))
+        shift = Shift.objects.create(
+            venue=OrderVenue.objects.create(venue=Venue.objects.get(pk=1)),
+            start=start,
+            end=start + datetime.timedelta(hours=4),
+        )
+        product = Product.objects.create(name="Tosti", current_price=1)
+        product.available_at.add(shift.venue)
+        order = Order.objects.create(
+            shift=shift, product=product, user=self.user, paid=True
+        )
+        Order.objects.filter(pk=order.pk).update(created=start)
+
+        response = self._get(story_url(2026), DECEMBER)
+        self.assertContains(response, "Your TOSTI personality")
+        self.assertContains(response, "since 2 December only")
+        self.assertNotContains(response, "Your visits")
 
 
 @mock.patch(

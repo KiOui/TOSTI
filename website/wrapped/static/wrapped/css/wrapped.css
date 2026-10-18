@@ -239,6 +239,14 @@
     margin-top: 0.75rem;
 }
 
+.wrapped-story p.wrapped-footnote {
+    color: var(--wrapped-muted);
+    font-size: 0.8rem;
+    margin: 0.75rem 0 0;
+    max-width: 40ch;
+    opacity: 0.8;
+}
+
 .wrapped-calendar .is-outside {
     visibility: hidden;
 }

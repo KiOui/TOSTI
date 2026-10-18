@@ -56,4 +56,7 @@
             {% endfor %}
         </ol>
     {% endif %}
+    {% if slide.footnote %}
+        <p class="wrapped-footnote">{{ slide.footnote }}</p>
+    {% endif %}
 </section>
