@@ -18,7 +18,7 @@ from datetime import timedelta
 
 from constance import config
 from django.contrib.auth import get_user_model
-from django.db.models import Avg, Count, DurationField, ExpressionWrapper, F, Sum
+from django.db.models import Avg, Count, DurationField, ExpressionWrapper, F, Q, Sum
 from django.db.models.functions import TruncDate
 from django.template.defaultfilters import pluralize
 
@@ -175,11 +175,21 @@ def newcomer_slides(period):
     new_users = period.filter(User.objects.all(), "date_joined").count()
     if new_users == 0:
         return []
-    text = "people logged in to TOSTI for the very first time. Welcome!"
-    # Only the last login of every user is stored, so this is only right for the period that is still going on.
-    if period.is_ongoing():
-        logged_in = period.filter(User.objects.all(), "last_login").count()
-        text += f" In total, {logged_in:,} {'person' if logged_in == 1 else 'people'} logged in this year."
+    # Only the last login of every user is stored, so also count everyone who ordered or requested a song (which
+    # they had to log in for).
+    logged_in = User.objects.filter(
+        Q(last_login__date__range=(period.start, period.end))
+        | Q(pk__in=period.filter(Order.objects.all(), "created").values("user"))
+        | Q(
+            pk__in=period.filter(SpotifyQueueItem.objects.all(), "added").values(
+                "requested_by"
+            )
+        )
+    ).count()
+    text = (
+        "people logged in to TOSTI for the very first time. Welcome! "
+        f"In total, {logged_in:,} {'person' if logged_in == 1 else 'people'} logged in this year."
+    )
     return [
         {
             "kicker": "Newcomers",

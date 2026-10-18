@@ -24,6 +24,9 @@
             {% for tag in slide.tags %}<li>{{ tag }}</li>{% endfor %}
         </ul>
     {% endif %}
+    {% if slide.meaning %}
+        <p class="wrapped-meaning">{{ slide.meaning }}</p>
+    {% endif %}
     {% if slide.calendar %}
         {% with first=slide.calendar|first last=slide.calendar|last %}
             <div class="wrapped-calendar" role="img"

@@ -235,8 +235,19 @@
 }
 
 .wrapped-story .wrapped-slide-compact p.wrapped-text {
-    font-size: 1.05rem;
+    font-size: 1.15rem;
     margin-top: 0.75rem;
+}
+
+/* What a personality means, right below its name. */
+.wrapped-story p.wrapped-meaning {
+    max-width: 34ch;
+    margin: 1rem 0 0;
+    padding: 0.75rem 1rem;
+    border-radius: 1rem;
+    background: var(--wrapped-surface);
+    font-size: 1.2rem;
+    line-height: 1.4;
 }
 
 .wrapped-story p.wrapped-footnote {
@@ -686,7 +697,12 @@
     }
 
     .wrapped-large .wrapped-slide-compact .wrapped-text {
-        font-size: clamp(1rem, 2.2vh, 1.35rem);
+        font-size: clamp(1.1rem, 2.4vh, 1.5rem);
+    }
+
+    .wrapped-large .wrapped-meaning {
+        max-width: 40ch;
+        font-size: clamp(1.15rem, 2.6vh, 1.6rem);
     }
 
     .wrapped-large .wrapped-share-preview {

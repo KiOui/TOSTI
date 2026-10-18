@@ -64,6 +64,21 @@ PERSONALITIES = {
     ),
 }
 
+# What every personality means: what made someone get it.
+MEANINGS = {
+    "furniture": "You get this personality when you stand out in how many of the days the canteen was open you "
+    "came by.",
+    "clockwork": "You get this personality when you stand out in coming by week after week, with a long streak of "
+    "weeks in a row.",
+    "early": "You get this personality when you were usually one of the first to order in a shift.",
+    "late": "You get this personality when you usually ordered near the end of a shift, after the rush.",
+    "hopper": "You get this personality when you ordered in both canteens, instead of sticking to one.",
+    "mixer": "You get this personality when you ordered a mix of products, instead of always the same one.",
+    "dj": "You get this personality when you stand out in how many songs you requested on Thaliedje.",
+    "binger": "You get this personality when most of your visits fell within just two weeks.",
+    "rare": "You get this personality when you came by only once or twice.",
+}
+
 # What to say about how someone compares to everyone else, for dimensions where that makes sense.
 COMPARISONS = {
     "furniture": "You came by more often than {percentage}% of TOSTI users{period}.",
@@ -341,7 +356,8 @@ def personality(f, period, since, suffix=""):
     """
     Return someone's personality.
 
-    :return: dict with the ``key``, ``name``, ``description`` (including how they compare) and ``tags``
+    :return: dict with the ``key``, ``name``, ``description`` (including how they compare), what the personality
+    ``means`` and ``tags``
     """
     context = period_context(period, since)
     tuned = model(period, since)
@@ -380,5 +396,7 @@ def personality(f, period, since, suffix=""):
         "key": key,
         "name": name,
         "description": " ".join(sentences),
+        "means": f"{MEANINGS[key]} Everyone gets the personality they stand out in most, compared to everyone "
+        "else in the canteens.",
         "tags": tags[:3],
     }

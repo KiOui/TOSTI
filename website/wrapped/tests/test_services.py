@@ -18,6 +18,7 @@ from wrapped.slides import tower_illustration
 from wrapped.periods import Period, current_period, tracked_since
 from wrapped.personal import personal_wrapped, queue_illustration, top_percentage
 from wrapped.personality import (
+    MEANINGS,
     PERSONALITIES,
     _even_goals,
     personality,
@@ -183,8 +184,10 @@ class CollectSlidesTests(WrappedDataTestCase):
         )
         self.assertEqual(slides["Artist of the year"]["value"], "ABBA")
         self.assertEqual(slides["Newcomers"]["value"], "1")
-        # The total number of logins is only known for the current year.
-        self.assertNotIn("In total", slides["Newcomers"]["text"])
+        # Only the last login is stored, but everyone who ordered or requested a song logged in that year.
+        self.assertIn(
+            "In total, 1 person logged in this year.", slides["Newcomers"]["text"]
+        )
 
     def test_busiest_weekday_is_an_average(self):
         # Tuesday 4 March: 3 orders. Mondays 10 and 17 March: 4 orders, and none (but the canteen was open).
@@ -234,6 +237,27 @@ class CollectSlidesTests(WrappedDataTestCase):
                 for slide in services.collect_slides(Period.starting_in(2026))
             }
         self.assertEqual(slides["Newcomers"]["value"], "1")
+        self.assertIn(
+            "In total, 2 people logged in this year.", slides["Newcomers"]["text"]
+        )
+
+    def test_logged_in_this_year(self):
+        User.objects.update(date_joined=aware(2024, 2, 1, 10), last_login=None)
+        User.objects.filter(pk=self.user.pk).update(date_joined=aware(2025, 2, 1, 10))
+        other = User.objects.exclude(pk=self.user.pk).first()
+        # One logged in this year, one ordered (and logged in again since), one requested a song anonymously.
+        User.objects.filter(pk=other.pk).update(last_login=aware(2025, 5, 1, 10))
+        self._order(self.tosti, aware(2025, 3, 4, 12, 30))
+        User.objects.filter(pk=self.user.pk).update(last_login=aware(2026, 1, 5, 10))
+        self._request(
+            SpotifyTrack.objects.create(track_id="t", track_name="T"),
+            aware(2025, 6, 1, 13),
+        )
+
+        slides = {
+            slide["kicker"]: slide
+            for slide in services.collect_slides(Period.starting_in(2025))
+        }
         self.assertIn(
             "In total, 2 people logged in this year.", slides["Newcomers"]["text"]
         )
@@ -334,6 +358,7 @@ class PersonalWrappedTests(WrappedDataTestCase):
         self.assertIn(
             personality_slide["value"], {name for name, _ in PERSONALITIES.values()}
         )
+        self.assertIn("You get this personality when", personality_slide["meaning"])
         self.assertIn("Cheese lover", personality_slide["tags"])
         self.assertIn("Team North", personality_slide["tags"])
         self.assertEqual(
@@ -730,6 +755,9 @@ CONTEXT = {"open_days": list(range(20)), "open_weeks": list(range(5)), "days": 3
 class PersonalityTests(TestCase):
     def setUp(self):
         cache.clear()
+
+    def test_every_personality_has_a_meaning(self):
+        self.assertEqual(set(MEANINGS), set(PERSONALITIES))
 
     def test_product_flavour(self):
         self.assertEqual(product_flavour("Tosti Ham-Cheese"), "ham-cheese")

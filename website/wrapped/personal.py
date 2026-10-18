@@ -254,6 +254,7 @@ def personal_wrapped(user, period):
         "order": 100,
         "value": you["name"],
         "text": you["description"],
+        "meaning": you["means"],
         "tags": you["tags"],
         "calendar": calendar,
         # Months per row on small and large screens.

@@ -110,6 +110,7 @@ class StoryViewTests(TestCase):
         response = self._get(story_url(2026), DECEMBER)
         self.assertContains(response, "Your TOSTI personality")
         self.assertContains(response, "since 2 December only")
+        self.assertContains(response, 'class="wrapped-meaning"')
         self.assertNotContains(response, "Your visits")
 
 
