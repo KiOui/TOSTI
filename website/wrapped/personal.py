@@ -18,7 +18,7 @@ from django.db.models import Count
 from django.template.defaultfilters import pluralize
 from django.utils import timezone
 
-from orders.models import Order
+from orders.models import Order, Shift
 from thaliedje.models import SpotifyQueueItem
 from wrapped.periods import longest_streak, tracked_since, week
 from wrapped.personality import features, period_context, personality, queue_positions
@@ -142,6 +142,48 @@ def _bragging(percentage, what):
     return f" That puts you in the top {percentage}% of {what}!"
 
 
+def baker_slide(user, period):
+    """Return the slide about the shifts someone was a baker in, or None if they weren't."""
+    shifts = period.filter(Shift.objects.filter(assignees=user), "start")
+    days = [
+        timezone.localtime(start).date()
+        for start in shifts.values_list("start", flat=True)
+    ]
+    if not days:
+        return None
+    tostis = Order.objects.filter(
+        shift__in=shifts, product__name__icontains="tosti"
+    ).count()
+    weekdays = Counter(day.weekday() for day in days)
+    most = max(weekdays.values())
+    favourites = [
+        _weekday_name(weekday) for weekday in range(7) if weekdays[weekday] == most
+    ]
+    text = f"shift{pluralize(len(days))} you were a baker, mostly on {_join(f'{day}s' for day in favourites)}."
+    if tostis:
+        text += f" Together with your fellow bakers, you grilled {tostis:,} tosti{pluralize(tostis)}. Thank you!"
+    else:
+        text += " Thank you!"
+    return {
+        "kicker": "Behind the counter",
+        "icon": "fa-fire-burner",
+        "icon_animation": "flicker",
+        "order": 52,
+        "value": len(days),
+        "text": text,
+        "bars": [
+            {
+                "label": _weekday_name(weekday)[:3],
+                "height": round(100 * weekdays[weekday] / most),
+                "top": weekdays[weekday] == most,
+            }
+            for weekday in range(7)
+            if weekday < 5 or weekdays[weekday]
+        ],
+        "share": {"label": "Shifts as a baker", "value": len(days)},
+    }
+
+
 def personal_wrapped(user, period):
     """
     Return the personal Wrapped of a user for a period.
@@ -151,10 +193,22 @@ def personal_wrapped(user, period):
     """
     personality_only = period.start < config.WRAPPED_PERSONAL_FROM
     since = tracked_since(period)
-    orders = period.filter(Order.objects.filter(user=user), "created")
-    requests = period.filter(
-        SpotifyQueueItem.objects.filter(requested_by=user), "added"
-    )
+
+    def counted(queryset, field):
+        """Filter a queryset on what personal statistics count: the period, from ``since``."""
+        queryset = period.filter(queryset, field)
+        return (
+            queryset
+            if since is None
+            else queryset.filter(**{f"{field}__date__gte": since})
+        )
+
+    # Shifts aren't anonymised, so the baker slide always covers the whole period.
+    baker = baker_slide(user, period)
+    bakers = [baker] if baker else []
+
+    orders = counted(Order.objects.filter(user=user), "created")
+    requests = counted(SpotifyQueueItem.objects.filter(requested_by=user), "added")
     order_rows = list(
         orders.values_list("created", "product__name", "shift__venue__venue__name")
     )
@@ -166,8 +220,8 @@ def personal_wrapped(user, period):
     visits = order_days | song_days
     if not visits:
         return {
-            "slides": [],
-            "share": [],
+            "slides": bakers,
+            "share": [slide["share"] for slide in bakers],
             "partial": since is not None and not personality_only,
         }
 
@@ -216,7 +270,12 @@ def personal_wrapped(user, period):
                 f"Based on your visits since {since.day} {since:%B} only: due to data minimisation, TOSTI no "
                 "longer knows who ordered what before then, so we can't look back at your whole year."
             )
-        return {"slides": [personality_slide], "share": share, "partial": False}
+        slides = [personality_slide] + bakers
+        return {
+            "slides": slides,
+            "share": share + [slide["share"] for slide in bakers],
+            "partial": False,
+        }
 
     partial = since is not None
     slides = [
@@ -230,7 +289,7 @@ def personal_wrapped(user, period):
             "was open."
             + _bragging(
                 top_percentage(
-                    period.filter(Order.objects.all(), "created"),
+                    counted(Order.objects.all(), "created"),
                     "user",
                     len(order_rows),
                 ),
@@ -383,7 +442,7 @@ def personal_wrapped(user, period):
             "text": f"song{pluralize(song_count)} you requested on Thaliedje{suffix}."
             + _bragging(
                 top_percentage(
-                    period.filter(SpotifyQueueItem.objects.all(), "added"),
+                    counted(SpotifyQueueItem.objects.all(), "added"),
                     "requested_by",
                     song_count,
                 ),
@@ -419,6 +478,7 @@ def personal_wrapped(user, period):
                 }
             )
 
+    slides += bakers
     slides.append(personality_slide)
     return {
         "slides": slides,

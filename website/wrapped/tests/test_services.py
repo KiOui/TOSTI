@@ -172,7 +172,7 @@ class CollectSlidesTests(WrappedDataTestCase):
         self.assertEqual(slides["Crowd favourites"]["value"], "Tosti ham-kaas")
         self.assertIsNone(slides["Crowd favourites"]["count_to"])
         self.assertEqual(slides["Rush hour"]["value"], "4 March")
-        self.assertEqual(slides["Rush hour"]["ranking"][0]["value"], "Tuesday")
+        self.assertEqual(slides["The busiest weekday"]["value"], "Tuesday")
         self.assertEqual(slides["Speedy service"]["value"], "5.0 min")
         self.assertEqual(slides["Association leaderboard"]["value"], "Thalia")
         self.assertEqual(slides["Thaliedje"]["value"], "2")
@@ -185,6 +185,39 @@ class CollectSlidesTests(WrappedDataTestCase):
         self.assertEqual(slides["Newcomers"]["value"], "1")
         # The total number of logins is only known for the current year.
         self.assertNotIn("In total", slides["Newcomers"]["text"])
+
+    def test_busiest_weekday_is_an_average(self):
+        # Tuesday 4 March: 3 orders. Mondays 10 and 17 March: 4 orders, and none (but the canteen was open).
+        for _ in range(3):
+            self._order(self.tosti, aware(2025, 3, 4, 12, 30))
+        for _ in range(4):
+            self._order(self.tosti, aware(2025, 3, 10, 12, 30))
+        start = aware(2025, 3, 17, 12)
+        Shift.objects.create(
+            venue=self.shift.venue, start=start, end=start + datetime.timedelta(hours=4)
+        )
+
+        slides = {
+            slide["kicker"]: slide
+            for slide in services.collect_slides(Period.starting_in(2025))
+        }
+        weekday = slides["The busiest weekday"]
+        self.assertEqual(weekday["value"], "Tuesday")
+        self.assertIn("3 orders on average", weekday["text"])
+        bars = {bar["label"]: bar for bar in weekday["bars"]}
+        self.assertEqual(list(bars), ["Mon", "Tue", "Wed", "Thu", "Fri"])
+        self.assertEqual((bars["Tue"]["height"], bars["Tue"]["top"]), (100, True))
+        self.assertEqual((bars["Mon"]["height"], bars["Mon"]["top"]), (67, False))
+        self.assertEqual(bars["Wed"]["height"], 0)
+        self.assertEqual(
+            weekday["ranking"],
+            [
+                {"label": "Average on Tuesdays", "value": "3 orders"},
+                {"label": "Average on Mondays", "value": "2 orders"},
+            ],
+        )
+        # The busiest single day is still a Monday.
+        self.assertEqual(slides["Rush hour"]["value"], "10 March")
 
     def test_newcomers_this_year(self):
         User.objects.filter(pk=self.user.pk).update(
@@ -502,6 +535,106 @@ class PersonalWrappedTests(WrappedDataTestCase):
             len(personal_wrapped(self.user, Period.starting_in(2025))["slides"]), 1
         )
 
+    def _bake(self, day, tostis=0):
+        """Let the user be a baker in a shift on a day, in which ``tostis`` tostis are ordered by someone else."""
+        start = aware(day.year, day.month, day.day, 12)
+        shift = Shift.objects.create(
+            venue=self.shift.venue, start=start, end=start + datetime.timedelta(hours=4)
+        )
+        shift.assignees.add(self.user)
+        for _ in range(tostis):
+            Order.objects.create(
+                shift=shift, product=self.cheese, user=self.other_user, paid=True
+            )
+        Order.objects.filter(shift=shift).update(created=start)
+        return shift
+
+    def test_baker(self):
+        self._bake(datetime.date(2025, 3, 3), tostis=10)
+        self._bake(datetime.date(2025, 3, 10), tostis=5)
+        shift = self._bake(datetime.date(2025, 3, 12))
+        Order.objects.create(
+            shift=shift, product=self.coffee, user=self.other_user, paid=True
+        )
+
+        slides = {
+            slide["kicker"]: slide
+            for slide in personal_wrapped(self.user, Period.starting_in(2025))["slides"]
+        }
+        baker = slides["Behind the counter"]
+        self.assertEqual(baker["value"], 3)
+        self.assertIn("shifts you were a baker, mostly on Mondays", baker["text"])
+        self.assertIn("you grilled 15 tostis", baker["text"])
+        bars = {bar["label"]: bar for bar in baker["bars"]}
+        self.assertEqual((bars["Mon"]["height"], bars["Mon"]["top"]), (100, True))
+        self.assertEqual((bars["Wed"]["height"], bars["Wed"]["top"]), (50, False))
+        self.assertEqual(bars["Tue"]["height"], 0)
+
+    def test_baker_without_orders_of_their_own(self):
+        self._bake(datetime.date(2025, 3, 3), tostis=1)
+        personal = personal_wrapped(self.user, Period.starting_in(2025))
+        self.assertEqual(
+            [slide["kicker"] for slide in personal["slides"]], ["Behind the counter"]
+        )
+        self.assertIn("1 tosti.", personal["slides"][0]["text"])
+        self.assertEqual(
+            personal["share"], [{"label": "Shifts as a baker", "value": 1}]
+        )
+
+    def test_no_baker_slide_for_others(self):
+        self._bake(datetime.date(2025, 3, 3), tostis=1)
+        self._visits(3)
+        self.assertNotIn(
+            "Behind the counter",
+            [
+                slide["kicker"]
+                for slide in personal_wrapped(
+                    self.other_user, Period.starting_in(2025)
+                )["slides"]
+            ],
+        )
+
+    @override_config(WRAPPED_PERSONAL_FROM=datetime.date(2026, 1, 1))
+    def test_baker_slide_with_only_the_personality(self):
+        # Shifts aren't anonymised, so they're complete even when the orders are not.
+        self._bake(datetime.date(2025, 3, 3))
+        self._visits(9)
+        personal = personal_wrapped(self.user, Period.starting_in(2025))
+        self.assertEqual(
+            [slide["kicker"] for slide in personal["slides"]],
+            ["Your TOSTI personality", "Behind the counter"],
+        )
+        self.assertIn({"label": "Shifts as a baker", "value": 1}, personal["share"])
+
+    @override_config(WRAPPED_PERSONAL_DATA_SINCE=datetime.date(2025, 9, 1))
+    def test_only_counts_from_personal_data_since(self):
+        self._visits(1)
+        self._visits(9)
+        personal = personal_wrapped(self.user, Period.starting_in(2025))
+        slides = {slide["kicker"]: slide for slide in personal["slides"]}
+
+        self.assertTrue(personal["partial"])
+        self.assertEqual(slides["Your visits"]["value"], 4)
+        self.assertIn("since September", slides["Your visits"]["text"])
+        calendar = slides["Your TOSTI personality"]["calendar"]
+        self.assertEqual(
+            [month["name"] for month in calendar],
+            ["September", "October", "November", "December"],
+        )
+
+    @override_config(
+        WRAPPED_PERSONAL_FROM=datetime.date(2026, 1, 1),
+        WRAPPED_PERSONAL_DATA_SINCE=datetime.date(2025, 9, 1),
+    )
+    def test_personality_footnote_names_personal_data_since(self):
+        self._visits(1)
+        self._visits(9)
+        personality_slide = personal_wrapped(self.user, Period.starting_in(2025))[
+            "slides"
+        ][0]
+        self.assertIn("since 1 September only", personality_slide["footnote"])
+        self.assertEqual(personality_slide["calendar"][0]["name"], "September")
+
     def test_personal_slides_only_about_the_user(self):
         self._order(self.tosti, aware(2025, 3, 4, 12, 30))
         self._user_request(self.user, aware(2025, 6, 1, 13))
@@ -534,6 +667,23 @@ class PersonalWrappedTests(WrappedDataTestCase):
         self.assertEqual(
             tracked_since(Period.starting_in(2025)), datetime.date(2025, 9, 10)
         )
+
+    def test_tracked_since_personal_data_since(self):
+        self._order(self.tosti, aware(2025, 1, 10, 12))
+        with override_config(WRAPPED_PERSONAL_DATA_SINCE=datetime.date(2025, 9, 18)):
+            self.assertEqual(
+                tracked_since(Period.starting_in(2025)), datetime.date(2025, 9, 18)
+            )
+        # Only for the period the day falls in.
+        with override_config(WRAPPED_PERSONAL_DATA_SINCE=datetime.date(2024, 9, 18)):
+            self.assertIsNone(tracked_since(Period.starting_in(2025)))
+        # Whichever is later.
+        Order.objects.update(user=None)
+        self._order(self.tosti, aware(2025, 10, 1, 12))
+        with override_config(WRAPPED_PERSONAL_DATA_SINCE=datetime.date(2025, 9, 18)):
+            self.assertEqual(
+                tracked_since(Period.starting_in(2025)), datetime.date(2025, 10, 1)
+            )
 
     def test_story_share(self):
         self._order(self.tosti, aware(2025, 3, 4, 12, 30))

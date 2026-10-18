@@ -382,6 +382,12 @@ CONSTANCE_CONFIG = {
         "the TOSTI personality, as there isn't enough personal data of them.",
         datetime.date,
     ),
+    "WRAPPED_PERSONAL_DATA_SINCE": (
+        datetime.date(2026, 9, 18),
+        "First day of complete personal data. Personal statistics in TOSTI Wrapped of the year this day falls in only "
+        "count from this day.",
+        datetime.date,
+    ),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = {
@@ -411,6 +417,7 @@ CONSTANCE_CONFIG_FIELDSETS = {
         "WRAPPED_SHOW_UNTIL",
         "WRAPPED_YEAR_START_MONTH",
         "WRAPPED_PERSONAL_FROM",
+        "WRAPPED_PERSONAL_DATA_SINCE",
     ),
 }
 

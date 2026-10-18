@@ -13,12 +13,13 @@ Every slide is a dict with anonymous, aggregate statistics only (never data abou
 """
 
 import calendar
+from collections import Counter
 from datetime import timedelta
 
 from constance import config
 from django.contrib.auth import get_user_model
 from django.db.models import Avg, Count, DurationField, ExpressionWrapper, F, Sum
-from django.db.models.functions import ExtractWeekDay, TruncDate
+from django.db.models.functions import TruncDate
 from django.template.defaultfilters import pluralize
 
 from borrel.models import BorrelReservation, ReservationItem
@@ -26,6 +27,7 @@ from fridges.models import AccessLog
 from orders.models import Order, Shift
 from thaliedje.models import SpotifyArtist, SpotifyQueueItem, SpotifyTrack
 from venues.models import Reservation
+from wrapped.periods import open_days
 
 User = get_user_model()
 
@@ -96,9 +98,52 @@ def busiest(queryset, expression):
     )
 
 
-def weekday_name(extracted_weekday):
-    """Return the name of a weekday from ``ExtractWeekDay`` (1 is Sunday, 7 is Saturday)."""
-    return calendar.day_name[(extracted_weekday - 2) % 7]
+def weekday_slide(orders, period):
+    """Return the slide about how busy every day of the week was on average, or None if the canteen was never open."""
+    days = open_days(period)
+    if not days:
+        return None
+    per_day = Counter(
+        {
+            row["day"]: row["amount"]
+            for row in orders.annotate(day=TruncDate("created"))
+            .values("day")
+            .annotate(amount=Count("id"))
+        }
+    )
+    totals, opened = Counter(), Counter()
+    for day in days:
+        totals[day.weekday()] += per_day[day]
+        opened[day.weekday()] += 1
+    averages = {weekday: totals[weekday] / opened[weekday] for weekday in opened}
+    busiest_weekday = max(averages, key=averages.get)
+    most = averages[busiest_weekday]
+    if most == 0:
+        return None
+    return {
+        "kicker": "The busiest weekday",
+        "order": 30,
+        "value": calendar.day_name[busiest_weekday],
+        "text": f"was the busiest day of the week, with {most:,.0f} orders on average on the days the canteen was "
+        "open.",
+        "bars": [
+            {
+                "label": calendar.day_abbr[weekday],
+                "height": round(100 * averages.get(weekday, 0) / most),
+                "top": weekday == busiest_weekday,
+            }
+            # Only show the weekend if the canteen was actually open then.
+            for weekday in range(7)
+            if weekday < 5 or weekday in averages
+        ],
+        "ranking": [
+            {
+                "label": f"Average on {calendar.day_name[weekday]}s",
+                "value": f"{averages[weekday]:,.0f} orders",
+            }
+            for weekday in sorted(averages, key=averages.get, reverse=True)[:3]
+        ],
+    }
 
 
 def artist_names(track):
@@ -244,7 +289,6 @@ def order_slides(period):
     )
 
     busiest_day = busiest(orders, TruncDate("created"))
-    busiest_weekday = busiest(orders, ExtractWeekDay("created"))
     biggest_shift = busiest(orders, F("shift"))
     slides.append(
         {
@@ -255,14 +299,13 @@ def order_slides(period):
             "value": f"{busiest_day['bucket'].day} {busiest_day['bucket']:%B}",
             "text": f"was the busiest day of the year, with {busiest_day['amount']:,} orders.",
             "ranking": [
-                {
-                    "label": "Busiest day of the week",
-                    "value": weekday_name(busiest_weekday["bucket"]),
-                },
                 {"label": "Most orders in one shift", "value": biggest_shift["amount"]},
             ],
         }
     )
+    weekdays = weekday_slide(orders, period)
+    if weekdays:
+        slides.append(weekdays)
 
     waiting_time = (
         orders.filter(

@@ -82,11 +82,14 @@ def current_period():
 
 def tracked_since(period):
     """
-    Return the date from which orders and song requests in a period are still linked to users.
+    Return the date from which personal statistics of a period count, e.g. since orders are still linked to users.
 
     Older data is anonymised (see the data minimisation of ``orders`` and ``thaliedje``), so personal statistics may
-    only cover part of the period. Returns None if they cover (practically) the whole period.
+    only cover part of the period. ``WRAPPED_PERSONAL_DATA_SINCE`` can set a later date, when the data before it is
+    incomplete. Returns None if they cover (practically) the whole period.
     """
+    configured = config.WRAPPED_PERSONAL_DATA_SINCE
+    configured = configured if period.start < configured <= period.end else None
     firsts = [
         period.filter(Order.objects.filter(user__isnull=False), "created").aggregate(
             first=Min("created")
@@ -97,9 +100,12 @@ def tracked_since(period):
     ]
     firsts = [first for first in firsts if first is not None]
     if not firsts:
-        return None
+        return configured
     since = timezone.localtime(min(firsts)).date()
-    return since if since > period.start + WHOLE_PERIOD_GRACE else None
+    since = since if since > period.start + WHOLE_PERIOD_GRACE else None
+    if configured is None:
+        return since
+    return max(since or configured, configured)
 
 
 def open_days(period, since=None):
