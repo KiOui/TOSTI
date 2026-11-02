@@ -507,11 +507,11 @@ wheels = [
 
 [[package]]
 name = "django-constance"
-version = "4.4.0"
+version = "4.5.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/54/bc/17bc94968933a427b851d5f42a82ceabcc09172d6b317dd3c3d41566c470/django_constance-4.4.0.tar.gz", hash = "sha256:fc0b012b493590946142172ca38e0b43149c422f8dc8976045a01313e6f4f487", size = 184807, upload-time = "2026-10-21T19:37:48.503Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e4/96/c4980722d8cce79d600b1cca8436d02b84eea8f79d009174c28da4cbf28a/django_constance-4.5.0.tar.gz", hash = "sha256:a467fd202449e508e120dbee5bb6410103bc418140bb1be87eef3c270240407f", size = 187719, upload-time = "2026-10-28T15:12:38.45Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ad/f5/74e10e3b47bb0127c468441ee9e1c0a6b7399db83f336137e8af8ea45181/django_constance-4.4.0-py3-none-any.whl", hash = "sha256:4924ca143777191e279b9664d4f6d59b68402c88b91c7581f5fb8a71e753f4f0", size = 68746, upload-time = "2026-10-21T19:37:46.982Z" },
+    { url = "https://files.pythonhosted.org/packages/15/62/dee274de0ef07b44a60eba3e30acefb85aa2d126e2cc455bb32e856bf47b/django_constance-4.5.0-py3-none-any.whl", hash = "sha256:b3ff93c231f86786aa0d6606c72cf1ea26393500defdfe11e3b0f2c172a30b94", size = 69324, upload-time = "2026-10-28T15:12:36.926Z" },
 ]
 
 [[package]]
