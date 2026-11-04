@@ -439,6 +439,7 @@ class MarietjePlayer(Player):
 
         if queue is None:
             cache.set(self._queue_cache_key, "unavailable", 10)
+            return None
 
         queue = [
             {

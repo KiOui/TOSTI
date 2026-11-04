@@ -14,7 +14,7 @@ from unittest.mock import MagicMock
 
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
-from django.test import TestCase
+from django.test import Client, TestCase
 from oauth2_provider.models import Application
 
 from tosti.mcp import require_scope
@@ -342,6 +342,17 @@ class DynamicClientRegistrationTests(TestCase):
             data=json.dumps(body),
             content_type="application/json",
         )
+
+    def test_registration_works_with_csrf_enforcement(self):
+        # Real MCP clients POST anonymously with no CSRF token/cookie. The
+        # default test client skips CSRF checks, so enforce them explicitly.
+        client = Client(enforce_csrf_checks=True)
+        response = client.post(
+            self.DCR_URL,
+            data=json.dumps({"redirect_uris": ["https://example.com/callback"]}),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 201)
 
     def test_minimum_valid_payload_creates_application(self):
         response = self._post({"redirect_uris": ["https://example.com/callback"]})

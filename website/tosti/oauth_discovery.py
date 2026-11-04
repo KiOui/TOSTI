@@ -18,7 +18,9 @@ what the library does not cover:
 
 from django.core.cache import cache
 from django.shortcuts import render
+from django.utils.decorators import method_decorator
 from django.views import View
+from django.views.decorators.csrf import csrf_exempt
 from oauth2_provider.views import AuthorizationView, DynamicClientRegistrationView
 
 from tosti.forms import GranularAuthorizationForm
@@ -58,6 +60,7 @@ class RateLimitedAnonymousDCRPermission:
         return True
 
 
+@method_decorator(csrf_exempt, name="dispatch")
 class DCRLandingView(View):
     """Wrap the library DCR view with an HTML explainer for browsers.
 
@@ -66,6 +69,10 @@ class DCRLandingView(View):
     into their browser get a friendly landing page pointing at the docs.
     Non-browser GETs and all POSTs fall through to the library view
     unchanged.
+
+    ``csrf_exempt`` must be set on this wrapper too: ``CsrfViewMiddleware``
+    only inspects the view the URL resolves to, so the exemption on the
+    library view inside is invisible to it and anonymous POSTs would 403.
     """
 
     def dispatch(self, request, *args, **kwargs):

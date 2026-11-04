@@ -2,9 +2,10 @@
 
 from unittest.mock import MagicMock, PropertyMock, patch
 
+from django.core.cache import cache
 from django.test import TestCase
 
-from thaliedje.models import SpotifyPlayer
+from thaliedje.models import MarietjePlayer, SpotifyPlayer
 
 
 class SpotifyPlayerRequestSongTests(TestCase):
@@ -141,3 +142,19 @@ class SpotifyPlayerSearchTests(TestCase):
         self.assertEqual(
             [track["id"] for track in result["tracks"]], ["first", "second"]
         )
+
+
+class MarietjePlayerQueueTests(TestCase):
+    """``MarietjePlayer.queue`` must degrade gracefully when Marietje is down."""
+
+    def setUp(self):
+        cache.clear()
+
+    def test_queue_is_none_when_marietje_request_fails(self):
+        player = MarietjePlayer(
+            id=999, url="https://example.com", client_id="ci", client_secret="cs"
+        )
+        with patch.object(MarietjePlayer, "do_marietje_request", return_value=None):
+            self.assertIsNone(player.queue)
+            # The short-lived "unavailable" marker is honoured on the next call.
+            self.assertIsNone(player.queue)
