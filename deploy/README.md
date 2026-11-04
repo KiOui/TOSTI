@@ -1,6 +1,6 @@
 # Deployment
 
-Production deployment for TOSTI runs on a Docker Compose stack on a VM, orchestrated by `.github/workflows/deploy.yaml`. It fires after the `CI` workflow (test + lint + image build) succeeds on `master`.
+Production deployment for TOSTI runs on a Docker Compose stack on a VM, orchestrated by `.github/workflows/deploy.yaml`. It fires after the `CI` workflow (test + lint + image build) succeeds on `main`.
 
 The deploy runs on a **self-hosted GitHub Actions runner installed on the VM itself**. The runner polls GitHub over outbound HTTPS; GitHub never connects inbound. This was necessary because the CNCZ network blocks inbound SSH from the public internet, so a push-based model would have needed a VPN or an SSH hole.
 
@@ -75,13 +75,13 @@ The CI image gets tagged by source:
 
 | Source | Tags applied |
 | --- | --- |
-| Push to `master` | `sha-<40-char-sha>`, `latest` |
+| Push to `main` | `sha-<40-char-sha>`, `latest` |
 | Published release `v1.2.3` | `sha-<40-char-sha>`, `1.2.3`, `1.2`, `1`, `latest` (unless pre-release) |
 | Published pre-release `v1.2.3-rc1` | `sha-<40-char-sha>`, `1.2.3-rc1`, `1.2`, `1` (no `latest`) |
 
-To cut a release: on GitHub → Releases → "Draft a new release" → create a new tag `vX.Y.Z` targeting `master` → click "Generate release notes" → publish. CI picks up the `release: published` event, runs test + lint, and pushes the image with the semver tags. The `:latest` tag moves forward too, so the next auto-deploy picks up the released build.
+To cut a release: on GitHub → Releases → "Draft a new release" → create a new tag `vX.Y.Z` targeting `main` → click "Generate release notes" → publish. CI picks up the `release: published` event, runs test + lint, and pushes the image with the semver tags. The `:latest` tag moves forward too, so the next auto-deploy picks up the released build.
 
-Deploys still trigger from master pushes only — releases don't trigger an extra deploy, they just add stable tags for rollback.
+Deploys still trigger from main pushes only — releases don't trigger an extra deploy, they just add stable tags for rollback.
 
 ## Rollback
 
@@ -100,6 +100,6 @@ docker compose up -d
 
 ## Security notes
 
-- The runner executes any code that lands on `master`. Branch protection on `master` + required reviewers on the `tosti.science.ru.nl` Environment are the main defenses.
+- The runner executes any code that lands on `main`. Branch protection on `main` + required reviewers on the `tosti.science.ru.nl` Environment are the main defenses.
 - Never set "Run workflows from fork pull requests" without approval — a malicious PR could exfiltrate secrets or run commands on the VM.
 - The `github-runner` user should not have sudo. If it needs elevated privileges for something specific, use a tightly scoped sudoers rule.

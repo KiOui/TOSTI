@@ -5,10 +5,10 @@ name: "Deploy"
 on:
   workflow_run:
     # CI runs test + lint + build-image as a linear pipeline. By the time CI
-    # succeeds on master, we know a new image has been pushed to GHCR.
+    # succeeds on main, we know a new image has been pushed to GHCR.
     workflows: ["CI"]
     types: [completed]
-    branches: [master]
+    branches: [main]
 
 concurrency:
   group: deploy-production

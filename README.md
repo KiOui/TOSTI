@@ -186,7 +186,7 @@ Verify Vue: `head -2 website/tosti/static/tosti/js/vue.global.prod.js` should pr
 
 ## 🐳 Production Deployment
 
-TOSTI runs in production as a Docker Compose stack on a VM. Deployments are automated: every push to `master` that passes CI (test + lint + image build) is deployed by `.github/workflows/deploy.yaml`.
+TOSTI runs in production as a Docker Compose stack on a VM. Deployments are automated: every push to `main` that passes CI (test + lint + image build) is deployed by `.github/workflows/deploy.yaml`.
 
 Deployment configuration — `docker-compose.yml`, `Caddyfile`, `.env.example` — lives in [`deploy/`](deploy/). See [`deploy/README.md`](deploy/README.md) for VM prerequisites, required GitHub secrets, and rollback procedure.
 
